@@ -3,34 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Danh sách chi tiết tiến độ các môn học, tín chỉ và trạng thái hoàn thành của sinh viên trên hệ thống EduGPA.">
+    <meta name="description" content="Danh sách tiến độ các môn học và tài liệu của sinh viên trên hệ thống EduGPA.">
     <title>Danh sách môn học | EduGPA</title>
 </head>
 <body>
+    <!-- Khung chung: Header -->
     <header>
-        <h1>EduGPA - Hệ thống theo dõi và lập kế hoạch học tập</h1>
+        <h1>EduGPA - Hệ thống quản lý học tập</h1>
     </header>
+
+    <!-- Khung chung: Thanh điều hướng -->
     <nav>
         <ul>
             <li><a href="index.html">Trang chủ</a></li>
-            <li><a href="danh-sach.html">Danh sách môn học</a></li>
-            <li><a href="chi-tiet.html">Mô phỏng & Chi tiết điểm</a></li>
-            <li><a href="gioi-thieu.html">Giới thiệu nhóm</a></li>
-            <li><a href="lien-he.html">Liên hệ hỗ trợ</a></li>
+            <li><a href="danh-sach.html">Danh sách</a></li>
+            <li><a href="chi-tiet.html">Chi tiết</a></li>
+            <li><a href="gioi-thieu.html">Giới thiệu</a></li>
+            <li><a href="lien-he.html">Liên hệ</a></li>
         </ul>
     </nav>
 
-    
+    <!-- Nội dung chính của trang Danh sách -->
     <main>
-       
         <h2>Danh sách môn học - Học kỳ 1 (Năm học 2026-2027)</h2>
         
         <section>
             <h3>Tổng quan tiến độ</h3>
-            <p>Sinh viên cần hoàn thành các môn học chuyên ngành dưới đây để đảm bảo tiến độ tích lũy tín chỉ. Bấm vào nút "Xem chi tiết" để theo dõi điểm số thành phần hoặc bắt đầu mô phỏng GPA.</p>
+            <p>Sinh viên cần hoàn thành các môn học chuyên ngành dưới đây để đảm bảo tiến độ tích lũy tín chỉ. Sử dụng công cụ bên dưới để tìm nhanh tài liệu hoặc môn học.</p>
+            
+            <!-- Form tìm kiếm chuẩn HTML5 -->
+            <form action="#" method="get">
+                <fieldset>
+                    <legend>Tra cứu nhanh</legend>
+                    <label for="tim-kiem">Tìm kiếm môn học, tài liệu:</label>
+                    <input type="search" id="tim-kiem" name="tu_khoa" placeholder="Nhập tên môn học, tài liệu...">
+                    <button type="submit">Tìm kiếm</button>
+                </fieldset>
+            </form>
         </section>
 
-       
+        <br>
+
+        <!-- Bảng danh sách môn học -->
         <table>
             <caption>Bảng thống kê trạng thái và tín chỉ các môn học chuyên ngành IT</caption>
             
@@ -44,7 +58,6 @@
                 </tr>
             </thead>
             
-            
             <tbody>
                 <tr>
                     <td>INT101</td>
@@ -55,7 +68,7 @@
                 </tr>
                 <tr>
                     <td>INT102</td>
-                    <td>Cơ sở dữ liệu (SQL)</td>
+                    <td>Cơ sở dữ liệu</td>
                     <td>3</td>
                     <td>Đang học</td>
                     <td><a href="chi-tiet.html">Xem chi tiết</a></td>
@@ -69,19 +82,20 @@
                 </tr>
                 <tr>
                     <td>INT104</td>
-                    <td>Mạng máy tính cơ bản</td>
+                    <td>Mạng máy tính</td>
                     <td>3</td>
                     <td>Đã hoàn thành</td>
                     <td><a href="chi-tiet.html">Xem chi tiết</a></td>
                 </tr>
                 <tr>
                     <td>INT105</td>
-                    <td>Trí tuệ nhân tạo & Thị giác máy tính</td>
+                    <td>Hệ điều hành</td>
                     <td>3</td>
                     <td>Đăng ký mới</td>
                     <td><a href="chi-tiet.html">Xem chi tiết</a></td>
                 </tr>
             </tbody>
+
             <tfoot>
                 <tr>
                     <th scope="row" colspan="2">Tổng số môn: 5</th>
@@ -91,8 +105,9 @@
         </table>
     </main>
 
+    <!-- Khung chung: Footer (Đã chốt Nhóm 3) -->
     <footer>
-        <p>© 2026 Nhóm [05] — Khoa Toán – Tin, Trường Đại học Sư phạm</p>
+        <p>&copy; 2026 Nhóm 3 - Khoa Toán - Tin.</p>
     </footer>
 </body>
 </html>

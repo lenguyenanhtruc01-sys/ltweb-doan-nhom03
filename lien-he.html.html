@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+        content="Liên hệ với đội ngũ EduGPA qua form, hotline, email hoặc fanpage. Giải đáp thắc mắc về tính GPA, nhập điểm và tài liệu học tập.">
+
+    <title>Liên hệ | EduGPA</title>
+</head>
+
+<body>
+
+    <header>
+        <p>
+            <strong>EduGPA</strong>
+        </p>
+
+        <p>
+            Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập cho sinh viên
+        </p>
+    </header>
+
+    <nav aria-label="Điều hướng chính">
+        <ul>
+            <li>
+                <a href="index.html">Trang chủ</a>
+            </li>
+            <li>
+                <a href="danh-sach.html">Danh sách</a>
+            </li>
+            <li>
+                <a href="chi-tiet.html">Chi tiết </a>
+            </li>
+            <li>
+                <a href="gioi-thieu.html">Giới thiệu</a>
+            </li>
+            <li>
+                <a href="lien-he.html">Liên hệ</a>
+            </li>
+        </ul>
+    </nav>
+
+    <main>
+
+        <h1>Liên hệ với EduGPA</h1>
+
+        <p>
+            Nếu bạn có câu hỏi, góp ý hoặc gặp vấn đề khi sử dụng EduGPA,
+            hãy liên hệ với đội ngũ hỗ trợ qua các kênh bên dưới. Chúng tôi
+            luôn sẵn sàng lắng nghe và phản hồi trong thời gian sớm nhất.
+        </p>
+
+        <!-- ================= FORM LIÊN HỆ ================= -->
+        <section>
+            <h2>Gửi câu hỏi cho chúng tôi</h2>
+
+            <p>
+                Điền form bên dưới để gửi câu hỏi hoặc yêu cầu hỗ trợ.
+                Đội ngũ EduGPA sẽ phản hồi qua email trong vòng 24 giờ làm việc.
+            </p>
+
+            <form action="#" method="post">
+
+                <fieldset>
+                    <legend>Thông tin người liên hệ</legend>
+
+                    <p>
+                        <label for="hoten">Họ và tên <span aria-hidden="true">*</span></label><br>
+                        <input type="text" id="hoten" name="hoten" required
+                               minlength="3" maxlength="50"
+                               placeholder="Nguyễn Văn A">
+                    </p>
+
+                    <p>
+                        <label for="email">Email liên hệ <span aria-hidden="true">*</span></label><br>
+                        <input type="email" id="email" name="email" required
+                               placeholder="ban@example.com">
+                    </p>
+
+                    <p>
+                        <label for="sdt">Số điện thoại</label><br>
+                        <input type="tel" id="sdt" name="sdt"
+                               pattern="[0-9]{10}" title="Số điện thoại gồm 10 chữ số"
+                               placeholder="0901234567">
+                    </p>
+
+                </fieldset>
+
+                <fieldset>
+                    <legend>Nội dung liên hệ</legend>
+
+                    <p>
+                        <label for="chude">Chủ đề cần hỗ trợ</label><br>
+                        <select id="chude" name="chude">
+                            <option value="gpa">Lỗi tính GPA</option>
+                            <option value="diem">Lỗi nhập điểm</option>
+                            <option value="taikhoan">Vấn đề tài khoản</option>
+                            <option value="tailieu">Tài liệu học tập</option>
+                            <option value="gopy">Góp ý cải thiện hệ thống</option>
+                            <option value="khac">Khác</option>
+                        </select>
+                    </p>
+
+                    <p>Mức độ ưu tiên:</p>
+
+                    <p>
+                        <input type="radio" id="thap" name="uutien" value="thap">
+                        <label for="thap">Thấp</label>
+
+                        <input type="radio" id="trungbinh" name="uutien" value="trungbinh" checked>
+                        <label for="trungbinh">Trung bình</label>
+
+                        <input type="radio" id="cao" name="uutien" value="cao">
+                        <label for="cao">Cao</label>
+                    </p>
+
+                    <p>
+                        <label for="noidung">Nội dung câu hỏi <span aria-hidden="true">*</span></label><br>
+                        <textarea id="noidung" name="noidung" rows="5" cols="40" required
+                                  placeholder="Mô tả chi tiết câu hỏi hoặc vấn đề bạn gặp phải..."></textarea>
+                    </p>
+
+                    <p>
+                        <input type="checkbox" id="phanhoi" name="phanhoi" checked>
+                        <label for="phanhoi">Tôi muốn nhận phản hồi qua email</label>
+                    </p>
+
+                </fieldset>
+
+                <p>
+                    <button type="submit">Gửi liên hệ</button>
+                    <button type="reset">Nhập lại</button>
+                </p>
+
+            </form>
+        </section>
+
+        <!-- ================= THÔNG TIN LIÊN HỆ TRỰC TIẾP ================= -->
+        <section>
+            <h2>Thông tin liên hệ trực tiếp</h2>
+
+            <ul>
+                <li>
+                    <strong>Địa chỉ:</strong> Khoa Toán - Tin, Trường Đại học Sư phạm - Đại học Đà Nẵng
+                </li>
+
+                <li>
+                    <strong>Hotline:</strong>
+                    <a href="tel:0901234567">0901 234 567</a>
+                </li>
+
+                <li>
+                    <strong>Email:</strong>
+                    <a href="mailto:support@edugpa.vn">support@edugpa.vn</a>
+                </li>
+
+                <li>
+                    <strong>Fanpage:</strong>
+                    <a href="https://facebook.com/edugpa">facebook.com/edugpa</a>
+                </li>
+
+                <li>
+                    <strong>Giờ làm việc:</strong>
+                    Thứ 2 - Thứ 6 (8:00 - 17:00), Thứ 7 (8:00 - 11:30)
+                </li>
+            </ul>
+
+            <h3>Bản đồ</h3>
+
+            <figure>
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.188!2d108.2208!3d16.0544"
+                    width="600"
+                    height="400"
+                    title="Bản đồ vị trí Khoa Toán - Tin, Trường Đại học Sư phạm - Đại học Đà Nẵng"
+                    loading="lazy"
+                    allowfullscreen>
+                </iframe>
+
+                <figcaption>
+                    Vị trí Khoa Toán - Tin trên bản đồ.
+                </figcaption>
+            </figure>
+        </section>
+
+        <!-- ================= FAQ ================= -->
+        <section>
+            <h2>Câu hỏi thường gặp</h2>
+
+            <details>
+                <summary>Làm sao để tính GPA học kỳ trên EduGPA?</summary>
+                <p>
+                    Sau khi nhập điểm và số tín chỉ của từng môn trong học kỳ,
+                    EduGPA sẽ tự động tính GPA học kỳ dựa trên công thức
+                    trung bình có trọng số theo tín chỉ.
+                </p>
+            </details>
+
+            <details>
+                <summary>EduGPA có hỗ trợ mô phỏng GPA không?</summary>
+                <p>
+                    Có. Bạn có thể thử các mức điểm dự kiến như A, B+, B, C
+                    cho những môn chưa có điểm để xem GPA dự kiến thay đổi thế nào.
+                </p>
+            </details>
+
+            <details>
+                <summary>Tôi quên mật khẩu thì phải làm sao?</summary>
+                <p>
+                    Hãy gửi yêu cầu hỗ trợ ở form phía trên với chủ đề
+                    "Vấn đề tài khoản". Đội ngũ EduGPA sẽ phản hồi qua email
+                    trong vòng 24 giờ làm việc.
+                </p>
+            </details>
+
+            <details>
+                <summary>Dữ liệu điểm của tôi có được bảo mật không?</summary>
+                <p>
+                    Có. Dữ liệu điểm chỉ hiển thị cho chính tài khoản của bạn
+                    và quản trị viên hệ thống. EduGPA không chia sẻ dữ liệu
+                    cho bên thứ ba.
+                </p>
+            </details>
+
+            <details>
+                <summary>EduGPA có hỗ trợ trên điện thoại không?</summary>
+                <p>
+                    Có. Giao diện EduGPA được thiết kế responsive, có thể sử dụng
+                    trên máy tính, máy tính bảng và điện thoại thông minh.
+                </p>
+            </details>
+        </section>
+
+        <aside>
+            <h2>Khám phá EduGPA</h2>
+
+            <ul>
+                <li>
+                    <a href="index.html">
+                        Quay lại trang chủ EduGPA
+                    </a>
+                </li>
+
+                <li>
+                    <a href="danh-sach.html">
+                        Xem danh sách môn học
+                    </a>
+                </li>
+
+                <li>
+                    <a href="chi-tiet.html">
+                        Xem chi tiết kết quả học tập
+                    </a>
+                </li>
+
+                <li>
+                    <a href="gioi-thieu.html">
+                        Tìm hiểu về EduGPA và nhóm thực hiện
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+    </main>
+
+    <footer>
+
+        <p>
+            &copy; 2026 Nhóm 3 - Khoa Toán - Tin.
+        </p>
+
+    </footer>
+
+</body>
+
+</html>

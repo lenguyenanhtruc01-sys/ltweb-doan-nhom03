@@ -227,7 +227,7 @@ button {
     margin-bottom: var(--kc-5);
 }
 
-.trang > main > section,
+.trang > main > section:not(.hero),
 .trang > main > article {
     padding: clamp(1rem, 3vw, 2rem);
     border: 1px solid var(--mau-vien);
@@ -428,10 +428,13 @@ input[type="reset"]:hover {
    ========================================================= */
 
 .trang > main > section.hero {
+    padding: clamp(1rem, 3vw, 2rem);
+    border: 1px solid var(--mau-chinh-dam);
+    border-radius: var(--bo-goc-lon);
     color: #ffffff;
-    background:
-        linear-gradient(115deg, rgb(15 47 111 / 98%), rgb(23 70 162 / 92%)),
-        var(--mau-chinh);
+    background-color: var(--mau-chinh);
+    background-image: linear-gradient(115deg, #0f2f6f, #1746a2);
+    box-shadow: var(--bong-nhe);
 }
 
 .hero__khung {

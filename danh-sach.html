@@ -1,113 +1,178 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Danh sách tiến độ các môn học và tài liệu của sinh viên trên hệ thống EduGPA.">
+
+    <meta name="description"
+        content="Danh sách tiến độ các môn học và tài liệu của sinh viên trên hệ thống EduGPA.">
+
     <title>Danh sách môn học | EduGPA</title>
+
+    <!-- Kết nối với file CSS chung -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-    <!-- Khung chung: Header -->
+
+<body class="trang trang-danh-sach">
+
     <header>
-        <h1>EduGPA - Hệ thống quản lý học tập</h1>
+        <p>
+            <strong>EduGPA</strong>
+        </p>
+
+        <p>
+            Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập cho sinh viên
+        </p>
     </header>
 
-    <!-- Khung chung: Thanh điều hướng -->
-    <nav>
+    <nav aria-label="Điều hướng chính">
         <ul>
-            <li><a href="index.html">Trang chủ</a></li>
-            <li><a href="danh-sach.html">Danh sách</a></li>
-            <li><a href="chi-tiet.html">Chi tiết</a></li>
-            <li><a href="gioi-thieu.html">Giới thiệu</a></li>
-            <li><a href="lien-he.html">Liên hệ</a></li>
+            <li>
+                <a href="index.html">Trang chủ</a>
+            </li>
+
+            <li>
+                <a href="danh-sach.html" aria-current="page">Danh sách</a>
+            </li>
+
+            <li>
+                <a href="chi-tiet.html">Chi tiết</a>
+            </li>
+
+            <li>
+                <a href="gioi-thieu.html">Giới thiệu</a>
+            </li>
+
+            <li>
+                <a href="lien-he.html">Liên hệ</a>
+            </li>
         </ul>
     </nav>
 
-    <!-- Nội dung chính của trang Danh sách -->
     <main>
-        <h2>Danh sách môn học - Học kỳ 1 (Năm học 2026-2027)</h2>
-        
+
+        <h1>Danh sách môn học</h1>
+
         <section>
-            <h3>Tổng quan tiến độ</h3>
-            <p>Sinh viên cần hoàn thành các môn học chuyên ngành dưới đây để đảm bảo tiến độ tích lũy tín chỉ. Sử dụng công cụ bên dưới để tìm nhanh tài liệu hoặc môn học.</p>
-            
-            <!-- Form tìm kiếm chuẩn HTML5 -->
+            <h2>Tổng quan tiến độ</h2>
+
+            <p>
+                Dưới đây là danh sách các môn học trong học kỳ 1,
+                năm học 2026–2027. Sinh viên có thể theo dõi số tín chỉ,
+                trạng thái học tập và xem thông tin chi tiết của từng môn.
+            </p>
+
             <form action="#" method="get">
                 <fieldset>
                     <legend>Tra cứu nhanh</legend>
-                    <label for="tim-kiem">Tìm kiếm môn học, tài liệu:</label>
-                    <input type="search" id="tim-kiem" name="tu_khoa" placeholder="Nhập tên môn học, tài liệu...">
-                    <button type="submit">Tìm kiếm</button>
+
+                    <label for="tim-kiem">
+                        Tìm kiếm môn học hoặc tài liệu
+                    </label>
+
+                    <input
+                        type="search"
+                        id="tim-kiem"
+                        name="tu-khoa"
+                        placeholder="Nhập tên môn học hoặc tài liệu..."
+                        required>
+
+                    <button type="submit">
+                        Tìm kiếm
+                    </button>
                 </fieldset>
             </form>
         </section>
 
-        <br>
+        <section>
+            <h2>Tiến độ các môn học</h2>
 
-        <!-- Bảng danh sách môn học -->
-        <table>
-            <caption>Bảng thống kê trạng thái và tín chỉ các môn học chuyên ngành IT</caption>
-            
-            <thead>
-                <tr>
-                    <th scope="col">Mã môn</th>
-                    <th scope="col">Tên môn học</th>
-                    <th scope="col">Số tín chỉ</th>
-                    <th scope="col">Trạng thái</th>
-                    <th scope="col">Thao tác</th>
-                </tr>
-            </thead>
-            
-            <tbody>
-                <tr>
-                    <td>INT101</td>
-                    <td>Thiết kế và Lập trình Web</td>
-                    <td>3</td>
-                    <td>Đang học</td>
-                    <td><a href="chi-tiet.html">Xem chi tiết</a></td>
-                </tr>
-                <tr>
-                    <td>INT102</td>
-                    <td>Cơ sở dữ liệu</td>
-                    <td>3</td>
-                    <td>Đang học</td>
-                    <td><a href="chi-tiet.html">Xem chi tiết</a></td>
-                </tr>
-                <tr>
-                    <td>INT103</td>
-                    <td>Cấu trúc dữ liệu và Giải thuật</td>
-                    <td>3</td>
-                    <td>Đã hoàn thành</td>
-                    <td><a href="chi-tiet.html">Xem chi tiết</a></td>
-                </tr>
-                <tr>
-                    <td>INT104</td>
-                    <td>Mạng máy tính</td>
-                    <td>3</td>
-                    <td>Đã hoàn thành</td>
-                    <td><a href="chi-tiet.html">Xem chi tiết</a></td>
-                </tr>
-                <tr>
-                    <td>INT105</td>
-                    <td>Hệ điều hành</td>
-                    <td>3</td>
-                    <td>Đăng ký mới</td>
-                    <td><a href="chi-tiet.html">Xem chi tiết</a></td>
-                </tr>
-            </tbody>
+            <table>
+                <caption>
+                    Bảng thống kê trạng thái và tín chỉ các môn học chuyên ngành
+                </caption>
 
-            <tfoot>
-                <tr>
-                    <th scope="row" colspan="2">Tổng số môn: 5</th>
-                    <th scope="col" colspan="3">Tổng tín chỉ tích lũy đợt này: 15 TC</th>
-                </tr>
-            </tfoot>
-        </table>
+                <thead>
+                    <tr>
+                        <th scope="col">Mã môn</th>
+                        <th scope="col">Tên môn học</th>
+                        <th scope="col">Số tín chỉ</th>
+                        <th scope="col">Trạng thái</th>
+                        <th scope="col">Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>INT101</td>
+                        <td>Thiết kế và Lập trình Web</td>
+                        <td>3</td>
+                        <td>Đang học</td>
+                        <td>
+                            <a href="chi-tiet.html">Xem chi tiết</a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>INT102</td>
+                        <td>Hệ quản trị cơ sở dữ liệu</td>
+                        <td>3</td>
+                        <td>Đang học</td>
+                        <td>
+                            <a href="chi-tiet.html">Xem chi tiết</a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>INT103</td>
+                        <td>Khai phá dữ liệu</td>
+                        <td>3</td>
+                        <td>Đang học</td>
+                        <td>
+                            <a href="chi-tiet.html">Xem chi tiết</a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>INT104</td>
+                        <td>Công nghệ phần mềm</td>
+                        <td>3</td>
+                        <td>Đang học</td>
+                        <td>
+                            <a href="chi-tiet.html">Xem chi tiết</a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>INT105</td>
+                        <td>An toàn thông tin</td>
+                        <td>3</td>
+                        <td>Đăng ký mới</td>
+                        <td>
+                            <a href="chi-tiet.html">Xem chi tiết</a>
+                        </td>
+                    </tr>
+                </tbody>
+
+                <tfoot>
+                    <tr>
+                        <th scope="row" colspan="2">Tổng cộng</th>
+                        <td>15 tín chỉ</td>
+                        <td colspan="2">5 môn học</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </section>
+
     </main>
 
-    <!-- Khung chung: Footer (Đã chốt Nhóm 3) -->
     <footer>
-        <p>&copy; 2026 Nhóm 3 - Khoa Toán - Tin.</p>
+        <p>
+            &copy; 2026 Nhóm 3 - Khoa Toán - Tin.
+        </p>
     </footer>
+
 </body>
+
 </html>

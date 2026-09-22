@@ -606,17 +606,15 @@ figcaption,
     padding-left: 1.25rem;
 }
 
-.trang > main > aside a {
+.trang > main > aside a:not(.nut) {
     color: #ffffff;
 }
 
-.trang > main > aside a.nut--phu {
-    color: var(--mau-chinh-dam);
+.trang > main > aside a:not(.nut):hover {
+    color: #ffd66b;
 }
 
-.trang > main > aside a.nut--phu:hover {
-    color: #ffffff;
-}
+
 /* Ho tro truc tiep HTML cu cua index.html trong kho hien tai */
 .trang-chu main > h1 {
     margin: 0;

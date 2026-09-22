@@ -1208,7 +1208,7 @@ details > p {
     *,
     *::before,
     *::after {
-        scroll-behavior: auto; 
+        scroll-behavior: auto;
         transition-duration: 0.01ms;
     }
 }

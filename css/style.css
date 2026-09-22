@@ -427,7 +427,7 @@ input[type="reset"]:hover {
    07. TRANG CHU - HERO VA CAC THE
    ========================================================= */
 
-.hero {
+.trang > main > section.hero {
     color: #ffffff;
     background:
         linear-gradient(115deg, rgb(15 47 111 / 98%), rgb(23 70 162 / 92%)),

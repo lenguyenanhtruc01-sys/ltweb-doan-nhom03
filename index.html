@@ -6,205 +6,440 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <meta name="description"
-        content="EduGPA là hệ thống hỗ trợ sinh viên theo dõi kết quả học tập, tính GPA, quản lý tín chỉ và lập kế hoạch học tập.">
+        content="EduGPA hỗ trợ sinh viên theo dõi kết quả học tập, tính GPA, quản lý tín chỉ và lập kế hoạch học tập.">
 
     <title>Trang chủ | EduGPA</title>
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body>
+<body class="trang">
 
-    <header>
-        <p>
-            <strong>EduGPA</strong>
-        </p>
+    <!-- ================= HEADER ================= -->
+    <header class="dau-trang">
+        <div class="bao dau-trang__noi-dung">
 
-        <p>
-            Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập cho sinh viên
-        </p>
+            <a class="thuong-hieu" href="index.html">
+                EduGPA
+            </a>
+
+            <p class="dau-trang__mo-ta">
+                Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập cho sinh viên
+            </p>
+
+        </div>
     </header>
 
-    <nav aria-label="Điều hướng chính">
-        <ul>
-            <li>
-                <a href="index.html">Trang chủ</a>
-            </li>
-            <li>
-                <a href="danh-sach.html">Danh sách </a>
-            </li>
-            <li>
-                <a href="chi-tiet.html">Chi tiết </a>
-            </li>
-            <li>
-                <a href="gioi-thieu.html">Giới thiệu</a>
-            </li>
-            <li>
-                <a href="lien-he.html">Liên hệ</a>
-            </li>
-        </ul>
-    </nav>
+    <!-- ================= MENU ================= -->
+    <nav class="dieu-huong" aria-label="Điều hướng chính">
+        <div class="bao">
 
-    <main>
+            <ul class="dieu-huong__danh-sach">
 
-        <h1>Đồng hành cùng sinh viên trong quá trình học tập</h1>
-
-        <section>
-
-            <p>
-                EduGPA được xây dựng nhằm hỗ trợ sinh viên quản lý và theo dõi
-                quá trình học tập trong suốt thời gian học đại học.
-            </p>
-
-            <p>
-                Hệ thống hỗ trợ theo dõi kết quả học tập, tính GPA,
-                quản lý tín chỉ và lập kế hoạch hướng tới mục tiêu tốt nghiệp.
-            </p>
-
-            <figure>
-                <img
-                    src="images/mota.png"
-                    alt="Minh họa hệ thống EduGPA hỗ trợ sinh viên quản lý kết quả học tập"
-                    width="600"
-                    height="400"
-                    loading="lazy">
-
-                <figcaption>
-                    EduGPA hỗ trợ sinh viên theo dõi kết quả và tiến độ học tập.
-                </figcaption>
-            </figure>
-
-        </section>
-
-        <section>
-
-            <h2>Chức năng nổi bật</h2>
-
-            <article>
-                <h3>Tính GPA</h3>
-
-                <p>
-                    Theo dõi GPA học kỳ và GPA tích lũy dựa trên kết quả
-                    các học phần đã hoàn thành.
-                </p>
-
-            </article>
-
-            <article>
-                <h3>Theo dõi tiến độ tín chỉ</h3>
-
-                <p>
-                    Theo dõi số tín chỉ đã hoàn thành và số tín chỉ còn thiếu
-                    trong quá trình học tập.
-                </p>
-
-            </article>
-
-            <article>
-                <h3>Mô phỏng GPA</h3>
-
-                <p>
-                    Mô phỏng kết quả GPA dự kiến với các mức điểm như
-                    A, B+, B, C đối với những học phần chưa có điểm.
-                </p>
-            </article>
-
-            <article>
-                <h3>Lời khuyên học tập</h3>
-
-                <p>
-                    Phân tích kết quả học tập để nhận biết những môn học
-                    có kết quả tốt hoặc chưa tốt và hỗ trợ định hướng học tập.
-                </p>
-            </article>
-
-        </section>
-
-        <section>
-
-            <h2>EduGPA hỗ trợ sinh viên như thế nào?</h2>
-
-            <ol>
-                <li>Quản lý danh sách môn học.</li>
-                <li>Theo dõi điểm số của từng môn học.</li>
-                <li>Tính GPA học kỳ và GPA tích lũy.</li>
-                <li>Theo dõi số tín chỉ đã hoàn thành.</li>
-                <li>Mô phỏng GPA dự kiến.</li>
-                <li>Đánh giá khả năng đạt mục tiêu tốt nghiệp.</li>
-                <li>Hỗ trợ phân tích và đưa ra lời khuyên học tập.</li>
-            </ol>
-
-        </section>
-
-        <section>
-
-            <h2>Đối tượng sử dụng</h2>
-
-            <article>
-                <h3>Khách</h3>
-
-                <p>
-                    Có thể xem thông tin giới thiệu, hướng dẫn tính GPA,
-                    tài liệu học tập và tìm kiếm nội dung trên website.
-                </p>
-            </article>
-
-            <article>
-                <h3>Sinh viên</h3>
-
-                <p>
-                    Có thể quản lý thông tin cá nhân, môn học, điểm số,
-                    GPA, tín chỉ và mục tiêu tốt nghiệp.
-                </p>
-            </article>
-
-            <article>
-                <h3>Quản trị viên</h3>
-
-                <p>
-                    Quản lý tài khoản, môn học, tài liệu, nội dung tư vấn
-                    và dữ liệu của hệ thống.
-                </p>
-            </article>
-
-        </section>
-
-        <aside>
-
-            <h2>Khám phá EduGPA</h2>
-
-            <ul>
-                <li>
-                    <a href="danh-sach.html">
-                        Tra cứu danh sách 
+                <li class="dieu-huong__muc">
+                    <a class="dieu-huong__lien-ket dieu-huong__lien-ket--hien-tai"
+                        href="index.html"
+                        aria-current="page">
+                        Trang chủ
                     </a>
                 </li>
 
-
-                <li>
-                    <a href="gioi-thieu.html">
-                        Tìm hiểu về EduGPA và nhóm thực hiện
+                <li class="dieu-huong__muc">
+                    <a class="dieu-huong__lien-ket" href="danh-sach.html">
+                        Danh sách
                     </a>
                 </li>
 
-                <li>
-                    <a href="lien-he.html">
-                        Liên hệ và đăng ký tài khoản
+                <li class="dieu-huong__muc">
+                    <a class="dieu-huong__lien-ket" href="chi-tiet.html">
+                        Chi tiết
                     </a>
                 </li>
+
+                <li class="dieu-huong__muc">
+                    <a class="dieu-huong__lien-ket" href="gioi-thieu.html">
+                        Giới thiệu
+                    </a>
+                </li>
+
+                <li class="dieu-huong__muc">
+                    <a class="dieu-huong__lien-ket" href="lien-he.html">
+                        Liên hệ
+                    </a>
+                </li>
+
             </ul>
 
+        </div>
+    </nav>
+
+    <!-- ================= NỘI DUNG CHÍNH ================= -->
+    <main class="noi-dung-chinh">
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="bao hero__khung">
+
+                <div class="hero__noi-dung">
+
+                    <p class="hero__nhan">
+                        Quản lý học tập thông minh
+                    </p>
+
+                    <h1 class="hero__tieu-de">
+                        Đồng hành cùng sinh viên trong quá trình học tập
+                    </h1>
+
+                    <p class="hero__mo-ta">
+                        EduGPA hỗ trợ sinh viên theo dõi kết quả học tập,
+                        tính GPA, quản lý tín chỉ và xây dựng kế hoạch
+                        hướng tới mục tiêu tốt nghiệp.
+                    </p>
+
+                    <div class="hero__hanh-dong">
+
+                        <a class="nut nut--chinh" href="danh-sach.html">
+                            Khám phá ngay
+                        </a>
+
+                        <a class="nut nut--phu" href="gioi-thieu.html">
+                            Tìm hiểu EduGPA
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <figure class="hero__hinh">
+
+                    <img
+                        src="images/mota.png"
+                        alt="Minh họa hệ thống EduGPA hỗ trợ sinh viên quản lý kết quả học tập"
+                        width="600"
+                        height="400">
+
+                    <figcaption class="hero__chu-thich">
+                        EduGPA hỗ trợ sinh viên theo dõi kết quả
+                        và tiến độ học tập.
+                    </figcaption>
+
+                </figure>
+
+            </div>
+        </section>
+
+        <!-- ================= 3 THẺ CHỨC NĂNG ================= -->
+        <section class="khu-vuc khu-vuc--chuc-nang">
+            <div class="bao">
+
+                <div class="tieu-de-khu-vuc">
+
+                    <p class="tieu-de-khu-vuc__nhan">
+                        Chức năng
+                    </p>
+
+                    <h2 class="tieu-de-khu-vuc__tieu-de">
+                        Những công cụ nổi bật của EduGPA
+                    </h2>
+
+                    <p class="tieu-de-khu-vuc__mo-ta">
+                        Các công cụ giúp sinh viên quản lý kết quả
+                        và lập kế hoạch học tập hiệu quả.
+                    </p>
+
+                </div>
+
+                <div class="luoi-the">
+
+                    <article class="the">
+
+                        <div class="the__bieu-tuong" aria-hidden="true">
+                            GPA
+                        </div>
+
+                        <h3 class="the__tieu-de">
+                            Tính và theo dõi GPA
+                        </h3>
+
+                        <p class="the__noi-dung">
+                            Theo dõi GPA học kỳ và GPA tích lũy dựa trên
+                            kết quả các học phần đã hoàn thành.
+                        </p>
+
+                        <a class="the__lien-ket" href="chi-tiet.html">
+                            Xem chi tiết
+                        </a>
+
+                    </article>
+
+                    <article class="the">
+
+                        <div class="the__bieu-tuong" aria-hidden="true">
+                            TC
+                        </div>
+
+                        <h3 class="the__tieu-de">
+                            Theo dõi tiến độ tín chỉ
+                        </h3>
+
+                        <p class="the__noi-dung">
+                            Theo dõi số tín chỉ đã hoàn thành,
+                            số tín chỉ còn thiếu và tiến độ học tập.
+                        </p>
+
+                        <a class="the__lien-ket" href="danh-sach.html">
+                            Xem danh sách
+                        </a>
+
+                    </article>
+
+                    <article class="the">
+
+                        <div class="the__bieu-tuong" aria-hidden="true">
+                            +
+                        </div>
+
+                        <h3 class="the__tieu-de">
+                            Mô phỏng GPA
+                        </h3>
+
+                        <p class="the__noi-dung">
+                            Mô phỏng GPA dự kiến với các mức điểm khác nhau
+                            để xây dựng kế hoạch học tập phù hợp.
+                        </p>
+
+                        <a class="the__lien-ket" href="chi-tiet.html">
+                            Thử mô phỏng
+                        </a>
+
+                    </article>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= QUY TRÌNH ================= -->
+        <section class="khu-vuc khu-vuc--nen-phu">
+            <div class="bao">
+
+                <div class="tieu-de-khu-vuc">
+
+                    <p class="tieu-de-khu-vuc__nhan">
+                        Quy trình
+                    </p>
+
+                    <h2 class="tieu-de-khu-vuc__tieu-de">
+                        EduGPA hỗ trợ sinh viên như thế nào?
+                    </h2>
+
+                </div>
+
+                <ol class="cac-buoc">
+
+                    <li class="cac-buoc__muc">
+
+                        <span class="cac-buoc__so">01</span>
+
+                        <div>
+                            <h3>Quản lý môn học</h3>
+
+                            <p>
+                                Thêm và quản lý danh sách các học phần
+                                trong quá trình học tập.
+                            </p>
+                        </div>
+
+                    </li>
+
+                    <li class="cac-buoc__muc">
+
+                        <span class="cac-buoc__so">02</span>
+
+                        <div>
+                            <h3>Theo dõi kết quả</h3>
+
+                            <p>
+                                Cập nhật điểm số và theo dõi kết quả
+                                của từng học phần.
+                            </p>
+                        </div>
+
+                    </li>
+
+                    <li class="cac-buoc__muc">
+
+                        <span class="cac-buoc__so">03</span>
+
+                        <div>
+                            <h3>Phân tích GPA</h3>
+
+                            <p>
+                                Tính GPA học kỳ, GPA tích lũy
+                                và theo dõi số tín chỉ hoàn thành.
+                            </p>
+                        </div>
+
+                    </li>
+
+                    <li class="cac-buoc__muc">
+
+                        <span class="cac-buoc__so">04</span>
+
+                        <div>
+                            <h3>Lập kế hoạch</h3>
+
+                            <p>
+                                Mô phỏng GPA và xây dựng kế hoạch
+                                hướng tới mục tiêu tốt nghiệp.
+                            </p>
+                        </div>
+
+                    </li>
+
+                </ol>
+
+            </div>
+        </section>
+
+        <!-- ================= ĐỐI TƯỢNG SỬ DỤNG ================= -->
+        <section class="khu-vuc">
+            <div class="bao">
+
+                <div class="tieu-de-khu-vuc">
+
+                    <p class="tieu-de-khu-vuc__nhan">
+                        Người dùng
+                    </p>
+
+                    <h2 class="tieu-de-khu-vuc__tieu-de">
+                        Đối tượng sử dụng
+                    </h2>
+
+                </div>
+
+                <div class="luoi-doi-tuong">
+
+                    <article class="doi-tuong">
+
+                        <h3 class="doi-tuong__tieu-de">
+                            Khách
+                        </h3>
+
+                        <p class="doi-tuong__noi-dung">
+                            Xem thông tin giới thiệu, hướng dẫn tính GPA,
+                            tài liệu học tập và các nội dung công khai.
+                        </p>
+
+                    </article>
+
+                    <article class="doi-tuong">
+
+                        <h3 class="doi-tuong__tieu-de">
+                            Sinh viên
+                        </h3>
+
+                        <p class="doi-tuong__noi-dung">
+                            Quản lý môn học, điểm số, GPA,
+                            tín chỉ và mục tiêu tốt nghiệp.
+                        </p>
+
+                    </article>
+
+                    <article class="doi-tuong">
+
+                        <h3 class="doi-tuong__tieu-de">
+                            Quản trị viên
+                        </h3>
+
+                        <p class="doi-tuong__noi-dung">
+                            Quản lý tài khoản, môn học,
+                            tài liệu và nội dung của hệ thống.
+                        </p>
+
+                    </article>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= KHÁM PHÁ EDUGPA ================= -->
+        <aside class="kham-pha">
+            <div class="bao kham-pha__khung">
+
+                <div class="kham-pha__noi-dung">
+
+                    <p class="kham-pha__nhan">
+                        Bắt đầu với EduGPA
+                    </p>
+
+                    <h2 class="kham-pha__tieu-de">
+                        Quản lý hành trình học tập dễ dàng hơn
+                    </h2>
+
+                    <p class="kham-pha__mo-ta">
+                        Khám phá các chức năng của EduGPA
+                        và xây dựng kế hoạch học tập phù hợp
+                        với mục tiêu của bạn.
+                    </p>
+
+                </div>
+
+                <div class="kham-pha__hanh-dong">
+
+                    <a class="nut nut--chinh" href="danh-sach.html">
+                        Tra cứu danh sách
+                    </a>
+
+                    <a class="nut nut--phu" href="lien-he.html">
+                        Liên hệ
+                    </a>
+
+                </div>
+
+            </div>
         </aside>
 
     </main>
 
-    <footer>
+    <!-- ================= FOOTER ================= -->
+    <footer class="chan-trang">
+        <div class="bao chan-trang__noi-dung">
 
-        <p>
-            &copy; 2026 Nhóm 3 - Khoa Toán - Tin.
-        </p>
+            <div>
 
+                <p class="chan-trang__thuong-hieu">
+                    EduGPA
+                </p>
+
+                <p class="chan-trang__mo-ta">
+                    Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập
+                    cho sinh viên.
+                </p>
+
+            </div>
+
+            <nav class="chan-trang__dieu-huong"
+                aria-label="Điều hướng cuối trang">
+
+                <a href="gioi-thieu.html">
+                    Giới thiệu
+                </a>
+
+                <a href="lien-he.html">
+                    Liên hệ
+                </a>
+
+            </nav>
+
+            <p class="chan-trang__ban-quyen">
+                &copy; 2026 Nhóm 3 - Khoa Toán - Tin.
+            </p>
+
+        </div>
     </footer>
 
 </body>
 
 </html>
-

@@ -1244,7 +1244,7 @@ details > p {
 .the-san-pham img { width: 100%; height: 250px; object-fit: cover; border-radius: var(--bo-goc, 8px) var(--bo-goc, 8px) 0 0; }
 .khung-chi-tiet { display: grid; gap: var(--khoang-cach, 16px); grid-template-columns: 1fr; }
 @media (min-width: 768px) { .khung-chi-tiet { grid-template-columns: 1fr 300px; align-items: start; } }
-.doan-van-dai { max-width: 65ch; margin: 0 auto; line-height: 1.8; }
+.doan-van-dai { max-width: 65ch; margin: 0 ; line-height: 1.8; }
 .khung-lien-he { display: grid; grid-template-columns: 1fr; gap: 30px; }
 @media (min-width: 768px) { .khung-lien-he { grid-template-columns: 1fr 1fr; } }
 .form-lien-he { display: flex; flex-direction: column; gap: 15px; }

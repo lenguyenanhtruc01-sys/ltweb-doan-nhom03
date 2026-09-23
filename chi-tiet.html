@@ -1,12 +1,67 @@
-<main>
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+        content="Chi tiết kết quả học tập trên EduGPA - bảng điểm từng học kỳ, GPA tích lũy, tín chỉ và nhận xét học tập cho sinh viên Công nghệ thông tin.">
+
+    <title>Chi tiết kết quả học tập | EduGPA</title>
+
+    
+    <link rel="stylesheet" href="css/style.css">
+
+    
+    <link rel="stylesheet" href="css/chi-tiet.css">
+</head>
+
+<body class="trang trang-chi-tiet">
+
+    <!-- ================= HEADER ================= -->
+    <header class="dau-trang">
+        <div class="dau-trang__noi-dung">
+            <a class="thuong-hieu" href="index.html">EduGPA</a>
+            <p class="dau-trang__mo-ta">
+                Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập cho sinh viên
+            </p>
+        </div>
+    </header>
+
+    <!-- ================= NAV ================= -->
+    <nav class="dieu-huong" aria-label="Điều hướng chính">
+        <ul class="dieu-huong__danh-sach">
+            <li class="dieu-huong__muc">
+                <a class="dieu-huong__lien-ket" href="index.html">Trang chủ</a>
+            </li>
+            <li class="dieu-huong__muc">
+                <a class="dieu-huong__lien-ket" href="danh-sach.html">Danh sách</a>
+            </li>
+            <li class="dieu-huong__muc">
+                <a class="dieu-huong__lien-ket dieu-huong__lien-ket--hien-tai"
+                   href="chi-tiet.html" aria-current="page">Chi tiết</a>
+            </li>
+            <li class="dieu-huong__muc">
+                <a class="dieu-huong__lien-ket" href="gioi-thieu.html">Giới thiệu</a>
+            </li>
+            <li class="dieu-huong__muc">
+                <a class="dieu-huong__lien-ket" href="lien-he.html">Liên hệ</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- ================= MAIN ================= -->
+    <main>
 
         <h1>Chi tiết kết quả học tập</h1>
 
-        <!-- Thêm khung bọc để dàn Grid 2 cột: Cột 1 là Nội dung, Cột 2 là Aside -->
+        <!-- Khung Grid 2 cột: Nội dung chính + Aside -->
         <div class="khung-chi-tiet">
-            
-            <!-- Phần nội dung chính bọc trong 1 div -->
+
+            <!-- ===== NỘI DUNG CHÍNH ===== -->
             <div class="noi-dung-chinh">
+
                 <article>
 
                     <h2>Tổng quan kết quả học tập</h2>
@@ -25,12 +80,11 @@
                     </p>
 
                     <figure>
-                        <img
-                            src="images/mota.png"
-                            alt="Minh họa bảng điểm chi tiết kết quả học tập trên hệ thống EduGPA"
-                            width="600"
-                            height="400"
-                            loading="lazy">
+                        <img src="images/mota.png"
+                             alt="Minh họa bảng điểm chi tiết kết quả học tập trên hệ thống EduGPA"
+                             width="600"
+                             height="400"
+                             loading="lazy">
 
                         <figcaption>
                             Bảng điểm chi tiết được hiển thị theo từng học kỳ trên EduGPA.
@@ -43,8 +97,7 @@
 
                     <h2>Bảng điểm học kỳ 1 - Năm học 2025 - 2026</h2>
 
-                    <!-- Thêm div bọc bảng để cuộn ngang trên điện thoại -->
-                    <div style="overflow-x: auto;">
+                    <div class="bang-cuon">
                         <table>
                             <caption>Bảng điểm chi tiết học kỳ 1 năm học 2025 - 2026</caption>
 
@@ -142,14 +195,14 @@
                             </tfoot>
                         </table>
                     </div>
+
                 </article>
 
                 <article>
 
                     <h2>Bảng điểm học kỳ 2 - Năm học 2025 - 2026</h2>
 
-                    <!-- Thêm div bọc bảng để cuộn ngang trên điện thoại -->
-                    <div style="overflow-x: auto;">
+                    <div class="bang-cuon">
                         <table>
                             <caption>Bảng điểm chi tiết học kỳ 2 năm học 2025 - 2026</caption>
 
@@ -227,14 +280,14 @@
                             </tfoot>
                         </table>
                     </div>
+
                 </article>
 
                 <article>
 
                     <h2>Tổng hợp GPA và tín chỉ tích lũy</h2>
 
-                    <!-- Thêm div bọc bảng để cuộn ngang trên điện thoại -->
-                    <div style="overflow-x: auto;">
+                    <div class="bang-cuon">
                         <table>
                             <caption>Bảng tổng hợp GPA và tín chỉ tích lũy toàn khóa</caption>
 
@@ -294,14 +347,12 @@
                     </p>
 
                     <figure>
-                        <!-- Điều chỉnh iframe youtube width="100%" để không bị vỡ trên đt -->
-                        <iframe
-                            width="100%"
-                            height="315"
-                            src="https://www.youtube.com/embed/UB1O30fR-EE"
-                            title="Video hướng dẫn xem kết quả học tập trên hệ thống EduGPA"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen>
+                        <iframe width="100%"
+                                height="315"
+                                src="https://www.youtube.com/embed/UB1O30fR-EE"
+                                title="Video hướng dẫn xem kết quả học tập trên hệ thống EduGPA"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen>
                         </iframe>
 
                         <figcaption>
@@ -345,9 +396,11 @@
                     </ul>
 
                 </article>
-            </div>
-            <!-- Kết thúc phần nội dung chính -->
 
+            </div>
+            <!-- ===== KẾT THÚC NỘI DUNG CHÍNH ===== -->
+
+            <!-- ===== ASIDE ===== -->
             <aside>
                 <h2>Khám phá EduGPA</h2>
 
@@ -383,8 +436,31 @@
                     </li>
                 </ul>
             </aside>
-            
+
         </div>
-        <!-- Kết thúc div khung-chi-tiet -->
+        <!-- ===== KẾT THÚC KHUNG CHI TIẾT ===== -->
 
     </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="chan-trang">
+        <div class="chan-trang__noi-dung">
+            <div>
+                <p class="chan-trang__thuong-hieu">EduGPA - Nhóm 3</p>
+                <p class="chan-trang__mo-ta">
+                    Khoa Toán - Tin &middot; Trường Đại học Sư Phạm, Đại học Đà Nẵng
+                </p>
+            </div>
+            <nav class="chan-trang__dieu-huong" aria-label="Điều hướng chân trang">
+                <a href="index.html">Trang chủ</a>
+                <a href="danh-sach.html">Danh sách</a>
+                <a href="chi-tiet.html">Chi tiết</a>
+                <a href="gioi-thieu.html">Giới thiệu</a>
+                <a href="lien-he.html">Liên hệ</a>
+            </nav>
+        </div>
+    </footer>
+
+</body>
+
+</html>

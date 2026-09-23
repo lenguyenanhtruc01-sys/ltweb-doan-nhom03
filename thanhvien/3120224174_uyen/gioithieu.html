@@ -9,115 +9,47 @@
         content="Trang giới thiệu cá nhân của thành viên nhóm thực hiện dự án EduGPA.">
 
     <title>Giới thiệu thành viên | EduGPA</title>
-
-    <style>
-        
-
-        /* ================= ẢNH ================= */
-
-        figure {
-            margin: 20px 0;
-        }
-        figure img {
-            max-width: 100%;
-            height: auto;
-        }
-
-        /* ================= BẢNG THỜI KHÓA BIỂU ================= */
-
-        .tkb-container {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        .thoi-khoa-bieu {
-            width: 100%;
-            min-width: 900px;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
-
-        .thoi-khoa-bieu caption {
-            font-size: 22px;
-            font-weight: bold;
-            padding: 10px;
-        }
-
-        .thoi-khoa-bieu th {
-            background-color: #2f6fa3;
-            color: white;
-            font-size: 18px;
-            height: 26px;
-            border: 1px solid #999;
-            text-align: center;
-        }
-
-        .thoi-khoa-bieu td {
-            border: 1px solid #999;
-            height: 48px;
-            padding: 4px;
-            vertical-align: top;
-            font-size: 16px;
-        }
-
-        /* Cột Tiết */
-
-        .thoi-khoa-bieu .tiet {
-            width: 10px;
-             text-align: center;
-            font-weight: normal;
-            background-color: white;
-            color: black;
-            padding: 2px;
-}
-
-        /* Ô môn học */
-
-        .thoi-khoa-bieu .mon-hoc {
-            vertical-align: top;
-        }
-
-        /* Dòng khoảng nghỉ */
-
-        .thoi-khoa-bieu .nghi {
-            height: 20px;
-            padding: 0;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body>
+<body class="trang-ca-nhan">
 
-    <header>
-    <p><strong>EduGPA</strong></p>
-    <p>Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập cho sinh viên</p>
-</header>
+    <header class="dau-trang">
+        <div class="bao dau-trang__noi-dung">
+            <p class="dau-trang__thuong-hieu"><strong>EduGPA</strong></p>
+            <p class="dau-trang__khau-hieu">
+                Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập cho sinh viên
+            </p>
+        </div>
+    </header>
 
-<nav>
-    <ul>
+    <nav class="dieu-huong" aria-label="Điều hướng chính">
+        <ul class="bao dieu-huong__danh-sach">
             <li>
-                <a href="../../index.html">Trang chủ</a>
+                <a class="dieu-huong__lien-ket" href="../../index.html">Trang chủ</a>
             </li>
             <li>
-                <a href="../../danh-sach.html">Danh sách</a>
+                <a class="dieu-huong__lien-ket" href="../../danh-sach.html">Danh sách</a>
             </li>
             <li>
-                <a href="../../chi-tiet.html">Chi tiết </a>
+                <a class="dieu-huong__lien-ket" href="../../chi-tiet.html">Chi tiết</a>
             </li>
             <li>
-                <a href="../../gioi-thieu.html">Giới thiệu</a>
+                <a class="dieu-huong__lien-ket dieu-huong__lien-ket--hien-tai"
+                    href="../../gioi-thieu.html" aria-current="location">Giới thiệu</a>
             </li>
             <li>
-                <a href="../../lien-he.html">Liên hệ</a>
+                <a class="dieu-huong__lien-ket" href="../../lien-he.html">Liên hệ</a>
             </li>
-    </ul>
-</nav>
-    <main>
+        </ul>
+    </nav>
 
-        <h1>Giới thiệu bản thân</h1>
+    <main class="bao noi-dung-chinh">
 
-        <section>
-            <h2>Thông tin cá nhân</h2>
+        <h1 class="noi-dung-chinh__tieu-de">Giới thiệu bản thân</h1>
+
+        <section class="the-noi-dung thong-tin">
+            <h2 class="the-noi-dung__tieu-de">Thông tin cá nhân</h2>
 
             <p>
                 Xin chào! Mình là Huỳnh Phương Uyên, thành viên của Nhóm 3
@@ -125,46 +57,46 @@
             </p>
 
             <p>
-                Mình hiện đang học tại lớp 24CNTT1, khoa Toán-Tin, trường Đại học Sư Phạm, Đại Học Đà Năng.
+                Mình hiện đang học tại lớp 24CNTT1, khoa Toán-Tin, Trường Đại học Sư phạm - Đại học Đà Nẵng.
                 Trong dự án EduGPA, mình tham gia xây dựng và phát triển
                 nội dung cho website, thiết kế giao diện và hỗ trợ các thành viên trong nhóm.
             </p>
 
-            <figure>
+            <figure class="thong-tin__anh">
                 <img
+                    class="thong-tin__anh-chan-dung"
                     src="anh-ca-nhan.jpg"
                     alt="Ảnh chân dung của Uyên"
                     width="300"
                     height="400"
                     loading="lazy">
 
-                <figcaption>
+                <figcaption class="thong-tin__chu-thich">
                     Ảnh chân dung của Phương Uyên
                 </figcaption>
             </figure>
         </section>
 
-        <article>
-            <h2>Dự án và sở thích</h2>
+        <article class="the-noi-dung so-thich">
+            <h2 class="the-noi-dung__tieu-de">Dự án và sở thích</h2>
 
             <p>
-                Mình chưa có nhiều kinh nghiệm tham gia các dự án thực tế. 
-                Hiện tại, mình đang tập trung học tập và tích lũy thêm kiến thức về lập trình, 
+                Mình chưa có nhiều kinh nghiệm tham gia các dự án thực tế.
+                Hiện tại, mình đang tập trung học tập và tích lũy thêm kiến thức về lập trình,
                 thiết kế website. Mình cũng đang tìm hiểu và tham gia hoạt động nghiên cứu khoa học,
                 mình rất mong muốn có cơ hội tiếp xúc với nhiều dự án hơn nữa trong thời gian tới.
             </p>
 
             <p>
-                Ngoài việc học tập, mình thích chơi thể thao và đọc truyện, hay tham gia các hoạt động, 
+                Ngoài việc học tập, mình thích chơi thể thao và đọc truyện, hay tham gia các hoạt động,
                 sự kiện bên đoàn trường tổ chức.
-                
             </p>
         </article>
 
-        <section>
-            <h2>Kỹ năng</h2>
+        <section class="the-noi-dung ky-nang">
+            <h2 class="the-noi-dung__tieu-de">Kỹ năng</h2>
 
-            <ul>
+            <ul class="ky-nang__danh-sach">
                 <li>HTML5</li>
                 <li>Thiết kế giao diện website</li>
                 <li>Làm việc nhóm</li>
@@ -175,10 +107,11 @@
 
         <!-- ================= THỜI KHÓA BIỂU ================= -->
 
-        <section>
-            <h2>Thời khóa biểu trong tuần</h2>
+        <section class="the-noi-dung lich-hoc">
+            <h2 class="the-noi-dung__tieu-de">Thời khóa biểu trong tuần</h2>
 
-            <div class="tkb-container">
+            <div class="tkb-container" tabindex="0" role="region"
+                aria-label="Thời khóa biểu có thể cuộn ngang">
 
                 <table class="thoi-khoa-bieu">
 
@@ -447,9 +380,8 @@
 
     </main>
 
-    <footer>
-
-        <p>
+    <footer class="chan-trang">
+        <p class="bao chan-trang__ban-quyen">
             &copy; 2026 Nhóm 3 - Khoa Toán - Tin.
         </p>
     </footer>

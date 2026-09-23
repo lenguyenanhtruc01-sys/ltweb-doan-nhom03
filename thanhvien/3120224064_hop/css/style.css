@@ -1,210 +1,121 @@
-:root {
-    --primary-color: #006BA1;      /* màu chính nhóm */
-    --secondary-color: #054FA8;
-    --accent-color: #FFEE00;
-    --text-color: #333333;
-    --bg-color: #f0f4f8;
-    --white: #ffffff;
-    --border: #d0d7de;
-}
+/* =========================================================
+   CSS RIÊNG TRANG CÁ NHÂN - PHAN VĂN HỢP
+   Dùng chung biến màu của nhóm EduGPA
+   ========================================================= */
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    line-height: 1.6;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    padding: 16px 12px;
-}
-
-.container {
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-/* ========== Nút quay lại ========== */
-.btn-back {
-    display: inline-block;
-    text-decoration: none;
-    color: var(--white);
-    background-color: var(--primary-color);
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-weight: 600;
-    transition: 0.25s ease;
-}
-
-.btn-back:hover {
-    background-color: var(--secondary-color);
-    transform: translateY(-2px);
-}
-
-.btn-back:focus-visible {
-    outline: 3px solid var(--accent-color);
-    outline-offset: 3px;
-}
-
-/* ========== Card chính ========== */
-main {
-    background-color: var(--white);
-    padding: 28px 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-    margin-top: 16px;
-}
-
-/* ========== Profile Header ========== */
-.profile-header {
-    text-align: center;
-    margin-bottom: 28px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid var(--border);
-}
-
-.profile-header img {
+/* Ảnh chân dung */
+.thong-tin__anh-chan-dung {
     width: 100%;
-    max-width: 200px;
+    max-width: 260px;
     height: auto;
-    aspect-ratio: 1/1;
-    border-radius: 50%;
-    border: 4px solid var(--primary-color);
+    aspect-ratio: 1 / 1;
     object-fit: cover;
+    border-radius: 16px;
+    border: 4px solid var(--mau-chinh);
     display: block;
-    margin: 0 auto 12px;
-}
-
-.profile-header h1 {
-    margin: 8px 0 6px;
-    color: var(--primary-color);
-    font-size: 1.8rem;
-}
-
-.profile-header p {
-    color: #555;
+    margin: 0 auto 1rem;
+    box-shadow: var(--bong-nhe);
 }
 
 /* Nút GitHub */
 .btn-github {
-    display: inline-block;
-    margin-top: 14px;
-    padding: 10px 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.75rem;
+    padding: 0.7rem 1.25rem;
     background-color: #24292e;
-    color: var(--white);
+    color: #ffffff;
+    font-weight: 700;
     text-decoration: none;
-    font-weight: 600;
-    border-radius: 6px;
-    transition: 0.25s ease;
+    border-radius: var(--bo-goc-nho);
+    transition: background-color var(--thoi-gian) ease,
+                transform var(--thoi-gian) ease;
 }
 
 .btn-github:hover {
-    background-color: #000;
+    background-color: #000000;
+    color: #ffffff;
     transform: translateY(-2px);
 }
 
 .btn-github:focus-visible {
-    outline: 3px solid var(--accent-color);
+    outline: 3px solid var(--mau-nhan);
     outline-offset: 3px;
 }
 
-/* ========== Tiêu đề ========== */
-h2 {
-    color: var(--primary-color);
-    border-left: 5px solid var(--secondary-color);
-    padding-left: 12px;
-    margin: 28px 0 14px;
-    font-size: 1.35rem;
+/* Danh sách kỹ năng */
+.ky-nang__danh-sach {
+    padding-left: 1.25rem;
 }
 
-ul {
-    padding-left: 20px;
+.ky-nang__danh-sach li {
+    margin-bottom: 0.6rem;
 }
 
-ul li {
-    margin-bottom: 10px;
-}
-
-/* ========== Bảng Thời khóa biểu (quan trọng) ========== */
-.table-wrapper {
-    overflow-x: auto;               /* cho phép cuộn ngang */
+/* Bảng Thời khóa biểu */
+.tkb-container {
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    margin-top: 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
+    margin-top: 1rem;
+    border: 1px solid var(--mau-vien);
+    border-radius: var(--bo-goc);
+    background: var(--mau-nen);
 }
 
-table {
+.thoi-khoa-bieu {
     width: 100%;
-    min-width: 700px;               /* giữ bảng không bị bóp */
+    min-width: 720px;          /* Giữ bảng không bị bóp trên mobile */
     border-collapse: collapse;
 }
 
-caption {
-    font-size: 1.05rem;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: var(--primary-color);
+.thoi-khoa-bieu caption {
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    color: var(--mau-chinh-dam);
     text-align: left;
-    padding: 0 4px;
 }
 
-th, td {
-    border: 1px solid #ccc;
-    padding: 10px 8px;
-    text-align: left;
+.thoi-khoa-bieu th,
+.thoi-khoa-bieu td {
+    border: 1px solid var(--mau-vien);
+    padding: 0.7rem 0.6rem;
     vertical-align: top;
     font-size: 0.92rem;
 }
 
-thead th {
-    background-color: var(--primary-color);
-    color: var(--white);
+.thoi-khoa-bieu thead th {
+    background-color: var(--mau-chinh-dam);
+    color: #ffffff;
     text-align: center;
     white-space: nowrap;
 }
 
-tbody th {
-    background-color: #e8f0f7;
+.thoi-khoa-bieu .tiet {
+    background-color: var(--mau-chinh-nhat);
     text-align: center;
-    color: var(--primary-color);
-    font-weight: 600;
+    font-weight: 700;
+    color: var(--mau-chinh-dam);
 }
 
-tbody tr:hover td {
-    background-color: #f5f9fc;
+.thoi-khoa-bieu .mon-hoc {
+    background-color: #f8fbff;
 }
 
-/* ========== Footer ========== */
-footer {
-    text-align: center;
-    margin-top: 24px;
-    color: #666;
-    font-size: 0.9rem;
-}
+/* =========================================================
+   RESPONSIVE - Bắt buộc có min-width
+   ========================================================= */
 
-/* ========== Responsive (bắt buộc có min-width) ========== */
 @media (min-width: 768px) {
-    body {
-        padding: 30px 20px;
+    .thong-tin__anh-chan-dung {
+        max-width: 280px;
     }
 
-    main {
-        padding: 40px;
+    .tkb-container {
+        overflow-x: visible;   /* Desktop không cần cuộn ngang */
     }
 
-    .profile-header img {
-        max-width: 220px;
-    }
-
-    .table-wrapper {
-        overflow-x: visible;        /* desktop không cần cuộn */
-    }
-
-    table {
+    .thoi-khoa-bieu {
         min-width: auto;
     }
 }

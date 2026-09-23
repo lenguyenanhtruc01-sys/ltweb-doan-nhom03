@@ -1,411 +1,295 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giới thiệu - Phan Văn Hợp</title>
-    <style>
-        :root {
-            --primary-color: #006BA1;
-            --secondary-color: #054FA8;
-            --accent-color: #FFEE00;
-            --text-color: #333333;
-            --bg-color: #f0f4f8;
-            --white: #ffffff;
-            --border: #d0d7de;
-        }
+    <meta name="description" content="Trang giới thiệu cá nhân của Phan Văn Hợp - thành viên nhóm thực hiện dự án EduGPA.">
+    <title>Giới thiệu - Phan Văn Hợp | EduGPA</title>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    <!-- CSS chung của nhóm -->
+    <link rel="stylesheet" href="../../css/style.css">
 
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 16px 12px;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        /* Nút quay lại */
-        .btn-back {
-            display: inline-block;
-            text-decoration: none;
-            color: var(--white);
-            background-color: var(--primary-color);
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: 0.25s ease;
-        }
-
-        .btn-back:hover {
-            background-color: var(--secondary-color);
-            transform: translateY(-2px);
-        }
-
-        .btn-back:focus-visible {
-            outline: 3px solid var(--accent-color);
-            outline-offset: 3px;
-        }
-
-        /* Card chính */
-        main {
-            background-color: var(--white);
-            padding: 28px 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-            margin-top: 16px;
-        }
-
-        /* Profile Header */
-        .profile-header {
-            text-align: center;
-            margin-bottom: 28px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .profile-header img {
-            width: 100%;
-            max-width: 200px;
-            height: auto;
-            aspect-ratio: 1 / 1;
-            border-radius: 50%;
-            border: 4px solid var(--primary-color);
-            object-fit: cover;
-            display: block;
-            margin: 0 auto 12px;
-        }
-
-        .profile-header h1 {
-            margin: 8px 0 6px;
-            color: var(--primary-color);
-            font-size: 1.8rem;
-        }
-
-        .profile-header p {
-            color: #555;
-        }
-
-        /* Nút GitHub */
-        .btn-github {
-            display: inline-block;
-            margin-top: 14px;
-            padding: 10px 20px;
-            background-color: #24292e;
-            color: var(--white);
-            text-decoration: none;
-            font-weight: 600;
-            border-radius: 6px;
-            transition: 0.25s ease;
-        }
-
-        .btn-github:hover {
-            background-color: #000;
-            transform: translateY(-2px);
-        }
-
-        .btn-github:focus-visible {
-            outline: 3px solid var(--accent-color);
-            outline-offset: 3px;
-        }
-
-        /* Tiêu đề */
-        h2 {
-            color: var(--primary-color);
-            border-left: 5px solid var(--secondary-color);
-            padding-left: 12px;
-            margin: 28px 0 14px;
-            font-size: 1.35rem;
-        }
-
-        ul {
-            padding-left: 20px;
-        }
-
-        ul li {
-            margin-bottom: 10px;
-        }
-
-        a {
-            color: var(--secondary-color);
-            font-weight: 600;
-            text-decoration: none;
-            transition: 0.25s;
-        }
-
-        a:hover {
-            color: var(--primary-color);
-        }
-
-        a:focus-visible {
-            outline: 3px solid var(--accent-color);
-            outline-offset: 2px;
-        }
-
-        /* Bảng Thời khóa biểu */
-        .table-wrapper {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-top: 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-
-        table {
-            width: 100%;
-            min-width: 720px;
-            border-collapse: collapse;
-        }
-
-        caption {
-            font-size: 1.05rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--primary-color);
-            text-align: left;
-            padding: 0 4px;
-        }
-
-        th, td {
-            border: 1px solid #ccc;
-            padding: 10px 8px;
-            text-align: left;
-            vertical-align: top;
-            font-size: 0.92rem;
-        }
-
-        thead th {
-            background-color: var(--primary-color);
-            color: var(--white);
-            text-align: center;
-            white-space: nowrap;
-        }
-
-        tbody th {
-            background-color: #e8f0f7;
-            text-align: center;
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        tbody tr:hover td {
-            background-color: #f5f9fc;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            margin-top: 24px;
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        /* Responsive */
-        @media (min-width: 768px) {
-            body {
-                padding: 30px 20px;
-            }
-
-            main {
-                padding: 40px;
-            }
-
-            .profile-header img {
-                max-width: 220px;
-            }
-
-            .table-wrapper {
-                overflow-x: visible;
-            }
-
-            table {
-                min-width: auto;
-            }
-        }
-    </style>
+    <!-- CSS riêng của trang cá nhân -->
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="container">
-        <header>
-            <nav>
-                <a href="../../index.html" class="btn-back">← Quay về Trang chủ Nhóm</a>
-            </nav>
-        </header>
 
-        <main>
-            <!-- Giới thiệu bản thân -->
-            <section id="gioi-thieu" class="profile-header">
-                <img src="./images/PhanVanHop.jpg" alt="Ảnh chân dung của Phan Văn Hợp, sinh viên ĐH Sư Phạm ĐHĐN">
-                <h1>Phan Văn Hợp</h1>
-                <p>Sinh viên Công nghệ Thông tin | Định hướng phát triển trở thành <strong>DevOps Engineer</strong></p>
-                
-                <a href="https://github.com/kurunetwork" target="_blank" rel="noopener" class="btn-github">
+<body class="trang-ca-nhan">
+
+    <!-- HEADER -->
+    <header class="dau-trang">
+        <div class="bao dau-trang__noi-dung">
+            <p class="dau-trang__thuong-hieu"><strong>EduGPA</strong></p>
+            <p class="dau-trang__khau-hieu">
+                Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập cho sinh viên
+            </p>
+        </div>
+    </header>
+
+    <!-- MENU -->
+    <nav class="dieu-huong" aria-label="Điều hướng chính">
+        <ul class="bao dieu-huong__danh-sach">
+            <li>
+                <a class="dieu-huong__lien-ket" href="../../index.html">Trang chủ</a>
+            </li>
+            <li>
+                <a class="dieu-huong__lien-ket" href="../../danh-sach.html">Danh sách</a>
+            </li>
+            <li>
+                <a class="dieu-huong__lien-ket" href="../../chi-tiet.html">Chi tiết</a>
+            </li>
+            <li>
+                <a class="dieu-huong__lien-ket dieu-huong__lien-ket--hien-tai"
+                   href="../../gioi-thieu.html" aria-current="page">Giới thiệu</a>
+            </li>
+            <li>
+                <a class="dieu-huong__lien-ket" href="../../lien-he.html">Liên hệ</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- NỘI DUNG CHÍNH -->
+    <main class="bao noi-dung-chinh">
+
+        <h1 class="noi-dung-chinh__tieu-de">Giới thiệu bản thân</h1>
+
+        <!-- Thông tin cá nhân -->
+        <section class="the-noi-dung thong-tin">
+            <h2 class="the-noi-dung__tieu-de">Thông tin cá nhân</h2>
+
+            <p>
+                Xin chào! Mình là <strong>Phan Văn Hợp</strong>, thành viên của Nhóm 3 
+                thực hiện dự án EduGPA.
+            </p>
+
+            <p>
+                Mình hiện là sinh viên ngành Công nghệ Thông tin, 
+                Trường Đại học Sư phạm – Đại học Đà Nẵng. 
+                Định hướng phát triển trở thành <strong>DevOps Engineer</strong>.
+            </p>
+
+            <figure class="thong-tin__anh">
+                <img class="thong-tin__anh-chan-dung"
+                     src="./images/PhanVanHop.jpg"
+                     alt="Ảnh chân dung của Phan Văn Hợp"
+                     loading="lazy">
+                <figcaption class="thong-tin__chu-thich">
+                    Ảnh chân dung của Phan Văn Hợp
+                </figcaption>
+            </figure>
+
+            <p style="text-align: center;">
+                <a href="https://github.com/kurunetwork" 
+                   target="_blank" 
+                   rel="noopener" 
+                   class="btn-github">
                     ★ Theo dõi GitHub của mình
                 </a>
-            </section>
+            </p>
+        </section>
 
-            <!-- Kỹ năng -->
-            <section id="ky-nang">
-                <h2>Kỹ năng & Hành trình đến với DevOps</h2>
-                <p style="margin-bottom: 10px;">Mình đang tập trung xây dựng nền tảng vững chắc về hệ thống, bảo mật và tự động hóa để đáp ứng vai trò của một kỹ sư DevOps:</p>
-                <ul>
-                    <li><strong>Hệ điều hành & Tự động hóa:</strong> Quản trị chuyên sâu hệ điều hành Linux (Ubuntu, Zorin OS) và tối ưu hóa công cụ bằng Bash script.</li>
-                    <li><strong>Mạng & Bảo mật (DevSecOps):</strong> Phân tích hạ tầng mạng, giao thức mã hóa (TLS 1.3) và nghiên cứu các framework bảo mật (NIST, BSI).</li>
-                    <li><strong>Cơ sở dữ liệu & Ứng dụng:</strong> Hiểu rõ luồng phát triển Web (HTML5, CSS3) và quản trị cơ sở dữ liệu (SQL).</li>
-                    <li><strong>Mục tiêu học tập tiếp theo:</strong> Trau dồi thêm về Containerization (Docker), CI/CD pipelines và Cloud AWS.</li>
-                </ul>
-            </section>
+        <!-- Kỹ năng -->
+        <section class="the-noi-dung ky-nang">
+            <h2 class="the-noi-dung__tieu-de">Kỹ năng & Hành trình đến với DevOps</h2>
 
-            <!-- Dự án & Sở thích -->
-            <article id="du-an-so-thich">
-                <h2>Dự án & Sở thích</h2>
-                <p>Về mảng học thuật và cọ xát thực tế, mình đang tham gia dự án <strong><a href="https://github.com/kurunetwork/tls-vn-assessment" target="_blank" rel="noopener">kurunetwork/tls-vn-assessment</a></strong>: Đánh giá thực nghiệm TLS 1.3, ALPN, HSTS trên tên miền .vn (2026). Dự án này giúp mình rèn luyện tư duy phân tích bảo mật hệ thống từ góc độ hạ tầng mạng.</p>
-                <p>Lúc rảnh rỗi, mình thích chơi Liên Quân Mobile cùng bạn bè hoặc vọc vạch phần cứng, test và cấu hình các bản phân phối Linux mới để tìm ra môi trường làm việc tối ưu nhất.</p>
-            </article>
+            <ul class="ky-nang__danh-sach">
+                <li><strong>Hệ điều hành & Tự động hóa:</strong> Quản trị Linux (Ubuntu, Zorin OS), viết Bash script</li>
+                <li><strong>Mạng & Bảo mật (DevSecOps):</strong> Phân tích hạ tầng mạng, TLS 1.3, framework NIST & BSI</li>
+                <li><strong>Cơ sở dữ liệu & Ứng dụng:</strong> HTML5, CSS3, SQL</li>
+                <li><strong>Mục tiêu tiếp theo:</strong> Docker, CI/CD pipelines, Cloud AWS</li>
+            </ul>
+        </section>
 
-            <!-- Thời khóa biểu -->
-            <section id="thoi-khoa-bieu">
-                <h2>Lịch trình học tập tuần</h2>
-                <div class="table-wrapper">
-                    <table>
-                        <caption>Thời khóa biểu học kỳ 1 của Phan Văn Hợp</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Tiết</th>
-                                <th scope="col">Thứ 2</th>
-                                <th scope="col">Thứ 3</th>
-                                <th scope="col">Thứ 4</th>
-                                <th scope="col">Thứ 5</th>
-                                <th scope="col">Thứ 6</th>
-                                <th scope="col">Thứ 7</th>
-                                <th scope="col">Chủ nhật</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td rowspan="3">31221010 - 24-0101<br><strong>An toàn thông tin</strong><br>Phòng: B3-206</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td rowspan="3">31231398 - 24-0101<br><strong>Lập trình mạng</strong><br>Phòng: A5-403</td>
-                                <td rowspan="3">31231755 - 24-0102<br><strong>Thiết kế và lập trình web</strong><br>Phòng: B3-303</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">2</th>
-                                <td></td>
-                                <td rowspan="3">31241283 - 24-0102<br><strong>Hệ quản trị cơ sở dữ liệu</strong><br>Phòng: A5-404B</td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">4</th>
-                                <td></td>
-                                <td></td>
-                                <td rowspan="3">31231330 - 24-0102<br><strong>Khai phá dữ liệu</strong><br>Phòng: A5-404B</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">5</th>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">6</th>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">7</th>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td rowspan="3">31231016 - 24-0102<br><strong>Công nghệ phần mềm</strong><br>Phòng: B3-503</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">8</th>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">9</th>
-                                <td></td>
-                                <td rowspan="3">21221904 - 24-0124<br><strong>Lịch sử Đảng Cộng sản Việt Nam</strong><br>Phòng: A6-502</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">10</th>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">11</th>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">12</th>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
+        <!-- Dự án & Sở thích -->
+        <article class="the-noi-dung so-thich">
+            <h2 class="the-noi-dung__tieu-de">Dự án & Sở thích</h2>
 
-        <footer>
-            <p>&copy; 2026 - Bản quyền thuộc về Phan Văn Hợp.</p>
-        </footer>
-    </div>
+            <p>
+                Hiện mình đang tham gia dự án 
+                <strong>
+                    <a href="https://github.com/kurunetwork/tls-vn-assessment" 
+                       target="_blank" rel="noopener">
+                        kurunetwork/tls-vn-assessment
+                    </a>
+                </strong> 
+                – Đánh giá thực nghiệm TLS 1.3, ALPN, HSTS trên tên miền .vn (2026).
+            </p>
+
+            <p>
+                Lúc rảnh, mình thích chơi Liên Quân Mobile cùng bạn bè 
+                hoặc vọc vạch phần cứng và thử các bản phân phối Linux mới.
+            </p>
+        </article>
+
+        <!-- Thời khóa biểu -->
+        <section class="the-noi-dung lich-hoc">
+            <h2 class="the-noi-dung__tieu-de">Thời khóa biểu trong tuần</h2>
+
+            <div class="tkb-container" tabindex="0" role="region"
+                 aria-label="Thời khóa biểu có thể cuộn ngang">
+
+                <table class="thoi-khoa-bieu">
+                    <caption>Thời khóa biểu học kỳ 1 của Phan Văn Hợp</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Tiết</th>
+                            <th scope="col">Thứ 2</th>
+                            <th scope="col">Thứ 3</th>
+                            <th scope="col">Thứ 4</th>
+                            <th scope="col">Thứ 5</th>
+                            <th scope="col">Thứ 6</th>
+                            <th scope="col">Thứ 7</th>
+                            <th scope="col">Chủ nhật</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="tiet">1</th>
+                            <td rowspan="3" class="mon-hoc">
+                                31221010 - 24-0101<br>
+                                <strong>An toàn thông tin</strong><br>
+                                Phòng: B3-206
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td rowspan="3" class="mon-hoc">
+                                31231398 - 24-0101<br>
+                                <strong>Lập trình mạng</strong><br>
+                                Phòng: A5-403
+                            </td>
+                            <td rowspan="3" class="mon-hoc">
+                                31231755 - 24-0102<br>
+                                <strong>Thiết kế và lập trình web</strong><br>
+                                Phòng: B3-303
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tiet">2</th>
+                            <td></td>
+                            <td rowspan="3" class="mon-hoc">
+                                31241283 - 24-0102<br>
+                                <strong>Hệ quản trị cơ sở dữ liệu</strong><br>
+                                Phòng: A5-404B
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tiet">3</th>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tiet">4</th>
+                            <td></td>
+                            <td></td>
+                            <td rowspan="3" class="mon-hoc">
+                                31231330 - 24-0102<br>
+                                <strong>Khai phá dữ liệu</strong><br>
+                                Phòng: A5-404B
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tiet">5</th>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tiet">6</th>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tiet">7</th>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td rowspan="3" class="mon-hoc">
+                                31231016 - 24-0102<br>
+                                <strong>Công nghệ phần mềm</strong><br>
+                                Phòng: B3-503
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tiet">8</th>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tiet">9</th>
+                            <td></td>
+                            <td rowspan="3" class="mon-hoc">
+                                21221904 - 24-0124<br>
+                                <strong>Lịch sử Đảng Cộng sản Việt Nam</strong><br>
+                                Phòng: A6-502
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tiet">10</th>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tiet">11</th>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="tiet">12</th>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="chan-trang">
+        <p class="bao chan-trang__ban-quyen">
+            &copy; 2026 Nhóm 3 - Khoa Toán - Tin. | Phan Văn Hợp
+        </p>
+    </footer>
+
 </body>
 </html>

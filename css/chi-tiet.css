@@ -5,27 +5,8 @@
    ========================================================= */
 
 /* =========================================================
-   01. CHỐNG TRÀN NGANG TOÀN TRANG
-   ========================================================= */
-
-html,
-body {
-    max-width: 100%;
-    overflow-x: hidden;
-}
-
-.trang,
-.trang-chi-tiet,
-.trang-chi-tiet main,
-.trang-chi-tiet main > article,
-.trang-chi-tiet main > section {
-    max-width: 100%;
-    min-width: 0;
-}
-
-/* =========================================================
-   02. KHUNG CHI TIẾT - GRID 2 CỘT
-   Mobile: 1 cột | Desktop: 2 cột (nội dung + aside)
+   01. KHUNG CHI TIẾT - GRID 2 CỘT
+   Mobile: 1 cột | Desktop: 2 cột
    ========================================================= */
 
 .khung-chi-tiet {
@@ -48,7 +29,7 @@ body {
 }
 
 /* =========================================================
-   03. CÁC BÀI VIẾT TRONG NỘI DUNG CHÍNH
+   02. CÁC BÀI VIẾT TRONG NỘI DUNG CHÍNH
    ========================================================= */
 
 .noi-dung-chinh > article {
@@ -70,7 +51,7 @@ body {
 }
 
 /* =========================================================
-   04. KHUNG CUỘN NGANG CHO BẢNG
+   03. KHUNG CUỘN NGANG CHO BẢNG
    Thay thế style="overflow-x: auto;" inline
    ========================================================= */
 
@@ -79,22 +60,24 @@ body {
     width: 100%;
     max-width: 100%;
     min-width: 0;
-
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
-
     box-sizing: border-box;
     border-radius: var(--bo-goc);
     margin-block: var(--kc-4);
 }
 
+/* Ghi đè style.css: table không được display: block nữa */
 .bang-cuon table {
+    display: table;
     width: 100%;
     min-width: 720px;
     border-collapse: collapse;
     table-layout: auto;
     margin: 0;
+    overflow-x: visible;
+    border-radius: 0;
 }
 
 .bang-cuon caption {
@@ -108,6 +91,7 @@ body {
 
 .bang-cuon th,
 .bang-cuon td {
+    min-width: 6rem;
     padding: 0.65rem 0.75rem;
     border: 1px solid var(--mau-vien);
     font-size: 0.9rem;
@@ -138,68 +122,15 @@ body {
 }
 
 /* =========================================================
-   05. FIGURE (ẢNH + IFRAME)
-   ========================================================= */
-
-.noi-dung-chinh figure {
-    margin: var(--kc-5) 0;
-    max-width: 100%;
-}
-
-.noi-dung-chinh figure img {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 3 / 2;
-    object-fit: cover;
-    border-radius: var(--bo-goc);
-    box-shadow: var(--bong-nhe);
-}
-
-.noi-dung-chinh figure iframe {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    height: auto;
-    border: 0;
-    border-radius: var(--bo-goc);
-    box-shadow: var(--bong-nhe);
-}
-
-.noi-dung-chinh figcaption {
-    margin-top: var(--kc-2);
-    font-size: var(--co-chu-nho);
-    color: var(--mau-chu-phu);
-    text-align: center;
-    font-style: italic;
-}
-
-/* =========================================================
-   06. DANH SÁCH NHẬN XÉT
-   ========================================================= */
-
-.noi-dung-chinh ul {
-    padding-left: 1.25rem;
-    max-width: 65ch;
-}
-
-.noi-dung-chinh ul li + li {
-    margin-top: var(--kc-2);
-}
-
-.noi-dung-chinh ul li strong {
-    color: var(--mau-chinh-dam);
-}
-
-/* =========================================================
-   07. ASIDE - KHÁM PHÁ EDUGPA
+   04. ASIDE
    ========================================================= */
 
 .khung-chi-tiet > aside {
     padding: clamp(1.25rem, 3vw, 1.75rem);
     border-radius: var(--bo-goc-lon);
     color: #ffffff;
-    background:
-        radial-gradient(circle at 90% 10%, rgb(244 180 0 / 24%), transparent 30%),
-        var(--mau-nen-dam);
+    background-color: var(--mau-nen-dam);
+    background-image: radial-gradient(circle at 90% 10%, rgb(244 180 0 / 24%), transparent 30%);
     box-shadow: var(--bong-nhe);
 }
 
@@ -233,7 +164,7 @@ body {
     display: block;
     padding: var(--kc-2) 0;
     font-weight: 600;
-    transition: color 0.2s ease, transform 0.2s ease;
+    transition: color var(--thoi-gian) ease, transform var(--thoi-gian) ease;
 }
 
 .khung-chi-tiet > aside a:hover {
@@ -253,34 +184,10 @@ body {
 }
 
 /* =========================================================
-   08. HOVER + FOCUS-VISIBLE CHO LINK TRONG NỘI DUNG
-   ========================================================= */
-
-.noi-dung-chinh a {
-    color: var(--mau-chinh);
-    transition: color 0.2s ease;
-}
-
-.noi-dung-chinh a:hover {
-    color: var(--mau-chinh-dam);
-}
-
-.noi-dung-chinh a:active {
-    color: var(--mau-nhan-dam);
-}
-
-.noi-dung-chinh a:focus-visible {
-    outline: 3px solid var(--mau-nhan);
-    outline-offset: 3px;
-    border-radius: var(--bo-goc-nho);
-}
-
-/* =========================================================
-   09. RESPONSIVE - TABLET (MIN-WIDTH: 768PX)
+   05. RESPONSIVE - TABLET (MIN-WIDTH: 768PX)
    ========================================================= */
 
 @media (min-width: 768px) {
-
     .khung-chi-tiet {
         grid-template-columns: minmax(0, 1fr) 280px;
         gap: var(--kc-6);
@@ -293,28 +200,12 @@ body {
 }
 
 /* =========================================================
-   10. RESPONSIVE - DESKTOP (MIN-WIDTH: 992PX)
+   06. RESPONSIVE - DESKTOP (MIN-WIDTH: 992PX)
    ========================================================= */
 
 @media (min-width: 992px) {
-
     .khung-chi-tiet {
         grid-template-columns: minmax(0, 1fr) 320px;
         gap: var(--kc-7);
-    }
-}
-
-/* =========================================================
-   11. GIẢM CHUYỂN ĐỘNG
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-    .khung-chi-tiet > aside a {
-        transition: none;
-    }
-
-    .khung-chi-tiet > aside a:hover {
-        transform: none;
     }
 }

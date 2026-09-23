@@ -1,48 +1,95 @@
 /* =========================================================
    CSS RIÊNG TRANG CÁ NHÂN - PHAN VĂN HỢP
-   Dùng chung biến màu của nhóm EduGPA
    ========================================================= */
 
+/* =========================
+   BỐ CỤC THÔNG TIN CÁ NHÂN
+   ========================= */
+
+.thong-tin {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 1.5rem 2rem;
+    align-items: center;
+}
+
+/* Tiêu đề section trải toàn bộ chiều rộng */
+.thong-tin > .the-noi-dung__tieu-de {
+    grid-column: 1 / -1;
+}
+
 /* Ảnh chân dung */
+.thong-tin__anh {
+    grid-column: 2;
+    grid-row: 2 / span 3;
+    margin: 0;
+    text-align: center;
+}
+
 .thong-tin__anh-chan-dung {
     width: 100%;
     max-width: 260px;
     height: auto;
     aspect-ratio: 1 / 1;
     object-fit: cover;
-    border-radius: 20px;
-    border: 5px solid var(--mau-chinh);
+
     display: block;
-    margin: 0 auto 1.25rem;
-    box-shadow: 
+    margin: 0 auto 1rem;
+
+    border: 5px solid var(--mau-chinh);
+    border-radius: 20px;
+
+    box-shadow:
         0 8px 24px rgba(0, 0, 0, 0.12),
         0 2px 6px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
 .thong-tin__anh-chan-dung:hover {
     transform: translateY(-4px);
-    box-shadow: 
+    box-shadow:
         0 12px 32px rgba(0, 0, 0, 0.16),
         0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Nút GitHub */
+.thong-tin__chu-thich {
+    font-size: 0.9rem;
+    color: var(--mau-chu-phu);
+    text-align: center;
+}
+
+/* =========================
+   NÚT GITHUB
+   ========================= */
+
 .btn-github {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+
     margin-top: 1rem;
     padding: 0.8rem 1.5rem;
+
     background-color: #24292e;
     color: #ffffff;
+
     font-weight: 600;
     font-size: 0.95rem;
     text-decoration: none;
+
     border-radius: var(--bo-goc-nho);
+
     box-shadow: 0 4px 12px rgba(36, 41, 46, 0.25);
-    transition: all 0.25s ease;
+
+    transition:
+        background-color 0.25s ease,
+        color 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
 .btn-github:hover {
@@ -61,7 +108,24 @@
     outline-offset: 3px;
 }
 
-/* Danh sách kỹ năng */
+/* =========================
+   LINK
+   ========================= */
+
+a:hover {
+    text-decoration: underline;
+}
+
+a:focus-visible,
+button:focus-visible {
+    outline: 3px solid var(--mau-nhan);
+    outline-offset: 3px;
+}
+
+/* =========================
+   DANH SÁCH KỸ NĂNG
+   ========================= */
+
 .ky-nang__danh-sach {
     padding-left: 1.4rem;
     margin-top: 0.5rem;
@@ -70,7 +134,6 @@
 .ky-nang__danh-sach li {
     margin-bottom: 0.7rem;
     line-height: 1.5;
-    position: relative;
 }
 
 .ky-nang__danh-sach li::marker {
@@ -78,15 +141,33 @@
     font-weight: 700;
 }
 
-/* Bảng Thời khóa biểu */
+/* =========================
+   THỜI KHÓA BIỂU
+   ========================= */
+
 .tkb-container {
+    width: 100%;
+    max-width: 100%;
+
     overflow-x: auto;
+    overflow-y: hidden;
+
     -webkit-overflow-scrolling: touch;
+
     margin-top: 1.25rem;
+
     border: 1px solid var(--mau-vien);
     border-radius: var(--bo-goc);
+
     background: var(--mau-nen);
+
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* Khi vùng bảng được focus bằng bàn phím */
+.tkb-container:focus-visible {
+    outline: 3px solid var(--mau-nhan);
+    outline-offset: 3px;
 }
 
 .thoi-khoa-bieu {
@@ -97,35 +178,52 @@
 
 .thoi-khoa-bieu caption {
     padding: 0.9rem 1.1rem;
+
     font-weight: 700;
     font-size: 1.05rem;
+
     color: var(--mau-chinh-dam);
+
     text-align: left;
-    background: linear-gradient(to right, var(--mau-chinh-nhat), transparent);
+
+    background: linear-gradient(
+        to right,
+        var(--mau-chinh-nhat),
+        transparent
+    );
 }
 
 .thoi-khoa-bieu th,
 .thoi-khoa-bieu td {
     border: 1px solid var(--mau-vien);
+
     padding: 0.75rem 0.7rem;
+
     vertical-align: top;
+
     font-size: 0.92rem;
+
     transition: background-color 0.2s ease;
 }
 
 .thoi-khoa-bieu thead th {
     background-color: var(--mau-chinh-dam);
     color: #ffffff;
+
     text-align: center;
     white-space: nowrap;
+
     font-weight: 600;
     letter-spacing: 0.3px;
 }
 
 .thoi-khoa-bieu .tiet {
     background-color: var(--mau-chinh-nhat);
+
     text-align: center;
+
     font-weight: 700;
+
     color: var(--mau-chinh-dam);
 }
 
@@ -142,20 +240,56 @@
     color: #ffffff;
 }
 
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
+/* =========================
+   RESPONSIVE - MOBILE
+   ========================= */
+
+@media (max-width: 767px) {
+
+    .thong-tin {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .thong-tin > .the-noi-dung__tieu-de {
+        grid-column: 1;
+    }
+
+    .thong-tin__anh {
+        grid-column: 1;
+        grid-row: auto;
+
+        order: 3;
+    }
+
+    .thong-tin__anh-chan-dung {
+        width: 100%;
+        max-width: 260px;
+    }
+
+    .btn-github {
+        max-width: 100%;
+    }
+
+    .tkb-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+}
+    .thong-tin__github {
+    text-align: center;
+}
+/* =========================
+   RESPONSIVE - DESKTOP
+   ========================= */
 
 @media (min-width: 768px) {
+
     .thong-tin__anh-chan-dung {
         max-width: 280px;
     }
 
     .tkb-container {
-        overflow-x: visible;
-    }
-
-    .thoi-khoa-bieu {
-        min-width: auto;
+        overflow-x: auto;
     }
 }

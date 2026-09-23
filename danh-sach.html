@@ -20,7 +20,6 @@
         <p>
             <strong>EduGPA</strong>
         </p>
-
         <p>
             Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập cho sinh viên
         </p>
@@ -28,25 +27,11 @@
 
     <nav aria-label="Điều hướng chính">
         <ul>
-            <li>
-                <a href="index.html">Trang chủ</a>
-            </li>
-
-            <li>
-                <a href="danh-sach.html" aria-current="page">Danh sách</a>
-            </li>
-
-            <li>
-                <a href="chi-tiet.html">Chi tiết</a>
-            </li>
-
-            <li>
-                <a href="gioi-thieu.html">Giới thiệu</a>
-            </li>
-
-            <li>
-                <a href="lien-he.html">Liên hệ</a>
-            </li>
+            <li><a href="index.html">Trang chủ</a></li>
+            <li><a href="danh-sach.html" aria-current="page">Danh sách</a></li>
+            <li><a href="chi-tiet.html">Chi tiết</a></li>
+            <li><a href="gioi-thieu.html">Giới thiệu</a></li>
+            <li><a href="lien-he.html">Liên hệ</a></li>
         </ul>
     </nav>
 
@@ -56,21 +41,17 @@
 
         <section>
             <h2>Tổng quan tiến độ</h2>
-
             <p>
                 Dưới đây là danh sách các môn học trong học kỳ 1,
                 năm học 2026–2027. Sinh viên có thể theo dõi số tín chỉ,
                 trạng thái học tập và xem thông tin chi tiết của từng môn.
             </p>
 
-            <form action="#" method="get">
+            <form action="#" method="get" class="form-lien-he">
                 <fieldset>
                     <legend>Tra cứu nhanh</legend>
 
-                    <label for="tim-kiem">
-                        Tìm kiếm môn học hoặc tài liệu
-                    </label>
-
+                    <label for="tim-kiem">Tìm kiếm môn học hoặc tài liệu</label>
                     <input
                         type="search"
                         id="tim-kiem"
@@ -78,91 +59,79 @@
                         placeholder="Nhập tên môn học hoặc tài liệu..."
                         required>
 
-                    <button type="submit">
-                        Tìm kiếm
-                    </button>
+                    <button type="submit">Tìm kiếm</button>
                 </fieldset>
             </form>
         </section>
 
         <section>
             <h2>Tiến độ các môn học</h2>
+            
+            <!-- Áp dụng class luoi-san-pham để dàn Grid tự co giãn -->
+            <div class="luoi-san-pham">
+                
+                <!-- Thẻ môn học 1 -->
+                <article class="the-san-pham">
+                    <!-- Ảnh tạm để test object-fit, bạn có thể tự thay đường dẫn ảnh thật của nhóm vào src -->
+                    <img src="https://via.placeholder.com/400x250/123b6d/ffffff?text=INT101" alt="Thiết kế và Lập trình Web" loading="lazy">
+                    <div style="padding: 15px; border: 1px solid #eee; border-top: none; border-radius: 0 0 8px 8px;">
+                        <h3>Thiết kế và Lập trình Web</h3>
+                        <p><strong>Mã môn:</strong> INT101</p>
+                        <p><strong>Số tín chỉ:</strong> 3</p>
+                        <p><strong>Trạng thái:</strong> Đang học</p>
+                        <a href="chi-tiet.html" style="display: inline-block; margin-top: 10px; color: var(--mau-chinh); font-weight: bold;">Xem chi tiết &rarr;</a>
+                    </div>
+                </article>
 
-            <table>
-                <caption>
-                    Bảng thống kê trạng thái và tín chỉ các môn học chuyên ngành
-                </caption>
+                <!-- Thẻ môn học 2 -->
+                <article class="the-san-pham">
+                    <img src="https://via.placeholder.com/400x250/123b6d/ffffff?text=INT102" alt="Hệ quản trị cơ sở dữ liệu" loading="lazy">
+                    <div style="padding: 15px; border: 1px solid #eee; border-top: none; border-radius: 0 0 8px 8px;">
+                        <h3>Hệ quản trị CSDL</h3>
+                        <p><strong>Mã môn:</strong> INT102</p>
+                        <p><strong>Số tín chỉ:</strong> 3</p>
+                        <p><strong>Trạng thái:</strong> Đang học</p>
+                        <a href="chi-tiet.html" style="display: inline-block; margin-top: 10px; color: var(--mau-chinh); font-weight: bold;">Xem chi tiết &rarr;</a>
+                    </div>
+                </article>
 
-                <thead>
-                    <tr>
-                        <th scope="col">Mã môn</th>
-                        <th scope="col">Tên môn học</th>
-                        <th scope="col">Số tín chỉ</th>
-                        <th scope="col">Trạng thái</th>
-                        <th scope="col">Thao tác</th>
-                    </tr>
-                </thead>
+                <!-- Thẻ môn học 3 -->
+                <article class="the-san-pham">
+                    <img src="https://via.placeholder.com/400x250/123b6d/ffffff?text=INT103" alt="Khai phá dữ liệu" loading="lazy">
+                    <div style="padding: 15px; border: 1px solid #eee; border-top: none; border-radius: 0 0 8px 8px;">
+                        <h3>Khai phá dữ liệu</h3>
+                        <p><strong>Mã môn:</strong> INT103</p>
+                        <p><strong>Số tín chỉ:</strong> 3</p>
+                        <p><strong>Trạng thái:</strong> Đang học</p>
+                        <a href="chi-tiet.html" style="display: inline-block; margin-top: 10px; color: var(--mau-chinh); font-weight: bold;">Xem chi tiết &rarr;</a>
+                    </div>
+                </article>
 
-                <tbody>
-                    <tr>
-                        <td>INT101</td>
-                        <td>Thiết kế và Lập trình Web</td>
-                        <td>3</td>
-                        <td>Đang học</td>
-                        <td>
-                            <a href="chi-tiet.html">Xem chi tiết</a>
-                        </td>
-                    </tr>
+                <!-- Thẻ môn học 4 -->
+                <article class="the-san-pham">
+                    <img src="https://via.placeholder.com/400x250/123b6d/ffffff?text=INT104" alt="Công nghệ phần mềm" loading="lazy">
+                    <div style="padding: 15px; border: 1px solid #eee; border-top: none; border-radius: 0 0 8px 8px;">
+                        <h3>Công nghệ phần mềm</h3>
+                        <p><strong>Mã môn:</strong> INT104</p>
+                        <p><strong>Số tín chỉ:</strong> 3</p>
+                        <p><strong>Trạng thái:</strong> Đang học</p>
+                        <a href="chi-tiet.html" style="display: inline-block; margin-top: 10px; color: var(--mau-chinh); font-weight: bold;">Xem chi tiết &rarr;</a>
+                    </div>
+                </article>
 
-                    <tr>
-                        <td>INT102</td>
-                        <td>Hệ quản trị cơ sở dữ liệu</td>
-                        <td>3</td>
-                        <td>Đang học</td>
-                        <td>
-                            <a href="chi-tiet.html">Xem chi tiết</a>
-                        </td>
-                    </tr>
+                <!-- Thẻ môn học 5 -->
+                <article class="the-san-pham">
+                    <img src="https://via.placeholder.com/400x250/123b6d/ffffff?text=INT105" alt="An toàn thông tin" loading="lazy">
+                    <div style="padding: 15px; border: 1px solid #eee; border-top: none; border-radius: 0 0 8px 8px;">
+                        <h3>An toàn thông tin</h3>
+                        <p><strong>Mã môn:</strong> INT105</p>
+                        <p><strong>Số tín chỉ:</strong> 3</p>
+                        <p><strong>Trạng thái:</strong> Đăng ký mới</p>
+                        <a href="chi-tiet.html" style="display: inline-block; margin-top: 10px; color: var(--mau-chinh); font-weight: bold;">Xem chi tiết &rarr;</a>
+                    </div>
+                </article>
 
-                    <tr>
-                        <td>INT103</td>
-                        <td>Khai phá dữ liệu</td>
-                        <td>3</td>
-                        <td>Đang học</td>
-                        <td>
-                            <a href="chi-tiet.html">Xem chi tiết</a>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>INT104</td>
-                        <td>Công nghệ phần mềm</td>
-                        <td>3</td>
-                        <td>Đang học</td>
-                        <td>
-                            <a href="chi-tiet.html">Xem chi tiết</a>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>INT105</td>
-                        <td>An toàn thông tin</td>
-                        <td>3</td>
-                        <td>Đăng ký mới</td>
-                        <td>
-                            <a href="chi-tiet.html">Xem chi tiết</a>
-                        </td>
-                    </tr>
-                </tbody>
-
-                <tfoot>
-                    <tr>
-                        <th scope="row" colspan="2">Tổng cộng</th>
-                        <td>15 tín chỉ</td>
-                        <td colspan="2">5 môn học</td>
-                    </tr>
-                </tfoot>
-            </table>
+            </div>
         </section>
 
     </main>

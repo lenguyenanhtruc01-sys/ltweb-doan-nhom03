@@ -10,177 +10,180 @@
 
     <title>Giới thiệu | EduGPA</title>
 
-    <!-- Kết nối với file CSS chung -->
+    <!-- CSS chung của Nhóm 03 -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body class="trang trang-gioi-thieu">
 
-    <header>
+    <header class="dau-trang">
         <p>
             <strong>EduGPA</strong>
         </p>
-
         <p>
             Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập cho sinh viên
         </p>
     </header>
 
-    <nav aria-label="Điều hướng chính">
-        <ul>
-            <li>
-                <a href="index.html">Trang chủ</a>
+    <nav class="dieu-huong" aria-label="Điều hướng chính">
+        <ul class="dieu-huong__danh-sach">
+            <li class="dieu-huong__muc">
+                <a class="dieu-huong__lien-ket" href="index.html">Trang chủ</a>
             </li>
-
-            <li>
-                <a href="danh-sach.html">Danh sách</a>
+            <li class="dieu-huong__muc">
+                <a class="dieu-huong__lien-ket" href="danh-sach.html">Danh sách</a>
             </li>
-
-            <li>
-                <a href="chi-tiet.html">Chi tiết</a>
+            <li class="dieu-huong__muc">
+                <a class="dieu-huong__lien-ket" href="chi-tiet.html">Chi tiết</a>
             </li>
-
-            <li>
-                <a href="gioi-thieu.html" aria-current="page">Giới thiệu</a>
+            <li class="dieu-huong__muc">
+                <a class="dieu-huong__lien-ket dieu-huong__lien-ket--hien-tai" href="gioi-thieu.html" aria-current="page">Giới thiệu</a>
             </li>
-
-            <li>
-                <a href="lien-he.html">Liên hệ</a>
+            <li class="dieu-huong__muc">
+                <a class="dieu-huong__lien-ket" href="lien-he.html">Liên hệ</a>
             </li>
         </ul>
     </nav>
 
-    <main>
+    <main class="noi-dung-chinh">
 
-        <h1>Giới thiệu EduGPA và nhóm thực hiện</h1>
+        <h1 style="text-align: center; margin-bottom: 30px;">Giới thiệu EduGPA và nhóm thực hiện</h1>
 
-        <section>
-            <h2>Giới thiệu về EduGPA</h2>
-
-            <p>
-                EduGPA là hệ thống hỗ trợ sinh viên theo dõi và lập kế hoạch
-                học tập trong quá trình học đại học.
-            </p>
-
-            <p>
-                Website được xây dựng nhằm hỗ trợ sinh viên quản lý kết quả
-                học tập, tính GPA, theo dõi tín chỉ và đánh giá tiến độ
-                hướng tới mục tiêu tốt nghiệp.
-            </p>
-
-            <p>
-                Bên cạnh việc quản lý kết quả học tập, EduGPA còn hỗ trợ
-                mô phỏng GPA với các mức điểm dự kiến và cung cấp những
-                gợi ý giúp sinh viên định hướng việc học tập.
-            </p>
-        </section>
-
-        <section>
-            <h2>Mục tiêu của website</h2>
-
-            <ul>
-                <li>Hỗ trợ sinh viên theo dõi kết quả học tập.</li>
-                <li>Hỗ trợ tính GPA học kỳ và GPA tích lũy.</li>
-                <li>Theo dõi số tín chỉ đã hoàn thành và còn thiếu.</li>
-                <li>Mô phỏng GPA dự kiến với các mức điểm khác nhau.</li>
-                <li>Hỗ trợ sinh viên lập kế hoạch học tập.</li>
-                <li>Đánh giá khả năng đạt mục tiêu tốt nghiệp.</li>
-            </ul>
-        </section>
-
-        <section>
-            <h2>Đối tượng sử dụng</h2>
-
-            <article>
-                <h3>Khách truy cập</h3>
-
-                <p>
-                    Có thể xem thông tin giới thiệu, hướng dẫn tính GPA,
-                    danh sách môn học và các tài liệu học tập được cung cấp
-                    trên website.
+        <!-- Bọc các phần văn bản vào class doan-van-dai để giới hạn độ dài dòng 65ch -->
+        <div class="doan-van-dai">
+            <!-- GIỚI THIỆU EDUGPA -->
+            <section class="gioi-thieu__tong-quan">
+                <h2>Giới thiệu về EduGPA</h2>
+                <p class="gioi-thieu__mo-ta">
+                    EduGPA là hệ thống hỗ trợ sinh viên theo dõi và lập kế hoạch
+                    học tập trong quá trình học đại học.
                 </p>
-            </article>
-
-            <article>
-                <h3>Sinh viên</h3>
-
-                <p>
-                    Có thể quản lý thông tin cá nhân, môn học, điểm số,
-                    GPA, tín chỉ và mục tiêu tốt nghiệp.
+                <p class="gioi-thieu__mo-ta">
+                    Website được xây dựng nhằm hỗ trợ sinh viên quản lý kết quả
+                    học tập, tính GPA, theo dõi tín chỉ và đánh giá tiến độ
+                    hướng tới mục tiêu tốt nghiệp.
                 </p>
-            </article>
-
-            <article>
-                <h3>Quản trị viên</h3>
-
-                <p>
-                    Có thể quản lý tài khoản, môn học, tài liệu,
-                    nội dung tư vấn và dữ liệu của hệ thống.
+                <p class="gioi-thieu__mo-ta">
+                    Bên cạnh việc quản lý kết quả học tập, EduGPA còn hỗ trợ
+                    mô phỏng GPA với các mức điểm dự kiến và cung cấp những
+                    gợi ý giúp sinh viên định hướng việc học tập.
                 </p>
-            </article>
-        </section>
+            </section>
 
-        <section>
-            <h2>Thành viên nhóm 3</h2>
+            <!-- MỤC TIÊU WEBSITE -->
+            <section class="gioi-thieu__muc-tieu">
+                <h2>Mục tiêu của website</h2>
+                <ul class="gioi-thieu__van-ban">
+                    <li>Hỗ trợ sinh viên theo dõi kết quả học tập.</li>
+                    <li>Hỗ trợ tính GPA học kỳ và GPA tích lũy.</li>
+                    <li>Theo dõi số tín chỉ đã hoàn thành và số tín chỉ còn thiếu.</li>
+                    <li>Mô phỏng GPA dự kiến với các mức điểm khác nhau.</li>
+                    <li>Hỗ trợ sinh viên lập kế hoạch học tập.</li>
+                    <li>Đánh giá khả năng đạt mục tiêu tốt nghiệp.</li>
+                </ul>
+            </section>
 
-            <ul class="danh-sach-thanh-vien">
-                <li>
-                    <a href="thanhvien/LeNguyenAnhTruc/gioithieu.html">
+            <!-- ĐỐI TƯỢNG SỬ DỤNG -->
+            <section class="gioi-thieu__doi-tuong">
+                <h2>Đối tượng sử dụng</h2>
+                
+                <article class="gioi-thieu__doi-tuong-the">
+                    <h3>Khách truy cập</h3>
+                    <p>
+                        Có thể xem thông tin giới thiệu, hướng dẫn tính GPA,
+                        danh sách môn học và các tài liệu học tập được cung cấp
+                        trên website.
+                    </p>
+                </article>
+
+                <article class="gioi-thieu__doi-tuong-the">
+                    <h3>Sinh viên</h3>
+                    <p>
+                        Có thể quản lý thông tin cá nhân, môn học, điểm số,
+                        GPA, tín chỉ và mục tiêu tốt nghiệp.
+                    </p>
+                </article>
+
+                <article class="gioi-thieu__doi-tuong-the">
+                    <h3>Quản trị viên</h3>
+                    <p>
+                        Có thể quản lý tài khoản, môn học, tài liệu,
+                        nội dung tư vấn và dữ liệu của hệ thống.
+                    </p>
+                </article>
+            </section>
+        </div>
+
+        <!-- DANH SÁCH THÀNH VIÊN -->
+        <section class="gioi-thieu__thanh-vien">
+            <h2 style="text-align: center; margin-top: 50px;">Thành viên nhóm</h2>
+            
+            <!-- Danh sách này sẽ tự động dàn Flexbox nhờ class danh-sach-thanh-vien -->
+            <ul class="danh-sach-thanh-vien" style="list-style: none; padding: 0;">
+                
+                <!-- Đã cập nhật thư mục của Trúc -->
+                <li class="danh-sach-thanh-vien__muc">
+                    <a class="danh-sach-thanh-vien__lien-ket"
+<<<<<<< HEAD
+                        href="thanhvien/3120224159_anhtruc/gioithieu.html"
+                        style="display: block; padding: 15px 25px; background: #f0f0f0; border-radius: 8px; text-decoration: none; color: var(--chu); font-weight: bold;">
+=======
+                        href="thanhvien/3120224159_anhtruc/gioithieu.html">
+
+>>>>>>> 89565929a1d1cae4befdab576448a594f1ced7c9
                         Lê Nguyễn Anh Trúc
                     </a>
                 </li>
 
-                <li>
-                    <a href="thanhvien/huynhphuonguyen/gioithieu.html">
+                <li class="danh-sach-thanh-vien__muc">
+                    <a class="danh-sach-thanh-vien__lien-ket"
+                        href="thanhvien/3120224174_uyen/gioithieu.html"
+                        style="display: block; padding: 15px 25px; background: #f0f0f0; border-radius: 8px; text-decoration: none; color: var(--chu); font-weight: bold;">
                         Huỳnh Phương Uyên
                     </a>
                 </li>
 
-                <li>
-                    <a href="thanhvien/DuongBaoDuy/gioithieu.html">
+                <li class="danh-sach-thanh-vien__muc">
+                    <a class="danh-sach-thanh-vien__lien-ket"
+                        href="thanhvien/DuongBaoDuy/gioithieu.html"
+                        style="display: block; padding: 15px 25px; background: #f0f0f0; border-radius: 8px; text-decoration: none; color: var(--chu); font-weight: bold;">
                         Dương Bảo Duy
                     </a>
                 </li>
 
-                <li>
-                    <a href="thanhvien/LeDuongHoangHai/gioithieu.html">
+                <!-- Đã cập nhật thư mục của Hải -->
+                <li class="danh-sach-thanh-vien__muc">
+                    <a class="danh-sach-thanh-vien__lien-ket"
+                        href="thanhvien/048206005368_hai/gioithieu.html"
+                        style="display: block; padding: 15px 25px; background: var(--mau-chinh); color: var(--nen); border-radius: 8px; text-decoration: none; font-weight: bold;">
                         Lê Dương Hoàng Hải
                     </a>
                 </li>
 
-                <li>
-                    <a href="thanhvien/PhanVanHop/gioithieu.html">
+                <li class="danh-sach-thanh-vien__muc">
+                    <a class="danh-sach-thanh-vien__lien-ket"
+                        href="thanhvien/PhanVanHop/gioithieu.html"
+                        style="display: block; padding: 15px 25px; background: #f0f0f0; border-radius: 8px; text-decoration: none; color: var(--chu); font-weight: bold;">
                         Phan Văn Hợp
                     </a>
                 </li>
             </ul>
         </section>
 
-        <aside>
+        <!-- KHÁM PHÁ EDUGPA -->
+        <aside class="kham-pha" style="margin-top: 60px; text-align: center;">
             <h2>Khám phá EduGPA</h2>
-
-            <ul>
-                <li>
-                    <a href="index.html">Quay lại trang chủ EduGPA</a>
-                </li>
-
-                <li>
-                    <a href="danh-sach.html">Xem danh sách môn học</a>
-                </li>
-
-                <li>
-                    <a href="chi-tiet.html">Xem thông tin chi tiết</a>
-                </li>
-
-                <li>
-                    <a href="lien-he.html">Liên hệ và đăng ký tài khoản</a>
-                </li>
+            <ul style="list-style: none; padding: 0; display: inline-flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+                <li><a href="index.html">Quay lại trang chủ</a></li>
+                <li><a href="danh-sach.html">Xem danh sách</a></li>
+                <li><a href="chi-tiet.html">Xem chi tiết</a></li>
+                <li><a href="lien-he.html">Liên hệ</a></li>
             </ul>
         </aside>
 
     </main>
 
-    <footer>
+    <footer class="chan-trang" style="text-align: center; margin-top: 40px; padding: 20px 0; border-top: 1px solid #ddd;">
         <p>
             &copy; 2026 Nhóm 3 - Khoa Toán - Tin.
         </p>
@@ -188,4 +191,4 @@
 
 </body>
 
-</html>
+</html>     

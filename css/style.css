@@ -1237,3 +1237,17 @@ details > p {
         width: 100%;
     }
 }
+.luoi-san-pham { display: grid; gap: var(--khoang-cach, 16px); grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.the-san-pham img { width: 100%; height: 250px; object-fit: cover; border-radius: var(--bo-goc, 8px) var(--bo-goc, 8px) 0 0; }
+.khung-chi-tiet { display: grid; gap: var(--khoang-cach, 16px); grid-template-columns: 1fr; }
+@media (min-width: 768px) { .khung-chi-tiet { grid-template-columns: 1fr 300px; align-items: start; } }
+.doan-van-dai { max-width: 65ch; margin: 0 auto; line-height: 1.8; }
+.danh-sach-thanh-vien { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 40px; }
+.khung-lien-he { display: grid; grid-template-columns: 1fr; gap: 30px; }
+@media (min-width: 768px) { .khung-lien-he { grid-template-columns: 1fr 1fr; } }
+.form-lien-he { display: flex; flex-direction: column; gap: 15px; }
+.form-lien-he label { font-weight: 600; margin-bottom: -5px; }
+.form-lien-he input, .form-lien-he textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: var(--bo-goc, 8px); font-family: inherit; }
+.form-lien-he input:focus-visible, .form-lien-he textarea:focus-visible, .form-lien-he button:focus-visible { outline: 3px solid var(--mau-nhan, #ffc72c); outline-offset: 2px; border-color: transparent; }
+.form-lien-he button { padding: 12px 24px; background-color: var(--mau-chinh, #123b6d); color: var(--nen, #fff); border: none; border-radius: var(--bo-goc, 8px); cursor: pointer; transition: all 0.2s ease; }
+.form-lien-he button:hover { opacity: 0.9; transform: translateY(-2px); }

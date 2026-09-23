@@ -1,0 +1,26 @@
+/* Ghi đè biến CSS mặc định của Bootstrap */
+:root {
+  --bs-primary: #123b6d; 
+  --bs-primary-rgb: 18, 59, 109; 
+}
+
+/* Tùy chỉnh màu hover cho nút bấm */
+.btn-primary, .btn-outline-primary:hover {
+  --bs-btn-bg: var(--bs-primary);
+  --bs-btn-border-color: var(--bs-primary);
+  --bs-btn-hover-bg: #0e2d53; 
+  --bs-btn-hover-border-color: #0e2d53;
+  --bs-btn-focus-shadow-rgb: var(--bs-primary-rgb);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--bs-primary);
+  --bs-btn-border-color: var(--bs-primary);
+}
+
+/* Tùy chỉnh màu thẻ phân trang */
+.pagination {
+  --bs-pagination-active-bg: var(--bs-primary);
+  --bs-pagination-active-border-color: var(--bs-primary);
+  --bs-pagination-color: var(--bs-primary);
+}

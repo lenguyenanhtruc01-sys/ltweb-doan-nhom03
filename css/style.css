@@ -1251,3 +1251,6 @@ details > p {
 .form-lien-he input:focus-visible, .form-lien-he textarea:focus-visible, .form-lien-he button:focus-visible { outline: 3px solid var(--mau-nhan, #ffc72c); outline-offset: 2px; border-color: transparent; }
 .form-lien-he button { padding: 12px 24px; background-color: var(--mau-chinh, #123b6d); color: var(--nen, #fff); border: none; border-radius: var(--bo-goc, 8px); cursor: pointer; transition: all 0.2s ease; }
 .form-lien-he button:hover { opacity: 0.9; transform: translateY(-2px); }
+
+    transform: translateY(0);
+}

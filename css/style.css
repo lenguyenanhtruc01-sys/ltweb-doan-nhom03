@@ -791,67 +791,70 @@ tfoot td {
    11. TRANG GIOI THIEU
    ========================================================= */
 
-.van-ban-dai,
-.gioi-thieu__van-ban,
-.trang-gioi-thieu main > section:not(:nth-of-type(3)):not(:nth-of-type(4)) > p,
-.trang-gioi-thieu main > section:nth-of-type(2) > ul {
+/* Đoạn văn dài: giới hạn độ dài dòng khoảng 65ch */
+.trang-gioi-thieu .gioi-thieu__mo-ta,
+.trang-gioi-thieu .gioi-thieu__van-ban {
     max-width: 65ch;
 }
 
-.danh-sach-thanh-vien,
-.trang-gioi-thieu main > section:nth-of-type(4) > ul {
+/* Danh sách thành viên dùng Flexbox */
+.danh-sach-thanh-vien {
     margin: 0;
     padding: 0;
     list-style: none;
+
     display: flex;
     flex-wrap: wrap;
     gap: var(--kc-3);
 }
 
-.danh-sach-thanh-vien > li,
-.trang-gioi-thieu main > section:nth-of-type(4) > ul > li {
+/* Mỗi thành viên */
+.danh-sach-thanh-vien__muc {
     flex: 1 1 13rem;
 }
 
-.danh-sach-thanh-vien a,
-.trang-gioi-thieu main > section:nth-of-type(4) > ul a {
+/* Link thành viên */
+.danh-sach-thanh-vien__lien-ket {
     min-height: 4.25rem;
     height: 100%;
     display: flex;
     align-items: center;
+
     padding: var(--kc-4);
     border: 1px solid var(--mau-vien);
     border-radius: var(--bo-goc);
+
     background: var(--mau-nen-phu);
     font-weight: 750;
     text-decoration: none;
 }
 
-.danh-sach-thanh-vien a:hover,
-.trang-gioi-thieu main > section:nth-of-type(4) > ul a:hover {
+.danh-sach-thanh-vien__lien-ket:hover {
     border-color: var(--mau-chinh);
     background: var(--mau-chinh-nhat);
     transform: translateY(-2px);
 }
 
-.trang-gioi-thieu main > section:nth-of-type(3) {
+/* Đối tượng sử dụng */
+.trang-gioi-thieu .gioi-thieu__doi-tuong {
     display: flex;
     flex-wrap: wrap;
     gap: var(--kc-4);
 }
 
-.trang-gioi-thieu main > section:nth-of-type(3) > h2 {
+.trang-gioi-thieu .gioi-thieu__doi-tuong > h2 {
     flex-basis: 100%;
 }
 
-.trang-gioi-thieu main > section:nth-of-type(3) > article {
+.trang-gioi-thieu .gioi-thieu__doi-tuong-the {
     flex: 1 1 14rem;
     padding: var(--kc-4);
+
     border-left: 4px solid var(--mau-nhan);
     border-radius: 0 var(--bo-goc) var(--bo-goc) 0;
+
     background: var(--mau-nen-phu);
 }
-
 /* =========================================================
    12. FORM VA TRANG LIEN HE
    ========================================================= */
@@ -1241,8 +1244,7 @@ details > p {
 .the-san-pham img { width: 100%; height: 250px; object-fit: cover; border-radius: var(--bo-goc, 8px) var(--bo-goc, 8px) 0 0; }
 .khung-chi-tiet { display: grid; gap: var(--khoang-cach, 16px); grid-template-columns: 1fr; }
 @media (min-width: 768px) { .khung-chi-tiet { grid-template-columns: 1fr 300px; align-items: start; } }
-.doan-van-dai { max-width: 65ch; margin: 0 auto; line-height: 1.8; }
-.danh-sach-thanh-vien { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 40px; }
+.doan-van-dai { max-width: 65ch; margin: 0 ; line-height: 1.8; }
 .khung-lien-he { display: grid; grid-template-columns: 1fr; gap: 30px; }
 @media (min-width: 768px) { .khung-lien-he { grid-template-columns: 1fr 1fr; } }
 .form-lien-he { display: flex; flex-direction: column; gap: 15px; }
@@ -1251,3 +1253,4 @@ details > p {
 .form-lien-he input:focus-visible, .form-lien-he textarea:focus-visible, .form-lien-he button:focus-visible { outline: 3px solid var(--mau-nhan, #ffc72c); outline-offset: 2px; border-color: transparent; }
 .form-lien-he button { padding: 12px 24px; background-color: var(--mau-chinh, #123b6d); color: var(--nen, #fff); border: none; border-radius: var(--bo-goc, 8px); cursor: pointer; transition: all 0.2s ease; }
 .form-lien-he button:hover { opacity: 0.9; transform: translateY(-2px); }
+

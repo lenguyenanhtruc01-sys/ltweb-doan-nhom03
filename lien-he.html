@@ -60,204 +60,207 @@
             luôn sẵn sàng lắng nghe và phản hồi trong thời gian sớm nhất.
         </p>
 
-        <section>
-            <h2>Gửi câu hỏi cho chúng tôi</h2>
-
-            <p>
-                Điền biểu mẫu bên dưới để gửi câu hỏi hoặc yêu cầu hỗ trợ.
-                Đội ngũ EduGPA sẽ phản hồi qua email trong vòng 24 giờ làm việc.
-            </p>
-
-            <form action="#" method="post">
-
-                <fieldset>
-                    <legend>Thông tin người liên hệ</legend>
-
-                    <p>
-                        <label for="hoten">
-                            Họ và tên
-                            <span aria-hidden="true">*</span>
-                        </label>
-
-                        <input
-                            type="text"
-                            id="hoten"
-                            name="hoten"
-                            minlength="3"
-                            maxlength="50"
-                            placeholder="Nguyễn Văn A"
-                            autocomplete="name"
-                            required>
-                    </p>
-
-                    <p>
-                        <label for="email">
-                            Email liên hệ
-                            <span aria-hidden="true">*</span>
-                        </label>
-
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            placeholder="ban@example.com"
-                            autocomplete="email"
-                            required>
-                    </p>
-
-                    <p>
-                        <label for="sdt">Số điện thoại</label>
-
-                        <input
-                            type="tel"
-                            id="sdt"
-                            name="sdt"
-                            pattern="[0-9]{10}"
-                            title="Số điện thoại phải gồm đúng 10 chữ số"
-                            placeholder="0901234567"
-                            autocomplete="tel">
-                    </p>
-                </fieldset>
-
-                <fieldset>
-                    <legend>Nội dung liên hệ</legend>
-
-                    <p>
-                        <label for="chude">Chủ đề cần hỗ trợ</label>
-
-                        <select id="chude" name="chude">
-                            <option value="gpa">Lỗi tính GPA</option>
-                            <option value="diem">Lỗi nhập điểm</option>
-                            <option value="taikhoan">Vấn đề tài khoản</option>
-                            <option value="tailieu">Tài liệu học tập</option>
-                            <option value="gopy">Góp ý cải thiện hệ thống</option>
-                            <option value="khac">Khác</option>
-                        </select>
-                    </p>
-
-                    <p>
-                        <strong>Mức độ ưu tiên</strong>
-                    </p>
-
-                    <p>
-                        <input
-                            type="radio"
-                            id="thap"
-                            name="uutien"
-                            value="thap">
-
-                        <label for="thap">Thấp</label>
-
-                        <input
-                            type="radio"
-                            id="trungbinh"
-                            name="uutien"
-                            value="trungbinh"
-                            checked>
-
-                        <label for="trungbinh">Trung bình</label>
-
-                        <input
-                            type="radio"
-                            id="cao"
-                            name="uutien"
-                            value="cao">
-
-                        <label for="cao">Cao</label>
-                    </p>
-
-                    <p>
-                        <label for="noidung">
-                            Nội dung câu hỏi
-                            <span aria-hidden="true">*</span>
-                        </label>
-
-                        <textarea
-                            id="noidung"
-                            name="noidung"
-                            rows="5"
-                            cols="40"
-                            placeholder="Mô tả chi tiết câu hỏi hoặc vấn đề bạn gặp phải..."
-                            required></textarea>
-                    </p>
-
-                    <p>
-                        <input
-                            type="checkbox"
-                            id="phanhoi"
-                            name="phanhoi"
-                            checked>
-
-                        <label for="phanhoi">
-                            Tôi muốn nhận phản hồi qua email
-                        </label>
-                    </p>
-                </fieldset>
+        <!-- Khung bao bọc để dàn Grid 2 cột -->
+        <div class="khung-lien-he">
+            <section>
+                <h2>Gửi câu hỏi cho chúng tôi</h2>
 
                 <p>
-                    <button type="submit">Gửi liên hệ</button>
-                    <button type="reset">Nhập lại</button>
+                    Điền biểu mẫu bên dưới để gửi câu hỏi hoặc yêu cầu hỗ trợ.
+                    Đội ngũ EduGPA sẽ phản hồi qua email trong vòng 24 giờ làm việc.
                 </p>
 
-            </form>
-        </section>
+                <form class="form-lien-he" action="#" method="post">
 
-        <section>
-            <h2>Thông tin liên hệ trực tiếp</h2>
+                    <fieldset>
+                        <legend>Thông tin người liên hệ</legend>
 
-            <ul>
-                <li>
-                    <strong>Địa chỉ:</strong>
-                    Khoa Toán - Tin, Trường Đại học Sư phạm -
-                    Đại học Đà Nẵng
-                </li>
+                        <p>
+                            <label for="hoten">
+                                Họ và tên
+                                <span aria-hidden="true">*</span>
+                            </label>
 
-                <li>
-                    <strong>Hotline:</strong>
-                    <a href="tel:0901234567">0901 234 567</a>
-                </li>
+                            <input
+                                type="text"
+                                id="hoten"
+                                name="hoten"
+                                minlength="3"
+                                maxlength="50"
+                                placeholder="Nguyễn Văn A"
+                                autocomplete="name"
+                                required>
+                        </p>
 
-                <li>
-                    <strong>Email:</strong>
-                    <a href="mailto:support@edugpa.vn">
-                        support@edugpa.vn
-                    </a>
-                </li>
+                        <p>
+                            <label for="email">
+                                Email liên hệ
+                                <span aria-hidden="true">*</span>
+                            </label>
 
-                <li>
-                    <strong>Fanpage:</strong>
-                    <a
-                        href="https://facebook.com/edugpa"
-                        target="_blank"
-                        rel="noopener noreferrer">
-                        facebook.com/edugpa
-                    </a>
-                </li>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="ban@example.com"
+                                autocomplete="email"
+                                required>
+                        </p>
 
-                <li>
-                    <strong>Giờ làm việc:</strong>
-                    Thứ 2 - Thứ 6 (8:00 - 17:00),
-                    Thứ 7 (8:00 - 11:30)
-                </li>
-            </ul>
+                        <p>
+                            <label for="sdt">Số điện thoại</label>
 
-            <h3>Bản đồ</h3>
+                            <input
+                                type="tel"
+                                id="sdt"
+                                name="sdt"
+                                pattern="[0-9]{10}"
+                                title="Số điện thoại phải gồm đúng 10 chữ số"
+                                placeholder="0901234567"
+                                autocomplete="tel">
+                        </p>
+                    </fieldset>
 
-            <figure>
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.0739377611776!2d108.15654371138382!3d16.061652539575185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31421924682e8689%3A0x48eb0bdbeec05215!2zVHLGsOG7nW5nIMSQ4bqhaSBI4buNYyBTxrAgUGjhuqFtIC0gxJDhuqFpIGjhu41jIMSQw6AgTuG6tW5n!5e0!3m2!1svi!2s!4v1789143046077!5m2!1svi!2s"
-                    width="600"
-                    height="400"
-                    title="Bản đồ vị trí Khoa Toán - Tin, Trường Đại học Sư phạm - Đại học Đà Nẵng"
-                    loading="lazy"
-                    allowfullscreen>
-                </iframe>
+                    <fieldset>
+                        <legend>Nội dung liên hệ</legend>
 
-                <figcaption>
-                    Vị trí Khoa Toán - Tin trên bản đồ.
-                </figcaption>
-            </figure>
-        </section>
+                        <p>
+                            <label for="chude">Chủ đề cần hỗ trợ</label>
+
+                            <select id="chude" name="chude">
+                                <option value="gpa">Lỗi tính GPA</option>
+                                <option value="diem">Lỗi nhập điểm</option>
+                                <option value="taikhoan">Vấn đề tài khoản</option>
+                                <option value="tailieu">Tài liệu học tập</option>
+                                <option value="gopy">Góp ý cải thiện hệ thống</option>
+                                <option value="khac">Khác</option>
+                            </select>
+                        </p>
+
+                        <p>
+                            <strong>Mức độ ưu tiên</strong>
+                        </p>
+
+                        <p>
+                            <input
+                                type="radio"
+                                id="thap"
+                                name="uutien"
+                                value="thap">
+
+                            <label for="thap">Thấp</label>
+
+                            <input
+                                type="radio"
+                                id="trungbinh"
+                                name="uutien"
+                                value="trungbinh"
+                                checked>
+
+                            <label for="trungbinh">Trung bình</label>
+
+                            <input
+                                type="radio"
+                                id="cao"
+                                name="uutien"
+                                value="cao">
+
+                            <label for="cao">Cao</label>
+                        </p>
+
+                        <p>
+                            <label for="noidung">
+                                Nội dung câu hỏi
+                                <span aria-hidden="true">*</span>
+                            </label>
+
+                            <textarea
+                                id="noidung"
+                                name="noidung"
+                                rows="5"
+                                cols="40"
+                                placeholder="Mô tả chi tiết câu hỏi hoặc vấn đề bạn gặp phải..."
+                                required></textarea>
+                        </p>
+
+                        <p>
+                            <input
+                                type="checkbox"
+                                id="phanhoi"
+                                name="phanhoi"
+                                checked>
+
+                            <label for="phanhoi">
+                                Tôi muốn nhận phản hồi qua email
+                            </label>
+                        </p>
+                    </fieldset>
+
+                    <p>
+                        <button type="submit">Gửi liên hệ</button>
+                        <button type="reset">Nhập lại</button>
+                    </p>
+
+                </form>
+            </section>
+
+            <section>
+                <h2>Thông tin liên hệ trực tiếp</h2>
+
+                <ul>
+                    <li>
+                        <strong>Địa chỉ:</strong>
+                        Khoa Toán - Tin, Trường Đại học Sư phạm -
+                        Đại học Đà Nẵng
+                    </li>
+
+                    <li>
+                        <strong>Hotline:</strong>
+                        <a href="tel:0901234567">0901 234 567</a>
+                    </li>
+
+                    <li>
+                        <strong>Email:</strong>
+                        <a href="mailto:support@edugpa.vn">
+                            support@edugpa.vn
+                        </a>
+                    </li>
+
+                    <li>
+                        <strong>Fanpage:</strong>
+                        <a
+                            href="https://facebook.com/edugpa"
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            facebook.com/edugpa
+                        </a>
+                    </li>
+
+                    <li>
+                        <strong>Giờ làm việc:</strong>
+                        Thứ 2 - Thứ 6 (8:00 - 17:00),
+                        Thứ 7 (8:00 - 11:30)
+                    </li>
+                </ul>
+
+                <h3>Bản đồ</h3>
+
+                <figure>
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.0739377611776!2d108.15654371138382!3d16.061652539575185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31421924682e8689%3A0x48eb0bdbeec05215!2zVHLGsOG7nW5nIMSQ4bqhaSBI4buNYyBTxrAgUGjhuqFtIC0gxJDhuqFpIGjhu41jIMSQw6AgTuG6tW5n!5e0!3m2!1svi!2s!4v1789143046077!5m2!1svi!2s"
+                        width="100%"
+                        height="400"
+                        title="Bản đồ vị trí Khoa Toán - Tin, Trường Đại học Sư phạm - Đại học Đà Nẵng"
+                        loading="lazy"
+                        allowfullscreen>
+                    </iframe>
+
+                    <figcaption>
+                        Vị trí Khoa Toán - Tin trên bản đồ.
+                    </figcaption>
+                </figure>
+            </section>
+        </div>
 
         <section>
             <h2>Câu hỏi thường gặp</h2>

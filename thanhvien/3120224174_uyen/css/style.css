@@ -1,7 +1,5 @@
 /* ==========================================================
    CSS TRANG CÁ NHÂN - HUỲNH PHƯƠNG UYÊN
-   Mobile-first • Grid + Flexbox • Responsive • Accessible
-   Dùng lại bảng màu xanh - vàng của website EduGPA.
    ========================================================== */
 
 :root {
@@ -117,50 +115,25 @@ a:focus-visible,
 }
 
 .bao {
-    width: min(calc(100% - 2rem), 72rem);
+    width: min(calc(100% - 2rem), var(--rong-toi-da));
     margin-inline: auto;
 }
 
 .dau-trang {
-    position: relative;
-    isolation: isolate;
     grid-area: dau;
-    overflow: hidden;
-    color: var(--mau-trang);
-    background: linear-gradient(125deg, var(--mau-chinh-dam) 0%, var(--mau-chinh) 52%, var(--mau-phu) 100%);
-}
-
-.dau-trang::before,
-.dau-trang::after {
-    position: absolute;
-    z-index: -1;
-    content: "";
-    border-radius: 50%;
-    background: rgb(255 255 255 / 0.08);
-}
-
-.dau-trang::before {
-    width: 17rem;
-    height: 17rem;
-    top: -10rem;
-    right: -4rem;
-}
-
-.dau-trang::after {
-    width: 8rem;
-    height: 8rem;
-    right: 27%;
-    bottom: -5.5rem;
-    border: 1.5rem solid rgb(244 185 66 / 0.17);
-    background: transparent;
+    color: #ffffff;
+    background:
+        radial-gradient(circle at 85% 20%, rgb(244 180 0 / 22%), transparent 28%),
+        linear-gradient(120deg, var(--mau-chinh-dam), var(--mau-chinh));
 }
 
 .dieu-huong {
     grid-area: menu;
-    z-index: 10;
-    border-bottom: 1px solid rgb(215 226 238 / 0.9);
-    background: rgb(255 255 255 / 0.96);
-    box-shadow: 0 0.3rem 1.2rem rgb(7 31 61 / 0.07);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--mau-nen-dam);
+    box-shadow: 0 6px 18px rgb(11 23 54 / 18%);
 }
 
 .noi-dung-chinh {
@@ -173,66 +146,55 @@ a:focus-visible,
 
 .chan-trang {
     grid-area: chan;
-    color: #e8f2fb;
-    background: var(--mau-chinh-dam);
+    padding: var(--kc-6) max(1rem, calc((100% - var(--rong-toi-da)) / 2));
+    color: #dce6fb;
+    background: var(--mau-nen-dam);
 }
 
 /* Đầu trang và điều hướng dùng Flexbox */
 .dau-trang__noi-dung {
-    min-height: 11rem;
+    padding-block: var(--kc-4);
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    padding-block: 2rem;
+    gap: var(--kc-1);
 }
 
 .dau-trang__thuong-hieu {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    margin-bottom: var(--kc-2);
-    font-size: clamp(1.8rem, 8vw, 2.65rem);
-    line-height: 1.1;
-    letter-spacing: -0.035em;
-}
-
-.dau-trang__thuong-hieu::before {
-    width: 0.75rem;
-    height: 2.1rem;
-    content: "";
-    border-radius: 999px;
-    background: var(--mau-nhan);
-    box-shadow: 0 0 0 0.35rem rgb(244 185 66 / 0.14);
+    margin: 0;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
 }
 
 .dau-trang__khau-hieu {
-    max-width: 43rem;
-    margin-bottom: 0;
-    color: var(--mau-trang);
-    font-size: clamp(0.98rem, 2.5vw, 1.12rem);
+    margin: 0;
+    color: #e7efff;
+    font-size: var(--co-chu-nho);
 }
 
 .dieu-huong__danh-sach {
+    width: min(100%, var(--rong-toi-da));
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem;
-    margin-block: 0;
-    padding-block: 0.55rem;
-    padding-left: 0;
+    justify-content: center;
+    gap: var(--kc-1);
+    margin: 0 auto;
+    padding: var(--kc-2) var(--kc-3);
     list-style: none;
 }
 
 .dieu-huong__danh-sach li {
-    flex: 1 1 calc(50% - 0.35rem);
-    min-width: 0;
+    flex: 1 1 8.5rem;
+    max-width: 13rem;
 }
 
 .dieu-huong__lien-ket {
     display: block;
-    padding: 0.72rem 0.65rem;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid transparent;
     border-radius: var(--bo-goc-nho);
-    color: var(--mau-chinh-dam);
-    font-weight: 700;
+    color: #f7f9ff;
+    font-weight: 650;
     text-align: center;
     text-decoration: none;
     transition-property: color, background-color, transform, box-shadow;
@@ -240,16 +202,25 @@ a:focus-visible,
     transition-timing-function: ease;
 }
 
-.dieu-huong__lien-ket:hover,
-.dieu-huong__lien-ket--hien-tai {
-    color: var(--mau-trang);
-    background: var(--mau-chinh);
-    box-shadow: 0 0.35rem 0.9rem rgb(18 59 109 / 0.18);
+.dieu-huong__lien-ket:hover {
+    color: #ffffff;
+    background: rgb(255 255 255 / 13%);
 }
 
 .dieu-huong__lien-ket:active {
-    transform: translateY(1px) scale(0.99);
-    box-shadow: none;
+    color: #ffffff;
+    background: rgb(255 255 255 / 22%);
+    transform: translateY(1px);
+}
+
+.dieu-huong__lien-ket--hien-tai,
+.dieu-huong__lien-ket[aria-current="page"] {
+    color: var(--mau-nen-dam);
+    background: var(--mau-nhan);
+}
+
+.dieu-huong__lien-ket:focus-visible {
+    outline-offset: -3px;
 }
 
 /* Tiêu đề và các thẻ nội dung */
@@ -527,26 +498,29 @@ a:focus-visible,
 }
 
 .chan-trang__ban-quyen {
-    margin-bottom: 0;
-    padding-block: 1.4rem;
-    color: #d5e4f2;
+    margin: 0;
+    color: #dce6fb;
     text-align: center;
 }
 
 /* Responsive mobile-first */
 @media (min-width: 768px) {
     .bao {
-        width: min(calc(100% - 3rem), 72rem);
+        width: min(calc(100% - 3rem), var(--rong-toi-da));
     }
 
     .dau-trang__noi-dung {
-        min-height: 13rem;
-        padding-block: 2.5rem;
+        min-height: 5.5rem;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--kc-5);
+        padding-block: var(--kc-4);
     }
 
-    .dieu-huong {
-        position: sticky;
-        top: 0;
+    .dau-trang__khau-hieu {
+        max-width: 48ch;
+        text-align: right;
     }
 
     .dieu-huong__danh-sach {
@@ -556,11 +530,12 @@ a:focus-visible,
 
     .dieu-huong__danh-sach li {
         flex: 0 1 auto;
+        min-width: 7.5rem;
     }
 
     .dieu-huong__lien-ket {
-        min-width: 7.4rem;
-        padding-inline: 1rem;
+        min-width: 0;
+        padding: 0.7rem 0.8rem;
     }
 
     .noi-dung-chinh {

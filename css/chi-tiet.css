@@ -1,23 +1,66 @@
 /* =========================================================
-   TRANG CHI TIẾT - CSS RIÊNG
-   Dùng biến CSS chung từ style.css
-   Tác giả: Nhóm 03 - EduGPA
-   KHÔNG sửa style.css - mọi override đều nằm trong file này
-   ========================================================= */
-
-/* =========================================================
    00. OVERRIDE STYLE.CSS - KHÔNG ĐỤNG FILE GỐC
    ========================================================= */
 
-/* --- 00.1: Vô hiệu hóa layout grid 2 cột của style.css ---
-   style.css có:
-     @media (min-width: 992px) {
-         .trang-chi-tiet main { display: grid; grid-template-columns: ... }
-         .trang-chi-tiet main > article { grid-column: 1; }
-         .trang-chi-tiet main > aside { grid-column: 2; position: sticky; ... }
-     }
-   → Ta reset main về block bình thường, để .khung-chi-tiet tự lo layout.
-*/
+/* --- 00.1: Phá layout grid của .trang-chi-tiet main --- */
+.trang-chi-tiet main,
+body.trang-chi-tiet main,
+main {
+    display: block !important;
+    grid-template-columns: none !important;
+    grid-template-rows: none !important;
+    gap: 0 !important;
+}
+
+/* Reset mọi thứ con trực tiếp của main về auto */
+.trang-chi-tiet main > *,
+.trang-chi-tiet main > h1,
+.trang-chi-tiet main > article,
+.trang-chi-tiet main > aside,
+.trang-chi-tiet main > section,
+.trang-chi-tiet main > div {
+    grid-column: auto !important;
+    grid-row: auto !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    float: none !important;
+}
+
+/* --- 00.2: Reset table bị display: block --- */
+.trang-chi-tiet table {
+    display: table !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: visible !important;
+    border-collapse: collapse;
+}
+
+/* --- 00.3: Fix selector main > article trong style.css --- */
+.trang-chi-tiet main article figure {
+    max-width: 720px;
+    margin: var(--kc-5) auto 0;
+}
+
+.trang-chi-tiet main article img {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: var(--bo-goc);
+}
+
+.trang-chi-tiet main article iframe {
+    aspect-ratio: 16 / 9;
+    height: auto;
+}
+
+.trang-chi-tiet main article ul {
+    padding-left: 1.25rem;
+}
+
+.trang-chi-tiet main article li + li {
+    margin-top: var(--kc-2);
+}
 .trang-chi-tiet main {
     display: block !important;
     grid-template-columns: none !important;

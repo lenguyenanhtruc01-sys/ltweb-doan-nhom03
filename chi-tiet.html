@@ -8,15 +8,137 @@
         content="Chi tiết kết quả học tập trên EduGPA - bảng điểm từng học kỳ, GPA tích lũy, tín chỉ và nhận xét học tập.">
     <title>Chi tiết kết quả học tập | EduGPA</title>
 
-    <!-- CSS chung -->
     <link rel="stylesheet" href="css/style.css">
-    <!-- CSS riêng trang chi tiết -->
-    <link rel="stylesheet" href="css/chi-tiet.css">
+
+    <style>
+        /* ===== Khung cuộn (desktop/tablet) ===== */
+        .bang-cuon {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-block: 1rem;
+        }
+
+        .bang-cuon table {
+            display: table;
+            width: 100%;
+            min-width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+            overflow-x: visible;
+        }
+
+        /* ===== Mobile: bảng → card ===== */
+        @media (max-width: 600px) {
+    .bang-cuon {
+        overflow-x: visible;
+    }
+
+    .bang-cuon table,
+    .bang-cuon thead,
+    .bang-cuon tbody,
+    .bang-cuon tfoot,
+    .bang-cuon tr,
+    .bang-cuon th,
+    .bang-cuon td {
+        display: block;
+        width: 100%;
+    }
+
+    .bang-cuon thead {
+        display: none;
+    }
+
+    /* ===== FIX CAPTION ===== */
+    .bang-cuon caption {
+        display: block;
+        width: 100%;
+        text-align: left;
+        white-space: normal;
+        word-break: normal;
+        overflow-wrap: normal;
+        font-size: 0.9rem;
+        font-weight: 750;
+        padding: 0.6rem 0.75rem;
+        margin-bottom: 0.75rem;
+        color: #ffffff;
+        background: var(--mau-chinh-dam);
+        border-radius: var(--bo-goc);
+        caption-side: top;
+        box-sizing: border-box;
+    }
+
+    /* ===== CARD ===== */
+    .bang-cuon tbody tr {
+        margin-bottom: 0.75rem;
+        border: 1px solid var(--mau-vien);
+        border-radius: var(--bo-goc);
+        background: #fff;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgb(15 47 111 / 6%);
+    }
+
+    .bang-cuon tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0.75rem;
+        border: 0;
+        border-bottom: 1px solid var(--mau-vien);
+        font-size: 0.85rem;
+        text-align: right;
+        min-width: 0;
+    }
+
+    .bang-cuon tbody td:last-child {
+        border-bottom: 0;
+    }
+
+    .bang-cuon tbody td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: var(--mau-chinh-dam);
+        text-align: left;
+        padding-right: 0.75rem;
+        flex-shrink: 0;
+    }
+
+    .bang-cuon tbody tr:nth-child(even) {
+        background: #fff;
+    }
+
+    .bang-cuon tfoot tr {
+        display: block;
+        padding: 0.75rem;
+        background: #e8effc;
+        border-radius: var(--bo-goc);
+        margin-top: 0.5rem;
+    }
+
+    .bang-cuon tfoot th,
+    .bang-cuon tfoot td {
+        display: block;
+        text-align: left;
+        border: 0;
+        padding: 0.25rem 0;
+        background: transparent;
+        font-size: 0.85rem;
+    }
+
+    .bang-cuon tfoot th[colspan] {
+        font-weight: 800;
+        color: var(--mau-chinh-dam);
+        margin-bottom: 0.25rem;
+    }
+}
+    </style>
 </head>
 
 <body class="trang trang-chi-tiet">
 
-    <!-- ================= HEADER ================= -->
     <header class="dau-trang">
         <div class="dau-trang__noi-dung">
             <a class="thuong-hieu" href="index.html">EduGPA</a>
@@ -26,7 +148,6 @@
         </div>
     </header>
 
-    <!-- ================= NAV ================= -->
     <nav class="dieu-huong" aria-label="Điều hướng chính">
         <ul class="dieu-huong__danh-sach">
             <li class="dieu-huong__muc"><a class="dieu-huong__lien-ket" href="index.html">Trang chủ</a></li>
@@ -37,170 +158,269 @@
         </ul>
     </nav>
 
-    <!-- ================= MAIN ================= -->
     <main>
 
         <h1>Chi tiết kết quả học tập</h1>
 
-        <!-- BỌC 2 CỘT: NỘI DUNG CHÍNH + ASIDE -->
-        <div class="khung-chi-tiet">
+        <article>
+            <h2>Tổng quan kết quả học tập</h2>
+            <p>
+                Trang này hiển thị chi tiết kết quả học tập của sinh viên
+                ngành Công nghệ thông tin, khóa 2021. Dữ liệu được cập nhật
+                theo từng học kỳ, bao gồm điểm chữ, điểm hệ 4 và số tín chỉ
+                của từng môn học.
+            </p>
+            <p>
+                Dựa trên bảng điểm này, EduGPA tự động tính GPA học kỳ,
+                GPA tích lũy và theo dõi số tín chỉ đã hoàn thành để đánh giá
+                tiến độ hướng tới mục tiêu tốt nghiệp.
+            </p>
+            <figure>
+                <img src="images/mota.png"
+                     alt="Minh họa bảng điểm chi tiết kết quả học tập trên hệ thống EduGPA"
+                     width="600" height="400" loading="lazy">
+                <figcaption>Bảng điểm chi tiết được hiển thị theo từng học kỳ trên EduGPA.</figcaption>
+            </figure>
+        </article>
 
-            <!-- ===== CỘT TRÁI: NỘI DUNG CHÍNH ===== -->
-            <div class="noi-dung-chinh">
-
-                <article>
-                    <h2>Tổng quan kết quả học tập</h2>
-                    <p>
-                        Trang này hiển thị chi tiết kết quả học tập của sinh viên
-                        ngành Công nghệ thông tin, khóa 2021. Dữ liệu được cập nhật
-                        theo từng học kỳ, bao gồm điểm chữ, điểm hệ 4 và số tín chỉ
-                        của từng môn học.
-                    </p>
-                    <p>
-                        Dựa trên bảng điểm này, EduGPA tự động tính GPA học kỳ,
-                        GPA tích lũy và theo dõi số tín chỉ đã hoàn thành để đánh giá
-                        tiến độ hướng tới mục tiêu tốt nghiệp.
-                    </p>
-                    <figure>
-                        <img src="images/mota.png"
-                             alt="Minh họa bảng điểm chi tiết kết quả học tập trên hệ thống EduGPA"
-                             width="600" height="400" loading="lazy">
-                        <figcaption>Bảng điểm chi tiết được hiển thị theo từng học kỳ trên EduGPA.</figcaption>
-                    </figure>
-                </article>
-
-                <article>
-                    <h2>Bảng điểm học kỳ 1 - Năm học 2025 - 2026</h2>
-                    <div class="bang-cuon">
-                        <table>
-                            <caption>Bảng điểm chi tiết học kỳ 1 năm học 2025 - 2026</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">STT</th><th scope="col">Mã môn</th><th scope="col">Tên môn học</th>
-                                    <th scope="col">Số tín chỉ</th><th scope="col">Điểm chữ</th>
-                                    <th scope="col">Điểm hệ 4</th><th scope="col">Kết quả</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr><td>1</td><td>31231755</td><td>Thiết kế và lập trình web</td><td>3</td><td>A</td><td>4.0</td><td>Đạt</td></tr>
-                                <tr><td>2</td><td>31221010</td><td>An toàn thông tin</td><td>3</td><td>B+</td><td>3.5</td><td>Đạt</td></tr>
-                                <tr><td>3</td><td>31231398</td><td>Lập trình mạng</td><td>3</td><td>B</td><td>3.0</td><td>Đạt</td></tr>
-                                <tr><td>4</td><td>31241283</td><td>Hệ quản trị cơ sở dữ liệu</td><td>3</td><td>A</td><td>4.0</td><td>Đạt</td></tr>
-                                <tr><td>5</td><td>31231330</td><td>Khai phá dữ liệu</td><td>3</td><td>B</td><td>3.0</td><td>Đạt</td></tr>
-                                <tr><td>6</td><td>31231016</td><td>Công nghệ phần mềm</td><td>3</td><td>B+</td><td>3.5</td><td>Đạt</td></tr>
-                                <tr><td>7</td><td>21221904</td><td>Lịch sử Đảng Cộng sản Việt Nam</td><td>2</td><td>A</td><td>4.0</td><td>Đạt</td></tr>
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th scope="row" colspan="3">Tổng kết học kỳ 1</th>
-                                    <td>20</td><td colspan="2">GPA học kỳ: 3.58</td><td>Đạt</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </article>
-
-                <article>
-                    <h2>Bảng điểm học kỳ 2 - Năm học 2025 - 2026</h2>
-                    <div class="bang-cuon">
-                        <table>
-                            <caption>Bảng điểm chi tiết học kỳ 2 năm học 2025 - 2026</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">STT</th><th scope="col">Mã môn</th><th scope="col">Tên môn học</th>
-                                    <th scope="col">Số tín chỉ</th><th scope="col">Điểm chữ</th>
-                                    <th scope="col">Điểm hệ 4</th><th scope="col">Kết quả</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr><td>1</td><td>31232001</td><td>Trí tuệ nhân tạo</td><td>3</td><td>A</td><td>4.0</td><td>Đạt</td></tr>
-                                <tr><td>2</td><td>31232002</td><td>Phát triển ứng dụng di động</td><td>3</td><td>B+</td><td>3.5</td><td>Đạt</td></tr>
-                                <tr><td>3</td><td>31232003</td><td>Kiến trúc phần mềm</td><td>3</td><td>B</td><td>3.0</td><td>Đạt</td></tr>
-                                <tr><td>4</td><td>31232004</td><td>Điện toán đám mây</td><td>3</td><td>A</td><td>4.0</td><td>Đạt</td></tr>
-                                <tr><td>5</td><td>31232005</td><td>Kiểm thử phần mềm</td><td>3</td><td>B+</td><td>3.5</td><td>Đạt</td></tr>
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th scope="row" colspan="3">Tổng kết học kỳ 2</th>
-                                    <td>15</td><td colspan="2">GPA học kỳ: 3.60</td><td>Đạt</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </article>
-
-                <article>
-                    <h2>Tổng hợp GPA và tín chỉ tích lũy</h2>
-                    <div class="bang-cuon">
-                        <table>
-                            <caption>Bảng tổng hợp GPA và tín chỉ tích lũy toàn khóa</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Học kỳ</th><th scope="col">Số tín chỉ</th>
-                                    <th scope="col">GPA học kỳ</th><th scope="col">GPA tích lũy</th>
-                                    <th scope="col">Tín chỉ tích lũy</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr><th scope="row">HK1 - 2025/2026</th><td>20</td><td>3.58</td><td>3.58</td><td>20</td></tr>
-                                <tr><th scope="row">HK2 - 2025/2026</th><td>15</td><td>3.60</td><td>3.59</td><td>35</td></tr>
-                                <tr><th scope="row">Tổng tích lũy</th><td>35</td><td>—</td><td>3.59</td><td>35 / 130</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <p>
-                        Với GPA tích lũy hiện tại là <strong>3.59</strong>, sinh viên đang
-                        nằm trong nhóm xếp loại <strong>Giỏi</strong> và có khả năng đạt
-                        mục tiêu tốt nghiệp loại Giỏi nếu duy trì phong độ ở các học kỳ tiếp theo.
-                    </p>
-                </article>
-
-                <article>
-                    <h2>Video hướng dẫn xem kết quả học tập</h2>
-                    <p>Video dưới đây hướng dẫn cách tra cứu và đọc bảng điểm chi tiết trên hệ thống EduGPA.</p>
-                    <figure>
-                        <iframe
-                                src="https://www.youtube.com/embed/UB1O30fR-EE"
-                                title="Video hướng dẫn xem kết quả học tập trên hệ thống EduGPA"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowfullscreen>
-                        </iframe>
-                        <figcaption>Video hướng dẫn tra cứu bảng điểm chi tiết trên EduGPA.</figcaption>
-                    </figure>
-                </article>
-
-                <article>
-                    <h2>Nhận xét và gợi ý học tập</h2>
-                    <p>Dựa trên kết quả học tập ở hai học kỳ, EduGPA đưa ra một số nhận xét:</p>
-                    <ul>
-                        <li>Các môn đạt kết quả tốt: <strong>Thiết kế và lập trình web</strong>, <strong>Hệ quản trị cơ sở dữ liệu</strong>, <strong>Trí tuệ nhân tạo</strong>, <strong>Điện toán đám mây</strong> (đều đạt điểm A).</li>
-                        <li>Các môn cần cải thiện thêm: <strong>Lập trình mạng</strong>, <strong>Khai phá dữ liệu</strong>, <strong>Kiến trúc phần mềm</strong> (đạt điểm B).</li>
-                        <li>Sinh viên nên tập trung ôn luyện thêm phần lý thuyết nâng cao và làm bài tập nhóm cho các môn cần cải thiện.</li>
-                        <li>Có thể tham khảo tài liệu và video bài giảng được gợi ý trên trang chi tiết từng môn học.</li>
-                    </ul>
-                </article>
-
+        <article>
+            <h2>Bảng điểm học kỳ 1 - Năm học 2025 - 2026</h2>
+            <div class="bang-cuon">
+                <table>
+                    <caption>Bảng điểm chi tiết học kỳ 1 năm học 2025 - 2026</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">STT</th><th scope="col">Mã môn</th><th scope="col">Tên môn học</th>
+                            <th scope="col">Số tín chỉ</th><th scope="col">Điểm chữ</th>
+                            <th scope="col">Điểm hệ 4</th><th scope="col">Kết quả</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-label="STT">1</td>
+                            <td data-label="Mã môn">31231755</td>
+                            <td data-label="Tên môn">Thiết kế và lập trình web</td>
+                            <td data-label="Số tín chỉ">3</td>
+                            <td data-label="Điểm chữ">A</td>
+                            <td data-label="Điểm hệ 4">4.0</td>
+                            <td data-label="Kết quả">Đạt</td>
+                        </tr>
+                        <tr>
+                            <td data-label="STT">2</td>
+                            <td data-label="Mã môn">31221010</td>
+                            <td data-label="Tên môn">An toàn thông tin</td>
+                            <td data-label="Số tín chỉ">3</td>
+                            <td data-label="Điểm chữ">B+</td>
+                            <td data-label="Điểm hệ 4">3.5</td>
+                            <td data-label="Kết quả">Đạt</td>
+                        </tr>
+                        <tr>
+                            <td data-label="STT">3</td>
+                            <td data-label="Mã môn">31231398</td>
+                            <td data-label="Tên môn">Lập trình mạng</td>
+                            <td data-label="Số tín chỉ">3</td>
+                            <td data-label="Điểm chữ">B</td>
+                            <td data-label="Điểm hệ 4">3.0</td>
+                            <td data-label="Kết quả">Đạt</td>
+                        </tr>
+                        <tr>
+                            <td data-label="STT">4</td>
+                            <td data-label="Mã môn">31241283</td>
+                            <td data-label="Tên môn">Hệ quản trị cơ sở dữ liệu</td>
+                            <td data-label="Số tín chỉ">3</td>
+                            <td data-label="Điểm chữ">A</td>
+                            <td data-label="Điểm hệ 4">4.0</td>
+                            <td data-label="Kết quả">Đạt</td>
+                        </tr>
+                        <tr>
+                            <td data-label="STT">5</td>
+                            <td data-label="Mã môn">31231330</td>
+                            <td data-label="Tên môn">Khai phá dữ liệu</td>
+                            <td data-label="Số tín chỉ">3</td>
+                            <td data-label="Điểm chữ">B</td>
+                            <td data-label="Điểm hệ 4">3.0</td>
+                            <td data-label="Kết quả">Đạt</td>
+                        </tr>
+                        <tr>
+                            <td data-label="STT">6</td>
+                            <td data-label="Mã môn">31231016</td>
+                            <td data-label="Tên môn">Công nghệ phần mềm</td>
+                            <td data-label="Số tín chỉ">3</td>
+                            <td data-label="Điểm chữ">B+</td>
+                            <td data-label="Điểm hệ 4">3.5</td>
+                            <td data-label="Kết quả">Đạt</td>
+                        </tr>
+                        <tr>
+                            <td data-label="STT">7</td>
+                            <td data-label="Mã môn">21221904</td>
+                            <td data-label="Tên môn">Lịch sử Đảng Cộng sản Việt Nam</td>
+                            <td data-label="Số tín chỉ">2</td>
+                            <td data-label="Điểm chữ">A</td>
+                            <td data-label="Điểm hệ 4">4.0</td>
+                            <td data-label="Kết quả">Đạt</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th scope="row" colspan="3">Tổng kết học kỳ 1</th>
+                            <td>20</td><td colspan="2">GPA học kỳ: 3.58</td><td>Đạt</td>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
-            <!-- ===== HẾT CỘT TRÁI ===== -->
+        </article>
 
-            <!-- ===== CỘT PHẢI: ASIDE ===== -->
-            <aside>
-                <h2>Khám phá EduGPA</h2>
-                <ul>
-                    <li><a href="index.html">Quay lại trang chủ EduGPA</a></li>
-                    <li><a href="danh-sach.html">Xem danh sách môn học</a></li>
-                    <li><a href="chi-tiet.html">Xem chi tiết kết quả học tập</a></li>
-                    <li><a href="gioi-thieu.html">Tìm hiểu về EduGPA và nhóm thực hiện</a></li>
-                    <li><a href="lien-he.html">Liên hệ và đăng ký thành viên</a></li>
-                </ul>
-            </aside>
+        <article>
+            <h2>Bảng điểm học kỳ 2 - Năm học 2025 - 2026</h2>
+            <div class="bang-cuon">
+                <table>
+                    <caption>Bảng điểm chi tiết học kỳ 2 năm học 2025 - 2026</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">STT</th><th scope="col">Mã môn</th><th scope="col">Tên môn học</th>
+                            <th scope="col">Số tín chỉ</th><th scope="col">Điểm chữ</th>
+                            <th scope="col">Điểm hệ 4</th><th scope="col">Kết quả</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-label="STT">1</td>
+                            <td data-label="Mã môn">31232001</td>
+                            <td data-label="Tên môn">Trí tuệ nhân tạo</td>
+                            <td data-label="Số tín chỉ">3</td>
+                            <td data-label="Điểm chữ">A</td>
+                            <td data-label="Điểm hệ 4">4.0</td>
+                            <td data-label="Kết quả">Đạt</td>
+                        </tr>
+                        <tr>
+                            <td data-label="STT">2</td>
+                            <td data-label="Mã môn">31232002</td>
+                            <td data-label="Tên môn">Phát triển ứng dụng di động</td>
+                            <td data-label="Số tín chỉ">3</td>
+                            <td data-label="Điểm chữ">B+</td>
+                            <td data-label="Điểm hệ 4">3.5</td>
+                            <td data-label="Kết quả">Đạt</td>
+                        </tr>
+                        <tr>
+                            <td data-label="STT">3</td>
+                            <td data-label="Mã môn">31232003</td>
+                            <td data-label="Tên môn">Kiến trúc phần mềm</td>
+                            <td data-label="Số tín chỉ">3</td>
+                            <td data-label="Điểm chữ">B</td>
+                            <td data-label="Điểm hệ 4">3.0</td>
+                            <td data-label="Kết quả">Đạt</td>
+                        </tr>
+                        <tr>
+                            <td data-label="STT">4</td>
+                            <td data-label="Mã môn">31232004</td>
+                            <td data-label="Tên môn">Điện toán đám mây</td>
+                            <td data-label="Số tín chỉ">3</td>
+                            <td data-label="Điểm chữ">A</td>
+                            <td data-label="Điểm hệ 4">4.0</td>
+                            <td data-label="Kết quả">Đạt</td>
+                        </tr>
+                        <tr>
+                            <td data-label="STT">5</td>
+                            <td data-label="Mã môn">31232005</td>
+                            <td data-label="Tên môn">Kiểm thử phần mềm</td>
+                            <td data-label="Số tín chỉ">3</td>
+                            <td data-label="Điểm chữ">B+</td>
+                            <td data-label="Điểm hệ 4">3.5</td>
+                            <td data-label="Kết quả">Đạt</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th scope="row" colspan="3">Tổng kết học kỳ 2</th>
+                            <td>15</td><td colspan="2">GPA học kỳ: 3.60</td><td>Đạt</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </article>
 
-        </div>
-        <!-- ===== HẾT .khung-chi-tiet ===== -->
+        <article>
+            <h2>Tổng hợp GPA và tín chỉ tích lũy</h2>
+            <div class="bang-cuon">
+                <table>
+                    <caption>Bảng tổng hợp GPA và tín chỉ tích lũy toàn khóa</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Học kỳ</th><th scope="col">Số tín chỉ</th>
+                            <th scope="col">GPA học kỳ</th><th scope="col">GPA tích lũy</th>
+                            <th scope="col">Tín chỉ tích lũy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row" data-label="Học kỳ">HK1 - 2025/2026</th>
+                            <td data-label="Số tín chỉ">20</td>
+                            <td data-label="GPA học kỳ">3.58</td>
+                            <td data-label="GPA tích lũy">3.58</td>
+                            <td data-label="Tín chỉ tích lũy">20</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" data-label="Học kỳ">HK2 - 2025/2026</th>
+                            <td data-label="Số tín chỉ">15</td>
+                            <td data-label="GPA học kỳ">3.60</td>
+                            <td data-label="GPA tích lũy">3.59</td>
+                            <td data-label="Tín chỉ tích lũy">35</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" data-label="Học kỳ">Tổng tích lũy</th>
+                            <td data-label="Số tín chỉ">35</td>
+                            <td data-label="GPA học kỳ">—</td>
+                            <td data-label="GPA tích lũy">3.59</td>
+                            <td data-label="Tín chỉ tích lũy">35 / 130</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>
+                Với GPA tích lũy hiện tại là <strong>3.59</strong>, sinh viên đang
+                nằm trong nhóm xếp loại <strong>Giỏi</strong> và có khả năng đạt
+                mục tiêu tốt nghiệp loại Giỏi nếu duy trì phong độ ở các học kỳ tiếp theo.
+            </p>
+        </article>
+
+        <article>
+            <h2>Video hướng dẫn xem kết quả học tập</h2>
+            <p>Video dưới đây hướng dẫn cách tra cứu và đọc bảng điểm chi tiết trên hệ thống EduGPA.</p>
+            <figure>
+                <iframe
+                        src="https://www.youtube.com/embed/UB1O30fR-EE"
+                        title="Video hướng dẫn xem kết quả học tập trên hệ thống EduGPA"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                </iframe>
+                <figcaption>Video hướng dẫn tra cứu bảng điểm chi tiết trên EduGPA.</figcaption>
+            </figure>
+        </article>
+
+        <article>
+            <h2>Nhận xét và gợi ý học tập</h2>
+            <p>Dựa trên kết quả học tập ở hai học kỳ, EduGPA đưa ra một số nhận xét:</p>
+            <ul>
+                <li>Các môn đạt kết quả tốt: <strong>Thiết kế và lập trình web</strong>, <strong>Hệ quản trị cơ sở dữ liệu</strong>, <strong>Trí tuệ nhân tạo</strong>, <strong>Điện toán đám mây</strong> (đều đạt điểm A).</li>
+                <li>Các môn cần cải thiện thêm: <strong>Lập trình mạng</strong>, <strong>Khai phá dữ liệu</strong>, <strong>Kiến trúc phần mềm</strong> (đạt điểm B).</li>
+                <li>Sinh viên nên tập trung ôn luyện thêm phần lý thuyết nâng cao và làm bài tập nhóm cho các môn cần cải thiện.</li>
+                <li>Có thể tham khảo tài liệu và video bài giảng được gợi ý trên trang chi tiết từng môn học.</li>
+            </ul>
+        </article>
+
+        <aside>
+            <h2>Khám phá EduGPA</h2>
+            <ul>
+                <li><a href="index.html">Quay lại trang chủ EduGPA</a></li>
+                <li><a href="danh-sach.html">Xem danh sách môn học</a></li>
+                <li><a href="chi-tiet.html">Xem chi tiết kết quả học tập</a></li>
+                <li><a href="gioi-thieu.html">Tìm hiểu về EduGPA và nhóm thực hiện</a></li>
+                <li><a href="lien-he.html">Liên hệ và đăng ký thành viên</a></li>
+            </ul>
+        </aside>
 
     </main>
 
-    <!-- ================= FOOTER ================= -->
     <footer class="chan-trang">
         <div class="chan-trang__noi-dung">
             <div>

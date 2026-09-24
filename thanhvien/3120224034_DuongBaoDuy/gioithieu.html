@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+        content="Trang giới thiệu cá nhân của Dương Bảo Duy - sinh viên Công nghệ thông tin, yêu thích IoT, phát triển Web và hệ thống nhúng.">
+
+    <title>Giới thiệu thành viên | Dương Bảo Duy</title>
+
+    <!-- CSS chung của nhóm -->
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* =========================================================
+           01. BIẾN MÀU & CHUẨN HÓA
+           ========================================================= */
+        :root {
+            --mau-chinh: #1746a2;
+            --mau-chinh-dam: #0f2f6f;
+            --mau-chinh-nhat: #eaf1ff;
+            --mau-nhan: #f4b400;
+            --mau-nhan-dam: #9a6200;
+            --mau-chu: #172033;
+            --mau-chu-phu: #526078;
+            --mau-vien: #d8e0ee;
+            --mau-nen: #ffffff;
+            --mau-nen-phu: #f5f8fe;
+            --mau-phu: #326bc4;
+            --bo-goc-nho: 8px;
+            --bo-goc: 14px;
+            --bo-goc-lon: 24px;
+            --thoi-gian: 0.2s;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, system-ui, sans-serif;
+            color: var(--mau-chu);
+            background: var(--mau-nen-phu);
+            line-height: 1.7;
+        }
+
+        .bao {
+            width: min(calc(100% - 2rem), 1180px);
+            margin-inline: auto;
+        }
+
+        /* =========================================================
+           02. HEADER ĐÚNG CHUẨN THEO ẢNH
+           ========================================================= */
+        .dau-trang {
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            color: #ffffff;
+            background: linear-gradient(125deg, var(--mau-chinh-dam) 0%, var(--mau-chinh) 52%, var(--mau-phu) 100%);
+        }
+
+        .dau-trang::before,
+        .dau-trang::after {
+            position: absolute;
+            z-index: -1;
+            content: "";
+            border-radius: 50%;
+            background: rgb(255 255 255 / 0.08);
+        }
+
+        .dau-trang::before {
+            width: 17rem;
+            height: 17rem;
+            top: -10rem;
+            right: -4rem;
+        }
+
+        .dau-trang::after {
+            width: 12rem;
+            height: 12rem;
+            right: 8%;
+            bottom: -6rem;
+            border: 1.8rem solid rgb(244 185 66 / 0.16);
+            background: transparent;
+        }
+
+        .dau-trang__noi-dung {
+            min-height: 10.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-block: 2rem;
+        }
+
+        .dau-trang__thuong-hieu {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0 0 0.5rem 0;
+            font-size: clamp(2rem, 5vw, 2.75rem);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+        }
+
+        /* Thanh màu vàng hình viên thuốc bên cạnh logo */
+        .dau-trang__thuong-hieu::before {
+            width: 0.8rem;
+            height: 2.1rem;
+            content: "";
+            border-radius: 999px;
+            background: var(--mau-nhan);
+            box-shadow: 0 0 0 0.35rem rgb(244 185 66 / 0.2);
+            flex-shrink: 0;
+        }
+
+        .dau-trang__khau-hieu {
+            margin: 0;
+            color: #ffffff;
+            font-size: clamp(0.95rem, 2vw, 1.1rem);
+            font-weight: 400;
+            opacity: 0.95;
+        }
+
+        /* =========================================================
+           03. THANH ĐIỀU HƯỚNG THEO ẢNH
+           ========================================================= */
+        .dieu-huong {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: #ffffff;
+            border-bottom: 1px solid rgb(215 226 238 / 0.9);
+            box-shadow: 0 0.25rem 1rem rgb(7 31 61 / 0.06);
+        }
+
+        .dieu-huong__danh-sach {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 0 auto;
+            padding: 0.65rem 0;
+            list-style: none;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .dieu-huong__danh-sach li {
+            flex: 0 1 auto;
+        }
+
+        .dieu-huong__lien-ket {
+            display: block;
+            padding: 0.65rem 1.1rem;
+            border-radius: var(--bo-goc-nho);
+            color: var(--mau-chinh-dam);
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all var(--thoi-gian) ease;
+        }
+
+        .dieu-huong__lien-ket:hover {
+            color: var(--mau-chinh);
+            background: var(--mau-chinh-nhat);
+        }
+
+        /* Nút active bo góc màu xanh */
+        .dieu-huong__lien-ket--hien-tai {
+            color: #ffffff !important;
+            background: var(--mau-chinh) !important;
+            box-shadow: 0 0.35rem 0.9rem rgb(18 59 109 / 0.2);
+        }
+
+        .dieu-huong__lien-ket:focus-visible {
+            outline: 3px solid var(--mau-nhan);
+            outline-offset: 2px;
+        }
+
+        /* =========================================================
+           04. BỐ CỤC NỘI DUNG NGUYÊN BẢN CỦA TRANG
+           ========================================================= */
+        main {
+            padding-block: 2rem 3.5rem;
+        }
+
+        main > h1 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            color: var(--mau-chinh-dam);
+            font-size: clamp(1.75rem, 4vw, 2.4rem);
+        }
+
+        main > section,
+        main > article {
+            background: #ffffff;
+            border: 1px solid var(--mau-vien);
+            border-radius: var(--bo-goc-lon);
+            padding: clamp(1.2rem, 3vw, 2rem);
+            margin-bottom: 1.75rem;
+            box-shadow: 0 4px 16px rgb(15 47 111 / 6%);
+        }
+
+        main h2 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: var(--mau-chinh-dam);
+        }
+
+        /* ---------- KHỐI THÔNG TIN CÁ NHÂN ---------- */
+        .gioi-thieu__khung {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .gioi-thieu__chu {
+            min-width: 0;
+        }
+
+        .gioi-thieu__anh {
+            margin: 0;
+            justify-self: center;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .gioi-thieu__anh img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            border-radius: var(--bo-goc);
+            border: 1px solid var(--mau-vien);
+            box-shadow: 0 8px 20px rgb(15 47 111 / 12%);
+            transition: transform 0.3s ease;
+        }
+
+        .gioi-thieu__anh img:hover {
+            transform: translateY(-3px);
+        }
+
+        .gioi-thieu__anh figcaption {
+            margin-top: 0.6rem;
+            padding: 0.4rem 0.6rem;
+            color: var(--mau-chinh-dam);
+            background: var(--mau-chinh-nhat);
+            font-size: 0.85rem;
+            font-style: italic;
+            font-weight: 600;
+            text-align: center;
+            border-radius: var(--bo-goc-nho);
+            border-left: 4px solid var(--mau-nhan);
+        }
+
+        @media (min-width: 768px) {
+            .gioi-thieu__khung {
+                grid-template-columns: minmax(0, 1fr) 280px;
+                gap: 2rem;
+            }
+
+            .gioi-thieu__anh {
+                justify-self: end;
+                position: sticky;
+                top: 5.5rem;
+            }
+        }
+
+        /* ---------- KHỐI DỰ ÁN VÀ SỞ THÍCH ---------- */
+        .gioi-thieu__du-an-khung {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .gioi-thieu__du-an-chu {
+            min-width: 0;
+        }
+
+        .gioi-thieu__du-an-anh {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            align-content: start;
+        }
+
+        .gioi-thieu__anh-doc {
+            margin: 0;
+            width: 100%;
+            max-width: 320px;
+            justify-self: center;
+        }
+
+        .gioi-thieu__anh-doc img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 2 / 3;
+            object-fit: cover;
+            border-radius: var(--bo-goc);
+            border: 1px solid var(--mau-vien);
+            box-shadow: 0 6px 16px rgb(15 47 111 / 10%);
+            transition: transform 0.3s ease;
+        }
+
+        .gioi-thieu__anh-doc img:hover {
+            transform: translateY(-3px);
+        }
+
+        .gioi-thieu__anh-doc figcaption {
+            margin-top: 0.5rem;
+            padding: 0.35rem 0.6rem;
+            color: var(--mau-chinh-dam);
+            background: var(--mau-chinh-nhat);
+            font-size: 0.85rem;
+            font-style: italic;
+            font-weight: 600;
+            text-align: center;
+            border-radius: var(--bo-goc-nho);
+            border-left: 4px solid var(--mau-nhan);
+        }
+
+        @media (min-width: 768px) {
+            .gioi-thieu__du-an-khung {
+                grid-template-columns: minmax(0, 1fr) 280px;
+                gap: 2rem;
+            }
+
+            .gioi-thieu__du-an-anh {
+                position: sticky;
+                top: 5.5rem;
+            }
+
+            .gioi-thieu__anh-doc {
+                justify-self: end;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .gioi-thieu__du-an-khung {
+                grid-template-columns: minmax(0, 1fr) 380px;
+            }
+
+            .gioi-thieu__du-an-anh {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.85rem;
+            }
+
+            .gioi-thieu__anh-doc {
+                max-width: 100%;
+            }
+        }
+
+        .gioi-thieu__trich-dan {
+            margin: 1.25rem 0;
+            padding: 0.85rem 1.1rem;
+            border-left: 4px solid var(--mau-nhan);
+            border-radius: var(--bo-goc-nho);
+            background: var(--mau-chinh-nhat);
+            color: var(--mau-chinh-dam);
+            font-style: italic;
+            font-weight: 600;
+        }
+
+        .gioi-thieu__trich-dan p {
+            margin: 0;
+        }
+
+        /* ---------- DANH SÁCH KỸ NĂNG ---------- */
+        .gioi-thieu__ky-nang-danh-sach {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+            gap: 0.75rem;
+            padding: 0;
+            margin: 1rem 0 0 0;
+            list-style: none;
+        }
+
+        .gioi-thieu__ky-nang-danh-sach li {
+            padding: 0.65rem 0.9rem;
+            background: var(--mau-nen-phu);
+            border: 1px solid var(--mau-vien);
+            border-left: 4px solid var(--mau-chinh);
+            border-radius: var(--bo-goc-nho);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--mau-chu);
+            transition: all var(--thoi-gian) ease;
+        }
+
+        .gioi-thieu__ky-nang-danh-sach li:hover {
+            background: var(--mau-chinh-nhat);
+            border-left-color: var(--mau-nhan);
+            transform: translateX(3px);
+        }
+
+        /* ---------- THỜI KHÓA BIỂU (CUỘN NGANG AN TOÀN) ---------- */
+        .tkb-container {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border: 1px solid var(--mau-vien);
+            border-radius: var(--bo-goc);
+            background: #ffffff;
+            margin-top: 1rem;
+        }
+
+        .tkb-container:focus-visible {
+            outline: 3px solid var(--mau-nhan);
+            outline-offset: 2px;
+        }
+
+        .thoi-khoa-bieu {
+            width: 100%;
+            min-width: 820px;
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin: 0;
+        }
+
+        .thoi-khoa-bieu caption {
+            font-size: 1.15rem;
+            font-weight: 700;
+            padding: 0.85rem 1rem;
+            color: var(--mau-chinh-dam);
+            background: var(--mau-nen-phu);
+            text-align: left;
+            border-bottom: 1px solid var(--mau-vien);
+        }
+
+        .thoi-khoa-bieu th {
+            background-color: var(--mau-chinh-dam);
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: 700;
+            height: 42px;
+            border: 1px solid var(--mau-vien);
+            text-align: center;
+            padding: 0.5rem;
+        }
+
+        .thoi-khoa-bieu td {
+            border: 1px solid var(--mau-vien);
+            height: 48px;
+            padding: 0.5rem;
+            vertical-align: top;
+            font-size: 0.88rem;
+        }
+
+        .thoi-khoa-bieu .tiet {
+            width: 48px;
+            text-align: center;
+            font-weight: 700;
+            background-color: var(--mau-nen-phu);
+            color: var(--mau-chu);
+        }
+
+        .thoi-khoa-bieu .mon-hoc {
+            vertical-align: top;
+            background: #f8fbff;
+            line-height: 1.45;
+        }
+
+        .thoi-khoa-bieu .nghi {
+            height: 14px;
+            padding: 0;
+            background: var(--mau-nhan);
+            border: 0;
+            opacity: 0.35;
+        }
+
+        /* ---------- FOOTER ---------- */
+        .chan-trang {
+            padding-block: 1.5rem;
+            color: #e8f2fb;
+            background: var(--mau-chinh-dam);
+            text-align: center;
+        }
+
+        .chan-trang p {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="trang-ca-nhan">
+
+        <!-- ================= HEADER GIỐNG ẢNH ================= -->
+        <header class="dau-trang">
+            <div class="bao dau-trang__noi-dung">
+                <h1 class="dau-trang__thuong-hieu">EduGPA</h1>
+                <p class="dau-trang__khau-hieu">
+                    Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập cho sinh viên
+                </p>
+            </div>
+        </header>
+
+        <!-- ================= THANH ĐIỀU HƯỚNG GIỐNG ẢNH ================= -->
+        <nav class="dieu-huong" aria-label="Điều hướng chính">
+            <ul class="bao dieu-huong__danh-sach">
+                <li><a class="dieu-huong__lien-ket" href="index.html">Trang chủ</a></li>
+                <li><a class="dieu-huong__lien-ket" href="danh-sach.html">Danh sách</a></li>
+                <li><a class="dieu-huong__lien-ket" href="chi-tiet.html">Chi tiết</a></li>
+                <li><a class="dieu-huong__lien-ket dieu-huong__lien-ket--hien-tai" href="gioithieu.html" aria-current="page">Giới thiệu</a></li>
+                <li><a class="dieu-huong__lien-ket" href="lien-he.html">Liên hệ</a></li>
+            </ul>
+        </nav>
+
+        <!-- ================= NỘI DUNG CHÍNH (THEO BỐ CỤC BAN ĐẦU) ================= -->
+        <main class="bao">
+
+            <h1>Giới thiệu bản thân</h1>
+
+            <!-- ========== THÔNG TIN CÁ NHÂN ========== -->
+            <section class="gioi-thieu__thong-tin">
+                <h2>Thông tin cá nhân</h2>
+
+                <div class="gioi-thieu__khung">
+                    <!-- Cột chữ bên trái -->
+                    <div class="gioi-thieu__chu">
+                        <p class="gioi-thieu__mo-ta">
+                            Xin chào! Mình là <strong>Dương Bảo Duy</strong>, thành viên của Nhóm 3
+                            thực hiện dự án EduGPA.
+                        </p>
+
+                        <p class="gioi-thieu__van-ban">
+                            Mình hiện đang học tại lớp 24CNTT1, khoa Toán-Tin, trường Đại học Sư Phạm,
+                            Đại Học Đà Nẵng. Mình là một người trẻ đang theo đuổi lĩnh vực Công nghệ Thông tin
+                            với niềm yêu thích đặc biệt dành cho lập trình, phát triển Web, IoT và các hệ thống
+                            công nghệ thực tế. Trong dự án EduGPA, mình tham gia xây dựng và phát triển nội dung
+                            cho website, hỗ trợ các thành viên trong nhóm.
+                        </p>
+                    </div>
+
+                    <!-- Cột ảnh bên phải: co giãn theo khung, không viền rườm rà -->
+                    <figure class="gioi-thieu__anh">
+                        <img src="images/anh-ca-nhan.jpg"
+                             alt="Ảnh chân dung của Dương Bảo Duy"
+                             width="300"
+                             height="400"
+                             loading="lazy">
+                        <figcaption>Ảnh chân dung của Dương Bảo Duy</figcaption>
+                    </figure>
+                </div>
+            </section>
+
+            <!-- ========== DỰ ÁN VÀ SỞ THÍCH ========== -->
+            <article class="gioi-thieu__du-an">
+                <h2>Dự án và sở thích</h2>
+
+                <div class="gioi-thieu__du-an-khung">
+
+                    <!-- Cột chữ bên trái -->
+                    <div class="gioi-thieu__du-an-chu">
+                        <p class="gioi-thieu__van-ban">
+                            Mình không chỉ thích học kiến thức từ sách vở mà còn thích tự tay biến những gì
+                            mình học được thành các sản phẩm có thể chạy, có thể tương tác và giải quyết
+                            một vấn đề cụ thể. Trong quá trình học tập, mình đã tìm hiểu và thực hành nhiều
+                            lĩnh vực khác nhau như lập trình C/C++, Java, Python, phát triển Web, Cơ sở dữ liệu,
+                            Mạng máy tính, Hệ điều hành và Internet of Things.
+                        </p>
+
+                        <p class="gioi-thieu__van-ban">
+                            Một trong những điều mình thích nhất là bắt đầu từ một ý tưởng đơn giản rồi từng bước
+                            biến nó thành một hệ thống hoàn chỉnh — từ những chương trình nhỏ, website, chatbot
+                            cho đến các dự án robot sử dụng ESP32, cảm biến, MQTT và điều khiển từ xa.
+                        </p>
+
+                        <blockquote class="gioi-thieu__trich-dan">
+                            <p>
+                                "Không cần phải biết tất cả ngay từ đầu. Quan trọng là dám bắt đầu
+                                và tiếp tục tìm cách giải quyết vấn đề."
+                            </p>
+                        </blockquote>
+
+                        <p class="gioi-thieu__van-ban">
+                            Ngoài việc học tập, mình thích chơi thể thao, đọc truyện và tham gia các hoạt động,
+                            sự kiện do đoàn trường tổ chức.
+                        </p>
+                    </div>
+
+                    <!-- Cột ảnh bên phải: 2 ảnh dọc nguyên bản -->
+                    <div class="gioi-thieu__du-an-anh">
+
+                        <figure class="gioi-thieu__anh-doc">
+                            <img src="images/du-an-1.jpg"
+                                 alt="Dự án IoT sử dụng Arduino và Module Bluetooth"
+                                 width="400"
+                                 height="600"
+                                 loading="lazy">
+                            <figcaption>Dự án IoT với Arduino &amp; Module Bluetooth</figcaption>
+                        </figure>
+
+                        <figure class="gioi-thieu__anh-doc">
+                            <img src="images/thethao.jpg"
+                                 alt="Thể thao"
+                                 width="400"
+                                 height="600"
+                                 loading="lazy">
+                            <figcaption>Thể thao</figcaption>
+                        </figure>
+
+                    </div>
+
+                </div>
+            </article>
+
+            <!-- ========== KỸ NĂNG ========== -->
+            <section class="gioi-thieu__ky-nang">
+                <h2>Kỹ năng</h2>
+
+                <ul class="gioi-thieu__ky-nang-danh-sach">
+                    <li>Lập trình C/C++, Java, Python</li>
+                    <li>Phát triển Web (HTML5, CSS3, JavaScript)</li>
+                    <li>IoT và hệ thống nhúng (ESP32, MQTT)</li>
+                    <li>Cơ sở dữ liệu</li>
+                    <li>Mạng máy tính và Hệ điều hành</li>
+                    <li>Quản lý mã nguồn với GitHub</li>
+                    <li>Làm việc nhóm</li>
+                </ul>
+            </section>
+
+            <!-- ========== THỜI KHÓA BIỂU ========== -->
+            <section class="gioi-thieu__tkb">
+                <h2>Thời khóa biểu trong tuần</h2>
+
+                <!-- Container cuộn ngang an toàn có tabindex để hỗ trợ bàn phím / accessibility -->
+                <div class="tkb-container" tabindex="0" role="region" aria-label="Bảng thời khóa biểu có thể cuộn ngang">
+
+                    <table class="thoi-khoa-bieu">
+
+                        <caption>Thời khóa biểu</caption>
+
+                        <thead>
+                            <tr>
+                                <th scope="col">Tiết</th>
+                                <th scope="col">Thứ 2</th>
+                                <th scope="col">Thứ 3</th>
+                                <th scope="col">Thứ 4</th>
+                                <th scope="col">Thứ 5</th>
+                                <th scope="col">Thứ 6</th>
+                                <th scope="col">Thứ 7</th>
+                                <th scope="col">Chủ nhật</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <!-- TIẾT 1 -->
+                            <tr>
+                                <th scope="row" class="tiet">1</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+
+                                <!-- Lập trình mạng: tiết 1-3 (Thứ 6) -->
+                                <td rowspan="3" class="mon-hoc">
+                                    31231398 - 24-0101<br>
+                                    Lập trình mạng<br>
+                                    Phòng: A5-403
+                                </td>
+
+                                <!-- Thiết kế và lập trình web: tiết 1-3 (Thứ 7) -->
+                                <td rowspan="3" class="mon-hoc">
+                                    31231755 - 24-0102<br>
+                                    Thiết kế và lập trình web<br>
+                                    Phòng: B3-303
+                                </td>
+
+                                <td></td>
+                            </tr>
+
+                            <!-- TIẾT 2 -->
+                            <tr>
+                                <th scope="row" class="tiet">2</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                            <!-- TIẾT 3 -->
+                            <tr>
+                                <th scope="row" class="tiet">3</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                            <!-- TIẾT 4 -->
+                            <tr>
+                                <th scope="row" class="tiet">4</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+
+                                <!-- Khai phá dữ liệu: tiết 4-6 (Thứ 5) -->
+                                <td rowspan="3" class="mon-hoc">
+                                    31231330 - 24-0102<br>
+                                    Khai phá dữ liệu<br>
+                                    Phòng: A5-404B
+                                </td>
+
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                            <!-- TIẾT 5 -->
+                            <tr>
+                                <th scope="row" class="tiet">5</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                            <!-- TIẾT 6 -->
+                            <tr>
+                                <th scope="row" class="tiet">6</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                        </tbody>
+
+                        <!-- KHOẢNG NGHỈ -->
+                        <tbody>
+                            <tr>
+                                <td class="nghi" colspan="8"></td>
+                            </tr>
+                        </tbody>
+
+                        <tbody>
+
+                            <!-- TIẾT 7 -->
+                            <tr>
+                                <th scope="row" class="tiet">7</th>
+                                <td></td>
+                                <td></td>
+
+                                <!-- Hệ quản trị CSDL: tiết 7-9 (Thứ 4) -->
+                                <td rowspan="3" class="mon-hoc">
+                                    31241283 - 24-0301<br>
+                                    Hệ quản trị cơ sở dữ liệu<br>
+                                    Phòng: B1-104
+                                </td>
+
+                                <td></td>
+                                <td></td>
+
+                                <!-- Lịch sử Đảng: tiết 7-9 (Thứ 7) -->
+                                <td rowspan="3" class="mon-hoc">
+                                    21221904 - 24-0318<br>
+                                    Lịch sử Đảng Cộng sản Việt Nam<br>
+                                    Phòng: A6-502
+                                </td>
+
+                                <td></td>
+                            </tr>
+
+                            <!-- TIẾT 8 -->
+                            <tr>
+                                <th scope="row" class="tiet">8</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                            <!-- TIẾT 9 -->
+                            <tr>
+                                <th scope="row" class="tiet">9</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                            <!-- TIẾT 10 -->
+                            <tr>
+                                <th scope="row" class="tiet">10</th>
+                                <td></td>
+                                <td></td>
+
+                                <!-- Công nghệ phần mềm: tiết 10-12 (Thứ 4) -->
+                                <td rowspan="3" class="mon-hoc">
+                                    31231016 - 24-0103<br>
+                                    Công nghệ phần mềm<br>
+                                    Phòng: B3-304
+                                </td>
+
+                                <td></td>
+                                <td></td>
+
+                                <!-- An toàn thông tin: tiết 10-12 (Thứ 7) -->
+                                <td rowspan="3" class="mon-hoc">
+                                    31221010 - 24-0103<br>
+                                    An toàn thông tin<br>
+                                    Phòng: B3-506
+                                </td>
+
+                                <td></td>
+                            </tr>
+
+                            <!-- TIẾT 11 -->
+                            <tr>
+                                <th scope="row" class="tiet">11</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                            <!-- TIẾT 12 -->
+                            <tr>
+                                <th scope="row" class="tiet">12</th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </section>
+
+        </main>
+
+        <!-- ================= FOOTER ================= -->
+        <footer class="chan-trang">
+            <p>&copy; 2026 Nhóm 3 - Khoa Toán - Tin &middot; Trường Đại học Sư Phạm - Đại học Đà Nẵng.</p>
+        </footer>
+
+    </div>
+
+</body>
+
+</html>

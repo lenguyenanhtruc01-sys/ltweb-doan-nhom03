@@ -1,0 +1,210 @@
+/* =========================================================
+   TÙY BIẾN BOOTSTRAP 5 - EDUGPA NHÓM 03
+   Nạp SAU Bootstrap để ghi đè biến --bs-*
+   ========================================================= */
+
+:root {
+    /* ---------- Màu chính ---------- */
+    --bs-primary: #1746a2;
+    --bs-primary-rgb: 23, 70, 162;
+    --bs-primary-text-emphasis: #0f2f6f;
+    --bs-primary-bg-subtle: #eaf1ff;
+    --bs-primary-border-subtle: #c7d8f5;
+
+    /* ---------- Màu phụ ---------- */
+    --bs-secondary: #526078;
+    --bs-secondary-rgb: 82, 96, 120;
+
+    /* ---------- Màu nhấn ---------- */
+    --bs-warning: #f4b400;
+    --bs-warning-rgb: 244, 180, 0;
+
+    /* ---------- Link ---------- */
+    --bs-link-color: #1746a2;
+    --bs-link-color-rgb: 23, 70, 162;
+    --bs-link-hover-color: #0f2f6f;
+    --bs-link-hover-color-rgb: 15, 47, 111;
+
+    /* ---------- Bo góc ---------- */
+    --bs-border-radius: 14px;
+    --bs-border-radius-sm: 8px;
+    --bs-border-radius-lg: 24px;
+
+    /* ---------- Font ---------- */
+    --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --bs-body-font-size: 1rem;
+    --bs-body-line-height: 1.65;
+    --bs-body-color: #172033;
+    --bs-body-bg: #f5f8fe;
+
+    /* ---------- Khác ---------- */
+    --bs-border-color: #d8e0ee;
+    --bs-focus-ring-color: rgba(244, 180, 0, 0.5);
+    --bs-focus-ring-width: 3px;
+    --bs-focus-ring-offset: 3px;
+}
+
+/* =========================================================
+   GHI ĐÈ COMPONENT
+   ========================================================= */
+
+/* ---------- Body ---------- */
+body {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+/* ---------- Navbar ---------- */
+.navbar.bg-primary {
+    background-color: var(--bs-primary) !important;
+    background-image: linear-gradient(125deg, #0f2f6f 0%, #1746a2 60%, #326bc4 100%);
+}
+
+.navbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    letter-spacing: -0.03em;
+}
+
+/* Dấu chấm vàng trước tên EduGPA */
+.brand-dot {
+    display: inline-block;
+    width: 0.75rem;
+    height: 2rem;
+    border-radius: 999px;
+    background: var(--bs-warning);
+    box-shadow: 0 0 0 0.3rem rgba(244, 180, 0, 0.18);
+    vertical-align: middle;
+}
+
+/* ---------- Card ---------- */
+.card {
+    border-radius: var(--bs-border-radius-lg);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 1rem 2rem rgba(15, 47, 111, 0.14) !important;
+}
+
+.card-title {
+    color: var(--bs-primary-text-emphasis);
+}
+
+/* ---------- Button ---------- */
+.btn-primary {
+    --bs-btn-bg: var(--bs-primary);
+    --bs-btn-border-color: var(--bs-primary);
+    --bs-btn-hover-bg: #0f2f6f;
+    --bs-btn-hover-border-color: #0f2f6f;
+    --bs-btn-active-bg: #0b1736;
+    --bs-btn-active-border-color: #0b1736;
+    --bs-btn-focus-shadow-rgb: 244, 180, 0;
+    --bs-btn-border-radius: 8px;
+    --bs-btn-padding-y: 0.6rem;
+    --bs-btn-padding-x: 1.1rem;
+    --bs-btn-font-weight: 700;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--bs-primary);
+    --bs-btn-border-color: var(--bs-primary);
+    --bs-btn-hover-bg: var(--bs-primary);
+    --bs-btn-hover-border-color: var(--bs-primary);
+    --bs-btn-focus-shadow-rgb: 244, 180, 0;
+}
+
+/* ---------- Alert ---------- */
+.alert-info {
+    --bs-alert-color: #0f2f6f;
+    --bs-alert-bg: #eaf1ff;
+    --bs-alert-border-color: #c7d8f5;
+}
+
+.alert-success {
+    --bs-alert-color: #0f5132;
+    --bs-alert-bg: #d1e7dd;
+    --bs-alert-border-color: #badbcc;
+}
+
+/* ---------- Table ---------- */
+.table-primary {
+    --bs-table-bg: var(--bs-primary);
+    --bs-table-color: #ffffff;
+    --bs-table-border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ---------- Pagination ---------- */
+.pagination {
+    --bs-pagination-color: var(--bs-primary);
+    --bs-pagination-hover-color: #ffffff;
+    --bs-pagination-hover-bg: var(--bs-primary);
+    --bs-pagination-hover-border-color: var(--bs-primary);
+    --bs-pagination-active-bg: var(--bs-primary);
+    --bs-pagination-active-border-color: var(--bs-primary);
+    --bs-pagination-focus-box-shadow: 0 0 0 3px rgba(244, 180, 0, 0.5);
+    --bs-pagination-border-radius: 8px;
+}
+
+/* ---------- Breadcrumb ---------- */
+.breadcrumb {
+    --bs-breadcrumb-divider-color: #526078;
+    --bs-breadcrumb-item-active-color: #526078;
+}
+
+/* ---------- Badge ---------- */
+.badge.bg-warning {
+    font-weight: 700;
+    color: #563800;
+}
+
+/* ---------- List group trong aside ---------- */
+.bg-primary .list-group-item {
+    color: #ffffff;
+}
+
+.bg-primary .list-group-item-action:hover,
+.bg-primary .list-group-item-action:focus {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #ffd66b !important;
+}
+
+/* ---------- Focus visible ---------- */
+.btn:focus-visible,
+.form-control:focus-visible,
+.nav-link:focus-visible,
+.page-link:focus-visible,
+.list-group-item:focus-visible {
+    outline: 3px solid var(--bs-warning);
+    outline-offset: 3px;
+    box-shadow: none;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (min-width: 768px) {
+    .navbar-brand {
+        font-size: 1.7rem;
+    }
+}
+
+/* =========================================================
+   GIẢM CHUYỂN ĐỘNG
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .card,
+    .btn,
+    .page-link {
+        transition: none;
+    }
+
+    .card:hover {
+        transform: none;
+    }
+}

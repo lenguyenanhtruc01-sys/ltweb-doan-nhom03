@@ -2,11 +2,91 @@
    TRANG CHI TIẾT - CSS RIÊNG
    Dùng biến CSS chung từ style.css
    Tác giả: Nhóm 03 - EduGPA
+   KHÔNG sửa style.css - mọi override đều nằm trong file này
    ========================================================= */
 
 /* =========================================================
+   00. OVERRIDE STYLE.CSS - KHÔNG ĐỤNG FILE GỐC
+   ========================================================= */
+
+/* --- 00.1: Vô hiệu hóa layout grid 2 cột của style.css ---
+   style.css có:
+     @media (min-width: 992px) {
+         .trang-chi-tiet main { display: grid; grid-template-columns: ... }
+         .trang-chi-tiet main > article { grid-column: 1; }
+         .trang-chi-tiet main > aside { grid-column: 2; position: sticky; ... }
+     }
+   → Ta reset main về block bình thường, để .khung-chi-tiet tự lo layout.
+*/
+.trang-chi-tiet main {
+    display: block !important;
+    grid-template-columns: none !important;
+    gap: 0 !important;
+}
+
+.trang-chi-tiet main > article,
+.trang-chi-tiet main > aside {
+    grid-column: auto !important;
+    grid-row: auto !important;
+    position: static !important;
+    margin-bottom: var(--kc-5);
+}
+
+/* --- 00.2: Vô hiệu hóa table { display: block } của style.css ---
+   style.css có:
+     table { display: block; overflow-x: auto; ... }
+   → Ép mọi table trong trang chi tiết về display: table chuẩn.
+*/
+.trang-chi-tiet table {
+    display: table !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: visible !important;
+    border-spacing: 0;
+    border-collapse: collapse;
+    border: 1px solid var(--mau-vien);
+    border-radius: var(--bo-goc);
+    background: #ffffff;
+    box-shadow: none;
+}
+
+/* --- 00.3: Fix selector main > article trong style.css ---
+   style.css có:
+     .trang-chi-tiet main > article figure { max-width: 720px; ... }
+     .trang-chi-tiet main > article img { ... }
+     .trang-chi-tiet main > article iframe { ... }
+     .trang-chi-tiet main > article ul { padding-left: 1.25rem; }
+   Nhưng article giờ nằm trong .noi-dung-chinh, không còn là con trực tiếp của main.
+   → Ta khai báo lại các rule này với selector descendant (không có >).
+*/
+.trang-chi-tiet main article figure {
+    max-width: 720px;
+    margin: var(--kc-5) auto 0;
+}
+
+.trang-chi-tiet main article img {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: var(--bo-goc);
+}
+
+.trang-chi-tiet main article iframe {
+    aspect-ratio: 16 / 9;
+    height: auto;
+}
+
+.trang-chi-tiet main article ul {
+    padding-left: 1.25rem;
+}
+
+.trang-chi-tiet main article li + li {
+    margin-top: var(--kc-2);
+}
+
+/* =========================================================
    01. KHUNG CHI TIẾT - GRID 2 CỘT
-   Mobile: 1 cột | Desktop: 2 cột
+   Mobile: 1 cột | Tablet: 2 cột | Desktop: 2 cột rộng hơn
    ========================================================= */
 
 .khung-chi-tiet {
@@ -52,7 +132,6 @@
 
 /* =========================================================
    03. KHUNG CUỘN NGANG CHO BẢNG
-   Thay thế style="overflow-x: auto;" inline
    ========================================================= */
 
 .bang-cuon {
@@ -68,16 +147,17 @@
     margin-block: var(--kc-4);
 }
 
-/* Ghi đè style.css: table không được display: block nữa */
+/* Table bên trong .bang-cuon: co giãn theo khung, không cứng 720px */
 .bang-cuon table {
-    display: table;
-    width: 100%;
-    min-width: 720px;
+    display: table !important;
+    width: 100% !important;
+    min-width: 100% !important;
     border-collapse: collapse;
     table-layout: auto;
     margin: 0;
-    overflow-x: visible;
+    overflow-x: visible !important;
     border-radius: 0;
+    box-shadow: none !important;
 }
 
 .bang-cuon caption {
@@ -91,12 +171,13 @@
 
 .bang-cuon th,
 .bang-cuon td {
-    min-width: 6rem;
+    min-width: 0;
     padding: 0.65rem 0.75rem;
     border: 1px solid var(--mau-vien);
     font-size: 0.9rem;
     text-align: left;
     vertical-align: middle;
+    word-break: break-word;
 }
 
 .bang-cuon thead th {
@@ -207,5 +288,39 @@
     .khung-chi-tiet {
         grid-template-columns: minmax(0, 1fr) 320px;
         gap: var(--kc-7);
+    }
+}
+
+/* =========================================================
+   07. RESPONSIVE - MOBILE (MAX-WIDTH: 767PX)
+   ========================================================= */
+
+@media (max-width: 767px) {
+    .khung-chi-tiet {
+        gap: var(--kc-4);
+    }
+
+    .noi-dung-chinh > article {
+        padding: var(--kc-4);
+        border-radius: var(--bo-goc);
+    }
+
+    .bang-cuon th,
+    .bang-cuon td {
+        padding: 0.5rem 0.55rem;
+        font-size: 0.82rem;
+    }
+
+    .bang-cuon caption {
+        font-size: 0.9rem;
+        padding: var(--kc-2);
+    }
+
+    .khung-chi-tiet > aside {
+        padding: var(--kc-4);
+    }
+
+    .khung-chi-tiet > aside h2 {
+        font-size: 1.1rem;
     }
 }

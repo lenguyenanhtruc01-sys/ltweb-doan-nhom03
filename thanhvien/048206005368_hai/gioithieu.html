@@ -5,73 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Trang giới thiệu cá nhân của Lê Dương Hoàng Hải - Thành viên Nhóm 3.">
     <title>Lê Dương Hoàng Hải | Giới thiệu cá nhân</title>
-    
-    <style>
-        /* CSS Reset cơ bản */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; background-color: #f4f7f6; color: #333; }
-        
-        /* Layout chính bằng CSS Grid */
-        .container { display: grid; grid-template-columns: 1fr; gap: 30px; max-width: 1200px; margin: 0 auto; padding: 20px; }
-        @media (min-width: 768px) { .container { grid-template-columns: 1fr 2fr; align-items: start; } }
-
-        /* Header & Nav */
-        header { background: #123b6d; color: white; padding: 20px 0; text-align: center; }
-        nav { background: #fff; padding: 15px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        nav ul { list-style: none; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
-        nav a { text-decoration: none; color: #123b6d; font-weight: bold; padding: 8px 16px; border-radius: 4px; transition: background 0.3s; }
-        nav a:hover { background: #f0f0f0; }
-
-        /* Card */
-        section, article, .table-container { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-
-        /* Profile */
-        .profile { display: flex; flex-direction: column; align-items: center; text-align: center; }
-        .profile img { border-radius: 50%; border: 4px solid #123b6d; margin-bottom: 15px; object-fit: cover; width: 150px; height: 150px; }
-        h2 { color: #123b6d; margin-bottom: 15px; border-bottom: 2px solid #ffc72c; padding-bottom: 5px; display: inline-block; }
-        h3 { color: #444; margin-top: 15px; margin-bottom: 10px; font-size: 1.1rem; }
-        ul { padding-left: 20px; margin-bottom: 15px; }
-
-        /* CSS lưới Thời khóa biểu 12 tiết chuẩn theo mẫu */
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto; /* Cho phép cuộn ngang trên điện thoại */
-            -webkit-overflow-scrolling: touch;
-        }
-        .tkb-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 850px; /* Đảm bảo các cột không bị ép quá nhỏ gây vỡ chữ */
-            text-align: center;
-        }
-        .tkb-table th {
-            background-color: #337ab7;
-            color: white;
-            padding: 12px 5px;
-            border: 1px solid #ddd;
-            font-weight: bold;
-        }
-        .tkb-table td {
-            border: 1px solid #ddd;
-            padding: 10px 5px;
-            vertical-align: middle;
-            font-size: 0.95rem;
-        }
-        .tkb-table .tiet {
-            font-weight: bold;
-            width: 40px;
-        }
-        .tkb-table strong { color: #333; display: block; margin-bottom: 4px; }
-        
-        footer { text-align: center; padding: 20px; margin-top: 40px; color: #666; }
-    </style>
+    <!-- Nhúng CSS chung của nhóm (nếu có) và CSS riêng của trang cá nhân -->
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <h1>EduGPA - Hệ thống quản lý học tập</h1>
     </header>
 
-    <nav>
+    <nav aria-label="Điều hướng trang cá nhân">
         <ul>
             <li><a href="../../index.html">Quay về Trang chủ Nhóm</a></li>
             <li><a href="../../gioi-thieu.html">Giới thiệu Nhóm 3</a></li>
@@ -81,12 +24,12 @@
     <main class="container">
         
         <!-- CỘT TRÁI: Thông tin cá nhân & Kỹ năng -->
-        <section class="profile">
+        <section class="profile grid-col">
             <h2>Lê Dương Hoàng Hải</h2>
-            <img src="images/hoanghai.jpg" alt="Ảnh chân dung của Lê Dương Hoàng Hải" onerror="this.src='https://via.placeholder.com/150x150/123b6d/ffffff?text=Hải'">
+            <img src="images/hoanghai.jpg" alt="Ảnh chân dung của Lê Dương Hoàng Hải" width="150" height="150">
             <p>Xin chào! Mình là sinh viên ngành Công nghệ Thông tin tại Khoa Toán - Tin, Trường Đại học Sư phạm - Đại học Đà Nẵng. Mình đam mê phát triển phần mềm và ứng dụng thị giác máy tính.</p>
             
-            <div style="text-align: left; width: 100%; margin-top: 20px;">
+            <div class="skills-box">
                 <h3>Kỹ năng công nghệ:</h3>
                 <ul>
                     <li>Ngôn ngữ: C++, Python, SQL.</li>
@@ -98,17 +41,17 @@
         </section>
 
         <!-- CỘT PHẢI: Sở thích & Thời khóa biểu -->
-        <div>
-            <article style="margin-bottom: 30px;">
+        <div class="grid-col">
+            <article class="hobby-card">
                 <h2>Sở thích và Hoạt động</h2>
                 <p>Bên cạnh việc nghiên cứu thuật toán, mình rất yêu thích eSports. Mình là fan hâm mộ của T1 và thường chơi Đấu Trường Chân Lý, ARK: Survival Evolved.</p>
                 <p>Mình cũng có kinh nghiệm tổ chức và quản lý các giải đấu Liên Quân Mobile cho học sinh, sinh viên tại địa phương.</p>
             </article>
 
             <!-- BẢNG THỜI KHÓA BIỂU DẠNG LƯỚI 12 TIẾT -->
-            <div class="table-container" style="padding: 15px;">
-                <h2 style="display: block; text-align: center; border: none;">Thời khóa biểu</h2>
-                <div class="table-wrapper">
+            <div class="table-container">
+                <h2 class="tkb-title">Thời khóa biểu</h2>
+                <div class="table-wrapper" tabindex="0" role="region" aria-label="Bảng thời khóa biểu có thể cuộn ngang">
                     <table class="tkb-table">
                         <thead>
                             <tr>
@@ -137,12 +80,8 @@
                             <!-- Tiết 2 -->
                             <tr>
                                 <td class="tiet">2</td>
-                                <!-- T2 (gộp) -->
                                 <td></td>
                                 <td rowspan="3"><strong>Hệ quản trị cơ sở dữ liệu</strong>Phòng: B3-402</td>
-                                <!-- T5 (gộp) -->
-                                <!-- T6 (gộp) -->
-                                <!-- T7 (gộp) -->
                                 <td></td>
                             </tr>
                             <!-- Tiết 3 -->
@@ -150,18 +89,12 @@
                                 <td class="tiet">3</td>
                                 <td rowspan="2"><strong>Lịch sử Đảng Cộng sản Việt Nam</strong>Phòng: A5-404C</td>
                                 <td></td>
-                                <!-- T4 (gộp) -->
-                                <!-- T5 (gộp) -->
-                                <!-- T6 (gộp) -->
-                                <!-- T7 (gộp) -->
                                 <td></td>
                             </tr>
                             <!-- Tiết 4 -->
                             <tr>
                                 <td class="tiet">4</td>
-                                <!-- T2 (gộp) -->
                                 <td></td>
-                                <!-- T4 (gộp) -->
                                 <td rowspan="2"><strong>Hệ phân tán</strong>Phòng: B3-303</td>
                                 <td></td>
                                 <td></td>
@@ -173,7 +106,6 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <!-- T5 (gộp) -->
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -197,12 +129,12 @@
                             <!-- Tiết 8 -->
                             <tr>
                                 <td class="tiet">8</td>
-                                <td></td><td></td><td></td><!-- T5 (gộp) --><td></td><td></td><td></td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td>
                             </tr>
                             <!-- Tiết 9 -->
                             <tr>
                                 <td class="tiet">9</td>
-                                <td></td><td></td><td></td><!-- T5 (gộp) --><td></td><td></td><td></td>
+                                <td></td><td></td><td></td><td></td><td></td><td></td>
                             </tr>
                             <!-- Tiết 10 -->
                             <tr>

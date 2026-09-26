@@ -1,0 +1,209 @@
+/* Khai báo biến chung (kế thừa từ style.css gốc hoặc dự phòng) */
+:root {
+    --primary-color: #123b6d;
+    --accent-color: #ffc72c;
+    --table-header-bg: #337ab7;
+    --bg-light: #f4f7f6;
+    --text-dark: #333333;
+    --text-muted: #666666;
+    --white: #ffffff;
+    --border-color: #dddddd;
+    --radius: 8px;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* CSS Reset cơ bản */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+}
+
+/* SỬA LỖI VỠ KHUNG 360px: Dùng minmax(0, 1fr) và min-width: 0 cho ô lưới */
+.container {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.grid-col {
+    min-width: 0; /* Ngăn bảng Thời khóa biểu đẩy rộng khung lưới */
+}
+
+@media (min-width: 768px) {
+    .container {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+        align-items: start;
+    }
+}
+
+/* Header & Nav */
+header {
+    background: var(--primary-color);
+    color: var(--white);
+    padding: 20px 0;
+    text-align: center;
+}
+
+nav {
+    background: var(--white);
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--primary-color);
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+nav a:hover {
+    background: #f0f0f0;
+}
+
+/* BỔ SUNG :focus-visible THEO YÊU CẦU CỦA THẦY */
+a:focus-visible,
+button:focus-visible,
+.table-wrapper:focus-visible {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Card */
+section,
+article,
+.table-container {
+    background: var(--white);
+    padding: 25px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+/* Các class thay thế cho inline style đã xóa trong HTML */
+.skills-box {
+    text-align: left;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.hobby-card {
+    margin-bottom: 30px;
+}
+
+.table-container {
+    padding: 15px;
+}
+
+.tkb-title {
+    display: block;
+    text-align: center;
+    border: none;
+}
+
+/* Profile */
+.profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.profile img {
+    border-radius: 50%;
+    border: 4px solid var(--primary-color);
+    margin-bottom: 15px;
+    object-fit: cover;
+    width: 150px;
+    height: 150px;
+}
+
+h2 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 5px;
+    display: inline-block;
+}
+
+h3 {
+    color: #444444;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+ul {
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+/* CSS lưới Thời khóa biểu 12 tiết */
+.table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto; /* Chỉ cuộn ngang bên trong khung bảng, không làm phình trang */
+    -webkit-overflow-scrolling: touch;
+}
+
+.tkb-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 850px;
+    text-align: center;
+}
+
+.tkb-table th {
+    background-color: var(--table-header-bg);
+    color: var(--white);
+    padding: 12px 5px;
+    border: 1px solid var(--border-color);
+    font-weight: bold;
+}
+
+.tkb-table td {
+    border: 1px solid var(--border-color);
+    padding: 10px 5px;
+    vertical-align: middle;
+    font-size: 0.95rem;
+}
+
+.tkb-table .tiet {
+    font-weight: bold;
+    width: 40px;
+}
+
+.tkb-table strong {
+    color: var(--text-dark);
+    display: block;
+    margin-bottom: 4px;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    color: var(--text-muted);
+}

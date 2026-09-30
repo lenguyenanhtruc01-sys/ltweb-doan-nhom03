@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Trang giới thiệu cá nhân của Lê Dương Hoàng Hải - Thành viên Nhóm 3.">
     <title>Lê Dương Hoàng Hải | Giới thiệu cá nhân</title>
-    <!-- Nhúng CSS chung của nhóm (nếu có) và CSS riêng của trang cá nhân -->
     <link rel="stylesheet" href="../../style.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -29,6 +28,13 @@
             <img src="images/hoanghai.jpg" alt="Ảnh chân dung của Lê Dương Hoàng Hải" width="150" height="150">
             <p>Xin chào! Mình là sinh viên ngành Công nghệ Thông tin tại Khoa Toán - Tin, Trường Đại học Sư phạm - Đại học Đà Nẵng. Mình đam mê phát triển phần mềm và ứng dụng thị giác máy tính.</p>
             
+            <!-- TÍNH NĂNG 1: NÚT ĐẾM LƯỢT THÍCH -->
+            <div style="margin-top: 15px; margin-bottom: 15px;">
+                <button id="btn-like" style="padding: 10px 20px; cursor: pointer; border-radius: 5px; border: 2px solid #ffc72c; background-color: #fff; font-weight: bold; font-size: 16px; transition: 0.2s;">
+                    Ủng hộ Hải: ❤️ <span id="like-count">0</span>
+                </button>
+            </div>
+
             <div class="skills-box">
                 <h3>Kỹ năng công nghệ:</h3>
                 <ul>
@@ -48,21 +54,21 @@
                 <p>Mình cũng có kinh nghiệm tổ chức và quản lý các giải đấu Liên Quân Mobile cho học sinh, sinh viên tại địa phương.</p>
             </article>
 
-            <!-- BẢNG THỜI KHÓA BIỂU DẠNG LƯỚI 12 TIẾT -->
+            <!-- BẢNG THỜI KHÓA BIỂU -->
             <div class="table-container">
-                <h2 class="tkb-title">Thời khóa biểu</h2>
-                <div class="table-wrapper" tabindex="0" role="region" aria-label="Bảng thời khóa biểu có thể cuộn ngang">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h2 class="tkb-title" style="margin: 0; border: none;">Thời khóa biểu</h2>
+                    <!-- TÍNH NĂNG 2: NÚT ẨN/HIỆN TKB -->
+                    <button id="btn-toggle-tkb" style="padding: 8px 15px; cursor: pointer; border-radius: 5px; background-color: #123b6d; color: white; border: none; font-weight: bold;">
+                        Thu gọn ⬆️
+                    </button>
+                </div>
+                
+                <div class="table-wrapper" id="tkb-wrapper" tabindex="0" role="region" aria-label="Bảng thời khóa biểu">
                     <table class="tkb-table">
                         <thead>
                             <tr>
-                                <th>Tiết</th>
-                                <th>Thứ 2</th>
-                                <th>Thứ 3</th>
-                                <th>Thứ 4</th>
-                                <th>Thứ 5</th>
-                                <th>Thứ 6</th>
-                                <th>Thứ 7</th>
-                                <th>Chủ nhật</th>
+                                <th>Tiết</th><th>Thứ 2</th><th>Thứ 3</th><th>Thứ 4</th><th>Thứ 5</th><th>Thứ 6</th><th>Thứ 7</th><th>Chủ nhật</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -70,8 +76,7 @@
                             <tr>
                                 <td class="tiet">1</td>
                                 <td rowspan="2"><strong>An toàn thông tin</strong>Phòng: B3-206</td>
-                                <td></td>
-                                <td></td>
+                                <td></td><td></td>
                                 <td rowspan="3"><strong>Khai phá dữ liệu</strong>Phòng: A5-404B</td>
                                 <td rowspan="3"><strong>Lập trình mạng</strong>Phòng: B3-303</td>
                                 <td rowspan="3"><strong>Thiết kế và lập trình web</strong>Phòng: B3-303</td>
@@ -79,78 +84,39 @@
                             </tr>
                             <!-- Tiết 2 -->
                             <tr>
-                                <td class="tiet">2</td>
-                                <td></td>
-                                <td rowspan="3"><strong>Hệ quản trị cơ sở dữ liệu</strong>Phòng: B3-402</td>
-                                <td></td>
+                                <td class="tiet">2</td><td></td>
+                                <td rowspan="3"><strong>Hệ quản trị cơ sở dữ liệu</strong>Phòng: B3-402</td><td></td>
                             </tr>
                             <!-- Tiết 3 -->
                             <tr>
                                 <td class="tiet">3</td>
                                 <td rowspan="2"><strong>Lịch sử Đảng Cộng sản Việt Nam</strong>Phòng: A5-404C</td>
-                                <td></td>
-                                <td></td>
+                                <td></td><td></td>
                             </tr>
                             <!-- Tiết 4 -->
                             <tr>
-                                <td class="tiet">4</td>
-                                <td></td>
-                                <td rowspan="2"><strong>Hệ phân tán</strong>Phòng: B3-303</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td class="tiet">4</td><td></td>
+                                <td rowspan="2"><strong>Hệ phân tán</strong>Phòng: B3-303</td><td></td><td></td><td></td>
                             </tr>
                             <!-- Tiết 5 -->
-                            <tr>
-                                <td class="tiet">5</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
+                            <tr><td class="tiet">5</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
                             <!-- Tiết 6 -->
-                            <tr>
-                                <td class="tiet">6</td>
-                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                            </tr>
+                            <tr><td class="tiet">6</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
                             <!-- Tiết 7 -->
                             <tr>
-                                <td class="tiet">7</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td rowspan="3"><strong>Công nghệ phần mềm</strong>Phòng: B3-303</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td class="tiet">7</td><td></td><td></td><td></td>
+                                <td rowspan="3"><strong>Công nghệ phần mềm</strong>Phòng: B3-303</td><td></td><td></td><td></td>
                             </tr>
                             <!-- Tiết 8 -->
-                            <tr>
-                                <td class="tiet">8</td>
-                                <td></td><td></td><td></td><td></td><td></td><td></td>
-                            </tr>
+                            <tr><td class="tiet">8</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
                             <!-- Tiết 9 -->
-                            <tr>
-                                <td class="tiet">9</td>
-                                <td></td><td></td><td></td><td></td><td></td><td></td>
-                            </tr>
+                            <tr><td class="tiet">9</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
                             <!-- Tiết 10 -->
-                            <tr>
-                                <td class="tiet">10</td>
-                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                            </tr>
+                            <tr><td class="tiet">10</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
                             <!-- Tiết 11 -->
-                            <tr>
-                                <td class="tiet">11</td>
-                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                            </tr>
+                            <tr><td class="tiet">11</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
                             <!-- Tiết 12 -->
-                            <tr>
-                                <td class="tiet">12</td>
-                                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                            </tr>
+                            <tr><td class="tiet">12</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -162,5 +128,8 @@
     <footer>
         <p>&copy; 2026 Lê Dương Hoàng Hải - Nhóm 3.</p>
     </footer>
+
+    <!-- Gọi file JavaScript cá nhân -->
+    <script src="js/canhan.js"></script>
 </body>
 </html>

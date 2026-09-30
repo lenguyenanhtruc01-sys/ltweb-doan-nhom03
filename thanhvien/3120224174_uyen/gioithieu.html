@@ -10,6 +10,8 @@
 
     <title>Giới thiệu thành viên | EduGPA</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:,">
 </head>
 
 <body class="trang-ca-nhan">
@@ -47,7 +49,55 @@
     <main class="bao noi-dung-chinh">
 
         <h1 class="noi-dung-chinh__tieu-de">Giới thiệu bản thân</h1>
+            <section class="the-noi-dung tien-ich-ca-nhan">
+    <h2 class="the-noi-dung__tieu-de">Tùy chỉnh cỡ chữ</h2>
 
+    <div
+        class="bo-chon-co-chu"
+        role="group"
+        aria-label="Chọn cỡ chữ cho trang"
+    >
+        <button
+            class="nut-co-chu"
+            type="button"
+            data-co-chu="nho"
+            aria-pressed="false"
+        >
+            Chữ nhỏ
+        </button>
+
+        <button
+            class="nut-co-chu"
+            type="button"
+            data-co-chu="vua"
+            aria-pressed="true"
+        >
+            Chữ vừa
+        </button>
+
+        <button
+            class="nut-co-chu"
+            type="button"
+            data-co-chu="lon"
+            aria-pressed="false"
+        >
+            Chữ lớn
+        </button>
+    </div>
+
+    <p
+        id="thong-bao-co-chu"
+        class="thong-bao-tuong-tac"
+        aria-live="polite"
+    ></p>
+
+    <noscript>
+        <p>
+            Hãy bật JavaScript để sử dụng chức năng thay đổi cỡ chữ
+            và tìm kiếm môn học.
+        </p>
+    </noscript>
+        </section>      
         <section class="the-noi-dung thong-tin">
             <h2 class="the-noi-dung__tieu-de">Thông tin cá nhân</h2>
 
@@ -109,7 +159,32 @@
 
         <section class="the-noi-dung lich-hoc">
             <h2 class="the-noi-dung__tieu-de">Thời khóa biểu trong tuần</h2>
+            <div class="tim-mon-hoc">
+    <label for="o-tim-mon-hoc">
+        Tìm môn học trong thời khóa biểu
+    </label>
 
+    <div class="tim-mon-hoc__nhom">
+        <input
+            type="search"
+            id="o-tim-mon-hoc"
+            placeholder="Nhập tên môn, mã môn hoặc phòng học..."
+            autocomplete="off"
+        >
+
+        <button id="nut-xoa-tim" type="button">
+            Xóa tìm kiếm
+        </button>
+    </div>
+
+    <p
+        id="ket-qua-tim-mon"
+        class="thong-bao-tuong-tac"
+        aria-live="polite"
+    >
+        Nhập từ khóa để tìm môn học.
+    </p>
+</div>
             <div class="tkb-container" tabindex="0" role="region"
                 aria-label="Thời khóa biểu có thể cuộn ngang">
 
@@ -386,6 +461,7 @@
         </p>
     </footer>
 
+<script type="module" src="js/canhan.js"></script>
 </body>
 
 </html>

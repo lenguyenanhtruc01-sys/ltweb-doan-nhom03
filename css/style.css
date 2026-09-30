@@ -748,7 +748,7 @@ tfoot td {
     font-weight: 750;
 }
 
-/* =========================================================
+    /* =========================================================
    10. TRANG CHI TIET
    ========================================================= */
 
@@ -758,25 +758,42 @@ tfoot td {
 }
 
 .chi-tiet__noi-dung,
-.chi-tiet__ben {
+.chi-tiet__ben,
+.trang-chi-tiet main,
+.trang-chi-tiet main > article {
+    width: 100%;
+    max-width: 100%;
     min-width: 0;
 }
 
+/* Ảnh và video luôn nằm gọn trong khung */
 .trang-chi-tiet main > article figure {
+    width: 100%;
     max-width: 720px;
     margin: var(--kc-5) auto 0;
 }
 
 .trang-chi-tiet main > article img {
+    display: block;
     width: 100%;
-    aspect-ratio: 3 / 2;
-    object-fit: cover;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
     border-radius: var(--bo-goc);
 }
 
 .trang-chi-tiet main > article iframe {
+    display: block;
+    width: 100%;
+    max-width: 100%;
     aspect-ratio: 16 / 9;
     height: auto;
+}
+
+.trang-chi-tiet main > article figcaption {
+    width: 100%;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 
 .trang-chi-tiet main > article ul {
@@ -787,6 +804,22 @@ tfoot td {
     margin-top: var(--kc-2);
 }
 
+/* Bảng chỉ cuộn bên trong khung, không kéo rộng cả trang */
+.bang-cuon {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-block: var(--kc-4);
+    overflow-x: auto;
+}
+
+.bang-cuon table {
+    display: table;
+    width: 100%;
+    min-width: 700px;
+    margin: 0;
+}
 /* =========================================================
    11. TRANG GIOI THIEU
    ========================================================= */
@@ -1275,24 +1308,14 @@ details > p {
     }
 
     .trang-chi-tiet main {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 18rem;
-        gap: var(--kc-5);
-        align-items: start;
-    }
+    display: block;
+}
 
-    .trang-chi-tiet main > h1,
-    .trang-chi-tiet main > article {
-        grid-column: 1;
-    }
-
-    .trang-chi-tiet main > aside {
-        grid-column: 2;
-        grid-row: 2 / span 20;
-        position: sticky;
-        top: 6rem;
-        margin-bottom: 0;
-    }
+.trang-chi-tiet main > aside {
+    position: static;
+    width: 100%;
+    margin-bottom: var(--kc-5);
+}
 
     .trang-gioi-thieu main > section:nth-of-type(3) > article {
         flex-basis: calc(33.333% - var(--kc-4));

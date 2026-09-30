@@ -1432,3 +1432,13 @@ details > p {
         display: flex;
     }
 }
+.thong-bao-ket-qua {
+    margin-top: var(--kc-3);
+    color: var(--mau-chinh);
+    font-weight: 700;
+}
+
+.thong-bao-loi {
+    color: #b42318;
+    font-weight: 700;
+}

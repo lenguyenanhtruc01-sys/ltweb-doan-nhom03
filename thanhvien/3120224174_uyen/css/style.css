@@ -603,3 +603,151 @@ a:focus-visible,
         transition-duration: 0.01ms;
     }
 }
+/* ==========================================================
+   TƯƠNG TÁC TRANG CÁ NHÂN
+   1. Điều chỉnh cỡ chữ
+   2. Tìm kiếm môn học trong thời khóa biểu
+   ========================================================== */
+
+/* Ba mức cỡ chữ */
+html.co-chu-nho {
+    font-size: 90%;
+}
+
+html.co-chu-vua {
+    font-size: 100%;
+}
+
+html.co-chu-lon {
+    font-size: 112.5%;
+}
+
+/* Khối tùy chỉnh chiếm toàn bộ chiều rộng của Grid */
+.tien-ich-ca-nhan {
+    grid-column: 1 / -1;
+}
+
+.bo-chon-co-chu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--kc-3);
+}
+
+.nut-co-chu,
+#nut-xoa-tim {
+    min-height: 44px;
+    padding: 0.65rem 1rem;
+    border: 2px solid var(--mau-chinh);
+    border-radius: var(--bo-goc-nho);
+    color: var(--mau-chinh-dam);
+    background: var(--mau-trang);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition-property:
+        color,
+        background-color,
+        border-color,
+        transform,
+        box-shadow;
+    transition-duration: var(--thoi-gian);
+    transition-timing-function: ease;
+}
+
+.nut-co-chu {
+    flex: 1 1 8rem;
+}
+
+.nut-co-chu:hover,
+#nut-xoa-tim:hover {
+    color: #ffffff;
+    background: var(--mau-chinh);
+}
+
+.nut-co-chu:active,
+#nut-xoa-tim:active {
+    transform: translateY(1px);
+}
+
+.nut-co-chu[aria-pressed="true"] {
+    color: var(--mau-nen-dam);
+    border-color: var(--mau-nhan);
+    background: var(--mau-nhan);
+    box-shadow: 0 4px 12px rgb(154 98 0 / 20%);
+}
+
+/* Thông báo cho trình đọc màn hình */
+.thong-bao-tuong-tac {
+    min-height: 1.6em;
+    margin: var(--kc-3) 0 0;
+    color: var(--mau-chu-phu);
+    font-size: var(--co-chu-nho);
+    font-weight: 650;
+}
+
+/* Khối tìm kiếm môn học */
+.tim-mon-hoc {
+    margin-bottom: var(--kc-4);
+    padding: var(--kc-4);
+    border: 1px solid var(--mau-vien);
+    border-radius: var(--bo-goc);
+    background: var(--mau-phu-sang);
+}
+
+.tim-mon-hoc > label {
+    display: block;
+    margin-bottom: var(--kc-2);
+    color: var(--mau-chinh-dam);
+    font-weight: 750;
+}
+
+.tim-mon-hoc__nhom {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--kc-2);
+}
+
+#o-tim-mon-hoc {
+    flex: 1 1 15rem;
+    min-width: 0;
+    width: 100%;
+    min-height: 44px;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid #9eafc5;
+    border-radius: var(--bo-goc-nho);
+    color: var(--mau-chu);
+    background: #ffffff;
+    font: inherit;
+}
+
+#o-tim-mon-hoc:hover {
+    border-color: var(--mau-chinh);
+}
+
+/* Focus dùng bàn phím */
+.nut-co-chu:focus-visible,
+#nut-xoa-tim:focus-visible,
+#o-tim-mon-hoc:focus-visible {
+    outline: 3px solid var(--mau-focus);
+    outline-offset: 3px;
+}
+
+/* Kết quả tìm kiếm trong thời khóa biểu */
+.thoi-khoa-bieu .mon-hoc--tim-thay {
+    color: #0b5d3b;
+    background: #dff6e8;
+    box-shadow:
+        inset 0.25rem 0 var(--mau-thanh-cong),
+        0 0 0 3px rgb(24 121 78 / 22%);
+}
+
+.thoi-khoa-bieu .mon-hoc--khong-khop {
+    opacity: 0.35;
+}
+
+/* Điện thoại: nút xóa chiếm toàn bộ hàng */
+@media (max-width: 480px) {
+    #nut-xoa-tim {
+        width: 100%;
+    }
+}

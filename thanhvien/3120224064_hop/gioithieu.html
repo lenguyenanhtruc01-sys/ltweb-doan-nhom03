@@ -140,38 +140,42 @@
                 Bấm từng giai đoạn để xem chi tiết. Tick mục đã học — trang sẽ nhớ bằng localStorage.
             </p>
 
-            <div class="roadmap__cac-buoc" role="list">
-                <button type="button" class="roadmap__buoc roadmap__buoc--active"
-                        data-buoc="linux" role="listitem" aria-pressed="true">
-                    1. Linux
-                </button>
-                <span class="roadmap__mui-ten" aria-hidden="true">↓</span>
-                <button type="button" class="roadmap__buoc"
-                        data-buoc="network" role="listitem" aria-pressed="false">
-                    2. Network
-                </button>
-                <span class="roadmap__mui-ten" aria-hidden="true">↓</span>
-                <button type="button" class="roadmap__buoc"
-                        data-buoc="git" role="listitem" aria-pressed="false">
-                    3. Git
-                </button>
-                <span class="roadmap__mui-ten" aria-hidden="true">↓</span>
-                <button type="button" class="roadmap__buoc"
-                        data-buoc="docker" role="listitem" aria-pressed="false">
-                    4. Docker
-                </button>
-                <span class="roadmap__mui-ten" aria-hidden="true">↓</span>
-                <button type="button" class="roadmap__buoc"
-                        data-buoc="cicd" role="listitem" aria-pressed="false">
-                    5. CI/CD
-                </button>
-                <span class="roadmap__mui-ten" aria-hidden="true">↓</span>
-                <button type="button" class="roadmap__buoc"
-                        data-buoc="cloud" role="listitem" aria-pressed="false">
-                    6. Cloud
-                </button>
-            </div>
+            <div class="roadmap__cac-buoc">
+    <button type="button" class="roadmap__buoc roadmap__buoc--active"
+            data-buoc="linux" aria-pressed="true">
+        1. Linux
+    </button>
+    <span class="roadmap__mui-ten" aria-hidden="true">↓</span>
 
+    <button type="button" class="roadmap__buoc"
+            data-buoc="network" aria-pressed="false">
+        2. Network
+    </button>
+    <span class="roadmap__mui-ten" aria-hidden="true">↓</span>
+
+    <button type="button" class="roadmap__buoc"
+            data-buoc="git" aria-pressed="false">
+        3. Git
+    </button>
+    <span class="roadmap__mui-ten" aria-hidden="true">↓</span>
+
+    <button type="button" class="roadmap__buoc"
+            data-buoc="docker" aria-pressed="false">
+        4. Docker
+    </button>
+    <span class="roadmap__mui-ten" aria-hidden="true">↓</span>
+
+    <button type="button" class="roadmap__buoc"
+            data-buoc="cicd" aria-pressed="false">
+        5. CI/CD
+    </button>
+    <span class="roadmap__mui-ten" aria-hidden="true">↓</span>
+
+    <button type="button" class="roadmap__buoc"
+            data-buoc="cloud" aria-pressed="false">
+        6. Cloud
+    </button>
+</div>
             <div id="roadmap-chi-tiet" class="roadmap__chi-tiet" aria-live="polite">
                 <!-- JS render nội dung -->
             </div>

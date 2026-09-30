@@ -1368,3 +1368,67 @@ details > p {
 .the-san-pham__lien-ket:hover {
     text-decoration: underline;
 }
+/* =========================================================
+   17. MENU THU GỌN TRÊN ĐIỆN THOẠI
+   ========================================================= */
+
+/* Không có JavaScript: ẩn nút, menu vẫn hiển thị */
+.nut-menu {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    /* Có JavaScript: hiện nút mở menu */
+    .js .nut-menu {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--kc-2);
+        margin: var(--kc-2) var(--kc-3);
+        color: #ffffff;
+        border-color: rgb(255 255 255 / 45%);
+        background: rgb(255 255 255 / 12%);
+    }
+
+    .js .nut-menu:hover {
+        color: #ffffff;
+        border-color: #ffffff;
+        background: rgb(255 255 255 / 20%);
+    }
+
+    .js .nut-menu:active {
+        transform: translateY(1px);
+    }
+
+    .js .nut-menu:focus-visible {
+        outline: 3px solid var(--mau-nhan);
+        outline-offset: 2px;
+    }
+
+    /* Mặc định đóng menu khi có JavaScript */
+    .js .menu-chinh {
+        display: none;
+    }
+
+    /* main.js thêm lớp này khi người dùng bấm nút */
+    .js .menu-chinh.menu-chinh--mo {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .js .menu-chinh > li {
+        width: 100%;
+        max-width: none;
+    }
+}
+
+/* Máy tính: ẩn nút và luôn hiển thị menu */
+@media (min-width: 768px) {
+    .js .nut-menu {
+        display: none;
+    }
+
+    .js .menu-chinh {
+        display: flex;
+    }
+}

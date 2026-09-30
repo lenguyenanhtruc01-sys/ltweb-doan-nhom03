@@ -479,3 +479,164 @@ td.co-lich {
         transition-duration: 0.01ms;
     }
 }
+/* =========================================================
+   PHẦN C - TƯƠNG TÁC TRANG CÁ NHÂN
+   ========================================================= */
+
+.tuong-tac-ca-nhan {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.tuong-tac-ca-nhan__nut {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.25rem;
+}
+
+.nut-ca-nhan {
+    min-height: 44px;
+    padding: 0.75rem 1.25rem;
+    border: 2px solid #155eef;
+    border-radius: 0.65rem;
+
+    background: #155eef;
+    color: #ffffff;
+
+    font: inherit;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.nut-ca-nhan:hover {
+    background: #0d47c7;
+}
+
+.nut-ca-nhan:focus-visible {
+    outline: 3px solid #ffbf47;
+    outline-offset: 3px;
+}
+
+.nut-ca-nhan:active {
+    transform: translateY(1px);
+}
+
+.tuong-tac-ca-nhan__thong-bao {
+    min-height: 1.5rem;
+    margin-top: 1rem;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   CHẾ ĐỘ TỐI
+   ========================================================= */
+
+body.che-do-toi {
+    background-color: #121826;
+    color: #f5f7fa;
+}
+
+body.che-do-toi .dau-trang {
+    background-color: #182033;
+    color: #ffffff;
+}
+
+body.che-do-toi .dieu-huong {
+    background-color: #202a40;
+}
+
+body.che-do-toi .noi-dung-chinh {
+    color: #f5f7fa;
+}
+
+body.che-do-toi .the-noi-dung {
+    background-color: #1c2638;
+    color: #f5f7fa;
+    border-color: #3b4963;
+}
+
+body.che-do-toi .tieu-de-trang {
+    color: #f5f7fa;
+}
+
+body.che-do-toi .nhan {
+    color: #9fc5ff;
+}
+
+body.che-do-toi h1,
+body.che-do-toi h2,
+body.che-do-toi h3,
+body.che-do-toi p,
+body.che-do-toi dt,
+body.che-do-toi dd,
+body.che-do-toi li,
+body.che-do-toi figcaption {
+    color: inherit;
+}
+
+body.che-do-toi a {
+    color: #b7d4ff;
+}
+
+body.che-do-toi .thuong-hieu {
+    color: #ffffff;
+}
+
+body.che-do-toi table {
+    background-color: #1c2638;
+    color: #f5f7fa;
+}
+
+body.che-do-toi th {
+    background-color: #293750;
+    color: #ffffff;
+}
+
+body.che-do-toi td {
+    border-color: #44516a;
+}
+
+body.che-do-toi .co-lich {
+    background-color: #304a73;
+    color: #ffffff;
+}
+
+body.che-do-toi .nut-ca-nhan {
+    background-color: #9fc5ff;
+    border-color: #9fc5ff;
+    color: #101828;
+}
+
+body.che-do-toi .nut-ca-nhan:hover {
+    background-color: #c6dcff;
+}
+
+body.che-do-toi .chan-trang {
+    background-color: #182033;
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   MOBILE 360PX
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .tuong-tac-ca-nhan__nut {
+        flex-direction: column;
+    }
+
+    .nut-ca-nhan {
+        width: 100%;
+    }
+
+}

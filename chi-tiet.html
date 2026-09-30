@@ -1,442 +1,1467 @@
-<!DOCTYPE html>
-<html lang="vi">
+/* =========================================================
+   EDUGPA - CSS CHUNG CUA NHOM 03
+   Mobile-first | Grid + Flexbox | Khong dung !important
+   ========================================================= */
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Chi tiết kết quả học tập trên EduGPA - bảng điểm từng học kỳ, GPA tích lũy, tín chỉ và nhận xét học tập.">
-    <title>Chi tiết kết quả học tập | EduGPA</title>
+/* =========================================================
+   01. BIEN CSS
+   ========================================================= */
 
-    <link rel="stylesheet" href="css/style.css">
+:root {
+    --mau-chinh: #1746a2;
+    --mau-chinh-dam: #0f2f6f;
+    --mau-chinh-nhat: #eaf1ff;
+    --mau-nhan: #f4b400;
+    --mau-nhan-dam: #9a6200;
+    --mau-thanh-cong: #18794e;
+    --mau-nguy-hiem: #b42318;
 
-    <style>
-        /* ===== Khung cuộn (desktop/tablet) ===== */
-        .bang-cuon {
-            display: block;
-            width: 100%;
-            max-width: 100%;
-            min-width: 0;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-block: 1rem;
-        }
+    --mau-chu: #172033;
+    --mau-chu-phu: #526078;
+    --mau-vien: #d8e0ee;
+    --mau-nen: #ffffff;
+    --mau-nen-phu: #f5f8fe;
+    --mau-nen-dam: #0b1736;
 
-        .bang-cuon table {
-            display: table;
-            width: 100%;
-            min-width: 100%;
-            border-collapse: collapse;
-            margin: 0;
-            overflow-x: visible;
-        }
+    --font-chu: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --co-chu-nho: 0.875rem;
+    --co-chu-thuong: 1rem;
+    --co-chu-lon: clamp(1.65rem, 4vw, 2.6rem);
+    --do-cao-dong: 1.65;
 
-        /* ===== Mobile: bảng → card ===== */
-        @media (max-width: 600px) {
-    .bang-cuon {
-        overflow-x: visible;
+    --bo-goc-nho: 8px;
+    --bo-goc: 14px;
+    --bo-goc-lon: 24px;
+
+    --kc-1: 0.25rem;
+    --kc-2: 0.5rem;
+    --kc-3: 0.75rem;
+    --kc-4: 1rem;
+    --kc-5: 1.5rem;
+    --kc-6: 2rem;
+    --kc-7: 3rem;
+
+    --bong-nhe: 0 8px 24px rgb(15 47 111 / 10%);
+    --bong-vua: 0 16px 38px rgb(15 47 111 / 16%);
+    --rong-toi-da: 1180px;
+    --thoi-gian: 0.2s;
+}
+
+/* =========================================================
+   02. CHUAN HOA
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-width: 0;
+    overflow-x: hidden;
+    font-family: var(--font-chu);
+    font-size: var(--co-chu-thuong);
+    line-height: var(--do-cao-dong);
+    color: var(--mau-chu);
+    background: var(--mau-nen-phu);
+    -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg,
+video,
+canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+iframe {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    border: 0;
+    border-radius: var(--bo-goc);
+}
+
+figure {
+    margin: 0;
+}
+
+h1,
+h2,
+h3 {
+    margin-block: 0 0.75em;
+    line-height: 1.25;
+    text-wrap: balance;
+}
+
+h1 {
+    font-size: var(--co-chu-lon);
+    letter-spacing: -0.025em;
+}
+
+h2 {
+    font-size: clamp(1.35rem, 3vw, 1.9rem);
+    color: var(--mau-chinh-dam);
+}
+
+h3 {
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+}
+
+p,
+ul,
+ol {
+    margin-block: 0 1rem;
+}
+
+a {
+    color: var(--mau-chinh);
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: 0.08em;
+    transition:
+        color var(--thoi-gian) ease,
+        background-color var(--thoi-gian) ease,
+        border-color var(--thoi-gian) ease,
+        transform var(--thoi-gian) ease;
+}
+
+a:hover {
+    color: var(--mau-chinh-dam);
+}
+
+a:active {
+    color: var(--mau-nhan-dam);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+    outline: 3px solid var(--mau-nhan);
+    outline-offset: 3px;
+}
+
+button,
+input,
+select,
+textarea {
+    max-width: 100%;
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+::selection {
+    color: #ffffff;
+    background: var(--mau-chinh);
+}
+
+/* =========================================================
+   03. KHUNG TRANG CHUNG - CSS GRID
+   ========================================================= */
+
+.trang {
+    min-height: 100vh;
+    display: grid;
+    grid-template-areas:
+        "dau"
+        "menu"
+        "chinh"
+        "chan";
+    grid-template-rows: auto auto 1fr auto;
+}
+
+.trang > header,
+.dau-trang {
+    grid-area: dau;
+}
+
+.trang > nav,
+.dieu-huong {
+    grid-area: menu;
+}
+
+.trang > main,
+.noi-dung-chinh {
+    grid-area: chinh;
+}
+
+.trang > footer,
+.chan-trang {
+    grid-area: chan;
+}
+
+.bao {
+    width: min(calc(100% - 2rem), var(--rong-toi-da));
+    margin-inline: auto;
+}
+
+.trang > main {
+    width: min(calc(100% - 2rem), var(--rong-toi-da));
+    margin-inline: auto;
+    padding-block: var(--kc-6);
+}
+
+.trang > main > h1 {
+    margin-bottom: var(--kc-5);
+    color: var(--mau-chinh-dam);
+}
+
+.trang > main > section,
+.trang > main > article,
+.trang > main > aside,
+.khu-vuc {
+    min-width: 0;
+    margin-bottom: var(--kc-5);
+}
+
+.trang > main > section:not(.hero),
+.trang > main > article {
+    padding: clamp(1rem, 3vw, 2rem);
+    border: 1px solid var(--mau-vien);
+    border-radius: var(--bo-goc-lon);
+    background: var(--mau-nen);
+    box-shadow: var(--bong-nhe);
+}
+
+/* =========================================================
+   04. HEADER
+   ========================================================= */
+
+.trang > header,
+.dau-trang {
+    color: #ffffff;
+    background:
+        radial-gradient(circle at 85% 20%, rgb(244 180 0 / 22%), transparent 28%),
+        linear-gradient(120deg, var(--mau-chinh-dam), var(--mau-chinh));
+}
+
+.trang > header {
+    padding: 1.1rem max(1rem, calc((100% - var(--rong-toi-da)) / 2));
+}
+
+.trang > header p {
+    margin: 0;
+}
+
+.trang > header p:first-child,
+.thuong-hieu {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.trang > header h1 {
+    margin: 0;
+    font-size: clamp(1.45rem, 4vw, 2rem);
+    color: #ffffff;
+}
+
+.trang > header p + p,
+.dau-trang__mo-ta {
+    margin-top: var(--kc-1);
+    color: #e7efff;
+    font-size: var(--co-chu-nho);
+}
+
+.dau-trang__noi-dung {
+    width: min(calc(100% - 2rem), var(--rong-toi-da));
+    margin-inline: auto;
+    padding-block: var(--kc-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--kc-1);
+}
+
+.thuong-hieu {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.thuong-hieu:hover,
+.thuong-hieu:active {
+    color: #ffffff;
+}
+
+/* =========================================================
+   05. THANH DIEU HUONG - FLEXBOX
+   ========================================================= */
+
+.trang > nav,
+.dieu-huong {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--mau-nen-dam);
+    box-shadow: 0 6px 18px rgb(11 23 54 / 18%);
+}
+
+.trang > nav ul,
+.dieu-huong__danh-sach {
+    width: min(100%, var(--rong-toi-da));
+    margin: 0 auto;
+    padding: var(--kc-2) var(--kc-3);
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--kc-1);
+}
+
+.trang > nav li,
+.dieu-huong__muc {
+    flex: 1 1 8.5rem;
+    max-width: 13rem;
+}
+
+.trang > nav a,
+.dieu-huong__lien-ket {
+    display: block;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid transparent;
+    border-radius: var(--bo-goc-nho);
+    color: #f7f9ff;
+    font-weight: 650;
+    text-align: center;
+    text-decoration: none;
+}
+
+.trang > nav a:hover,
+.dieu-huong__lien-ket:hover {
+    color: #ffffff;
+    background: rgb(255 255 255 / 13%);
+}
+
+.trang > nav a:active,
+.dieu-huong__lien-ket:active {
+    color: #ffffff;
+    background: rgb(255 255 255 / 22%);
+    transform: translateY(1px);
+}
+
+.trang > nav a[aria-current="page"],
+.dieu-huong__lien-ket--hien-tai {
+    color: var(--mau-nen-dam);
+    background: var(--mau-nhan);
+}
+
+.trang > nav a:focus-visible,
+.dieu-huong__lien-ket:focus-visible {
+    outline-offset: -3px;
+}
+
+/* =========================================================
+   06. NUT DUNG LAI
+   ========================================================= */
+
+.nut,
+button,
+input[type="submit"],
+input[type="reset"] {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7rem 1.1rem;
+    border: 2px solid var(--mau-chinh);
+    border-radius: var(--bo-goc-nho);
+    color: #ffffff;
+    background: var(--mau-chinh);
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition:
+        color var(--thoi-gian) ease,
+        background-color var(--thoi-gian) ease,
+        border-color var(--thoi-gian) ease,
+        transform var(--thoi-gian) ease,
+        box-shadow var(--thoi-gian) ease;
+}
+
+.nut:hover,
+button:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover {
+    color: #ffffff;
+    border-color: var(--mau-chinh-dam);
+    background: var(--mau-chinh-dam);
+    box-shadow: 0 8px 18px rgb(23 70 162 / 20%);
+    transform: translateY(-1px);
+}
+
+.nut:active,
+button:active,
+input[type="submit"]:active,
+input[type="reset"]:active {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+.nut--phu,
+button[type="reset"],
+input[type="reset"] {
+    color: var(--mau-chinh-dam);
+    border-color: var(--mau-chinh);
+    background: #ffffff;
+}
+
+.nut--phu:hover,
+button[type="reset"]:hover,
+input[type="reset"]:hover {
+    color: #ffffff;
+}
+
+/* =========================================================
+   07. TRANG CHU - HERO VA CAC THE
+   ========================================================= */
+
+.trang > main > section.hero {
+    padding: clamp(1rem, 3vw, 2rem);
+    border: 1px solid var(--mau-chinh-dam);
+    border-radius: var(--bo-goc-lon);
+    color: #ffffff;
+    background-color: var(--mau-chinh);
+    background-image: linear-gradient(115deg, #0f2f6f, #1746a2);
+    box-shadow: var(--bong-nhe);
+}
+
+.hero__khung {
+    padding-block: clamp(2.5rem, 7vw, 5rem);
+    display: grid;
+    gap: var(--kc-6);
+    align-items: center;
+}
+
+.hero__tieu-de {
+    max-width: 18ch;
+    color: #ffffff;
+}
+
+.hero__nhan,
+.tieu-de-khu-vuc__nhan,
+.kham-pha__nhan {
+    margin-bottom: var(--kc-2);
+    color: var(--mau-nhan-dam);
+    font-size: var(--co-chu-nho);
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.hero__nhan,
+.kham-pha__nhan {
+    color: #ffd66b;
+}
+
+.hero__mo-ta {
+    max-width: 62ch;
+    color: #e7efff;
+}
+
+.hero__hanh-dong,
+.kham-pha__hanh-dong {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--kc-3);
+}
+
+.hero__hinh img,
+.trang-chu main > section:first-of-type img {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: var(--bo-goc-lon);
+    box-shadow: var(--bong-vua);
+}
+
+figcaption,
+.hero__chu-thich {
+    margin-top: var(--kc-2);
+    color: var(--mau-chu-phu);
+    font-size: var(--co-chu-nho);
+    text-align: center;
+}
+
+.hero figcaption {
+    color: #e7efff;
+}
+
+.tieu-de-khu-vuc {
+    max-width: 65ch;
+    margin-bottom: var(--kc-5);
+}
+
+.luoi-the,
+.luoi-doi-tuong {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+    gap: var(--kc-4);
+}
+
+.the,
+.doi-tuong,
+.trang-chu main > section:nth-of-type(2) article,
+.trang-chu main > section:nth-of-type(4) article {
+    min-width: 0;
+    padding: var(--kc-5);
+    border: 1px solid var(--mau-vien);
+    border-radius: var(--bo-goc);
+    background: #ffffff;
+    box-shadow: var(--bong-nhe);
+    transition:
+        transform var(--thoi-gian) ease,
+        box-shadow var(--thoi-gian) ease,
+        border-color var(--thoi-gian) ease;
+}
+
+.the:hover,
+.doi-tuong:hover,
+.trang-chu main > section:nth-of-type(2) article:hover,
+.trang-chu main > section:nth-of-type(4) article:hover {
+    border-color: #9db6e7;
+    box-shadow: var(--bong-vua);
+    transform: translateY(-3px);
+}
+
+.the__bieu-tuong {
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: var(--kc-4);
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: #ffffff;
+    background: var(--mau-chinh);
+    font-size: var(--co-chu-nho);
+    font-weight: 800;
+}
+
+.the__lien-ket {
+    font-weight: 750;
+}
+
+.cac-buoc {
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--kc-4);
+}
+
+.cac-buoc__muc {
+    display: flex;
+    gap: var(--kc-4);
+    align-items: flex-start;
+}
+
+.cac-buoc__so {
+    flex: 0 0 3rem;
+    height: 3rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: #ffffff;
+    background: var(--mau-chinh);
+    font-weight: 800;
+}
+
+.khu-vuc--nen-phu {
+    background: var(--mau-nen-phu);
+}
+
+.kham-pha,
+.trang > main > aside {
+    padding: clamp(1.25rem, 4vw, 2.25rem);
+    border-radius: var(--bo-goc-lon);
+    color: #ffffff;
+    background:
+        radial-gradient(circle at 90% 10%, rgb(244 180 0 / 24%), transparent 30%),
+        var(--mau-nen-dam);
+}
+
+.kham-pha__khung {
+    display: flex;
+    flex-direction: column;
+    gap: var(--kc-5);
+}
+
+.kham-pha h2,
+.trang > main > aside h2 {
+    color: #ffffff;
+}
+
+.trang > main > aside ul {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.trang > main > aside a:not(.nut) {
+    color: #ffffff;
+}
+
+.trang > main > aside a:not(.nut):hover {
+    color: #ffd66b;
+}
+
+
+/* Ho tro truc tiep HTML cu cua index.html trong kho hien tai */
+.trang-chu main > h1 {
+    margin: 0;
+    padding: clamp(1.5rem, 5vw, 3.5rem);
+    border-radius: var(--bo-goc-lon) var(--bo-goc-lon) 0 0;
+    color: #ffffff;
+    background:
+        radial-gradient(circle at 90% 10%, rgb(244 180 0 / 25%), transparent 28%),
+        linear-gradient(120deg, var(--mau-chinh-dam), var(--mau-chinh));
+}
+
+.trang-chu main > section:first-of-type {
+    border-top: 0;
+    border-radius: 0 0 var(--bo-goc-lon) var(--bo-goc-lon);
+    display: grid;
+    gap: var(--kc-5);
+    align-items: center;
+}
+
+.trang-chu main > section:nth-of-type(2),
+.trang-chu main > section:nth-of-type(4) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: var(--kc-4);
+}
+
+.trang-chu main > section:nth-of-type(2) > h2,
+.trang-chu main > section:nth-of-type(4) > h2 {
+    grid-column: 1 / -1;
+}
+
+.trang-chu main > section:nth-of-type(3) ol {
+    padding-left: 1.3rem;
+    columns: 1;
+    column-gap: var(--kc-7);
+}
+
+/* =========================================================
+   08. TRANG DANH SACH
+   ========================================================= */
+
+.trang-danh-sach main > section form {
+    margin-top: var(--kc-5);
+}
+
+.trang-danh-sach main > br {
+    display: none;
+}
+
+.luoi-danh-sach,
+.luoi-san-pham,
+.danh-sach-the {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: var(--kc-4);
+}
+
+.the-san-pham img,
+.the-bai-viet img,
+.luoi-danh-sach img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: var(--bo-goc-nho);
+}
+
+/* =========================================================
+   09. BANG DU LIEU
+   ========================================================= */
+
+table {
+    width: 100%;
+    max-width: 100%;
+    display: block;
+    overflow-x: auto;
+    border-spacing: 0;
+    border: 1px solid var(--mau-vien);
+    border-radius: var(--bo-goc);
+    background: #ffffff;
+    box-shadow: var(--bong-nhe);
+    -webkit-overflow-scrolling: touch;
+}
+
+caption {
+    padding: var(--kc-3) var(--kc-4);
+    color: var(--mau-chinh-dam);
+    font-weight: 750;
+    text-align: left;
+    caption-side: top;
+}
+
+th,
+td {
+    min-width: 7.5rem;
+    padding: 0.75rem;
+    border-right: 1px solid var(--mau-vien);
+    border-bottom: 1px solid var(--mau-vien);
+    text-align: left;
+    vertical-align: middle;
+}
+
+th:last-child,
+td:last-child {
+    border-right: 0;
+}
+
+tbody tr:last-child th,
+tbody tr:last-child td,
+tfoot tr:last-child th,
+tfoot tr:last-child td {
+    border-bottom: 0;
+}
+
+thead th {
+    color: #ffffff;
+    background: var(--mau-chinh-dam);
+}
+
+tbody tr:nth-child(even) {
+    background: var(--mau-nen-phu);
+}
+
+tbody tr:hover {
+    background: var(--mau-chinh-nhat);
+}
+
+tfoot th,
+tfoot td {
+    color: var(--mau-chinh-dam);
+    background: #e8effc;
+    font-weight: 750;
+}
+
+    /* =========================================================
+   10. TRANG CHI TIET
+   ========================================================= */
+
+.bo-cuc-chi-tiet {
+    display: grid;
+    gap: var(--kc-5);
+}
+
+.chi-tiet__noi-dung,
+.chi-tiet__ben,
+.trang-chi-tiet main,
+.trang-chi-tiet main > article {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+/* Ảnh và video luôn nằm gọn trong khung */
+.trang-chi-tiet main > article figure {
+    width: 100%;
+    max-width: 720px;
+    margin: var(--kc-5) auto 0;
+}
+
+.trang-chi-tiet main > article img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--bo-goc);
+}
+
+.trang-chi-tiet main > article iframe {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+}
+
+.trang-chi-tiet main > article figcaption {
+    width: 100%;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+.trang-chi-tiet main > article ul {
+    padding-left: 1.25rem;
+}
+
+.trang-chi-tiet main > article li + li {
+    margin-top: var(--kc-2);
+}
+
+/* Bảng chỉ cuộn bên trong khung, không kéo rộng cả trang */
+.bang-cuon {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-block: var(--kc-4);
+    overflow-x: auto;
+}
+
+.bang-cuon table {
+    display: table;
+    width: 100%;
+    min-width: 700px;
+    margin: 0;
+}
+/* =========================================================
+   11. TRANG GIOI THIEU
+   ========================================================= */
+
+/* Tiêu đề chính */
+.trang-gioi-thieu main > h1 {
+    margin-bottom: var(--kc-5);
+    color: var(--mau-chinh-dam);
+}
+
+/* Các khối nội dung của trang Giới thiệu */
+.trang-gioi-thieu main > section {
+    width: 100%;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    margin-bottom: var(--kc-5);
+
+    border: 1px solid var(--mau-vien);
+    border-radius: var(--bo-goc-lon);
+
+    background: var(--mau-nen);
+    box-shadow: var(--bong-nhe);
+}
+
+/* Tiêu đề từng phần */
+.trang-gioi-thieu main > section > h2 {
+    margin-bottom: var(--kc-4);
+    color: var(--mau-chinh-dam);
+}
+
+/* =========================================================
+   ĐOẠN VĂN DÀI
+   Yêu cầu đề bài: max-width khoảng 65ch
+   ========================================================= */
+
+.trang-gioi-thieu .gioi-thieu__mo-ta,
+.trang-gioi-thieu .gioi-thieu__van-ban {
+    max-width: 65ch;
+    margin-left: 0;
+    margin-right: auto;
+    line-height: 1.8;
+}
+
+/* Danh sách mục tiêu */
+.trang-gioi-thieu main > section ul:not(.danh-sach-thanh-vien) {
+    padding-left: 1.4rem;
+}
+
+.trang-gioi-thieu main > section ul:not(.danh-sach-thanh-vien) li {
+    margin-bottom: var(--kc-2);
+}
+
+/* =========================================================
+   DANH SÁCH THÀNH VIÊN - FLEXBOX
+   ========================================================= */
+
+.trang-gioi-thieu .danh-sach-thanh-vien {
+    margin: var(--kc-5) 0 0;
+    padding: 0;
+
+    list-style: none;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--kc-4);
+
+    width: 100%;
+}
+
+/* Mỗi thành viên */
+.trang-gioi-thieu .danh-sach-thanh-vien__muc {
+    flex: 1 1 200px;
+    min-width: 0;
+}
+
+/* Card thành viên */
+.trang-gioi-thieu .danh-sach-thanh-vien__lien-ket {
+    height: 100%;
+    min-height: 90px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: var(--kc-4);
+
+    border: 1px solid var(--mau-vien);
+    border-radius: var(--bo-goc);
+
+    color: var(--mau-chinh-dam);
+    background: #ffffff;
+
+    font-weight: 750;
+    text-align: center;
+    text-decoration: none;
+
+    box-shadow: 0 5px 16px rgb(15 47 111 / 7%);
+
+    transition:
+        transform var(--thoi-gian) ease,
+        box-shadow var(--thoi-gian) ease,
+        border-color var(--thoi-gian) ease,
+        background-color var(--thoi-gian) ease;
+}
+
+.trang-gioi-thieu .danh-sach-thanh-vien__lien-ket:hover {
+    border-color: var(--mau-chinh);
+    background: var(--mau-chinh-nhat);
+    box-shadow: var(--bong-nhe);
+    transform: translateY(-3px);
+}
+
+/* =========================================================
+   ĐỐI TƯỢNG SỬ DỤNG
+   ========================================================= */
+
+.trang-gioi-thieu .gioi-thieu__doi-tuong {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--kc-4);
+}
+
+.trang-gioi-thieu .gioi-thieu__doi-tuong > h2 {
+    flex-basis: 100%;
+}
+
+/* Card đối tượng */
+.trang-gioi-thieu .gioi-thieu__doi-tuong-the {
+    flex: 1 1 230px;
+
+    padding: var(--kc-5);
+
+    border: 1px solid var(--mau-vien);
+    border-left: 4px solid var(--mau-nhan);
+    border-radius: var(--bo-goc);
+
+    background: var(--mau-nen-phu);
+}
+
+.trang-gioi-thieu .gioi-thieu__doi-tuong-the h3 {
+    margin-bottom: var(--kc-2);
+    color: var(--mau-chinh-dam);
+}
+
+.trang-gioi-thieu .gioi-thieu__doi-tuong-the p {
+    margin-bottom: 0;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 767px) {
+    .trang-gioi-thieu main > section {
+        padding: var(--kc-4);
     }
 
-    .bang-cuon table,
-    .bang-cuon thead,
-    .bang-cuon tbody,
-    .bang-cuon tfoot,
-    .bang-cuon tr,
-    .bang-cuon th,
-    .bang-cuon td {
-        display: block;
-        width: 100%;
+    .trang-gioi-thieu .danh-sach-thanh-vien__muc {
+        flex-basis: 100%;
     }
 
-    .bang-cuon thead {
+    .trang-gioi-thieu .gioi-thieu__doi-tuong-the {
+        flex-basis: 100%;
+    }
+}
+/* =========================================================
+   12. FORM VA TRANG LIEN HE
+   ========================================================= */
+
+form {
+    max-width: 100%;
+}
+
+fieldset {
+    min-width: 0;
+    margin: 0 0 var(--kc-4);
+    padding: var(--kc-4);
+    border: 1px solid var(--mau-vien);
+    border-radius: var(--bo-goc);
+    background: var(--mau-nen-phu);
+}
+
+legend {
+    padding-inline: var(--kc-2);
+    color: var(--mau-chinh-dam);
+    font-weight: 800;
+}
+
+label {
+    color: var(--mau-chu);
+    font-weight: 650;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="search"],
+select,
+textarea {
+    width: 100%;
+    margin-top: var(--kc-2);
+    padding: 0.75rem 0.85rem;
+    border: 1px solid #a8b4c8;
+    border-radius: var(--bo-goc-nho);
+    color: var(--mau-chu);
+    background: #ffffff;
+    transition:
+        border-color var(--thoi-gian) ease,
+        box-shadow var(--thoi-gian) ease;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+    border-color: var(--mau-chinh);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    border-color: var(--mau-chinh);
+    box-shadow: 0 0 0 4px rgb(23 70 162 / 14%);
+}
+
+textarea {
+    min-height: 9rem;
+    resize: vertical;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-right: var(--kc-1);
+    accent-color: var(--mau-chinh);
+}
+
+input[type="radio"] + label,
+input[type="checkbox"] + label {
+    margin-right: var(--kc-3);
+    font-weight: 500;
+}
+
+form > p:last-child {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--kc-3);
+}
+
+details {
+    margin-bottom: var(--kc-3);
+    border: 1px solid var(--mau-vien);
+    border-radius: var(--bo-goc-nho);
+    background: #ffffff;
+}
+
+summary {
+    padding: var(--kc-4);
+    color: var(--mau-chinh-dam);
+    font-weight: 750;
+    cursor: pointer;
+}
+
+details[open] summary {
+    border-bottom: 1px solid var(--mau-vien);
+    background: var(--mau-chinh-nhat);
+}
+
+details > p {
+    padding: var(--kc-4);
+    margin: 0;
+}
+
+.trang-lien-he main > p {
+    max-width: 70ch;
+    color: var(--mau-chu-phu);
+}
+
+.trang-lien-he main > section:nth-of-type(2) > ul {
+    padding-left: 1.25rem;
+}
+
+.trang-lien-he main > section:nth-of-type(2) > ul li + li {
+    margin-top: var(--kc-2);
+}
+
+.trang-lien-he main > section:nth-of-type(2) iframe {
+    aspect-ratio: 3 / 2;
+    height: auto;
+}
+
+/* =========================================================
+   13. FOOTER - FLEXBOX
+   ========================================================= */
+
+.trang > footer,
+.chan-trang {
+    padding: var(--kc-6) max(1rem, calc((100% - var(--rong-toi-da)) / 2));
+    color: #dce6fb;
+    background: var(--mau-nen-dam);
+}
+
+.trang > footer p {
+    margin: 0;
+    text-align: center;
+}
+
+.chan-trang__noi-dung {
+    display: flex;
+    flex-direction: column;
+    gap: var(--kc-4);
+}
+
+.chan-trang__thuong-hieu {
+    margin: 0;
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.chan-trang__mo-ta {
+    margin: var(--kc-1) 0 0;
+    color: #c4d1ea;
+}
+
+.chan-trang__dieu-huong {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--kc-4);
+}
+
+.chan-trang a {
+    color: #ffffff;
+}
+
+.chan-trang a:hover {
+    color: #ffd66b;
+}
+
+/* =========================================================
+   14. TIEN ICH
+   ========================================================= */
+
+.an-tren-dien-thoai {
+    display: none;
+}
+
+.can-giua {
+    text-align: center;
+}
+
+.chu-phu {
+    color: var(--mau-chu-phu);
+}
+
+.khong-le-duoi {
+    margin-bottom: 0;
+}
+
+/* =========================================================
+   15. RESPONSIVE - TABLET (MIN-WIDTH: 768PX)
+   ========================================================= */
+
+@media (min-width: 768px) {
+    .trang > header {
+        min-height: 5.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--kc-5);
+    }
+
+    .trang > header p + p {
+        max-width: 48ch;
+        margin-top: 0;
+        text-align: right;
+    }
+
+    .dau-trang__noi-dung {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--kc-6);
+    }
+
+    .dau-trang__mo-ta {
+        max-width: 48ch;
+        text-align: right;
+    }
+
+    .trang > nav ul,
+    .dieu-huong__danh-sach {
+        flex-wrap: nowrap;
+    }
+
+    .trang > nav li,
+    .dieu-huong__muc {
+        flex: 0 1 auto;
+        min-width: 7.5rem;
+    }
+
+    .hero__khung,
+    .trang-chu main > section:first-of-type {
+        grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+    }
+
+    .trang-chu main > section:first-of-type > figure {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+    }
+
+    .trang-chu main > section:nth-of-type(3) ol {
+        columns: 2;
+    }
+
+    .cac-buoc {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .kham-pha__khung {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .kham-pha__noi-dung {
+        max-width: 62ch;
+    }
+
+    .bo-cuc-chi-tiet {
+        grid-template-columns: minmax(0, 1fr) 17rem;
+        align-items: start;
+    }
+
+    .trang-lien-he main {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+        gap: var(--kc-5);
+        align-items: start;
+    }
+
+    .trang-lien-he main > h1,
+    .trang-lien-he main > p,
+    .trang-lien-he main > section:nth-of-type(3),
+    .trang-lien-he main > aside {
+        grid-column: 1 / -1;
+    }
+
+    .trang-lien-he main > section:nth-of-type(1),
+    .trang-lien-he main > section:nth-of-type(2) {
+        height: 100%;
+        margin-bottom: 0;
+    }
+
+    .chan-trang__noi-dung {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .an-tren-dien-thoai {
+        display: initial;
+    }
+}
+
+/* =========================================================
+   16. RESPONSIVE - DESKTOP (MIN-WIDTH: 992PX)
+   ========================================================= */
+
+@media (min-width: 992px) {
+    .bao,
+    .dau-trang__noi-dung {
+        width: min(calc(100% - 3rem), var(--rong-toi-da));
+    }
+
+    .trang > main {
+        width: min(calc(100% - 3rem), var(--rong-toi-da));
+        padding-block: var(--kc-7);
+    }
+
+    .hero__khung {
+        grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+    }
+
+    .cac-buoc {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .trang-chi-tiet main {
+    display: block;
+}
+
+.trang-chi-tiet main > aside {
+    position: static;
+    width: 100%;
+    margin-bottom: var(--kc-5);
+}
+
+    .trang-gioi-thieu main > section:nth-of-type(3) > article {
+        flex-basis: calc(33.333% - var(--kc-4));
+    }
+}
+
+/* =========================================================
+   17. GIAM CHUYEN DONG VA IN AN
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto;
+        transition-duration: 0.01ms;
+    }
+}
+
+@media print {
+    .trang > nav,
+    .dieu-huong,
+    .trang > main > aside,
+    .kham-pha {
         display: none;
     }
 
-    /* ===== FIX CAPTION ===== */
-    .bang-cuon caption {
-        display: block;
+    body,
+    .trang > main > section,
+    .trang > main > article {
+        color: #000000;
+        background: #ffffff;
+        box-shadow: none;
+    }
+
+    .trang > main {
         width: 100%;
-        text-align: left;
-        white-space: normal;
-        word-break: normal;
-        overflow-wrap: normal;
-        font-size: 0.9rem;
-        font-weight: 750;
-        padding: 0.6rem 0.75rem;
-        margin-bottom: 0.75rem;
-        color: #ffffff;
-        background: var(--mau-chinh-dam);
-        border-radius: var(--bo-goc);
-        caption-side: top;
-        box-sizing: border-box;
-    }
-
-    /* ===== CARD ===== */
-    .bang-cuon tbody tr {
-        margin-bottom: 0.75rem;
-        border: 1px solid var(--mau-vien);
-        border-radius: var(--bo-goc);
-        background: #fff;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgb(15 47 111 / 6%);
-    }
-
-    .bang-cuon tbody td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.5rem 0.75rem;
-        border: 0;
-        border-bottom: 1px solid var(--mau-vien);
-        font-size: 0.85rem;
-        text-align: right;
-        min-width: 0;
-    }
-
-    .bang-cuon tbody td:last-child {
-        border-bottom: 0;
-    }
-
-    .bang-cuon tbody td::before {
-        content: attr(data-label);
-        font-weight: 700;
-        color: var(--mau-chinh-dam);
-        text-align: left;
-        padding-right: 0.75rem;
-        flex-shrink: 0;
-    }
-
-    .bang-cuon tbody tr:nth-child(even) {
-        background: #fff;
-    }
-
-    .bang-cuon tfoot tr {
-        display: block;
-        padding: 0.75rem;
-        background: #e8effc;
-        border-radius: var(--bo-goc);
-        margin-top: 0.5rem;
-    }
-
-    .bang-cuon tfoot th,
-    .bang-cuon tfoot td {
-        display: block;
-        text-align: left;
-        border: 0;
-        padding: 0.25rem 0;
-        background: transparent;
-        font-size: 0.85rem;
-    }
-
-    .bang-cuon tfoot th[colspan] {
-        font-weight: 800;
-        color: var(--mau-chinh-dam);
-        margin-bottom: 0.25rem;
     }
 }
-    </style>
-</head>
+.luoi-san-pham { display: grid; gap: var(--khoang-cach, 16px); grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.the-san-pham img { width: 100%; height: 250px; object-fit: cover; border-radius: var(--bo-goc, 8px) var(--bo-goc, 8px) 0 0; }
+.khung-chi-tiet { display: grid; gap: var(--khoang-cach, 16px); grid-template-columns: 1fr; }
+@media (min-width: 768px) { .khung-chi-tiet { grid-template-columns: 1fr 300px; align-items: start; } }
+.doan-van-dai { max-width: 65ch; margin: 0 ; line-height: 1.8; }
+.khung-lien-he { display: grid; grid-template-columns: 1fr; gap: 30px; }
+@media (min-width: 768px) { .khung-lien-he { grid-template-columns: 1fr 1fr; } }
+.form-lien-he { display: flex; flex-direction: column; gap: 15px; }
+.form-lien-he label { font-weight: 600; margin-bottom: -5px; }
+.form-lien-he input, .form-lien-he textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: var(--bo-goc, 8px); font-family: inherit; }
+.form-lien-he input:focus-visible, .form-lien-he textarea:focus-visible, .form-lien-he button:focus-visible { outline: 3px solid var(--mau-nhan, #ffc72c); outline-offset: 2px; border-color: transparent; }
+.form-lien-he button { padding: 12px 24px; background-color: var(--mau-chinh, #123b6d); color: var(--nen, #fff); border: none; border-radius: var(--bo-goc, 8px); cursor: pointer; transition: all 0.2s ease; }
+.form-lien-he button:hover { opacity: 0.9; transform: translateY(-2px); }
+/* Bổ sung class BEM cho thẻ môn học ở trang danh-sach.html */
+.the-san-pham__than {
+    padding: 15px;
+    border: 1px solid #eeeeee;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+}
 
-<body class="trang trang-chi-tiet">
+.the-san-pham__lien-ket {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--mau-chinh, #123b6d);
+    font-weight: bold;
+    text-decoration: none;
+}
 
-    <header class="dau-trang">
-        <div class="dau-trang__noi-dung">
-            <a class="thuong-hieu" href="index.html">EduGPA</a>
-            <p class="dau-trang__mo-ta">
-                Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập cho sinh viên
-            </p>
-        </div>
-    </header>
+.the-san-pham__lien-ket:hover {
+    text-decoration: underline;
+}
+/* =========================================================
+   17. MENU THU GỌN TRÊN ĐIỆN THOẠI
+   ========================================================= */
 
-    <nav class="dieu-huong" aria-label="Điều hướng chính">
-        <ul class="dieu-huong__danh-sach">
-            <li class="dieu-huong__muc"><a class="dieu-huong__lien-ket" href="index.html">Trang chủ</a></li>
-            <li class="dieu-huong__muc"><a class="dieu-huong__lien-ket" href="danh-sach.html">Danh sách</a></li>
-            <li class="dieu-huong__muc"><a class="dieu-huong__lien-ket dieu-huong__lien-ket--hien-tai" href="chi-tiet.html" aria-current="page">Chi tiết</a></li>
-            <li class="dieu-huong__muc"><a class="dieu-huong__lien-ket" href="gioi-thieu.html">Giới thiệu</a></li>
-            <li class="dieu-huong__muc"><a class="dieu-huong__lien-ket" href="lien-he.html">Liên hệ</a></li>
-        </ul>
-    </nav>
+/* Không có JavaScript: ẩn nút, menu vẫn hiển thị */
+.nut-menu {
+    display: none;
+}
 
-    <main>
+@media (max-width: 767px) {
+    /* Có JavaScript: hiện nút mở menu */
+    .js .nut-menu {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--kc-2);
+        margin: var(--kc-2) var(--kc-3);
+        color: #ffffff;
+        border-color: rgb(255 255 255 / 45%);
+        background: rgb(255 255 255 / 12%);
+    }
 
-        <h1>Chi tiết kết quả học tập</h1>
+    .js .nut-menu:hover {
+        color: #ffffff;
+        border-color: #ffffff;
+        background: rgb(255 255 255 / 20%);
+    }
 
-        <article>
-            <h2>Tổng quan kết quả học tập</h2>
-            <p>
-                Trang này hiển thị chi tiết kết quả học tập của sinh viên
-                ngành Công nghệ thông tin, khóa 2021. Dữ liệu được cập nhật
-                theo từng học kỳ, bao gồm điểm chữ, điểm hệ 4 và số tín chỉ
-                của từng môn học.
-            </p>
-            <p>
-                Dựa trên bảng điểm này, EduGPA tự động tính GPA học kỳ,
-                GPA tích lũy và theo dõi số tín chỉ đã hoàn thành để đánh giá
-                tiến độ hướng tới mục tiêu tốt nghiệp.
-            </p>
-            <figure>
-                <img src="images/mota.png"
-                     alt="Minh họa bảng điểm chi tiết kết quả học tập trên hệ thống EduGPA"
-                     width="600" height="400" loading="lazy">
-                <figcaption>Bảng điểm chi tiết được hiển thị theo từng học kỳ trên EduGPA.</figcaption>
-            </figure>
-        </article>
+    .js .nut-menu:active {
+        transform: translateY(1px);
+    }
 
-        <article>
-            <h2>Bảng điểm học kỳ 1 - Năm học 2025 - 2026</h2>
-            <div class="bang-cuon">
-                <table>
-                    <caption>Bảng điểm chi tiết học kỳ 1 năm học 2025 - 2026</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">STT</th><th scope="col">Mã môn</th><th scope="col">Tên môn học</th>
-                            <th scope="col">Số tín chỉ</th><th scope="col">Điểm chữ</th>
-                            <th scope="col">Điểm hệ 4</th><th scope="col">Kết quả</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td data-label="STT">1</td>
-                            <td data-label="Mã môn">31231755</td>
-                            <td data-label="Tên môn">Thiết kế và lập trình web</td>
-                            <td data-label="Số tín chỉ">3</td>
-                            <td data-label="Điểm chữ">A</td>
-                            <td data-label="Điểm hệ 4">4.0</td>
-                            <td data-label="Kết quả">Đạt</td>
-                        </tr>
-                        <tr>
-                            <td data-label="STT">2</td>
-                            <td data-label="Mã môn">31221010</td>
-                            <td data-label="Tên môn">An toàn thông tin</td>
-                            <td data-label="Số tín chỉ">3</td>
-                            <td data-label="Điểm chữ">B+</td>
-                            <td data-label="Điểm hệ 4">3.5</td>
-                            <td data-label="Kết quả">Đạt</td>
-                        </tr>
-                        <tr>
-                            <td data-label="STT">3</td>
-                            <td data-label="Mã môn">31231398</td>
-                            <td data-label="Tên môn">Lập trình mạng</td>
-                            <td data-label="Số tín chỉ">3</td>
-                            <td data-label="Điểm chữ">B</td>
-                            <td data-label="Điểm hệ 4">3.0</td>
-                            <td data-label="Kết quả">Đạt</td>
-                        </tr>
-                        <tr>
-                            <td data-label="STT">4</td>
-                            <td data-label="Mã môn">31241283</td>
-                            <td data-label="Tên môn">Hệ quản trị cơ sở dữ liệu</td>
-                            <td data-label="Số tín chỉ">3</td>
-                            <td data-label="Điểm chữ">A</td>
-                            <td data-label="Điểm hệ 4">4.0</td>
-                            <td data-label="Kết quả">Đạt</td>
-                        </tr>
-                        <tr>
-                            <td data-label="STT">5</td>
-                            <td data-label="Mã môn">31231330</td>
-                            <td data-label="Tên môn">Khai phá dữ liệu</td>
-                            <td data-label="Số tín chỉ">3</td>
-                            <td data-label="Điểm chữ">B</td>
-                            <td data-label="Điểm hệ 4">3.0</td>
-                            <td data-label="Kết quả">Đạt</td>
-                        </tr>
-                        <tr>
-                            <td data-label="STT">6</td>
-                            <td data-label="Mã môn">31231016</td>
-                            <td data-label="Tên môn">Công nghệ phần mềm</td>
-                            <td data-label="Số tín chỉ">3</td>
-                            <td data-label="Điểm chữ">B+</td>
-                            <td data-label="Điểm hệ 4">3.5</td>
-                            <td data-label="Kết quả">Đạt</td>
-                        </tr>
-                        <tr>
-                            <td data-label="STT">7</td>
-                            <td data-label="Mã môn">21221904</td>
-                            <td data-label="Tên môn">Lịch sử Đảng Cộng sản Việt Nam</td>
-                            <td data-label="Số tín chỉ">2</td>
-                            <td data-label="Điểm chữ">A</td>
-                            <td data-label="Điểm hệ 4">4.0</td>
-                            <td data-label="Kết quả">Đạt</td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th scope="row" colspan="3">Tổng kết học kỳ 1</th>
-                            <td>20</td><td colspan="2">GPA học kỳ: 3.58</td><td>Đạt</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </article>
+    .js .nut-menu:focus-visible {
+        outline: 3px solid var(--mau-nhan);
+        outline-offset: 2px;
+    }
 
-        <article>
-            <h2>Bảng điểm học kỳ 2 - Năm học 2025 - 2026</h2>
-            <div class="bang-cuon">
-                <table>
-                    <caption>Bảng điểm chi tiết học kỳ 2 năm học 2025 - 2026</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">STT</th><th scope="col">Mã môn</th><th scope="col">Tên môn học</th>
-                            <th scope="col">Số tín chỉ</th><th scope="col">Điểm chữ</th>
-                            <th scope="col">Điểm hệ 4</th><th scope="col">Kết quả</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td data-label="STT">1</td>
-                            <td data-label="Mã môn">31232001</td>
-                            <td data-label="Tên môn">Trí tuệ nhân tạo</td>
-                            <td data-label="Số tín chỉ">3</td>
-                            <td data-label="Điểm chữ">A</td>
-                            <td data-label="Điểm hệ 4">4.0</td>
-                            <td data-label="Kết quả">Đạt</td>
-                        </tr>
-                        <tr>
-                            <td data-label="STT">2</td>
-                            <td data-label="Mã môn">31232002</td>
-                            <td data-label="Tên môn">Phát triển ứng dụng di động</td>
-                            <td data-label="Số tín chỉ">3</td>
-                            <td data-label="Điểm chữ">B+</td>
-                            <td data-label="Điểm hệ 4">3.5</td>
-                            <td data-label="Kết quả">Đạt</td>
-                        </tr>
-                        <tr>
-                            <td data-label="STT">3</td>
-                            <td data-label="Mã môn">31232003</td>
-                            <td data-label="Tên môn">Kiến trúc phần mềm</td>
-                            <td data-label="Số tín chỉ">3</td>
-                            <td data-label="Điểm chữ">B</td>
-                            <td data-label="Điểm hệ 4">3.0</td>
-                            <td data-label="Kết quả">Đạt</td>
-                        </tr>
-                        <tr>
-                            <td data-label="STT">4</td>
-                            <td data-label="Mã môn">31232004</td>
-                            <td data-label="Tên môn">Điện toán đám mây</td>
-                            <td data-label="Số tín chỉ">3</td>
-                            <td data-label="Điểm chữ">A</td>
-                            <td data-label="Điểm hệ 4">4.0</td>
-                            <td data-label="Kết quả">Đạt</td>
-                        </tr>
-                        <tr>
-                            <td data-label="STT">5</td>
-                            <td data-label="Mã môn">31232005</td>
-                            <td data-label="Tên môn">Kiểm thử phần mềm</td>
-                            <td data-label="Số tín chỉ">3</td>
-                            <td data-label="Điểm chữ">B+</td>
-                            <td data-label="Điểm hệ 4">3.5</td>
-                            <td data-label="Kết quả">Đạt</td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th scope="row" colspan="3">Tổng kết học kỳ 2</th>
-                            <td>15</td><td colspan="2">GPA học kỳ: 3.60</td><td>Đạt</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </article>
+    /* Mặc định đóng menu khi có JavaScript */
+    .js .menu-chinh {
+        display: none;
+    }
 
-        <article>
-            <h2>Tổng hợp GPA và tín chỉ tích lũy</h2>
-            <div class="bang-cuon">
-                <table>
-                    <caption>Bảng tổng hợp GPA và tín chỉ tích lũy toàn khóa</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Học kỳ</th><th scope="col">Số tín chỉ</th>
-                            <th scope="col">GPA học kỳ</th><th scope="col">GPA tích lũy</th>
-                            <th scope="col">Tín chỉ tích lũy</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row" data-label="Học kỳ">HK1 - 2025/2026</th>
-                            <td data-label="Số tín chỉ">20</td>
-                            <td data-label="GPA học kỳ">3.58</td>
-                            <td data-label="GPA tích lũy">3.58</td>
-                            <td data-label="Tín chỉ tích lũy">20</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" data-label="Học kỳ">HK2 - 2025/2026</th>
-                            <td data-label="Số tín chỉ">15</td>
-                            <td data-label="GPA học kỳ">3.60</td>
-                            <td data-label="GPA tích lũy">3.59</td>
-                            <td data-label="Tín chỉ tích lũy">35</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" data-label="Học kỳ">Tổng tích lũy</th>
-                            <td data-label="Số tín chỉ">35</td>
-                            <td data-label="GPA học kỳ">—</td>
-                            <td data-label="GPA tích lũy">3.59</td>
-                            <td data-label="Tín chỉ tích lũy">35 / 130</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <p>
-                Với GPA tích lũy hiện tại là <strong>3.59</strong>, sinh viên đang
-                nằm trong nhóm xếp loại <strong>Giỏi</strong> và có khả năng đạt
-                mục tiêu tốt nghiệp loại Giỏi nếu duy trì phong độ ở các học kỳ tiếp theo.
-            </p>
-        </article>
+    /* main.js thêm lớp này khi người dùng bấm nút */
+    .js .menu-chinh.menu-chinh--mo {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-        <article>
-            <h2>Video hướng dẫn xem kết quả học tập</h2>
-            <p>Video dưới đây hướng dẫn cách tra cứu và đọc bảng điểm chi tiết trên hệ thống EduGPA.</p>
-            <figure>
-                <iframe
-                        src="https://www.youtube.com/embed/UB1O30fR-EE"
-                        title="Video hướng dẫn xem kết quả học tập trên hệ thống EduGPA"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen>
-                </iframe>
-                <figcaption>Video hướng dẫn tra cứu bảng điểm chi tiết trên EduGPA.</figcaption>
-            </figure>
-        </article>
+    .js .menu-chinh > li {
+        width: 100%;
+        max-width: none;
+    }
+}
 
-        <article>
-            <h2>Nhận xét và gợi ý học tập</h2>
-            <p>Dựa trên kết quả học tập ở hai học kỳ, EduGPA đưa ra một số nhận xét:</p>
-            <ul>
-                <li>Các môn đạt kết quả tốt: <strong>Thiết kế và lập trình web</strong>, <strong>Hệ quản trị cơ sở dữ liệu</strong>, <strong>Trí tuệ nhân tạo</strong>, <strong>Điện toán đám mây</strong> (đều đạt điểm A).</li>
-                <li>Các môn cần cải thiện thêm: <strong>Lập trình mạng</strong>, <strong>Khai phá dữ liệu</strong>, <strong>Kiến trúc phần mềm</strong> (đạt điểm B).</li>
-                <li>Sinh viên nên tập trung ôn luyện thêm phần lý thuyết nâng cao và làm bài tập nhóm cho các môn cần cải thiện.</li>
-                <li>Có thể tham khảo tài liệu và video bài giảng được gợi ý trên trang chi tiết từng môn học.</li>
-            </ul>
-        </article>
+/* Máy tính: ẩn nút và luôn hiển thị menu */
+@media (min-width: 768px) {
+    .js .nut-menu {
+        display: none;
+    }
 
-        <aside>
-            <h2>Khám phá EduGPA</h2>
-            <ul>
-                <li><a href="index.html">Quay lại trang chủ EduGPA</a></li>
-                <li><a href="danh-sach.html">Xem danh sách môn học</a></li>
-                <li><a href="chi-tiet.html">Xem chi tiết kết quả học tập</a></li>
-                <li><a href="gioi-thieu.html">Tìm hiểu về EduGPA và nhóm thực hiện</a></li>
-                <li><a href="lien-he.html">Liên hệ và đăng ký thành viên</a></li>
-            </ul>
-        </aside>
+    .js .menu-chinh {
+        display: flex;
+    }
+}
+.thong-bao-ket-qua {
+    margin-top: var(--kc-3);
+    color: var(--mau-chinh);
+    font-weight: 700;
+}
 
-    </main>
-
-    <footer class="chan-trang">
-        <div class="chan-trang__noi-dung">
-            <div>
-                <p class="chan-trang__thuong-hieu">EduGPA - Nhóm 3</p>
-                <p class="chan-trang__mo-ta">Khoa Toán - Tin &middot; Trường Đại học Sư Phạm, Đại học Đà Nẵng</p>
-            </div>
-            <nav class="chan-trang__dieu-huong" aria-label="Điều hướng chân trang">
-                <a href="index.html">Trang chủ</a>
-                <a href="danh-sach.html">Danh sách</a>
-                <a href="chi-tiet.html">Chi tiết</a>
-                <a href="gioi-thieu.html">Giới thiệu</a>
-                <a href="lien-he.html">Liên hệ</a>
-            </nav>
-        </div>
-    </footer>
-
-</body>
-
-</html>
+.thong-bao-loi {
+    color: #b42318;
+    font-weight: 700;
+}

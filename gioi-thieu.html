@@ -13,7 +13,7 @@
     <!-- CSS chung của Nhóm 03 -->
     <link rel="stylesheet" href="css/style.css">
 </head>
-
+<script type="module" src="js/main.js"></script>
 <body class="trang trang-gioi-thieu">
 
     <header class="dau-trang">
@@ -26,7 +26,18 @@
     </header>
 
     <nav class="dieu-huong" aria-label="Điều hướng chính">
-        <ul class="dieu-huong__danh-sach">
+    <button
+        class="nut-menu"
+        type="button"
+        aria-controls="menu-chinh"
+        aria-expanded="false"
+        aria-label="Mở menu chính"
+    >
+        <span aria-hidden="true">☰</span>
+        <span>Menu</span>
+    </button>
+
+    <ul id="menu-chinh" class="dieu-huong__danh-sach menu-chinh">
             <li class="dieu-huong__muc">
                 <a class="dieu-huong__lien-ket" href="index.html">Trang chủ</a>
             </li>

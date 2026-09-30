@@ -1,0 +1,14 @@
+[
+  { "id": 1, "maMon": "INT101", "ten": "Thiết kế và Lập trình Web", "soTinChi": 3, "trangThai": "Đang học", "anh": "images/int101.svg" },
+  { "id": 2, "maMon": "INT102", "ten": "Hệ quản trị cơ sở dữ liệu", "soTinChi": 3, "trangThai": "Đang học", "anh": "images/int102.svg" },
+  { "id": 3, "maMon": "INT103", "ten": "Khai phá dữ liệu", "soTinChi": 3, "trangThai": "Đang học", "anh": "images/int103.svg" },
+  { "id": 4, "maMon": "INT104", "ten": "Công nghệ phần mềm", "soTinChi": 3, "trangThai": "Đang học", "anh": "images/int104.svg" },
+  { "id": 5, "maMon": "INT105", "ten": "An toàn thông tin", "soTinChi": 3, "trangThai": "Đăng ký mới", "anh": "images/int105.svg" },
+  { "id": 6, "maMon": "INT106", "ten": "Lập trình mạng", "soTinChi": 3, "trangThai": "Đã hoàn thành", "anh": "images/int101.svg" },
+  { "id": 7, "maMon": "INT107", "ten": "Hệ phân tán", "soTinChi": 3, "trangThai": "Đang học", "anh": "images/int102.svg" },
+  { "id": 8, "maMon": "POL101", "ten": "Lịch sử Đảng Cộng sản Việt Nam", "soTinChi": 2, "trangThai": "Đang học", "anh": "images/int103.svg" },
+  { "id": 9, "maMon": "MAT101", "ten": "Toán rời rạc", "soTinChi": 3, "trangThai": "Đã hoàn thành", "anh": "images/int104.svg" },
+  { "id": 10, "maMon": "MAT102", "ten": "Xác suất thống kê", "soTinChi": 3, "trangThai": "Đã hoàn thành", "anh": "images/int105.svg" },
+  { "id": 11, "maMon": "INT108", "ten": "Kiến trúc máy tính", "soTinChi": 3, "trangThai": "Đã hoàn thành", "anh": "images/int101.svg" },
+  { "id": 12, "maMon": "INT109", "ten": "Trí tuệ nhân tạo", "soTinChi": 3, "trangThai": "Đăng ký mới", "anh": "images/int102.svg" }
+]

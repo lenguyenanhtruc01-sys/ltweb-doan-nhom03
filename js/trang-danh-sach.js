@@ -1,128 +1,321 @@
 /**
- * Tệp xử lý dữ liệu động cho trang danh sách môn học
+ * trang-danh-sach.js
+ * Tải dữ liệu môn học từ tệp JSON.
+ * Hỗ trợ tìm kiếm không dấu, lọc trạng thái và sắp xếp.
+ * Hiển thị dữ liệu an toàn bằng textContent và createElement.
  */
-import { taiJSON } from './api.js';
 
-const vungChua = document.querySelector('.luoi-san-pham');
-const oTimKiem = document.querySelector('#tim-kiem');
-const vungThongBao = document.querySelector('#thong-bao-ket-qua');
-const locTrangThai = document.querySelector('#loc-trang-thai');
-const sapXep = document.querySelector('#sap-xep');
+import { taiJSON } from "./api.js";
+
+const vungChua = document.querySelector(".luoi-san-pham");
+const oTimKiem = document.querySelector("#tim-kiem");
+const vungThongBao = document.querySelector("#thong-bao-ket-qua");
+const locTrangThai = document.querySelector("#loc-trang-thai");
+const sapXep = document.querySelector("#sap-xep");
 
 let duLieuGoc = [];
 
-// Hàm xóa dấu tiếng Việt để tìm kiếm chính xác
+/**
+ * Xóa dấu tiếng Việt để hỗ trợ tìm kiếm không dấu.
+ */
 function xoaDau(chuoi) {
-    return chuoi.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    return String(chuoi)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/đ/g, "d")
+        .replace(/Đ/g, "D")
+        .toLowerCase();
 }
 
-// Render dữ liệu ra giao diện an toàn bằng textContent và createElement
-function hienThiDanhSach(danhSach) {
-    vungChua.textContent = ''; // Xóa nội dung cũ (hoặc nội dung tĩnh dự phòng)
+/**
+ * Tạo một dòng thông tin theo cách an toàn,
+ * không sử dụng innerHTML.
+ */
+function taoDongThongTin(nhan, giaTri) {
+    const dong = document.createElement("p");
 
-    if (danhSach.length === 0) {
-        vungChua.textContent = 'Không tìm thấy môn học nào phù hợp.';
-        vungThongBao.textContent = 'Trống: Không có kết quả.';
+    const tieuDe = document.createElement("strong");
+    tieuDe.textContent = `${nhan}: `;
+
+    const noiDung = document.createTextNode(String(giaTri));
+
+    dong.append(tieuDe, noiDung);
+
+    return dong;
+}
+
+/**
+ * Tạo một thẻ môn học.
+ */
+function taoTheMonHoc(mon) {
+    const theBai = document.createElement("article");
+    theBai.className = "the-san-pham";
+
+    const anh = document.createElement("img");
+    anh.src = mon.anh;
+    anh.alt = `Minh họa môn học ${mon.ten}`;
+    anh.width = 400;
+    anh.height = 250;
+    anh.loading = "lazy";
+
+    const phanThan = document.createElement("div");
+    phanThan.className = "the-san-pham__than";
+
+    const tieuDe = document.createElement("h3");
+    tieuDe.textContent = mon.ten;
+
+    const maMon = taoDongThongTin(
+        "Mã môn",
+        mon.maMon
+    );
+
+    const soTinChi = taoDongThongTin(
+        "Số tín chỉ",
+        mon.soTinChi
+    );
+
+    const trangThai = taoDongThongTin(
+        "Trạng thái",
+        mon.trangThai
+    );
+
+    const nutChiTiet = document.createElement("a");
+    nutChiTiet.href = `chi-tiet.html?id=${mon.id}`;
+    nutChiTiet.className = "the-san-pham__lien-ket";
+    nutChiTiet.textContent = "Xem chi tiết →";
+
+    phanThan.append(
+        tieuDe,
+        maMon,
+        soTinChi,
+        trangThai,
+        nutChiTiet
+    );
+
+    theBai.append(
+        anh,
+        phanThan
+    );
+
+    return theBai;
+}
+
+/**
+ * Hiển thị danh sách môn học ra giao diện.
+ */
+function hienThiDanhSach(danhSach) {
+    if (!vungChua || !vungThongBao) {
         return;
     }
 
-    danhSach.forEach(mon => {
-        const theBai = document.createElement('article');
-        theBai.className = 'the-san-pham';
+    vungChua.replaceChildren();
 
-        const anh = document.createElement('img');
-        anh.src = mon.anh;
-        anh.alt = mon.ten;
-        anh.width = 400;
-        anh.height = 250;
-        anh.loading = 'lazy';
+    if (danhSach.length === 0) {
+        const thongBaoTrong = document.createElement("p");
 
-        const phanThan = document.createElement('div');
-        phanThan.className = 'the-san-pham__than';
+        thongBaoTrong.className = "thong-bao-trong";
+        thongBaoTrong.textContent =
+            "Không tìm thấy môn học nào phù hợp.";
 
-        const tieuDe = document.createElement('h3');
-        tieuDe.textContent = mon.ten;
+        vungChua.append(thongBaoTrong);
 
-        const maMon = document.createElement('p');
-        maMon.innerHTML = `<strong>Mã môn:</strong> ${mon.maMon}`;
+        vungThongBao.textContent =
+            "Không có kết quả phù hợp.";
 
-        const soTinChi = document.createElement('p');
-        soTinChi.innerHTML = `<strong>Số tín chỉ:</strong> ${mon.soTinChi}`;
+        return;
+    }
 
-        const trangThai = document.createElement('p');
-        trangThai.innerHTML = `<strong>Trạng thái:</strong> ${mon.trangThai}`;
+    const fragment = document.createDocumentFragment();
 
-        const nutChiTiet = document.createElement('a');
-        nutChiTiet.href = `chi-tiet.html?id=${mon.id}`;
-        nutChiTiet.className = 'the-san-pham__lien-ket';
-        nutChiTiet.textContent = 'Xem chi tiết →';
-
-        phanThan.append(tieuDe, maMon, soTinChi, trangThai, nutChiTiet);
-        theBai.append(anh, phanThan);
-        vungChua.append(theBai);
+    danhSach.forEach((mon) => {
+        fragment.append(
+            taoTheMonHoc(mon)
+        );
     });
 
-    vungThongBao.textContent = `Đang hiển thị ${danhSach.length} môn học.`;
+    vungChua.append(fragment);
+
+    vungThongBao.textContent =
+        `Đang hiển thị ${danhSach.length} môn học.`;
 }
 
-// Xử lý Lọc, Tìm kiếm và Sắp xếp
+/**
+ * Tìm kiếm, lọc và sắp xếp dữ liệu.
+ */
 function xuLyDuLieu() {
-    const tuKhoa = xoaDau(oTimKiem.value.trim());
+    if (
+        !oTimKiem ||
+        !locTrangThai ||
+        !sapXep
+    ) {
+        return;
+    }
+
+    const tuKhoa = xoaDau(
+        oTimKiem.value.trim()
+    );
+
     const giaTriLoc = locTrangThai.value;
     const giaTriSapXep = sapXep.value;
 
-    // 1. Lọc theo từ khóa và trạng thái
-    let ketQua = duLieuGoc.filter(mon => {
-        const thoaTuKhoa = xoaDau(mon.ten).includes(tuKhoa) || xoaDau(mon.maMon).includes(tuKhoa);
-        const thoaLoc = giaTriLoc === 'tat-ca' || mon.trangThai === giaTriLoc;
+    let ketQua = duLieuGoc.filter((mon) => {
+        const tenMon = xoaDau(mon.ten);
+        const maMon = xoaDau(mon.maMon);
+
+        const thoaTuKhoa =
+            tenMon.includes(tuKhoa) ||
+            maMon.includes(tuKhoa);
+
+        const thoaLoc =
+            giaTriLoc === "tat-ca" ||
+            mon.trangThai === giaTriLoc;
+
         return thoaTuKhoa && thoaLoc;
     });
 
-    // 2. Sắp xếp
-    if (giaTriSapXep === 'ten-az') {
-        ketQua.sort((a, b) => a.ten.localeCompare(b.ten));
-    } else if (giaTriSapXep === 'tin-chi-giam') {
-        ketQua.sort((a, b) => b.soTinChi - a.soTinChi);
-    } else if (giaTriSapXep === 'tin-chi-tang') {
-        ketQua.sort((a, b) => a.soTinChi - b.soTinChi);
+    /*
+     * Tạo mảng mới trước khi sort
+     * để không làm thay đổi dữ liệu gốc.
+     */
+    ketQua = [...ketQua];
+
+    if (giaTriSapXep === "ten-az") {
+        ketQua.sort((a, b) =>
+            a.ten.localeCompare(
+                b.ten,
+                "vi"
+            )
+        );
+    } else if (
+        giaTriSapXep === "ten-za"
+    ) {
+        ketQua.sort((a, b) =>
+            b.ten.localeCompare(
+                a.ten,
+                "vi"
+            )
+        );
+    } else if (
+        giaTriSapXep === "tin-chi-giam"
+    ) {
+        ketQua.sort(
+            (a, b) =>
+                b.soTinChi - a.soTinChi
+        );
+    } else if (
+        giaTriSapXep === "tin-chi-tang"
+    ) {
+        ketQua.sort(
+            (a, b) =>
+                a.soTinChi - b.soTinChi
+        );
     }
 
     hienThiDanhSach(ketQua);
 }
 
-// Khởi chạy khi tải trang
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        vungChua.textContent = 'Đang tải dữ liệu...'; // Trạng thái đang tải
-        duLieuGoc = await taiJSON('data/mon-hoc.json');
-        
-        // Gắn sự kiện lắng nghe (Tìm kiếm tức thời)
-        oTimKiem.addEventListener('input', xuLyDuLieu);
-        locTrangThai.addEventListener('change', xuLyDuLieu);
-        sapXep.addEventListener('change', xuLyDuLieu);
-        
-        // Xóa hành vi gửi form mặc định để không bị tải lại trang
-        document.querySelector('.form-lien-he').addEventListener('submit', (e) => e.preventDefault());
+/**
+ * Hiển thị trạng thái lỗi và nút thử lại.
+ */
+function hienThiLoi() {
+    if (!vungChua || !vungThongBao) {
+        return;
+    }
 
-        xuLyDuLieu(); // Render lần đầu
-    } catch (loi) {
-    console.error(loi);
+    vungChua.replaceChildren();
 
-    vungChua.textContent = "";
+    const thongBaoLoi =
+        document.createElement("p");
 
-    const thongBaoLoi = document.createElement("p");
-    thongBaoLoi.className = "thong-bao-loi";
-    thongBaoLoi.textContent = "Không thể tải dữ liệu môn học.";
+    thongBaoLoi.className =
+        "thong-bao-loi";
 
-    const nutThuLai = document.createElement("button");
+    thongBaoLoi.textContent =
+        "Không thể tải dữ liệu môn học.";
+
+    const nutThuLai =
+        document.createElement("button");
+
     nutThuLai.type = "button";
+    nutThuLai.className = "nut nut--chinh";
     nutThuLai.textContent = "Thử lại";
 
-    nutThuLai.addEventListener("click", () => {
-        window.location.reload();
-    });
+    nutThuLai.addEventListener(
+        "click",
+        taiDanhSachMonHoc
+    );
 
-    vungChua.append(thongBaoLoi, nutThuLai);
-    vungThongBao.textContent = "Lỗi: Không tải được dữ liệu.";
+    vungChua.append(
+        thongBaoLoi,
+        nutThuLai
+    );
+
+    vungThongBao.textContent =
+        "Lỗi: Không tải được dữ liệu.";
 }
-});
+
+/**
+ * Tải dữ liệu môn học từ JSON.
+ */
+async function taiDanhSachMonHoc() {
+    if (!vungChua || !vungThongBao) {
+        return;
+    }
+
+    vungChua.textContent =
+        "Đang tải dữ liệu môn học...";
+
+    vungThongBao.textContent =
+        "Đang tải dữ liệu...";
+
+    try {
+        duLieuGoc = await taiJSON(
+            "data/mon-hoc.json"
+        );
+
+        if (!Array.isArray(duLieuGoc)) {
+            throw new Error(
+                "Dữ liệu môn học không hợp lệ."
+            );
+        }
+
+        xuLyDuLieu();
+    } catch (loi) {
+        console.error(
+            "Lỗi tải dữ liệu môn học:",
+            loi
+        );
+
+        hienThiLoi();
+    }
+}
+
+/**
+ * Gắn các sự kiện tìm kiếm, lọc và sắp xếp.
+ */
+function ganSuKien() {
+    oTimKiem?.addEventListener(
+        "input",
+        xuLyDuLieu
+    );
+
+    locTrangThai?.addEventListener(
+        "change",
+        xuLyDuLieu
+    );
+
+    sapXep?.addEventListener(
+        "change",
+        xuLyDuLieu
+    );
+}
+
+/**
+ * Khởi tạo trang.
+ */
+function khoiTao() {
+    ganSuKien();
+    taiDanhSachMonHoc();
+}
+
+khoiTao();

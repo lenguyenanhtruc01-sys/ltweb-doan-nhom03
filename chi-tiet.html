@@ -80,8 +80,9 @@
 
         <h1>Chi tiết kết quả học tập</h1>
 
-        <!-- Vùng này sẽ được trang-chi-tiet.js cập nhật theo tham số ?id= -->
+        <!-- ================= KHỐI JS RENDER THEO ?id= ================= -->
         <article id="chi-tiet" aria-live="polite">
+            <!-- Nội dung tĩnh dự phòng khi tắt JavaScript -->
             <h2>Tổng quan kết quả học tập</h2>
 
             <p>
@@ -92,25 +93,14 @@
             </p>
 
             <p>
-                Dựa trên bảng điểm này, EduGPA tự động tính GPA học kỳ,
-                GPA tích lũy và theo dõi số tín chỉ đã hoàn thành để đánh giá
-                tiến độ hướng tới mục tiêu tốt nghiệp.
+                Vui lòng chọn một môn học từ
+                <a href="danh-sach.html">danh sách môn học</a>
+                để xem thông tin chi tiết, hoặc thêm tham số
+                <code>?id=&lt;số&gt;</code> vào URL.
             </p>
-
-            <figure>
-                <img
-                    src="images/mota.png"
-                    alt="Minh họa bảng điểm chi tiết kết quả học tập trên hệ thống EduGPA"
-                    width="600"
-                    height="400"
-                    loading="lazy"
-                >
-                <figcaption>
-                    Bảng điểm chi tiết được hiển thị theo từng học kỳ trên EduGPA.
-                </figcaption>
-            </figure>
         </article>
 
+        <!-- ================= BẢNG ĐIỂM HK1 (giữ nguyên) ================= -->
         <article>
             <h2>Bảng điểm học kỳ 1 - Năm học 2025 - 2026</h2>
 
@@ -220,6 +210,7 @@
             </div>
         </article>
 
+        <!-- ================= BẢNG ĐIỂM HK2 (giữ nguyên) ================= -->
         <article>
             <h2>Bảng điểm học kỳ 2 - Năm học 2025 - 2026</h2>
 
@@ -307,6 +298,7 @@
             </div>
         </article>
 
+        <!-- ================= TỔNG HỢP GPA (giữ nguyên) ================= -->
         <article>
             <h2>Tổng hợp GPA và tín chỉ tích lũy</h2>
 
@@ -368,6 +360,7 @@
             </p>
         </article>
 
+        <!-- ================= VIDEO (giữ nguyên) ================= -->
         <article>
             <h2>Video hướng dẫn xem kết quả học tập</h2>
 
@@ -390,6 +383,7 @@
             </figure>
         </article>
 
+        <!-- ================= NHẬN XÉT (giữ nguyên) ================= -->
         <article>
             <h2>Nhận xét và gợi ý học tập</h2>
 

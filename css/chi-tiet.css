@@ -1,0 +1,184 @@
+/* =========================================================
+   EDUGPA - CSS RIÊNG CHO TRANG CHI TIẾT
+   File này chỉ áp dụng cho chi-tiet.html
+   Nạp SAU css/style.css để override khi cần
+   ========================================================= */
+
+/* =========================================================
+   01. CHỐNG TRÀN NGANG TOÀN TRANG
+   ========================================================= */
+
+body.trang-chi-tiet {
+    overflow-x: hidden;
+}
+
+.trang-chi-tiet main,
+.trang-chi-tiet main > * {
+    max-width: 100%;
+    min-width: 0;
+}
+
+/* =========================================================
+   02. NAV TRÊN MOBILE - CHO PHÉP CO LẠI
+   ========================================================= */
+
+@media (max-width: 767px) {
+    .trang-chi-tiet .dieu-huong__danh-sach {
+        flex-wrap: wrap;
+        justify-content: center;
+        padding-inline: var(--kc-2);
+    }
+
+    .trang-chi-tiet .dieu-huong__muc {
+        flex: 0 1 auto;
+        min-width: 0;
+        max-width: none;
+    }
+
+    .trang-chi-tiet .dieu-huong__lien-ket {
+        padding: 0.55rem 0.7rem;
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+}
+
+/* =========================================================
+   03. KHỐI #chi-tiet — JS RENDER THEO ?id=
+   ========================================================= */
+
+#chi-tiet {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+/* Ảnh môn học */
+#chi-tiet img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    margin: 1rem 0;
+    border-radius: var(--bo-goc);
+}
+
+/* Danh sách thông tin môn */
+#chi-tiet ul.thong-tin-mon {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+#chi-tiet ul.thong-tin-mon li {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--mau-vien);
+}
+
+#chi-tiet ul.thong-tin-mon li:last-child {
+    border-bottom: none;
+}
+
+#chi-tiet ul.thong-tin-mon strong {
+    color: var(--mau-chinh-dam);
+}
+
+/* Trạng thái: đang tải / lỗi / rỗng */
+#chi-tiet .trang-thai {
+    padding: 1rem 1.25rem;
+    margin: 0;
+    border-left: 4px solid var(--mau-chinh);
+    border-radius: var(--bo-goc-nho);
+    background: var(--mau-chinh-nhat);
+    color: var(--mau-chinh-dam);
+    font-weight: 600;
+}
+
+/* Nút quay lại danh sách */
+#chi-tiet .nut-quay-lai {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.6rem 1.25rem;
+    background: var(--mau-chinh);
+    color: #ffffff;
+    border-radius: var(--bo-goc-nho);
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s ease;
+}
+
+#chi-tiet .nut-quay-lai:hover {
+    background: var(--mau-chinh-dam);
+    color: #ffffff;
+    text-decoration: none;
+}
+
+/* =========================================================
+   04. BẢNG ĐIỂM — CUỘN TRONG .bang-cuon
+   ========================================================= */
+
+.trang-chi-tiet .bang-cuon {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin-block: var(--kc-4);
+    -webkit-overflow-scrolling: touch;
+}
+
+.trang-chi-tiet .bang-cuon table {
+    min-width: 700px;
+    width: 100%;
+    margin: 0;
+}
+
+/* =========================================================
+   05. ẢNH + IFRAME TRONG ARTICLE
+   ========================================================= */
+
+.trang-chi-tiet main > article {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.trang-chi-tiet main > article figure {
+    width: 100%;
+    max-width: 100%;
+    margin: 1rem 0;
+}
+
+.trang-chi-tiet main > article img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--bo-goc);
+}
+
+.trang-chi-tiet main > article iframe {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+}
+
+/* =========================================================
+   06. RESPONSIVE MOBILE
+   ========================================================= */
+
+@media (max-width: 767px) {
+    .trang-chi-tiet main > article {
+        padding: var(--kc-4);
+    }
+
+    .trang-chi-tiet .bang-cuon table {
+        font-size: 0.85rem;
+        min-width: 640px;
+    }
+
+    .trang-chi-tiet .bang-cuon th,
+    .trang-chi-tiet .bang-cuon td {
+        padding: 0.5rem;
+        min-width: 5rem;
+    }
+}

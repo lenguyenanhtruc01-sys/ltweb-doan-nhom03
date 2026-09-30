@@ -24,6 +24,7 @@ body {
     line-height: 1.6;
     background-color: var(--bg-light);
     color: var(--text-dark);
+    transition: background-color 0.3s, color 0.3s; /* Thêm hiệu ứng chuyển màu mượt */
 }
 
 /* SỬA LỖI VỠ KHUNG 360px: Dùng minmax(0, 1fr) và min-width: 0 cho ô lưới */
@@ -61,6 +62,7 @@ nav {
     text-align: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
+    transition: background-color 0.3s;
 }
 
 nav ul {
@@ -100,6 +102,7 @@ article,
     padding: 25px;
     border-radius: var(--radius);
     box-shadow: var(--shadow);
+    transition: background-color 0.3s;
 }
 
 /* Các class thay thế cho inline style đã xóa trong HTML */
@@ -206,4 +209,44 @@ footer {
     padding: 20px;
     margin-top: 40px;
     color: var(--text-muted);
+}
+
+/* ========================================= */
+/* CSS DÀNH CHO CHẾ ĐỘ DARK MODE (SÁNG/TỐI)  */
+/* ========================================= */
+body.dark-mode {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+/* Đổi màu nền của thanh Nav và các khối nội dung sang xám đen */
+body.dark-mode nav,
+body.dark-mode section,
+body.dark-mode article,
+body.dark-mode .table-container {
+    background-color: #2d2d2d !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    color: #e0e0e0 !important;
+}
+
+/* Đổi màu các tiêu đề cho nổi bật trên nền đen */
+body.dark-mode h2, 
+body.dark-mode h3,
+body.dark-mode .tkb-table strong,
+body.dark-mode nav a {
+    color: #ffc72c !important;
+}
+
+/* Hover trên thanh Nav khi ở chế độ tối */
+body.dark-mode nav a:hover {
+    background-color: #444 !important;
+}
+
+/* Bảng thời khóa biểu ở chế độ tối */
+body.dark-mode .tkb-table th {
+    background-color: #222 !important;
+    border-color: #444 !important;
+}
+body.dark-mode .tkb-table td {
+    border-color: #444 !important;
 }

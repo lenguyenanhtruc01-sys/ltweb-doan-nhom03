@@ -29,6 +29,21 @@
             <img src="images/hoanghai.jpg" alt="Ảnh chân dung của Lê Dương Hoàng Hải" width="150" height="150">
             <p>Xin chào! Mình là sinh viên ngành Công nghệ Thông tin tại Khoa Toán - Tin, Trường Đại học Sư phạm - Đại học Đà Nẵng. Mình đam mê phát triển phần mềm và ứng dụng thị giác máy tính.</p>
             
+            <!-- PHẦN THÊM MỚI: Tương tác JS Phần C -->
+            <!-- Nút chuyển giao diện Sáng/Tối -->
+            <div style="margin-top: 15px; margin-bottom: 15px;">
+                <button id="btn-theme" style="padding: 10px; cursor: pointer; border-radius: 5px;">Đổi Giao Diện 🌙</button>
+            </div>
+
+            <!-- Nút sao chép Email -->
+            <div style="margin-bottom: 15px;">
+                <p style="margin: 0;">Email: <span id="my-email" style="font-weight: bold;">hai2k6it@gmail.com</span> 
+                    <button id="btn-copy" style="padding: 5px 10px; cursor: pointer; margin-left: 10px; border-radius: 5px;">Copy</button>
+                </p>
+                <p id="copy-msg" style="color: #28a745; font-size: 14px; margin-top: 5px; height: 20px;"></p>
+            </div>
+            <!-- KẾT THÚC PHẦN THÊM MỚI -->
+
             <div class="skills-box">
                 <h3>Kỹ năng công nghệ:</h3>
                 <ul>
@@ -162,5 +177,8 @@
     <footer>
         <p>&copy; 2026 Lê Dương Hoàng Hải - Nhóm 3.</p>
     </footer>
+
+    <!-- Gọi file JavaScript cá nhân ở cuối trang -->
+    <script src="js/canhan.js"></script>
 </body>
 </html>

@@ -12,7 +12,7 @@
     
 <link rel="stylesheet" href="css/style.css?v=4">
 </head>
-
+<script type="module" src="js/main.js"></script>
 <body class="trang">
 
     <!-- ================= HEADER ================= -->
@@ -33,9 +33,18 @@
     <!-- ================= MENU ================= -->
     <nav class="dieu-huong" aria-label="Điều hướng chính">
         <div class="bao">
+    <button
+    class="nut-menu"
+    type="button"
+    aria-controls="menu-chinh"
+    aria-expanded="false"
+    aria-label="Mở menu chính"
+    >
+    <span aria-hidden="true">☰</span>
+    <span>Menu</span>
+    </button>
 
-            <ul class="dieu-huong__danh-sach">
-
+            <ul id="menu-chinh" class="dieu-huong__danh-sach menu-chinh">
                 <li class="dieu-huong__muc">
                     <a class="dieu-huong__lien-ket dieu-huong__lien-ket--hien-tai"
                         href="index.html"
@@ -440,6 +449,6 @@
         </div>
     </footer>
 
-</body>
+</>
 
 </html>

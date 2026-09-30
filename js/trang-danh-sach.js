@@ -106,7 +106,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         xuLyDuLieu(); // Render lần đầu
     } catch (loi) {
-        console.error(loi);
-        vungChua.innerHTML = `<p style="color: red;">Lỗi tải dữ liệu. <button onclick="location.reload()">Thử lại</button></p>`;
-    }
+    console.error(loi);
+
+    vungChua.textContent = "";
+
+    const thongBaoLoi = document.createElement("p");
+    thongBaoLoi.className = "thong-bao-loi";
+    thongBaoLoi.textContent = "Không thể tải dữ liệu môn học.";
+
+    const nutThuLai = document.createElement("button");
+    nutThuLai.type = "button";
+    nutThuLai.textContent = "Thử lại";
+
+    nutThuLai.addEventListener("click", () => {
+        window.location.reload();
+    });
+
+    vungChua.append(thongBaoLoi, nutThuLai);
+    vungThongBao.textContent = "Lỗi: Không tải được dữ liệu.";
+}
 });

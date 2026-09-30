@@ -1,7 +1,7 @@
 /**
  * canhan.js – Tương tác trang cá nhân Phan Văn Hợp
  * 1) Roadmap DevOps: bấm giai đoạn, tick đã học, % tiến độ + localStorage
- * 2) DevOps Challenge: nút random thử thách lệnh Linux/Git/Docker
+ * 2) DevOps Challenge: nút random thử thách lệnh Linux/Git/Docker.
  * Cách thử: bấm Linux→Docker, tick checkbox, F5 xem còn nhớ;
  * bấm "Thử thách hôm nay"; Tab+Enter; thử width 360px.
  */

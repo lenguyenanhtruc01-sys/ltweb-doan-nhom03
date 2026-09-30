@@ -293,3 +293,177 @@ button:focus-visible {
         overflow-x: auto;
     }
 }
+/* ===== Roadmap DevOps ===== */
+.roadmap__huong-dan,
+.challenge__huong-dan {
+    margin-bottom: 1rem;
+    color: #475569;
+    font-size: 0.95rem;
+}
+
+.roadmap__cac-buoc {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.roadmap__buoc {
+    width: 100%;
+    max-width: 16rem;
+    padding: 0.55rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #fff;
+    color: #0f172a;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 2.5rem;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.roadmap__buoc:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+}
+
+.roadmap__buoc:focus-visible {
+    outline: 2px solid #0f766e;
+    outline-offset: 2px;
+}
+
+.roadmap__buoc--active {
+    background: #0f766e;
+    border-color: #0f766e;
+    color: #fff;
+}
+
+.roadmap__mui-ten {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+.roadmap__chi-tiet {
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
+    margin-bottom: 1rem;
+}
+
+.roadmap__ten-buoc {
+    margin: 0 0 0.75rem;
+    font-size: 1.1rem;
+}
+
+.roadmap__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.roadmap__item {
+    margin-bottom: 0.5rem;
+}
+
+.roadmap__label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.roadmap__checkbox {
+    margin-top: 0.2rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+    accent-color: #0f766e;
+}
+
+.roadmap__tien-do-chu {
+    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
+}
+
+.roadmap__thanh {
+    height: 0.65rem;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.roadmap__thanh-fill {
+    height: 100%;
+    width: 0%;
+    background: #0f766e;
+    border-radius: 999px;
+    transition: width 0.25s ease;
+}
+
+/* ===== DevOps Challenge ===== */
+.nut-challenge {
+    padding: 0.65rem 1.25rem;
+    border: none;
+    border-radius: 10px;
+    background: #0f766e;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    min-height: 2.75rem;
+    transition: background 0.15s;
+}
+
+.nut-challenge:hover {
+    background: #0d9488;
+}
+
+.nut-challenge:focus-visible {
+    outline: 2px solid #0f766e;
+    outline-offset: 3px;
+}
+
+.challenge__ket-qua {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid #99f6e4;
+    background: #f0fdfa;
+}
+
+.challenge__lenh {
+    margin: 0 0 0.5rem;
+}
+
+.challenge__lenh code {
+    display: block;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    background: #0f172a;
+    color: #5eead4;
+    font-size: 0.95rem;
+    overflow-x: auto;
+}
+
+.challenge__muc-tieu,
+.challenge__goi-y {
+    margin: 0.4rem 0 0;
+    font-size: 0.95rem;
+    color: #334155;
+}
+
+/* Mobile 360px */
+@media (max-width: 360px) {
+    .roadmap__buoc {
+        max-width: 100%;
+        font-size: 0.9rem;
+    }
+
+    .nut-challenge {
+        width: 100%;
+    }
+}

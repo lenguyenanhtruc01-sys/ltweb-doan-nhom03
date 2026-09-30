@@ -16,6 +16,7 @@
 
 <body class="trang-ca-nhan">
 
+
     <!-- HEADER -->
     <header class="dau-trang">
         <div class="bao dau-trang__noi-dung">
@@ -130,6 +131,85 @@
                 hoặc vọc vạch phần cứng và thử các bản phân phối Linux mới.
             </p>
         </article>
+        <!-- ===== 1. ROADMAP DEVOPS ===== -->
+        <section class="the-noi-dung roadmap" aria-labelledby="tieu-de-roadmap">
+            <h2 class="the-noi-dung__tieu-de" id="tieu-de-roadmap">
+                Roadmap DevOps
+            </h2>
+            <p class="roadmap__huong-dan">
+                Bấm từng giai đoạn để xem chi tiết. Tick mục đã học — trang sẽ nhớ bằng localStorage.
+            </p>
+
+            <div class="roadmap__cac-buoc" role="list">
+                <button type="button" class="roadmap__buoc roadmap__buoc--active"
+                        data-buoc="linux" role="listitem" aria-pressed="true">
+                    1. Linux
+                </button>
+                <span class="roadmap__mui-ten" aria-hidden="true">↓</span>
+                <button type="button" class="roadmap__buoc"
+                        data-buoc="network" role="listitem" aria-pressed="false">
+                    2. Network
+                </button>
+                <span class="roadmap__mui-ten" aria-hidden="true">↓</span>
+                <button type="button" class="roadmap__buoc"
+                        data-buoc="git" role="listitem" aria-pressed="false">
+                    3. Git
+                </button>
+                <span class="roadmap__mui-ten" aria-hidden="true">↓</span>
+                <button type="button" class="roadmap__buoc"
+                        data-buoc="docker" role="listitem" aria-pressed="false">
+                    4. Docker
+                </button>
+                <span class="roadmap__mui-ten" aria-hidden="true">↓</span>
+                <button type="button" class="roadmap__buoc"
+                        data-buoc="cicd" role="listitem" aria-pressed="false">
+                    5. CI/CD
+                </button>
+                <span class="roadmap__mui-ten" aria-hidden="true">↓</span>
+                <button type="button" class="roadmap__buoc"
+                        data-buoc="cloud" role="listitem" aria-pressed="false">
+                    6. Cloud
+                </button>
+            </div>
+
+            <div id="roadmap-chi-tiet" class="roadmap__chi-tiet" aria-live="polite">
+                <!-- JS render nội dung -->
+            </div>
+
+            <div class="roadmap__tien-do">
+                <p class="roadmap__tien-do-chu">
+                    Tiến độ tổng:
+                    <strong id="roadmap-phan-tram">0%</strong>
+                </p>
+                <div class="roadmap__thanh" role="progressbar"
+                     aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+                     id="roadmap-thanh">
+                    <div class="roadmap__thanh-fill" id="roadmap-thanh-fill"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 2. DEVOPS CHALLENGE ===== -->
+        <section class="the-noi-dung challenge" aria-labelledby="tieu-de-challenge">
+            <h2 class="the-noi-dung__tieu-de" id="tieu-de-challenge">
+                DevOps Challenge
+            </h2>
+            <p class="challenge__huong-dan">
+                Bấm nút để nhận thử thách Linux / mạng / Git / Docker ngẫu nhiên.
+            </p>
+
+            <button type="button" id="nut-challenge" class="nut-challenge">
+                ⚡ Thử thách hôm nay
+            </button>
+
+            <div id="challenge-ket-qua" class="challenge__ket-qua" hidden>
+                <p class="challenge__lenh">
+                    <code id="challenge-cmd">—</code>
+                </p>
+                <p class="challenge__muc-tieu" id="challenge-muc-tieu"></p>
+                <p class="challenge__goi-y" id="challenge-goi-y"></p>
+            </div>
+        </section>
 
         <!-- Thời khóa biểu -->
         <section class="the-noi-dung lich-hoc">
@@ -301,5 +381,6 @@
         </p>
     </footer>
 
+    <script src="./js/canhan.js"></script>
 </body>
 </html>

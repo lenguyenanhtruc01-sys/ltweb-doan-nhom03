@@ -348,7 +348,41 @@
                 </div>
             </div>
         </section>
+        <!-- ================= THỜI TIẾT ĐÀ NẴNG ================= -->
+        <section class="khu-vuc khu-vuc--nen-phu" aria-labelledby="tieu-de-thoi-tiet">
+            <div class="bao">
+                <div class="tieu-de-khu-vuc">
+                    <p class="tieu-de-khu-vuc__nhan">
+                        Dữ liệu trực tuyến
+                    </p>
 
+                    <h2
+                        id="tieu-de-thoi-tiet"
+                        class="tieu-de-khu-vuc__tieu-de">
+                        Thời tiết Đà Nẵng hiện tại
+                    </h2>
+
+                    <p class="tieu-de-khu-vuc__mo-ta">
+                        Thông tin thời tiết được cập nhật từ REST API công khai,
+                        giúp sinh viên chủ động sắp xếp lịch học và di chuyển.
+                    </p>
+                </div>
+
+                <div
+                    id="thoi-tiet"
+                    class="thoi-tiet"
+                    aria-live="polite"
+                    aria-busy="true">
+                    <p>Đang tải dữ liệu thời tiết...</p>
+                </div>
+
+                <noscript>
+                    <p>
+                        Cần bật JavaScript để xem dữ liệu thời tiết trực tuyến.
+                    </p>
+                </noscript>
+            </div>
+        </section>
         <!-- ================= KHÁM PHÁ EDUGPA ================= -->
         <aside class="kham-pha">
             <div class="bao kham-pha__khung">

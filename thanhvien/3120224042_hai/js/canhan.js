@@ -1,50 +1,45 @@
 /* 
- * Tệp canhan.js - Thực hiện 2 chức năng tương tác cho trang cá nhân của Hải:
- * 1. Chuyển đổi giao diện Sáng/Tối, lưu trạng thái vào localStorage.
- * 2. Sao chép email vào clipboard (dùng navigator.clipboard.writeText) kèm thông báo.
- * Cách thử: Bấm nút "Đổi Giao Diện" hoặc nút "Copy" trên màn hình.
+ * Tệp canhan.js - Thực hiện 2 chức năng tương tác KHÔNG ĐỤNG HÀNG cho trang cá nhân:
+ * 1. Nút đếm lượt thả tim (Lưu vào localStorage).
+ * 2. Nút ẩn/hiện bảng Thời khóa biểu.
  */
 
-// --- CHỨC NĂNG 1: ĐỔI GIAO DIỆN SÁNG/TỐI ---
-const btnTheme = document.getElementById('btn-theme');
-const bodyElement = document.body;
+// --- CHỨC NĂNG 1: ĐẾM LƯỢT THÍCH LƯU VÀO LOCAL STORAGE ---
+const btnLike = document.getElementById('btn-like');
+const likeCountSpan = document.getElementById('like-count');
 
-// Kiểm tra trạng thái lưu trong localStorage khi vừa mở trang
-const currentTheme = localStorage.getItem('theme');
-if (currentTheme === 'dark') {
-    bodyElement.classList.add('dark-mode');
-    btnTheme.textContent = 'Đổi Giao Diện ☀️';
-}
+// Lấy số like từ bộ nhớ trình duyệt (nếu có), không có thì mặc định là 0
+let currentLikes = localStorage.getItem('hai_likes_count') || 0;
+likeCountSpan.textContent = currentLikes;
 
-// Bắt sự kiện click để chuyển đổi
-btnTheme.addEventListener('click', function() {
-    bodyElement.classList.toggle('dark-mode');
+// Bắt sự kiện khi click vào nút Like
+btnLike.addEventListener('click', function() {
+    currentLikes++; // Tăng số đếm
+    likeCountSpan.textContent = currentLikes; // Hiển thị ra màn hình
+    localStorage.setItem('hai_likes_count', currentLikes); // Lưu lại vào máy
     
-    // Cập nhật chữ trên nút và lưu vào localStorage
-    if (bodyElement.classList.contains('dark-mode')) {
-        btnTheme.textContent = 'Đổi Giao Diện ☀️';
-        localStorage.setItem('theme', 'dark');
-    } else {
-        btnTheme.textContent = 'Đổi Giao Diện 🌙';
-        localStorage.setItem('theme', 'light');
-    }
+    // Hiệu ứng giật nảy nhẹ khi bấm (Scale)
+    btnLike.style.transform = 'scale(1.1)';
+    btnLike.style.backgroundColor = '#fff0f0';
+    
+    setTimeout(function() {
+        btnLike.style.transform = 'scale(1)';
+        btnLike.style.backgroundColor = '#fff';
+    }, 200);
 });
 
-// --- CHỨC NĂNG 2: SAO CHÉP EMAIL ---
-const btnCopy = document.getElementById('btn-copy');
-const emailText = document.getElementById('my-email').textContent;
-const copyMsg = document.getElementById('copy-msg');
 
-btnCopy.addEventListener('click', function() {
-    navigator.clipboard.writeText(emailText)
-        .then(function() {
-            copyMsg.textContent = "Đã sao chép email thành công!";
-            setTimeout(function() {
-                copyMsg.textContent = "";
-            }, 3000);
-        })
-        .catch(function(err) {
-            copyMsg.textContent = "Lỗi không thể sao chép!";
-            console.error('Không thể copy: ', err);
-        });
+// --- CHỨC NĂNG 2: ẨN / HIỆN BẢNG THỜI KHÓA BIỂU ---
+const btnToggleTkb = document.getElementById('btn-toggle-tkb');
+const tkbWrapper = document.getElementById('tkb-wrapper');
+
+btnToggleTkb.addEventListener('click', function() {
+    // Nếu bảng đang hiện (hoặc chưa thiết lập display)
+    if (tkbWrapper.style.display !== 'none') {
+        tkbWrapper.style.display = 'none'; // Ẩn đi
+        btnToggleTkb.textContent = 'Mở rộng ⬇️'; // Đổi chữ nút
+    } else {
+        tkbWrapper.style.display = 'block'; // Hiện lại
+        btnToggleTkb.textContent = 'Thu gọn ⬆️';
+    }
 });

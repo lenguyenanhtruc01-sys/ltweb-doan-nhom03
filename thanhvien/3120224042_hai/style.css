@@ -215,8 +215,8 @@ footer {
 /* CSS DÀNH CHO CHẾ ĐỘ DARK MODE (SÁNG/TỐI)  */
 /* ========================================= */
 body.dark-mode {
-    background-color: #1a1a1a !important;
-    color: #e0e0e0 !important;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
 }
 
 /* Đổi màu nền của thanh Nav và các khối nội dung sang xám đen */
@@ -224,9 +224,9 @@ body.dark-mode nav,
 body.dark-mode section,
 body.dark-mode article,
 body.dark-mode .table-container {
-    background-color: #2d2d2d !important;
+    background-color: #2d2d2d;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-    color: #e0e0e0 !important;
+    color: #e0e0e0;
 }
 
 /* Đổi màu các tiêu đề cho nổi bật trên nền đen */
@@ -234,19 +234,70 @@ body.dark-mode h2,
 body.dark-mode h3,
 body.dark-mode .tkb-table strong,
 body.dark-mode nav a {
-    color: #ffc72c !important;
+    color: #ffc72c;
 }
 
 /* Hover trên thanh Nav khi ở chế độ tối */
 body.dark-mode nav a:hover {
-    background-color: #444 !important;
+    background-color: #444;
 }
 
 /* Bảng thời khóa biểu ở chế độ tối */
 body.dark-mode .tkb-table th {
-    background-color: #222 !important;
-    border-color: #444 !important;
+    background-color: #222;
+    border-color: #444;
 }
 body.dark-mode .tkb-table td {
-    border-color: #444 !important;
+    border-color: #444;
+}
+
+/* --- Định dạng cho các nút tính năng mới (chuyển từ style inline sang) --- */
+.like-section {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.btn-primary {
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 2px solid #ffc72c;
+    background-color: #fff;
+    font-weight: bold;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+/* Hiệu ứng khi nhấn giữ nút Thả tim */
+.btn-primary:active {
+    transform: scale(0.95);
+    background-color: #fdf5e6;
+}
+
+.tkb-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.tkb-title {
+    margin: 0;
+    border: none;
+}
+
+.btn-secondary {
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #123b6d;
+    color: white;
+    border: none;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+/* Hiệu ứng khi nhấn giữ nút Thu gọn */
+.btn-secondary:active {
+    background-color: #0c274a;
 }

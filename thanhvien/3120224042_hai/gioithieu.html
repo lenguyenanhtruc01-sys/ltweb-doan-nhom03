@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Trang giới thiệu cá nhân của Lê Dương Hoàng Hải - Thành viên Nhóm 3.">
     <title>Lê Dương Hoàng Hải | Giới thiệu cá nhân</title>
-    <link rel="stylesheet" href="../../style.css">
+    <!-- Đã sửa: Đường dẫn CSS chung -->
+    <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -28,9 +29,9 @@
             <img src="images/hoanghai.jpg" alt="Ảnh chân dung của Lê Dương Hoàng Hải" width="150" height="150">
             <p>Xin chào! Mình là sinh viên ngành Công nghệ Thông tin tại Khoa Toán - Tin, Trường Đại học Sư phạm - Đại học Đà Nẵng. Mình đam mê phát triển phần mềm và ứng dụng thị giác máy tính.</p>
             
-            <!-- TÍNH NĂNG 1: NÚT ĐẾM LƯỢT THÍCH -->
-            <div style="margin-top: 15px; margin-bottom: 15px;">
-                <button id="btn-like" style="padding: 10px 20px; cursor: pointer; border-radius: 5px; border: 2px solid #ffc72c; background-color: #fff; font-weight: bold; font-size: 16px; transition: 0.2s;">
+            <!-- Đã sửa: Gỡ style inline, thêm class và type="button" -->
+            <div class="like-section">
+                <button id="btn-like" class="btn-primary" type="button">
                     Ủng hộ Hải: ❤️ <span id="like-count">0</span>
                 </button>
             </div>
@@ -56,19 +57,30 @@
 
             <!-- BẢNG THỜI KHÓA BIỂU -->
             <div class="table-container">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h2 class="tkb-title" style="margin: 0; border: none;">Thời khóa biểu</h2>
-                    <!-- TÍNH NĂNG 2: NÚT ẨN/HIỆN TKB -->
-                    <button id="btn-toggle-tkb" style="padding: 8px 15px; cursor: pointer; border-radius: 5px; background-color: #123b6d; color: white; border: none; font-weight: bold;">
+                <!-- Đã sửa: Gỡ style inline, thêm class -->
+                <div class="tkb-header">
+                    <h2 class="tkb-title">Thời khóa biểu</h2>
+                    <!-- Đã sửa: Gỡ style inline, thêm class và type="button" -->
+                    <button id="btn-toggle-tkb" class="btn-secondary" type="button">
                         Thu gọn ⬆️
                     </button>
                 </div>
                 
                 <div class="table-wrapper" id="tkb-wrapper" tabindex="0" role="region" aria-label="Bảng thời khóa biểu">
                     <table class="tkb-table">
+                        <!-- Đã sửa: Bổ sung caption cho bảng -->
+                        <caption>Lịch học hàng tuần của sinh viên Lê Dương Hoàng Hải</caption>
                         <thead>
                             <tr>
-                                <th>Tiết</th><th>Thứ 2</th><th>Thứ 3</th><th>Thứ 4</th><th>Thứ 5</th><th>Thứ 6</th><th>Thứ 7</th><th>Chủ nhật</th>
+                                <!-- Đã sửa: Bổ sung scope cho thẻ th -->
+                                <th scope="col">Tiết</th>
+                                <th scope="col">Thứ 2</th>
+                                <th scope="col">Thứ 3</th>
+                                <th scope="col">Thứ 4</th>
+                                <th scope="col">Thứ 5</th>
+                                <th scope="col">Thứ 6</th>
+                                <th scope="col">Thứ 7</th>
+                                <th scope="col">Chủ nhật</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -129,7 +141,7 @@
         <p>&copy; 2026 Lê Dương Hoàng Hải - Nhóm 3.</p>
     </footer>
 
-    <!-- Gọi file JavaScript cá nhân -->
-    <script src="js/canhan.js"></script>
+    <!-- Đã sửa: Nạp script bằng type="module" -->
+    <script type="module" src="js/canhan.js"></script>
 </body>
 </html>

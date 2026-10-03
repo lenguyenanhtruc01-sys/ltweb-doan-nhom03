@@ -15,28 +15,6 @@ const sapXep = document.querySelector("#sap-xep");
 
 let duLieuGoc = [];
 
-// ====================================================
-// CÁC HÀM XỬ LÝ YÊU THÍCH (LOCALSTORAGE)
-// ====================================================
-function docYeuThich() {
-    const duLieu = localStorage.getItem("danhSachYeuThich");
-    return duLieu ? JSON.parse(duLieu) : [];
-}
-
-function luuYeuThich(mang) {
-    localStorage.setItem("danhSachYeuThich", JSON.stringify(mang));
-}
-
-function capNhatSoDemYeuThich() {
-    // Cập nhật số đếm trên thanh Header
-    const soDemHienThi = document.querySelector("#so-dem-yeu-thich");
-    if (soDemHienThi) {
-        const mang = docYeuThich();
-        soDemHienThi.textContent = mang.length;
-    }
-}
-// ====================================================
-
 /**
  * Xóa dấu tiếng Việt để hỗ trợ tìm kiếm không dấu.
  */
@@ -50,15 +28,40 @@ function xoaDau(chuoi) {
 }
 
 /**
- * Tạo một dòng thông tin theo cách an toàn.
+ * Tạo một dòng thông tin an toàn, không dùng innerHTML.
  */
 function taoDongThongTin(nhan, giaTri) {
     const dong = document.createElement("p");
+
     const tieuDe = document.createElement("strong");
     tieuDe.textContent = `${nhan}: `;
+
     const noiDung = document.createTextNode(String(giaTri));
+
     dong.append(tieuDe, noiDung);
+
     return dong;
+}
+
+/**
+ * Tạo nút yêu thích cho một môn học.
+ * Sự kiện nhấn nút được xử lý bằng event delegation trong main.js.
+ */
+function taoNutYeuThich(mon) {
+    const nutYeuThich = document.createElement("button");
+
+    nutYeuThich.type = "button";
+    nutYeuThich.className = "nut-yeu-thich";
+    nutYeuThich.dataset.yeuThichId = String(mon.id);
+    nutYeuThich.setAttribute("aria-pressed", "false");
+
+    const nhanYeuThich = document.createElement("span");
+    nhanYeuThich.dataset.nhanYeuThich = "";
+    nhanYeuThich.textContent = "Thêm vào yêu thích";
+
+    nutYeuThich.append(nhanYeuThich);
+
+    return nutYeuThich;
 }
 
 /**
@@ -81,43 +84,49 @@ function taoTheMonHoc(mon) {
     const tieuDe = document.createElement("h3");
     tieuDe.textContent = mon.ten;
 
-    const maMon = taoDongThongTin("Mã môn", mon.maMon);
-    const soTinChi = taoDongThongTin("Số tín chỉ", mon.soTinChi);
-    const trangThai = taoDongThongTin("Trạng thái", mon.trangThai);
+    const maMon = taoDongThongTin(
+        "Mã môn",
+        mon.maMon
+    );
+
+    const soTinChi = taoDongThongTin(
+        "Số tín chỉ",
+        mon.soTinChi
+    );
+
+    const trangThai = taoDongThongTin(
+        "Trạng thái",
+        mon.trangThai
+    );
+
+    const vungHanhDong = document.createElement("div");
+    vungHanhDong.className = "the-san-pham__hanh-dong";
 
     const nutChiTiet = document.createElement("a");
     nutChiTiet.href = `chi-tiet.html?id=${mon.id}`;
     nutChiTiet.className = "the-san-pham__lien-ket";
     nutChiTiet.textContent = "Xem chi tiết →";
 
-    // --- TẠO NÚT YÊU THÍCH ---
-    const nutYeuThich = document.createElement("button");
-    nutYeuThich.type = "button";
-    nutYeuThich.className = "nut-yeu-thich";
-    nutYeuThich.dataset.id = mon.id; // Gắn ID môn học vào thuộc tính data-id
-    nutYeuThich.style.cssText = "margin-top: 10px; padding: 6px 12px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background: #fff; font-weight: bold; width: 100%; transition: 0.2s;";
+    const nutYeuThich = taoNutYeuThich(mon);
 
-    // Kiểm tra trạng thái hiện tại trong localStorage
-    const danhSachYeuThich = docYeuThich();
-    const daThich = danhSachYeuThich.includes(String(mon.id));
-    
-    nutYeuThich.textContent = daThich ? "❤️ Đã thích" : "🤍 Yêu thích";
-    if (daThich) {
-        nutYeuThich.style.borderColor = "#ffc72c";
-        nutYeuThich.style.backgroundColor = "#fff9e6";
-        nutYeuThich.style.color = "#d9534f";
-    }
+    vungHanhDong.append(
+        nutChiTiet,
+        nutYeuThich
+    );
 
     phanThan.append(
         tieuDe,
         maMon,
         soTinChi,
         trangThai,
-        nutChiTiet,
-        nutYeuThich // Thêm nút vào giao diện
+        vungHanhDong
     );
 
-    theBai.append(anh, phanThan);
+    theBai.append(
+        anh,
+        phanThan
+    );
+
     return theBai;
 }
 
@@ -125,35 +134,55 @@ function taoTheMonHoc(mon) {
  * Hiển thị danh sách môn học ra giao diện.
  */
 function hienThiDanhSach(danhSach) {
-    if (!vungChua || !vungThongBao) return;
+    if (!vungChua || !vungThongBao) {
+        return;
+    }
 
     vungChua.replaceChildren();
 
     if (danhSach.length === 0) {
         const thongBaoTrong = document.createElement("p");
+
         thongBaoTrong.className = "thong-bao-trong";
-        thongBaoTrong.textContent = "Không tìm thấy môn học nào phù hợp.";
+        thongBaoTrong.textContent =
+            "Không tìm thấy môn học nào phù hợp.";
+
         vungChua.append(thongBaoTrong);
-        vungThongBao.textContent = "Không có kết quả phù hợp.";
+
+        vungThongBao.textContent =
+            "Không có kết quả phù hợp.";
+
         return;
     }
 
     const fragment = document.createDocumentFragment();
+
     danhSach.forEach((mon) => {
         fragment.append(taoTheMonHoc(mon));
     });
 
     vungChua.append(fragment);
-    vungThongBao.textContent = `Đang hiển thị ${danhSach.length} môn học.`;
+
+    vungThongBao.textContent =
+        `Đang hiển thị ${danhSach.length} môn học.`;
 }
 
 /**
  * Tìm kiếm, lọc và sắp xếp dữ liệu.
  */
 function xuLyDuLieu() {
-    if (!oTimKiem || !locTrangThai || !sapXep) return;
+    if (
+        !oTimKiem ||
+        !locTrangThai ||
+        !sapXep
+    ) {
+        return;
+    }
 
-    const tuKhoa = xoaDau(oTimKiem.value.trim());
+    const tuKhoa = xoaDau(
+        oTimKiem.value.trim()
+    );
+
     const giaTriLoc = locTrangThai.value;
     const giaTriSapXep = sapXep.value;
 
@@ -161,22 +190,39 @@ function xuLyDuLieu() {
         const tenMon = xoaDau(mon.ten);
         const maMon = xoaDau(mon.maMon);
 
-        const thoaTuKhoa = tenMon.includes(tuKhoa) || maMon.includes(tuKhoa);
-        const thoaLoc = giaTriLoc === "tat-ca" || mon.trangThai === giaTriLoc;
+        const thoaTuKhoa =
+            tenMon.includes(tuKhoa) ||
+            maMon.includes(tuKhoa);
+
+        const thoaLoc =
+            giaTriLoc === "tat-ca" ||
+            mon.trangThai === giaTriLoc;
 
         return thoaTuKhoa && thoaLoc;
     });
 
+    /*
+     * Tạo mảng mới trước khi sort
+     * để không làm thay đổi dữ liệu gốc.
+     */
     ketQua = [...ketQua];
 
     if (giaTriSapXep === "ten-az") {
-        ketQua.sort((a, b) => a.ten.localeCompare(b.ten, "vi"));
+        ketQua.sort((a, b) =>
+            a.ten.localeCompare(b.ten, "vi")
+        );
     } else if (giaTriSapXep === "ten-za") {
-        ketQua.sort((a, b) => b.ten.localeCompare(a.ten, "vi"));
+        ketQua.sort((a, b) =>
+            b.ten.localeCompare(a.ten, "vi")
+        );
     } else if (giaTriSapXep === "tin-chi-giam") {
-        ketQua.sort((a, b) => b.soTinChi - a.soTinChi);
+        ketQua.sort(
+            (a, b) => b.soTinChi - a.soTinChi
+        );
     } else if (giaTriSapXep === "tin-chi-tang") {
-        ketQua.sort((a, b) => a.soTinChi - b.soTinChi);
+        ketQua.sort(
+            (a, b) => a.soTinChi - b.soTinChi
+        );
     }
 
     hienThiDanhSach(ketQua);
@@ -186,84 +232,90 @@ function xuLyDuLieu() {
  * Hiển thị trạng thái lỗi và nút thử lại.
  */
 function hienThiLoi() {
-    if (!vungChua || !vungThongBao) return;
+    if (!vungChua || !vungThongBao) {
+        return;
+    }
 
     vungChua.replaceChildren();
 
     const thongBaoLoi = document.createElement("p");
     thongBaoLoi.className = "thong-bao-loi";
-    thongBaoLoi.textContent = "Không thể tải dữ liệu môn học.";
+    thongBaoLoi.textContent =
+        "Không thể tải dữ liệu môn học.";
 
     const nutThuLai = document.createElement("button");
     nutThuLai.type = "button";
     nutThuLai.className = "nut nut--chinh";
     nutThuLai.textContent = "Thử lại";
-    nutThuLai.addEventListener("click", taiDanhSachMonHoc);
 
-    vungChua.append(thongBaoLoi, nutThuLai);
-    vungThongBao.textContent = "Lỗi: Không tải được dữ liệu.";
+    nutThuLai.addEventListener(
+        "click",
+        taiDanhSachMonHoc
+    );
+
+    vungChua.append(
+        thongBaoLoi,
+        nutThuLai
+    );
+
+    vungThongBao.textContent =
+        "Lỗi: Không tải được dữ liệu.";
 }
 
 /**
  * Tải dữ liệu môn học từ JSON.
  */
 async function taiDanhSachMonHoc() {
-    if (!vungChua || !vungThongBao) return;
+    if (!vungChua || !vungThongBao) {
+        return;
+    }
 
-    vungChua.textContent = "Đang tải dữ liệu môn học...";
-    vungThongBao.textContent = "Đang tải dữ liệu...";
+    vungChua.textContent =
+        "Đang tải dữ liệu môn học...";
+
+    vungThongBao.textContent =
+        "Đang tải dữ liệu...";
 
     try {
-        duLieuGoc = await taiJSON("data/mon-hoc.json");
+        duLieuGoc = await taiJSON(
+            "data/mon-hoc.json"
+        );
+
         if (!Array.isArray(duLieuGoc)) {
-            throw new Error("Dữ liệu môn học không hợp lệ.");
+            throw new Error(
+                "Dữ liệu môn học không hợp lệ."
+            );
         }
+
         xuLyDuLieu();
     } catch (loi) {
-        console.error("Lỗi tải dữ liệu môn học:", loi);
+        console.error(
+            "Lỗi tải dữ liệu môn học:",
+            loi
+        );
+
         hienThiLoi();
     }
 }
 
 /**
- * Gắn các sự kiện.
+ * Gắn các sự kiện tìm kiếm, lọc và sắp xếp.
  */
 function ganSuKien() {
-    oTimKiem?.addEventListener("input", xuLyDuLieu);
-    locTrangThai?.addEventListener("change", xuLyDuLieu);
-    sapXep?.addEventListener("change", xuLyDuLieu);
+    oTimKiem?.addEventListener(
+        "input",
+        xuLyDuLieu
+    );
 
-    // ====================================================
-    // KỸ THUẬT ỦY QUYỀN SỰ KIỆN (EVENT DELEGATION)
-    // ====================================================
-    vungChua?.addEventListener("click", (suKien) => {
-        // Kiểm tra xem người dùng có bấm trúng nút yêu thích không
-        const nut = suKien.target.closest(".nut-yeu-thich");
-        if (!nut) return; // Nếu không thì bỏ qua
+    locTrangThai?.addEventListener(
+        "change",
+        xuLyDuLieu
+    );
 
-        const idMonHoc = nut.dataset.id;
-        let danhSachYeuThich = docYeuThich();
-
-        if (danhSachYeuThich.includes(idMonHoc)) {
-            // Đã thích -> Xóa khỏi mảng
-            danhSachYeuThich = danhSachYeuThich.filter(id => id !== idMonHoc);
-            nut.textContent = "🤍 Yêu thích";
-            nut.style.borderColor = "#ccc";
-            nut.style.backgroundColor = "#fff";
-            nut.style.color = "inherit";
-        } else {
-            // Chưa thích -> Thêm vào mảng
-            danhSachYeuThich.push(idMonHoc);
-            nut.textContent = "❤️️ Đã thích";
-            nut.style.borderColor = "#ffc72c";
-            nut.style.backgroundColor = "#fff9e6";
-            nut.style.color = "#d9534f";
-        }
-
-        // Lưu lại dữ liệu và cập nhật bộ đếm
-        luuYeuThich(danhSachYeuThich);
-        capNhatSoDemYeuThich();
-    });
+    sapXep?.addEventListener(
+        "change",
+        xuLyDuLieu
+    );
 }
 
 /**
@@ -271,7 +323,6 @@ function ganSuKien() {
  */
 function khoiTao() {
     ganSuKien();
-    capNhatSoDemYeuThich(); // Gọi lần đầu để hiện số ngay khi mới vào trang
     taiDanhSachMonHoc();
 }
 

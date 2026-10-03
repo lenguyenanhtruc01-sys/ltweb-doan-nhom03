@@ -35,7 +35,7 @@ async function chay() {
   hienThiTrangThai('Đang tải dữ liệu...');
 
   try {
-    const danhSach = await taiJSON('data/mon-hoc.json');
+    const danhSach = await taiJSON('data/mon-hoc1.json');
     const mon = danhSach.find((x) => x.id === id);
 
     // Không tìm thấy

@@ -3,15 +3,20 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
     <meta
         name="description"
-        content="EduGPA hỗ trợ sinh viên theo dõi kết quả học tập, tính GPA, quản lý tín chỉ và lập kế hoạch học tập.">
+        content="EduGPA hỗ trợ sinh viên tra cứu môn học, theo dõi trạng thái học tập, lưu môn yêu thích và xem dữ liệu thời tiết trực tuyến.">
 
     <title>Trang chủ | EduGPA</title>
 
-    <link rel="stylesheet" href="css/style.css?v=4">
+    <link
+        rel="stylesheet"
+        href="css/style.css?v=4">
 </head>
 
 <body class="trang">
@@ -19,41 +24,67 @@
     <!-- ================= HEADER ================= -->
     <header class="dau-trang">
         <div class="bao dau-trang__noi-dung">
-            <div class="dau-trang__cum-thuong-hieu">
-    <a class="thuong-hieu" href="index.html">
-        EduGPA
-    </a>
 
-    <a
-        class="dau-trang__yeu-thich"
-        href="danh-sach.html"
-    >
-        <span aria-hidden="true">♥</span>
-        <span>Yêu thích:</span>
-        <span
-            data-so-luong-yeu-thich
-            aria-live="polite"
-            aria-atomic="true"
-        >0</span>
-    </a>
-</div>
+            <div class="dau-trang__cum-thuong-hieu">
+
+                <a
+                    class="thuong-hieu"
+                    href="index.html">
+                    EduGPA
+                </a>
+
+                <a
+                    class="dau-trang__yeu-thich"
+                    href="danh-sach.html">
+
+                    <span aria-hidden="true">
+                        ♥
+                    </span>
+
+                    <span>
+                        Yêu thích:
+                    </span>
+
+                    <span
+                        data-so-luong-yeu-thich
+                        aria-live="polite"
+                        aria-atomic="true">
+                        0
+                    </span>
+
+                </a>
+
+            </div>
 
             <p class="dau-trang__mo-ta">
-                Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập cho sinh viên
+                Hệ thống hỗ trợ tra cứu và theo dõi
+                thông tin học tập cho sinh viên
             </p>
+
         </div>
     </header>
 
+
     <!-- ================= MENU CHÍNH ================= -->
-    <nav class="dieu-huong" aria-label="Điều hướng chính">
+    <nav
+        class="dieu-huong"
+        aria-label="Điều hướng chính">
+
         <button
             class="nut-menu"
             type="button"
             aria-controls="menu-chinh"
             aria-expanded="false"
             aria-label="Mở menu chính">
-            <span aria-hidden="true">☰</span>
-            <span>Menu</span>
+
+            <span aria-hidden="true">
+                ☰
+            </span>
+
+            <span>
+                Menu
+            </span>
+
         </button>
 
         <ul
@@ -80,14 +111,6 @@
             <li class="dieu-huong__muc">
                 <a
                     class="dieu-huong__lien-ket"
-                    href="chi-tiet.html">
-                    Chi tiết
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket"
                     href="gioi-thieu.html">
                     Giới thiệu
                 </a>
@@ -100,35 +123,44 @@
                     Liên hệ
                 </a>
             </li>
+
         </ul>
+
     </nav>
+
 
     <!-- ================= NỘI DUNG CHÍNH ================= -->
     <main class="noi-dung-chinh">
 
-        <!-- HERO -->
+
+        <!-- ================= HERO ================= -->
         <section class="hero">
+
             <div class="bao hero__khung">
+
                 <div class="hero__noi-dung">
+
                     <p class="hero__nhan">
-                        Quản lý học tập thông minh
+                        Quản lý học tập thuận tiện
                     </p>
 
                     <h1 class="hero__tieu-de">
-                        Đồng hành cùng sinh viên trong quá trình học tập
+                        Tra cứu và theo dõi môn học
+                        dễ dàng hơn cùng EduGPA
                     </h1>
 
                     <p class="hero__mo-ta">
-                        EduGPA hỗ trợ sinh viên theo dõi kết quả học tập,
-                        tính GPA, quản lý tín chỉ và xây dựng kế hoạch
-                        hướng tới mục tiêu tốt nghiệp.
+                        EduGPA hỗ trợ sinh viên tra cứu
+                        danh sách môn học, tìm kiếm và lọc dữ liệu,
+                        xem thông tin chi tiết và lưu các môn yêu thích.
                     </p>
 
                     <div class="hero__hanh-dong">
+
                         <a
                             class="nut nut--chinh"
                             href="danh-sach.html">
-                            Khám phá ngay
+                            Khám phá môn học
                         </a>
 
                         <a
@@ -136,80 +168,103 @@
                             href="gioi-thieu.html">
                             Tìm hiểu EduGPA
                         </a>
+
                     </div>
+
                 </div>
 
+
                 <figure class="hero__hinh">
+
                     <img
                         src="images/mota.png"
-                        alt="Minh họa hệ thống EduGPA hỗ trợ sinh viên quản lý kết quả học tập"
+                        alt="Minh họa hệ thống EduGPA hỗ trợ sinh viên tra cứu và theo dõi môn học"
                         width="600"
                         height="400">
 
                     <figcaption class="hero__chu-thich">
-                        EduGPA hỗ trợ sinh viên theo dõi kết quả
-                        và tiến độ học tập.
+                        EduGPA hỗ trợ sinh viên tra cứu
+                        và quản lý thông tin môn học.
                     </figcaption>
+
                 </figure>
+
             </div>
+
         </section>
+
 
         <!-- ================= CÁC CHỨC NĂNG ================= -->
         <section class="khu-vuc khu-vuc--chuc-nang">
+
             <div class="bao">
+
                 <div class="tieu-de-khu-vuc">
+
                     <p class="tieu-de-khu-vuc__nhan">
                         Chức năng
                     </p>
 
                     <h2 class="tieu-de-khu-vuc__tieu-de">
-                        Những công cụ nổi bật của EduGPA
+                        Những chức năng chính của EduGPA
                     </h2>
 
                     <p class="tieu-de-khu-vuc__mo-ta">
-                        Các công cụ giúp sinh viên quản lý kết quả
-                        và lập kế hoạch học tập hiệu quả.
+                        Các chức năng được xây dựng bằng JavaScript
+                        giúp người dùng thao tác với dữ liệu môn học
+                        thuận tiện hơn.
                     </p>
+
                 </div>
 
+
                 <div class="luoi-the">
+
+                    <!-- Chức năng 1 -->
                     <article class="the">
+
                         <div
                             class="the__bieu-tuong"
                             aria-hidden="true">
-                            GPA
+                            TK
                         </div>
 
                         <h3 class="the__tieu-de">
-                            Tính và theo dõi GPA
+                            Tìm kiếm và lọc môn học
                         </h3>
 
                         <p class="the__noi-dung">
-                            Theo dõi GPA học kỳ và GPA tích lũy dựa trên
-                            kết quả các học phần đã hoàn thành.
+                            Tìm kiếm môn học theo tên hoặc mã môn,
+                            đồng thời lọc và sắp xếp dữ liệu
+                            theo nhu cầu của người dùng.
                         </p>
 
                         <a
                             class="the__lien-ket"
-                            href="chi-tiet.html">
-                            Xem chi tiết
+                            href="danh-sach.html">
+                            Tìm kiếm môn học
                         </a>
+
                     </article>
 
+
+                    <!-- Chức năng 2 -->
                     <article class="the">
+
                         <div
                             class="the__bieu-tuong"
                             aria-hidden="true">
-                            TC
+                            ♥
                         </div>
 
                         <h3 class="the__tieu-de">
-                            Theo dõi tiến độ tín chỉ
+                            Lưu môn học yêu thích
                         </h3>
 
                         <p class="the__noi-dung">
-                            Theo dõi số tín chỉ đã hoàn thành,
-                            số tín chỉ còn thiếu và tiến độ học tập.
+                            Thêm hoặc bỏ môn học khỏi danh sách
+                            yêu thích và lưu trạng thái trên trình duyệt
+                            bằng localStorage.
                         </p>
 
                         <a
@@ -217,107 +272,166 @@
                             href="danh-sach.html">
                             Xem danh sách
                         </a>
+
                     </article>
 
+
+                    <!-- Chức năng 3 -->
                     <article class="the">
+
                         <div
                             class="the__bieu-tuong"
                             aria-hidden="true">
-                            +
+                            CT
                         </div>
 
                         <h3 class="the__tieu-de">
-                            Mô phỏng GPA
+                            Xem chi tiết môn học
                         </h3>
 
                         <p class="the__noi-dung">
-                            Mô phỏng GPA dự kiến với các mức điểm khác nhau
-                            để xây dựng kế hoạch học tập phù hợp.
+                            Chọn một môn học từ danh sách để xem
+                            mã môn, số tín chỉ, trạng thái,
+                            học kỳ và các thông tin liên quan.
                         </p>
 
                         <a
                             class="the__lien-ket"
-                            href="chi-tiet.html">
-                            Thử mô phỏng
+                            href="danh-sach.html">
+                            Chọn môn để xem
                         </a>
+
                     </article>
+
                 </div>
+
             </div>
+
         </section>
+
 
         <!-- ================= QUY TRÌNH ================= -->
         <section class="khu-vuc khu-vuc--nen-phu">
+
             <div class="bao">
+
                 <div class="tieu-de-khu-vuc">
+
                     <p class="tieu-de-khu-vuc__nhan">
                         Quy trình
                     </p>
 
                     <h2 class="tieu-de-khu-vuc__tieu-de">
-                        EduGPA hỗ trợ sinh viên như thế nào?
+                        Sử dụng EduGPA như thế nào?
                     </h2>
+
                 </div>
 
+
                 <ol class="cac-buoc">
-                    <li class="cac-buoc__muc">
-                        <span class="cac-buoc__so">01</span>
-
-                        <div>
-                            <h3>Quản lý môn học</h3>
-
-                            <p>
-                                Thêm và quản lý danh sách các học phần
-                                trong quá trình học tập.
-                            </p>
-                        </div>
-                    </li>
 
                     <li class="cac-buoc__muc">
-                        <span class="cac-buoc__so">02</span>
+
+                        <span class="cac-buoc__so">
+                            01
+                        </span>
 
                         <div>
-                            <h3>Theo dõi kết quả</h3>
+
+                            <h3>
+                                Mở danh sách môn học
+                            </h3>
 
                             <p>
-                                Cập nhật điểm số và theo dõi kết quả
-                                của từng học phần.
+                                Truy cập trang danh sách để xem
+                                các học phần được tải từ dữ liệu JSON.
                             </p>
+
                         </div>
+
                     </li>
+
 
                     <li class="cac-buoc__muc">
-                        <span class="cac-buoc__so">03</span>
+
+                        <span class="cac-buoc__so">
+                            02
+                        </span>
 
                         <div>
-                            <h3>Phân tích GPA</h3>
+
+                            <h3>
+                                Tìm kiếm và lọc
+                            </h3>
 
                             <p>
-                                Tính GPA học kỳ, GPA tích lũy
-                                và theo dõi số tín chỉ hoàn thành.
+                                Nhập từ khóa hoặc sử dụng các bộ lọc
+                                để nhanh chóng tìm môn học cần xem.
                             </p>
+
                         </div>
+
                     </li>
+
 
                     <li class="cac-buoc__muc">
-                        <span class="cac-buoc__so">04</span>
+
+                        <span class="cac-buoc__so">
+                            03
+                        </span>
 
                         <div>
-                            <h3>Lập kế hoạch</h3>
+
+                            <h3>
+                                Xem thông tin chi tiết
+                            </h3>
 
                             <p>
-                                Mô phỏng GPA và xây dựng kế hoạch
-                                hướng tới mục tiêu tốt nghiệp.
+                                Chọn một môn học để mở trang chi tiết
+                                và xem các thông tin tương ứng.
                             </p>
+
                         </div>
+
                     </li>
+
+
+                    <li class="cac-buoc__muc">
+
+                        <span class="cac-buoc__so">
+                            04
+                        </span>
+
+                        <div>
+
+                            <h3>
+                                Lưu môn yêu thích
+                            </h3>
+
+                            <p>
+                                Đánh dấu các môn quan tâm.
+                                Danh sách yêu thích được lưu
+                                bằng localStorage trên trình duyệt.
+                            </p>
+
+                        </div>
+
+                    </li>
+
                 </ol>
+
             </div>
+
         </section>
+
 
         <!-- ================= ĐỐI TƯỢNG SỬ DỤNG ================= -->
         <section class="khu-vuc">
+
             <div class="bao">
+
                 <div class="tieu-de-khu-vuc">
+
                     <p class="tieu-de-khu-vuc__nhan">
                         Người dùng
                     </p>
@@ -325,50 +439,73 @@
                     <h2 class="tieu-de-khu-vuc__tieu-de">
                         Đối tượng sử dụng
                     </h2>
+
                 </div>
 
+
                 <div class="luoi-doi-tuong">
-                    <article class="doi-tuong">
-                        <h3 class="doi-tuong__tieu-de">
-                            Khách
-                        </h3>
-
-                        <p class="doi-tuong__noi-dung">
-                            Xem thông tin giới thiệu, hướng dẫn tính GPA,
-                            tài liệu học tập và các nội dung công khai.
-                        </p>
-                    </article>
 
                     <article class="doi-tuong">
+
                         <h3 class="doi-tuong__tieu-de">
                             Sinh viên
                         </h3>
 
                         <p class="doi-tuong__noi-dung">
-                            Quản lý môn học, điểm số, GPA,
-                            tín chỉ và mục tiêu tốt nghiệp.
+                            Tra cứu môn học, theo dõi thông tin
+                            và lưu các học phần quan tâm.
                         </p>
+
                     </article>
 
+
                     <article class="doi-tuong">
+
                         <h3 class="doi-tuong__tieu-de">
-                            Quản trị viên
+                            Người xem
                         </h3>
 
                         <p class="doi-tuong__noi-dung">
-                            Quản lý tài khoản, môn học,
-                            tài liệu và nội dung của hệ thống.
+                            Xem thông tin giới thiệu,
+                            danh sách môn học và các nội dung
+                            công khai của website.
                         </p>
+
                     </article>
+
+
+                    <article class="doi-tuong">
+
+                        <h3 class="doi-tuong__tieu-de">
+                            Nhóm phát triển
+                        </h3>
+
+                        <p class="doi-tuong__noi-dung">
+                            Kiểm thử giao diện, dữ liệu,
+                            chức năng JavaScript và khả năng
+                            truy cập của hệ thống.
+                        </p>
+
+                    </article>
+
                 </div>
+
             </div>
+
         </section>
+
+
         <!-- ================= THỜI TIẾT ĐÀ NẴNG ================= -->
-        <section class="khu-vuc khu-vuc--nen-phu" aria-labelledby="tieu-de-thoi-tiet">
+        <section
+            class="khu-vuc khu-vuc--nen-phu"
+            aria-labelledby="tieu-de-thoi-tiet">
+
             <div class="bao">
+
                 <div class="tieu-de-khu-vuc">
+
                     <p class="tieu-de-khu-vuc__nhan">
-                        Dữ liệu trực tuyến
+                        REST API
                     </p>
 
                     <h2
@@ -378,46 +515,73 @@
                     </h2>
 
                     <p class="tieu-de-khu-vuc__mo-ta">
-                        Thông tin thời tiết được cập nhật từ REST API công khai,
-                        giúp sinh viên chủ động sắp xếp lịch học và di chuyển.
+                        Dữ liệu thời tiết được tải trực tuyến
+                        từ Open-Meteo API và cập nhật bằng JavaScript
+                        mà không cần tải lại toàn bộ trang.
                     </p>
+
                 </div>
 
+
+                <!--
+                    JavaScript trong js/trang-chu.js
+                    sẽ thay nội dung bên trong #thoi-tiet
+                    sau khi nhận dữ liệu từ API.
+                -->
                 <div
                     id="thoi-tiet"
                     class="thoi-tiet"
+                    role="status"
                     aria-live="polite"
                     aria-busy="true">
-                    <p>Đang tải dữ liệu thời tiết...</p>
+
+                    <p>
+                        Đang tải dữ liệu thời tiết...
+                    </p>
+
                 </div>
 
+
                 <noscript>
-                    <p>
-                        Cần bật JavaScript để xem dữ liệu thời tiết trực tuyến.
+
+                    <p class="trang-thai">
+                        Cần bật JavaScript để xem
+                        dữ liệu thời tiết trực tuyến.
                     </p>
+
                 </noscript>
+
             </div>
+
         </section>
+
+
         <!-- ================= KHÁM PHÁ EDUGPA ================= -->
         <aside class="kham-pha">
+
             <div class="bao kham-pha__khung">
+
                 <div class="kham-pha__noi-dung">
+
                     <p class="kham-pha__nhan">
                         Bắt đầu với EduGPA
                     </p>
 
                     <h2 class="kham-pha__tieu-de">
-                        Quản lý hành trình học tập dễ dàng hơn
+                        Tra cứu thông tin môn học dễ dàng hơn
                     </h2>
 
                     <p class="kham-pha__mo-ta">
-                        Khám phá các chức năng của EduGPA
-                        và xây dựng kế hoạch học tập phù hợp
-                        với mục tiêu của bạn.
+                        Khám phá danh sách môn học,
+                        sử dụng chức năng tìm kiếm, lọc
+                        và lưu các môn học yêu thích.
                     </p>
+
                 </div>
 
+
                 <div class="kham-pha__hanh-dong">
+
                     <a
                         class="nut nut--chinh"
                         href="danh-sach.html">
@@ -429,25 +593,36 @@
                         href="lien-he.html">
                         Liên hệ
                     </a>
+
                 </div>
+
             </div>
+
         </aside>
+
 
     </main>
 
+
     <!-- ================= FOOTER ================= -->
     <footer class="chan-trang">
+
         <div class="bao chan-trang__noi-dung">
+
             <div>
+
                 <p class="chan-trang__thuong-hieu">
                     EduGPA
                 </p>
 
                 <p class="chan-trang__mo-ta">
-                    Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập
+                    Hệ thống hỗ trợ tra cứu
+                    và theo dõi thông tin học tập
                     cho sinh viên.
                 </p>
+
             </div>
+
 
             <nav
                 class="chan-trang__dieu-huong"
@@ -460,16 +635,32 @@
                 <a href="lien-he.html">
                     Liên hệ
                 </a>
+
             </nav>
 
+
             <p class="chan-trang__ban-quyen">
-                &copy; 2026 Nhóm 3 - Khoa Toán - Tin.
+                &copy; 2026 Nhóm 03 - Khoa Toán - Tin.
             </p>
+
         </div>
+
     </footer>
 
-    <script type="module" src="js/main.js"></script>
-    <script type="module" src="js/trang-chu.js"></script>
+
+    <!-- JavaScript dùng chung -->
+    <script
+        type="module"
+        src="js/main.js">
+    </script>
+
+    <!-- JavaScript riêng của trang chủ:
+         tải dữ liệu thời tiết từ REST API -->
+    <script
+        type="module"
+        src="js/trang-chu.js">
+    </script>
+
 </body>
 
 </html>

@@ -1,4 +1,4 @@
-/**
+/*
  * trang-danh-sach.js
  * Tải dữ liệu môn học từ tệp JSON.
  * Hỗ trợ tìm kiếm không dấu, lọc trạng thái và sắp xếp.

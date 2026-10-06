@@ -175,6 +175,7 @@ button {
 .trang {
     min-height: 100vh;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
         "dau"
         "menu"
@@ -1640,3 +1641,24 @@ details > p {
         flex-basis: calc(33.333% - 1rem);
     }
 }
+
+/* Menu điện thoại vẫn hiển thị gọn khi tắt JavaScript */
+@media (max-width: 767px) {
+    .dieu-huong__danh-sach {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: stretch;
+    }
+
+    .trang > nav li,
+    .dieu-huong__muc {
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: none;
+    }
+
+    .dieu-huong__lien-ket {
+        overflow-wrap: anywhere;
+    }
+}
+

@@ -1,52 +1,89 @@
-<!DOCTYPE html>
-<html lang="vi">
+<?php
+declare(strict_types=1);
+/**
+ * gioithieu.php – Trang cá nhân Huỳnh Phương Uyên, Nhóm 03.
+ * PHP 1: Lọc kỹ năng theo nhóm bằng GET với danh sách giá trị cho phép.
+ * PHP 2: Tính điểm A1/A2/A3 bằng POST, kiểm tra máy chủ và PRG.
+ * Thử: chọn nhóm kỹ năng; nhập điểm hợp lệ/sai; tắt JS và thử lại.
+ */
+require __DIR__ . '/../../inc/config.php';
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+// Chức năng 1: PHP lọc kỹ năng, không dựa vào JavaScript.
+$nhomKyNang = [
+    'tat-ca' => 'Tất cả kỹ năng',
+    'web' => 'Thiết kế website',
+    'du-lieu' => 'Cơ sở dữ liệu',
+    'lam-viec' => 'Làm việc và công cụ',
+];
+$danhSachKyNang = [
+    ['ten' => 'HTML5', 'nhom' => 'web'],
+    ['ten' => 'Thiết kế giao diện website', 'nhom' => 'web'],
+    ['ten' => 'Làm việc nhóm', 'nhom' => 'lam-viec'],
+    ['ten' => 'Quản lý mã nguồn với GitHub', 'nhom' => 'lam-viec'],
+    ['ten' => 'Thiết kế và quản lý cơ sở dữ liệu', 'nhom' => 'du-lieu'],
+];
+$nhomDangChon = $_GET['nhom'] ?? 'tat-ca';
+if (!is_string($nhomDangChon) || !array_key_exists($nhomDangChon, $nhomKyNang)) {
+    $nhomDangChon = 'tat-ca';
+}
+$kyNangLoc = array_values(array_filter(
+    $danhSachKyNang,
+    static fn (array $kyNang): bool =>
+        $nhomDangChon === 'tat-ca' || $kyNang['nhom'] === $nhomDangChon
+));
 
-    <meta name="description"
-        content="Trang giới thiệu cá nhân của thành viên nhóm thực hiện dự án EduGPA.">
+// Chức năng 2: PHP tính điểm với xác thực 0–10 và Post/Redirect/Get.
+$maXacThuc = $_SESSION['uyen_csrf'] ?? null;
+if (!is_string($maXacThuc) || strlen($maXacThuc) !== 32) {
+    $maXacThuc = bin2hex(random_bytes(16));
+    $_SESSION['uyen_csrf'] = $maXacThuc;
+}
+$du = ['a1' => '', 'a2' => '', 'a3' => ''];
+$loi = [];
+$ketQuaDiem = $_SESSION['uyen_ket_qua_diem'] ?? null;
+unset($_SESSION['uyen_ket_qua_diem']);
+if (!is_float($ketQuaDiem) && !is_int($ketQuaDiem)) {
+    $ketQuaDiem = null;
+}
 
-    <title>Giới thiệu thành viên | EduGPA</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" href="data:,">
-</head>
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+    $maGui = $_POST['csrf_uyen'] ?? null;
+    if (!is_string($maGui) || !hash_equals($maXacThuc, $maGui)) {
+        $loi['csrf'] = 'Phiên biểu mẫu không hợp lệ. Vui lòng tải lại trang rồi thử lại.';
+    }
+    $diem = [];
+    foreach (['a1', 'a2', 'a3'] as $truong) {
+        $giaTri = $_POST[$truong] ?? null;
+        $du[$truong] = is_string($giaTri) ? trim($giaTri) : '';
+        $hopLe = preg_match('/^(?:0|[1-9]|10)(?:\.\d{1,2})?$/D', $du[$truong]) === 1;
+        $so = $hopLe ? filter_var($du[$truong], FILTER_VALIDATE_FLOAT) : false;
+        if ($so === false || $so < 0 || $so > 10) {
+            $loi[$truong] = 'Vui lòng nhập điểm từ 0 đến 10, tối đa 2 chữ số thập phân.';
+        } else {
+            $diem[$truong] = (float) $so;
+        }
+    }
+    if ($loi === []) {
+        $_SESSION['uyen_ket_qua_diem'] = round(
+            0.2 * $diem['a1'] + 0.3 * $diem['a2'] + 0.5 * $diem['a3'],
+            2
+        );
+        // POST thành công phải chuyển sang GET để tránh gửi lại khi F5.
+        header('Location: gioithieu.php#tinh-diem', true, 303);
+        exit;
+    }
+    $ketQuaDiem = null;
+}
 
-<body class="trang-ca-nhan">
-
-    <header class="dau-trang">
-        <div class="bao dau-trang__noi-dung">
-            <p class="dau-trang__thuong-hieu"><strong>EduGPA</strong></p>
-            <p class="dau-trang__khau-hieu">
-                Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập cho sinh viên
-            </p>
-        </div>
-    </header>
-
-    <nav class="dieu-huong" aria-label="Điều hướng chính">
-        <ul class="bao dieu-huong__danh-sach">
-            <li>
-                <a class="dieu-huong__lien-ket" href="../../index.html">Trang chủ</a>
-            </li>
-            <li>
-                <a class="dieu-huong__lien-ket" href="../../danh-sach.html">Danh sách</a>
-            </li>
-            <li>
-                <a class="dieu-huong__lien-ket" href="../../chi-tiet.html">Chi tiết</a>
-            </li>
-            <li>
-                <a class="dieu-huong__lien-ket dieu-huong__lien-ket--hien-tai"
-                    href="../../gioi-thieu.html" aria-current="location">Giới thiệu</a>
-            </li>
-            <li>
-                <a class="dieu-huong__lien-ket" href="../../lien-he.html">Liên hệ</a>
-            </li>
-        </ul>
-    </nav>
-
-    <main class="bao noi-dung-chinh">
+// Gắn đường dẫn về thư mục gốc và giữ kiểu riêng của Uyên.
+$tieuDe = 'Giới thiệu Huỳnh Phương Uyên';
+$trang = 'gioi-thieu';
+$goc = '../../';
+$lopBody = 'trang-ca-nhan';
+$cssTrang = 'css/php-ca-nhan.css';
+require __DIR__ . '/../../inc/header.php';
+?>
+<main class="bao noi-dung-chinh">
 
         <h1 class="noi-dung-chinh__tieu-de">Giới thiệu bản thân</h1>
             <section class="the-noi-dung tien-ich-ca-nhan">
@@ -143,17 +180,71 @@
             </p>
         </article>
 
-        <section class="the-noi-dung ky-nang">
-            <h2 class="the-noi-dung__tieu-de">Kỹ năng</h2>
 
-            <ul class="ky-nang__danh-sach">
-                <li>HTML5</li>
-                <li>Thiết kế giao diện website</li>
-                <li>Làm việc nhóm</li>
-                <li>Quản lý mã nguồn với GitHub</li>
-                <li>Thiết kế và quản lý cơ sở dữ liệu</li>
-            </ul>
-        </section>
+<section class="the-noi-dung ky-nang" id="loc-ky-nang">
+    <h2 class="the-noi-dung__tieu-de">Kỹ năng – lọc bằng PHP</h2>
+    <form class="uyen-form" method="get" action="gioithieu.php#loc-ky-nang">
+        <label for="nhom-ky-nang">Chọn nhóm kỹ năng</label>
+        <div class="uyen-form__hang">
+            <select id="nhom-ky-nang" name="nhom">
+                <?php foreach ($nhomKyNang as $maNhom => $tenNhom): ?>
+                    <option value="<?= e($maNhom) ?>" <?= $nhomDangChon === $maNhom ? 'selected' : '' ?>>
+                        <?= e($tenNhom) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <button type="submit">Lọc kỹ năng</button>
+        </div>
+    </form>
+    <p class="uyen-huong-dan">Danh sách được lọc trên máy chủ PHP, không phụ thuộc JavaScript.</p>
+    <?php if ($kyNangLoc): ?>
+        <ul class="ky-nang__danh-sach">
+            <?php foreach ($kyNangLoc as $kyNang): ?>
+                <li><?= e($kyNang['ten']) ?></li>
+            <?php endforeach; ?>
+        </ul>
+    <?php else: ?>
+        <p>Không có kỹ năng phù hợp.</p>
+    <?php endif; ?>
+</section>
+
+<section class="the-noi-dung uyen-tinh-diem" id="tinh-diem">
+    <h2 class="the-noi-dung__tieu-de">Máy tính điểm học phần bằng PHP</h2>
+    <p>Điểm tổng kết dự kiến = 20% A1 + 30% A2 + 50% A3.</p>
+    <form class="uyen-form" method="post" action="gioithieu.php#tinh-diem" novalidate>
+        <input type="hidden" name="csrf_uyen" value="<?= e($maXacThuc) ?>">
+        <div class="uyen-form__luoi">
+            <?php foreach (['a1' => 'Điểm A1 (20%)', 'a2' => 'Điểm A2 (30%)', 'a3' => 'Điểm A3 (50%)'] as $maDiem => $nhanDiem): ?>
+                <div class="uyen-form__truong">
+                    <label for="<?= e($maDiem) ?>"><?= e($nhanDiem) ?></label>
+                    <input
+                        id="<?= e($maDiem) ?>"
+                        name="<?= e($maDiem) ?>"
+                        type="number"
+                        min="0" max="10" step="any" required
+                        inputmode="decimal"
+                        value="<?= e($du[$maDiem]) ?>"
+                        <?= isset($loi[$maDiem]) ? 'aria-invalid="true" aria-describedby="loi-' . e($maDiem) . '"' : '' ?>
+                    >
+                    <?php if (isset($loi[$maDiem])): ?>
+                        <p class="uyen-loi" id="loi-<?= e($maDiem) ?>" role="alert"><?= e($loi[$maDiem]) ?></p>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <?php if (isset($loi['csrf'])): ?>
+            <p class="uyen-loi" role="alert"><?= e($loi['csrf']) ?></p>
+        <?php endif; ?>
+        <button type="submit">Tính điểm học phần</button>
+    </form>
+    <?php if ($ketQuaDiem !== null): ?>
+        <div class="uyen-ket-qua" role="status">
+            <p>Điểm tổng kết dự kiến:</p>
+            <p class="uyen-ket-qua__so"><?= e(number_format($ketQuaDiem, 2, ',', '.')) ?> / 10</p>
+            <p>Kết quả được tính trên máy chủ; tải lại trang sẽ không gửi lại biểu mẫu.</p>
+        </div>
+    <?php endif; ?>
+</section>
 
         <!-- ================= THỜI KHÓA BIỂU ================= -->
 
@@ -455,13 +546,7 @@
 
     </main>
 
-    <footer class="chan-trang">
-        <p class="bao chan-trang__ban-quyen">
-            &copy; 2026 Nhóm 3 - Khoa Toán - Tin.
-        </p>
-    </footer>
 
+<!-- Giữ hai tương tác JavaScript của Bài tập 4 (tùy chọn khi bật JS). -->
 <script type="module" src="js/canhan.js"></script>
-</body>
-
-</html>
+<?php require __DIR__ . '/../../inc/footer.php'; ?>

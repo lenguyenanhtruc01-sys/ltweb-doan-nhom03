@@ -1,129 +1,26 @@
-<!DOCTYPE html>
-<html lang="vi">
+<?php
+declare(strict_types=1);
 
-<head>
-    <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+/**
+ * gioi-thieu.php
+ * Trang giới thiệu EduGPA - Nhóm 03.
+ * Sử dụng Header và Footer dùng chung.
+ */
 
-    <meta
-        name="description"
-        content="Giới thiệu hệ thống EduGPA, mục tiêu, đối tượng sử dụng và các thành viên Nhóm 3 thực hiện dự án."
-    >
+// 1. Nạp cấu hình chung đầu tiên.
+require __DIR__ . '/inc/config.php';
 
-    <title>Giới thiệu | EduGPA</title>
+// 2. Thiết lập thông tin trang.
+$tieuDe = 'Giới thiệu';
+$trang = 'gioi-thieu';
+$goc = '';
 
-    <link rel="stylesheet" href="css/style.css">
-</head>
+// 3. Giữ CSS riêng của trang giới thiệu.
+$lopBody = 'trang-gioi-thieu';
 
-<body class="trang trang-gioi-thieu">
-
-    <!-- ================= HEADER ================= -->
-    <header class="dau-trang">
-        <div class="bao dau-trang__noi-dung">
-
-            <div class="dau-trang__cum-thuong-hieu">
-                <a
-                    class="thuong-hieu"
-                    href="index.html"
-                >
-                    EduGPA
-                </a>
-
-                <a
-                    class="dau-trang__yeu-thich"
-                    href="danh-sach.html"
-                >
-                    <span aria-hidden="true">♥</span>
-                    <span>Yêu thích:</span>
-
-                    <span
-                        data-so-luong-yeu-thich
-                        aria-live="polite"
-                        aria-atomic="true"
-                    >
-                        0
-                    </span>
-                </a>
-            </div>
-
-            <p class="dau-trang__mo-ta">
-                Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập
-                cho sinh viên
-            </p>
-
-        </div>
-    </header>
-
-    <!-- ================= MENU CHÍNH ================= -->
-    <nav
-        class="dieu-huong"
-        aria-label="Điều hướng chính"
-    >
-        <button
-            class="nut-menu"
-            type="button"
-            aria-controls="menu-chinh"
-            aria-expanded="false"
-            aria-label="Mở menu chính"
-        >
-            <span aria-hidden="true">☰</span>
-            <span>Menu</span>
-        </button>
-
-        <ul
-            id="menu-chinh"
-            class="dieu-huong__danh-sach menu-chinh"
-        >
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket"
-                    href="index.html"
-                >
-                    Trang chủ
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket"
-                    href="danh-sach.html"
-                >
-                    Danh sách
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket"
-                    href="chi-tiet.html?id=1"
-                >
-                    Chi tiết
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket dieu-huong__lien-ket--hien-tai"
-                    href="gioi-thieu.html"
-                    aria-current="page"
-                >
-                    Giới thiệu
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket"
-                    href="lien-he.html"
-                >
-                    Liên hệ
-                </a>
-            </li>
-        </ul>
-    </nav>
+// 4. Nạp Header dùng chung.
+require __DIR__ . '/inc/header.php';
+?>
 
     <!-- ================= NỘI DUNG CHÍNH ================= -->
     <main class="noi-dung-chinh">
@@ -279,25 +176,25 @@
 
             <ul>
                 <li>
-                    <a href="index.html">
+                    <a href="index.php">
                         Quay lại trang chủ
                     </a>
                 </li>
 
                 <li>
-                    <a href="danh-sach.html">
+                    <a href="danh-sach.php">
                         Xem danh sách môn học
                     </a>
                 </li>
 
                 <li>
-                    <a href="chi-tiet.html?id=1">
+                    <a href="chi-tiet.php?id=1">
                         Xem chi tiết môn học
                     </a>
                 </li>
 
                 <li>
-                    <a href="lien-he.html">
+                    <a href="lien-he.php">
                         Liên hệ
                     </a>
                 </li>
@@ -306,18 +203,11 @@
 
     </main>
 
-    <!-- ================= FOOTER ================= -->
-    <footer class="chan-trang">
-        <p class="chan-trang__ban-quyen">
-            &copy; 2026 Nhóm 3 - Khoa Toán - Tin.
-        </p>
-    </footer>
-
-    <script
-        type="module"
-        src="js/main.js"
-    ></script>
-
-</body>
-
-</html>
+    
+<?php
+/**
+ * Nạp Footer dùng chung của EduGPA.
+ * Footer đã bao gồm JavaScript chung,
+ * thẻ đóng body và html.
+ */
+require __DIR__ . '/inc/footer.php';

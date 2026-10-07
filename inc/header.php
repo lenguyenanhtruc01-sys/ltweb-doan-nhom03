@@ -47,6 +47,9 @@ if (!is_string($nguoiDung) || $nguoiDung === '') {
     <link
         rel="stylesheet"
         href="<?= e($goc) ?>css/style.css?v=4">
+    <?php if (!empty($cssTrang)): ?>
+    <link rel="stylesheet" href="<?= e($cssTrang) ?>">
+    <?php endif; ?>
 </head>
 
 

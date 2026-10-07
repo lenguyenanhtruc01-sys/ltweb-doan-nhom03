@@ -80,7 +80,7 @@ $tieuDe = 'Giới thiệu Huỳnh Phương Uyên';
 $trang = 'gioi-thieu';
 $goc = '../../';
 $lopBody = 'trang-ca-nhan';
-$cssTrang = 'css/php-ca-nhan.css';
+$cssTrang = 'css/style.css';
 require __DIR__ . '/../../inc/header.php';
 ?>
 <main class="bao noi-dung-chinh">

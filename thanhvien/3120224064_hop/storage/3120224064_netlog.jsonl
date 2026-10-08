@@ -1,3 +1,12 @@
 {"target":"google.com","ip":"74.125.24.138","type":"IPv4","latency":"24 ms","time":"2026-10-08 12:28:52"}
 {"target":"youtube.com","ip":"172.217.194.93","type":"IPv4","latency":"17 ms","time":"2026-10-08 12:37:24"}
 {"target":"facebook.com","ip":"57.144.220.1","type":"IPv4","latency":"19 ms","time":"2026-10-08 12:38:35"}
+{"target":"google.com","ip":"74.125.130.138","type":"IPv4","latency":"19 ms","time":"2026-10-08 17:22:36"}
+{"target":"google.com","ip":"74.125.130.138","type":"IPv4","latency":"23 ms","time":"2026-10-08 17:23:10"}
+{"target":"google.com","ip":"74.125.24.102","type":"IPv4","latency":"17 ms","time":"2026-10-08 17:30:20"}
+{"target":"google.com","ip":"74.125.24.100","type":"IPv4","latency":"6 ms","time":"2026-10-08 17:35:03"}
+{"target":"facebook.com","ip":"57.144.220.1","type":"IPv4","latency":"32 ms","time":"2026-10-08 17:35:12"}
+{"target":"facebook.com","ip":"57.145.12.1","type":"IPv4","latency":"13 ms","time":"2026-10-08 17:36:57"}
+{"target":"facebook.com","ip":"57.145.12.1","type":"IPv4","latency":"29 ms","time":"2026-10-08 17:37:00"}
+{"target":"facebook.com","ip":"57.144.64.1","type":"IPv4","latency":"10 ms","time":"2026-10-08 17:37:25"}
+{"target":"facebook.com","ip":"57.144.220.1","type":"IPv4","latency":"40 ms","time":"2026-10-08 17:39:57"}

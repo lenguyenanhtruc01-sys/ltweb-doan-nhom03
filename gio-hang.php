@@ -90,7 +90,7 @@ require __DIR__ . '/inc/header.php';
         <div style="margin-top: 20px; text-align: right;">
             <form action="gio-hang.php" method="post" style="display:inline;">
                 <input type="hidden" name="hanh_dong" value="xoa_het">
-                <button type="submit" class="btn btn-danger" style="background-color: #6c757d;" onclick="return confirm('Bạn có chắc chắn muốn xóa toàn bộ kế hoạch học tập không?');">Xóa hết kế hoạch</button>
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa toàn bộ kế hoạch học tập không?');">Xóa hết kế hoạch</button>
             </form>
         </div>
     <?php endif; ?>

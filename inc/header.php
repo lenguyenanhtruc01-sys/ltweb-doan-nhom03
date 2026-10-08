@@ -12,17 +12,18 @@ $tieuDe ??= 'Trang chủ';
 $trang ??= '';
 $goc ??= '';
 
-// Số món trong giỏ hàng.
+// Lấy tổng số môn từ dịch vụ Kế hoạch học tập OOP
 $soMonTrongGio = 0;
-
-// Tự kết nối lớp GioHang khi nhóm hoàn thành.
-if (class_exists(\App\Services\GioHang::class)) {
-    $gioHeader = new \App\Services\GioHang();
-    $soMonTrongGio = $gioHeader->soMon();
+try {
+    $keHoachHeader = new \App\Services\KeHoachHocTap();
+    $duLieuHeader = $keHoachHeader->layDanhSachChiTiet();
+    $soMonTrongGio = $duLieuHeader['tong_so_mon'] ?? 0;
+} catch (\Throwable $e) {
+    $soMonTrongGio = 0;
 }
 
 // Lấy tên người dùng đã đăng nhập từ session.
-$nguoiDung = $_SESSION['user'] ?? null;
+$nguoiDung = $_SESSION['user'] ?? $_SESSION['ho_ten'] ?? null;
 
 if (!is_string($nguoiDung) || $nguoiDung === '') {
     $nguoiDung = null;
@@ -154,7 +155,7 @@ if (!is_string($nguoiDung) || $nguoiDung === '') {
                 </a>
             </li>
 
-            <!-- Giỏ hàng -->
+            <!-- Giỏ hàng / Kế hoạch học tập -->
             <li class="dieu-huong__muc">
                 <a
                     class="dieu-huong__lien-ket <?= $trang === 'gio-hang' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>"

@@ -467,3 +467,102 @@ button:focus-visible {
         width: 100%;
     }
 }
+/* ===== Bổ sung hoàn chỉnh CSS cho 2 chức năng máy chủ (Tra cứu mạng & Kiểm tra mật khẩu) ===== */
+.cong-cu-server {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.cong-cu-box {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.cong-cu-box h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #1e293b;
+}
+
+.cong-cu-box p.loi {
+    color: #dc2626;
+    font-size: 13px;
+    background: #fee2e2;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.cong-cu-box p.ket-qua-net {
+    color: #065f46;
+    font-size: 13px;
+    background: #d1fae5;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    border-left: 4px solid #059669;
+}
+
+.cong-cu-box p.ket-qua-pass {
+    font-size: 13px;
+    background: #f1f5f9;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.cong-cu-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cong-cu-form input[type="text"],
+.cong-cu-form input[type="password"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.cong-cu-form input[type="text"]:focus,
+.cong-cu-form input[type="password"]:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.cong-cu-form button {
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: #fff;
+    transition: background 0.2s;
+    width: 100%;
+}
+
+.btn-net {
+    background: #2563eb;
+}
+.btn-net:hover {
+    background: #1d4ed8;
+}
+
+.btn-pass {
+    background: #0f766e;
+}
+.btn-pass:hover {
+    background: #0d9488;
+}

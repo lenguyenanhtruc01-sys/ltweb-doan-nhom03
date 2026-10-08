@@ -1,4 +1,11 @@
 <?php
+/**
+ * Tệp: src/Data/KhoMonHoc.php
+ * Chức năng: Lớp truy cập dữ liệu (Data Access) cho môn học, là nơi duy nhất đọc tệp JSON 
+ * (data/mon-hoc.json) để chuyển đổi thành các đối tượng MonHoc, hỗ trợ lấy tất cả, 
+ * tìm theo ID và tìm kiếm theo từ khóa.
+ */
+
 namespace App\Data;
 
 use App\Models\MonHoc;

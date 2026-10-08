@@ -25,13 +25,13 @@
         <div class="bao dau-trang__noi-dung">
 
             <div class="dau-trang__cum-thuong-hieu">
-                <a class="thuong-hieu" href="index.html">
+                <a class="thuong-hieu" href="index.php">
                     EduGPA
                 </a>
 
                 <a
                     class="dau-trang__yeu-thich"
-                    href="danh-sach.html"
+                    href="danh-sach.php"
                 >
                     <span aria-hidden="true">♥</span>
                     <span>Yêu thích:</span>
@@ -77,7 +77,7 @@
             <li class="dieu-huong__muc">
                 <a
                     class="dieu-huong__lien-ket"
-                    href="index.html"
+                    href="index.php"
                 >
                     Trang chủ
                 </a>
@@ -86,7 +86,7 @@
             <li class="dieu-huong__muc">
                 <a
                     class="dieu-huong__lien-ket"
-                    href="danh-sach.html"
+                    href="danh-sach.php"
                 >
                     Danh sách
                 </a>
@@ -95,7 +95,7 @@
             <li class="dieu-huong__muc">
                 <a
                     class="dieu-huong__lien-ket dieu-huong__lien-ket--hien-tai"
-                    href="chi-tiet.html"
+                    href="chi-tiet.php"
                     aria-current="page"
                 >
                     Chi tiết
@@ -105,7 +105,7 @@
             <li class="dieu-huong__muc">
                 <a
                     class="dieu-huong__lien-ket"
-                    href="gioi-thieu.html"
+                    href="gioi-thieu.php"
                 >
                     Giới thiệu
                 </a>
@@ -114,7 +114,7 @@
             <li class="dieu-huong__muc">
                 <a
                     class="dieu-huong__lien-ket"
-                    href="lien-he.html"
+                    href="lien-he.php"
                 >
                     Liên hệ
                 </a>
@@ -142,7 +142,7 @@
 
             <p>
                 Vui lòng chọn một môn học từ
-                <a href="danh-sach.html">
+                <a href="danh-sach.php">
                     danh sách môn học
                 </a>
                 để xem thông tin chi tiết.
@@ -542,31 +542,31 @@
 
             <ul>
                 <li>
-                    <a href="index.html">
+                    <a href="index.php">
                         Quay lại trang chủ EduGPA
                     </a>
                 </li>
 
                 <li>
-                    <a href="danh-sach.html">
+                    <a href="danh-sach.php">
                         Xem danh sách môn học
                     </a>
                 </li>
 
                 <li>
-                    <a href="chi-tiet.html?id=1">
+                    <a href="chi-tiet.php?id=1">
                         Xem môn học đầu tiên
                     </a>
                 </li>
 
                 <li>
-                    <a href="gioi-thieu.html">
+                    <a href="gioi-thieu.php">
                         Tìm hiểu về EduGPA và nhóm thực hiện
                     </a>
                 </li>
 
                 <li>
-                    <a href="lien-he.html">
+                    <a href="lien-he.php">
                         Liên hệ và đăng ký thành viên
                     </a>
                 </li>
@@ -595,15 +595,15 @@
                 class="chan-trang__dieu-huong"
                 aria-label="Điều hướng chân trang"
             >
-                <a href="index.html">Trang chủ</a>
-                <a href="danh-sach.html">Danh sách</a>
-                <a href="chi-tiet.html?id=1">
+                <a href="index.php">Trang chủ</a>
+                <a href="danh-sach.php">Danh sách</a>
+                <a href="chi-tiet.php?id=1">
                     Chi tiết
                 </a>
-                <a href="gioi-thieu.html">
+                <a href="gioi-thieu.php">
                     Giới thiệu
                 </a>
-                <a href="lien-he.html">Liên hệ</a>
+                <a href="lien-he.php">Liên hệ</a>
             </nav>
 
         </div>

@@ -616,7 +616,7 @@ figcaption,
 }
 
 
-/* Ho tro truc tiep HTML cu cua index.html trong kho hien tai */
+/* Ho tro truc tiep HTML cu cua index.php trong kho hien tai */
 .trang-chu main > h1 {
     margin: 0;
     padding: clamp(1.5rem, 5vw, 3.5rem);
@@ -1373,7 +1373,7 @@ details > p {
 .form-lien-he input:focus-visible, .form-lien-he textarea:focus-visible, .form-lien-he button:focus-visible { outline: 3px solid var(--mau-nhan, #ffc72c); outline-offset: 2px; border-color: transparent; }
 .form-lien-he button { padding: 12px 24px; background-color: var(--mau-chinh, #123b6d); color: var(--nen, #fff); border: none; border-radius: var(--bo-goc, 8px); cursor: pointer; transition: all 0.2s ease; }
 .form-lien-he button:hover { opacity: 0.9; transform: translateY(-2px); }
-/* Bổ sung class BEM cho thẻ môn học ở trang danh-sach.html */
+/* Bổ sung class BEM cho thẻ môn học ở trang danh-sach.php */
 .the-san-pham__than {
     padding: 15px;
     border: 1px solid #eeeeee;

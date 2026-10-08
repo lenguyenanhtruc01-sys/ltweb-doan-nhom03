@@ -29,13 +29,13 @@
 
                 <a
                     class="thuong-hieu"
-                    href="index.html">
+                    href="index.php">
                     EduGPA
                 </a>
 
                 <a
                     class="dau-trang__yeu-thich"
-                    href="danh-sach.html">
+                    href="danh-sach.php">
 
                     <span aria-hidden="true">
                         ♥
@@ -94,7 +94,7 @@
             <li class="dieu-huong__muc">
                 <a
                     class="dieu-huong__lien-ket dieu-huong__lien-ket--hien-tai"
-                    href="index.html"
+                    href="index.php"
                     aria-current="page">
                     Trang chủ
                 </a>
@@ -103,7 +103,7 @@
             <li class="dieu-huong__muc">
                 <a
                     class="dieu-huong__lien-ket"
-                    href="danh-sach.html">
+                    href="danh-sach.php">
                     Danh sách
                 </a>
             </li>
@@ -111,7 +111,7 @@
 <li class="dieu-huong__muc">
     <a
         class="dieu-huong__lien-ket"
-        href="chi-tiet.html">
+        href="chi-tiet.php">
         Chi tiết
     </a>
 </li>
@@ -121,7 +121,7 @@
             <li class="dieu-huong__muc">
                 <a
                     class="dieu-huong__lien-ket"
-                    href="gioi-thieu.html">
+                    href="gioi-thieu.php">
                     Giới thiệu
                 </a>
             </li>
@@ -129,7 +129,7 @@
             <li class="dieu-huong__muc">
                 <a
                     class="dieu-huong__lien-ket"
-                    href="lien-he.html">
+                    href="lien-he.php">
                     Liên hệ
                 </a>
             </li>
@@ -169,13 +169,13 @@
 
                         <a
                             class="nut nut--chinh"
-                            href="danh-sach.html">
+                            href="danh-sach.php">
                             Khám phá môn học
                         </a>
 
                         <a
                             class="nut nut--chinh"
-                            href="gioi-thieu.html">
+                            href="gioi-thieu.php">
                             Tìm hiểu EduGPA
                         </a>
 
@@ -251,7 +251,7 @@
 
                         <a
                             class="the__lien-ket"
-                            href="danh-sach.html">
+                            href="danh-sach.php">
                             Tìm kiếm môn học
                         </a>
 
@@ -279,7 +279,7 @@
 
                         <a
                             class="the__lien-ket"
-                            href="danh-sach.html">
+                            href="danh-sach.php">
                             Xem danh sách
                         </a>
 
@@ -307,7 +307,7 @@
 
                         <a
                             class="the__lien-ket"
-                            href="danh-sach.html">
+                            href="danh-sach.php">
                             Chọn môn để xem
                         </a>
 
@@ -594,13 +594,13 @@
 
                     <a
                         class="nut nut--chinh"
-                        href="danh-sach.html">
+                        href="danh-sach.php">
                         Tra cứu danh sách
                     </a>
 
                     <a
                         class="nut nut--chinh"
-                        href="lien-he.html">
+                        href="lien-he.php">
                         Liên hệ
                     </a>
 
@@ -638,11 +638,11 @@
                 class="chan-trang__dieu-huong"
                 aria-label="Điều hướng cuối trang">
 
-                <a href="gioi-thieu.html">
+                <a href="gioi-thieu.php">
                     Giới thiệu
                 </a>
 
-                <a href="lien-he.html">
+                <a href="lien-he.php">
                     Liên hệ
                 </a>
 

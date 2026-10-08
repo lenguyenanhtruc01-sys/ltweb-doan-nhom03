@@ -103,7 +103,7 @@ function taoTheMonHoc(mon) {
     vungHanhDong.className = "the-san-pham__hanh-dong";
 
     const nutChiTiet = document.createElement("a");
-    nutChiTiet.href = `chi-tiet.html?id=${mon.id}`;
+    nutChiTiet.href = `chi-tiet.php?id=${mon.id}`;
     nutChiTiet.className = "the-san-pham__lien-ket";
     nutChiTiet.textContent = "Xem chi tiết →";
 

@@ -1,105 +1,7 @@
-<!DOCTYPE html>
-<html lang="vi">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <meta
-        name="description"
-        content="Danh sách tiến độ các môn học và tài liệu của sinh viên trên hệ thống EduGPA.">
-
-    <title>Danh sách môn học | EduGPA</title>
-
-    <link rel="stylesheet" href="css/style.css">
-</head>
-
-<body class="trang trang-danh-sach">
-
-    <!-- ================= HEADER ================= -->
-    <header class="dau-trang">
-       <div class="dau-trang__cum-thuong-hieu">
-    <a class="thuong-hieu" href="index.html">
-        EduGPA
-    </a>
-
-    <a
-        class="dau-trang__yeu-thich"
-        href="danh-sach.html"
-    >
-        <span aria-hidden="true">♥</span>
-        <span>Yêu thích:</span>
-        <span
-            data-so-luong-yeu-thich
-            aria-live="polite"
-            aria-atomic="true"
-        >0</span>
-    </a>
-</div>
-
-        <p>
-            Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập cho sinh viên
-        </p>
-    </header>
-
-    <!-- ================= MENU CHÍNH ================= -->
-    <nav class="dieu-huong" aria-label="Điều hướng chính">
-        <button
-            class="nut-menu"
-            type="button"
-            aria-controls="menu-chinh"
-            aria-expanded="false"
-            aria-label="Mở menu chính">
-            <span aria-hidden="true">☰</span>
-            <span>Menu</span>
-        </button>
-
-        <ul
-            id="menu-chinh"
-            class="dieu-huong__danh-sach menu-chinh">
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket"
-                    href="index.html">
-                    Trang chủ
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket dieu-huong__lien-ket--hien-tai"
-                    href="danh-sach.html"
-                    aria-current="page">
-                    Danh sách
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket"
-                    href="chi-tiet.html">
-                    Chi tiết
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket"
-                    href="gioi-thieu.html">
-                    Giới thiệu
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket"
-                    href="lien-he.html">
-                    Liên hệ
-                </a>
-            </li>
-        </ul>
-    </nav>
+<?php
+require __DIR__ . '/inc/config.php';
+require __DIR__ . '/inc/header.php';
+?>
 
     <!-- ================= NỘI DUNG CHÍNH ================= -->
     <main class="noi-dung-chinh">
@@ -228,7 +130,7 @@
 
                         <a
                             class="the-san-pham__lien-ket"
-                            href="chi-tiet.html?id=1">
+                            href="chi-tiet.php?id=1">
                             Xem chi tiết &rarr;
                         </a>
                     </div>
@@ -262,7 +164,7 @@
 
                         <a
                             class="the-san-pham__lien-ket"
-                            href="chi-tiet.html?id=2">
+                            href="chi-tiet.php?id=2">
                             Xem chi tiết &rarr;
                         </a>
                     </div>
@@ -296,7 +198,7 @@
 
                         <a
                             class="the-san-pham__lien-ket"
-                            href="chi-tiet.html?id=3">
+                            href="chi-tiet.php?id=3">
                             Xem chi tiết &rarr;
                         </a>
                     </div>
@@ -330,7 +232,7 @@
 
                         <a
                             class="the-san-pham__lien-ket"
-                            href="chi-tiet.html?id=4">
+                            href="chi-tiet.php?id=4">
                             Xem chi tiết &rarr;
                         </a>
                     </div>
@@ -364,7 +266,7 @@
 
                         <a
                             class="the-san-pham__lien-ket"
-                            href="chi-tiet.html?id=5">
+                            href="chi-tiet.php?id=5">
                             Xem chi tiết &rarr;
                         </a>
                     </div>
@@ -375,15 +277,6 @@
 
     </main>
 
-    <!-- ================= FOOTER ================= -->
-    <footer class="chan-trang">
-        <p class="chan-trang__ban-quyen">
-            &copy; 2026 Nhóm 3 - Khoa Toán - Tin.
-        </p>
-    </footer>
-
-    <script type="module" src="js/main.js"></script>
-    <script type="module" src="js/trang-danh-sach.js"></script>
-</body>
-
-</html>
+<?php
+require __DIR__ . '/inc/footer.php';
+?>

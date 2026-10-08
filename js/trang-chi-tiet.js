@@ -156,7 +156,7 @@ function hienThiChiTiet(mon) {
     const nutQuayLai =
         document.createElement("a");
 
-    nutQuayLai.href = "danh-sach.html";
+    nutQuayLai.href = "danh-sach.php";
     nutQuayLai.className = "nut-quay-lai";
     nutQuayLai.textContent =
         "← Quay lại danh sách";
@@ -193,7 +193,7 @@ function hienThiThieuId() {
     const lienKet =
         document.createElement("a");
 
-    lienKet.href = "danh-sach.html";
+    lienKet.href = "danh-sach.php";
     lienKet.className = "nut-quay-lai";
     lienKet.textContent =
         "Xem danh sách môn học";
@@ -216,7 +216,7 @@ function hienThiKhongTimThay() {
     const lienKet =
         document.createElement("a");
 
-    lienKet.href = "danh-sach.html";
+    lienKet.href = "danh-sach.php";
     lienKet.className = "nut-quay-lai";
     lienKet.textContent =
         "Quay lại danh sách môn học";

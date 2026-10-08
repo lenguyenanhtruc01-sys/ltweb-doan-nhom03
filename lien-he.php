@@ -20,13 +20,13 @@
     <header class="dau-trang">
         <div class="dau-trang__noi-dung">
             <div class="dau-trang__cum-thuong-hieu">
-    <a class="thuong-hieu" href="index.html">
+    <a class="thuong-hieu" href="index.php">
         EduGPA
     </a>
 
     <a
         class="dau-trang__yeu-thich"
-        href="danh-sach.html"
+        href="danh-sach.php"
     >
         <span aria-hidden="true">♥</span>
         <span>Yêu thích:</span>
@@ -57,25 +57,25 @@
 
         <ul id="menu-chinh" class="dieu-huong__danh-sach menu-chinh">
             <li class="dieu-huong__muc">
-                <a class="dieu-huong__lien-ket" href="index.html">
+                <a class="dieu-huong__lien-ket" href="index.php">
                     Trang chủ
                 </a>
             </li>
 
             <li class="dieu-huong__muc">
-                <a class="dieu-huong__lien-ket" href="danh-sach.html">
+                <a class="dieu-huong__lien-ket" href="danh-sach.php">
                     Danh sách
                 </a>
             </li>
 
             <li class="dieu-huong__muc">
-                <a class="dieu-huong__lien-ket" href="chi-tiet.html">
+                <a class="dieu-huong__lien-ket" href="chi-tiet.php">
                     Chi tiết
                 </a>
             </li>
 
             <li class="dieu-huong__muc">
-                <a class="dieu-huong__lien-ket" href="gioi-thieu.html">
+                <a class="dieu-huong__lien-ket" href="gioi-thieu.php">
                     Giới thiệu
                 </a>
             </li>
@@ -83,7 +83,7 @@
             <li class="dieu-huong__muc">
                 <a
                     class="dieu-huong__lien-ket dieu-huong__lien-ket--hien-tai"
-                    href="lien-he.html"
+                    href="lien-he.php"
                     aria-current="page"
                 >
                     Liên hệ
@@ -438,25 +438,25 @@
 
             <ul>
                 <li>
-                    <a href="index.html">
+                    <a href="index.php">
                         Quay lại trang chủ EduGPA
                     </a>
                 </li>
 
                 <li>
-                    <a href="danh-sach.html">
+                    <a href="danh-sach.php">
                         Xem danh sách môn học
                     </a>
                 </li>
 
                 <li>
-                    <a href="chi-tiet.html">
+                    <a href="chi-tiet.php">
                         Xem chi tiết kết quả học tập
                     </a>
                 </li>
 
                 <li>
-                    <a href="gioi-thieu.html">
+                    <a href="gioi-thieu.php">
                         Tìm hiểu về EduGPA và nhóm thực hiện
                     </a>
                 </li>

@@ -148,7 +148,7 @@ require __DIR__ . '/inc/header.php';
 
                 <a
                     class="danh-sach-thanh-vien__lien-ket"
-                    href="thanhvien/3120224159_anhtruc/gioithieu.html">
+                    href="thanhvien/3120224159_anhtruc/gioithieu.php">
 
                     Lê Nguyễn Anh Trúc
 
@@ -174,7 +174,7 @@ require __DIR__ . '/inc/header.php';
 
                 <a
                     class="danh-sach-thanh-vien__lien-ket"
-                    href="thanhvien/3120224034_Duy/gioithieu.html">
+                    href="thanhvien/3120224034_Duy/gioithieu.php">
 
                     Dương Bảo Duy
 
@@ -187,7 +187,7 @@ require __DIR__ . '/inc/header.php';
 
                 <a
                     class="danh-sach-thanh-vien__lien-ket"
-                    href="thanhvien/3120224042_hai/gioithieu.html">
+                    href="thanhvien/3120224042_hai/gioithieu.php">
 
                     Lê Dương Hoàng Hải
 
@@ -200,7 +200,7 @@ require __DIR__ . '/inc/header.php';
 
                 <a
                     class="danh-sach-thanh-vien__lien-ket"
-                    href="thanhvien/3120224064_hop/gioithieu.html">
+                    href="thanhvien/3120224064_hop/gioithieu.php">
 
                     Phan Văn Hợp
 

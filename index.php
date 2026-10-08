@@ -1,143 +1,7 @@
-<!DOCTYPE html>
-<html lang="vi">
-
-<head>
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <meta
-        name="description"
-        content="EduGPA hỗ trợ sinh viên tra cứu môn học, theo dõi trạng thái học tập, lưu môn yêu thích và xem dữ liệu thời tiết trực tuyến.">
-
-    <title>Trang chủ | EduGPA</title>
-
-    <link
-        rel="stylesheet"
-        href="css/style.css?v=4">
-</head>
-
-<body class="trang">
-
-    <!-- ================= HEADER ================= -->
-    <header class="dau-trang">
-        <div class="bao dau-trang__noi-dung">
-
-            <div class="dau-trang__cum-thuong-hieu">
-
-                <a
-                    class="thuong-hieu"
-                    href="index.php">
-                    EduGPA
-                </a>
-
-                <a
-                    class="dau-trang__yeu-thich"
-                    href="danh-sach.php">
-
-                    <span aria-hidden="true">
-                        ♥
-                    </span>
-
-                    <span>
-                        Yêu thích:
-                    </span>
-
-                    <span
-                        data-so-luong-yeu-thich
-                        aria-live="polite"
-                        aria-atomic="true">
-                        0
-                    </span>
-
-                </a>
-
-            </div>
-
-            <p class="dau-trang__mo-ta">
-                Hệ thống hỗ trợ tra cứu và theo dõi
-                thông tin học tập cho sinh viên
-            </p>
-
-        </div>
-    </header>
-
-
-    <!-- ================= MENU CHÍNH ================= -->
-    <nav
-        class="dieu-huong"
-        aria-label="Điều hướng chính">
-
-        <button
-            class="nut-menu"
-            type="button"
-            aria-controls="menu-chinh"
-            aria-expanded="false"
-            aria-label="Mở menu chính">
-
-            <span aria-hidden="true">
-                ☰
-            </span>
-
-            <span>
-                Menu
-            </span>
-
-        </button>
-
-        <ul
-            id="menu-chinh"
-            class="dieu-huong__danh-sach menu-chinh">
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket dieu-huong__lien-ket--hien-tai"
-                    href="index.php"
-                    aria-current="page">
-                    Trang chủ
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket"
-                    href="danh-sach.php">
-                    Danh sách
-                </a>
-            </li>
-<!-- Chi tiết -->
-<li class="dieu-huong__muc">
-    <a
-        class="dieu-huong__lien-ket"
-        href="chi-tiet.php">
-        Chi tiết
-    </a>
-</li>
-
-
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket"
-                    href="gioi-thieu.php">
-                    Giới thiệu
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket"
-                    href="lien-he.php">
-                    Liên hệ
-                </a>
-            </li>
-
-        </ul>
-
-    </nav>
-
+<?php
+require __DIR__ . '/inc/config.php';
+require __DIR__ . '/inc/header.php';
+?>
 
     <!-- ================= NỘI DUNG CHÍNH ================= -->
     <main class="noi-dung-chinh">
@@ -613,64 +477,19 @@
 
     </main>
 
+<?php
+require __DIR__ . '/inc/footer.php';
+?>
 
-    <!-- ================= FOOTER ================= -->
-    <footer class="chan-trang">
+<!-- JavaScript dùng chung -->
+<script
+    type="module"
+    src="js/main.js">
+</script>
 
-        <div class="bao chan-trang__noi-dung">
-
-            <div>
-
-                <p class="chan-trang__thuong-hieu">
-                    EduGPA
-                </p>
-
-                <p class="chan-trang__mo-ta">
-                    Hệ thống hỗ trợ tra cứu
-                    và theo dõi thông tin học tập
-                    cho sinh viên.
-                </p>
-
-            </div>
-
-
-            <nav
-                class="chan-trang__dieu-huong"
-                aria-label="Điều hướng cuối trang">
-
-                <a href="gioi-thieu.php">
-                    Giới thiệu
-                </a>
-
-                <a href="lien-he.php">
-                    Liên hệ
-                </a>
-
-            </nav>
-
-
-            <p class="chan-trang__ban-quyen">
-                &copy; 2026 Nhóm 03 - Khoa Toán - Tin.
-            </p>
-
-        </div>
-
-    </footer>
-
-
-    <!-- JavaScript dùng chung -->
-    <script
-        type="module"
-        src="js/main.js">
-    </script>
-
-    <!-- JavaScript riêng của trang chủ:
-         tải dữ liệu thời tiết từ REST API -->
-    <script
-        type="module"
-        src="js/trang-chu.js">
-    </script>
-
-</body>
-
-</html>
+<!-- JavaScript riêng của trang chủ:
+     tải dữ liệu thời tiết từ REST API -->
+<script
+    type="module"
+    src="js/trang-chu.js">
+</script>

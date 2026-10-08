@@ -1,126 +1,7 @@
-<!DOCTYPE html>
-<html lang="vi">
-
-<head>
-    <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="description"
-        content="Chi tiết môn học, kết quả học tập, GPA và tín chỉ trên hệ thống EduGPA."
-    >
-
-    <title>Chi tiết môn học | EduGPA</title>
-
-    <link rel="stylesheet" href="css/style.css">
-</head>
-
-<body class="trang trang-chi-tiet">
-
-    <!-- ================= HEADER ================= -->
-    <header class="dau-trang">
-        <div class="bao dau-trang__noi-dung">
-
-            <div class="dau-trang__cum-thuong-hieu">
-                <a class="thuong-hieu" href="index.php">
-                    EduGPA
-                </a>
-
-                <a
-                    class="dau-trang__yeu-thich"
-                    href="danh-sach.php"
-                >
-                    <span aria-hidden="true">♥</span>
-                    <span>Yêu thích:</span>
-
-                    <span
-                        data-so-luong-yeu-thich
-                        aria-live="polite"
-                        aria-atomic="true"
-                    >
-                        0
-                    </span>
-                </a>
-            </div>
-
-            <p class="dau-trang__mo-ta">
-                Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập
-                cho sinh viên
-            </p>
-
-        </div>
-    </header>
-
-    <!-- ================= MENU CHÍNH ================= -->
-    <nav
-        class="dieu-huong"
-        aria-label="Điều hướng chính"
-    >
-        <button
-            class="nut-menu"
-            type="button"
-            aria-controls="menu-chinh"
-            aria-expanded="false"
-            aria-label="Mở menu chính"
-        >
-            <span aria-hidden="true">☰</span>
-            <span>Menu</span>
-        </button>
-
-        <ul
-            id="menu-chinh"
-            class="dieu-huong__danh-sach menu-chinh"
-        >
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket"
-                    href="index.php"
-                >
-                    Trang chủ
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket"
-                    href="danh-sach.php"
-                >
-                    Danh sách
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket dieu-huong__lien-ket--hien-tai"
-                    href="chi-tiet.php"
-                    aria-current="page"
-                >
-                    Chi tiết
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket"
-                    href="gioi-thieu.php"
-                >
-                    Giới thiệu
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket"
-                    href="lien-he.php"
-                >
-                    Liên hệ
-                </a>
-            </li>
-        </ul>
-    </nav>
+<?php
+require __DIR__ . '/inc/config.php';
+require __DIR__ . '/inc/header.php';
+?>
 
     <!-- ================= NỘI DUNG CHÍNH ================= -->
     <main class="noi-dung-chinh">
@@ -575,46 +456,12 @@
 
     </main>
 
-    <!-- ================= FOOTER ================= -->
-    <footer class="chan-trang">
-        <div class="chan-trang__noi-dung">
+<?php
+require __DIR__ . '/inc/footer.php';
+?>
 
-            <div>
-                <p class="chan-trang__thuong-hieu">
-                    EduGPA - Nhóm 3
-                </p>
-
-                <p class="chan-trang__mo-ta">
-                    Khoa Toán - Tin &middot;
-                    Trường Đại học Sư phạm -
-                    Đại học Đà Nẵng
-                </p>
-            </div>
-
-            <nav
-                class="chan-trang__dieu-huong"
-                aria-label="Điều hướng chân trang"
-            >
-                <a href="index.php">Trang chủ</a>
-                <a href="danh-sach.php">Danh sách</a>
-                <a href="chi-tiet.php?id=1">
-                    Chi tiết
-                </a>
-                <a href="gioi-thieu.php">
-                    Giới thiệu
-                </a>
-                <a href="lien-he.php">Liên hệ</a>
-            </nav>
-
-        </div>
-    </footer>
-
-    <script type="module" src="js/main.js"></script>
-    <script
-        type="module"
-        src="js/trang-chi-tiet.js"
-    ></script>
-
-</body>
-
-</html>
+<!-- JavaScript riêng của trang chi tiết -->
+<script
+    type="module"
+    src="js/trang-chi-tiet.js"
+></script>

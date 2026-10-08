@@ -1,96 +1,7 @@
-<!DOCTYPE html>
-<html lang="vi">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <meta
-        name="description"
-        content="Liên hệ với đội ngũ EduGPA qua biểu mẫu, hotline, email hoặc fanpage để được giải đáp về GPA, điểm số và tài liệu học tập."
-    >
-
-    <title>Liên hệ | EduGPA</title>
-
-    <link rel="stylesheet" href="css/style.css">
-</head>
-
-<body class="trang trang-lien-he">
-
-    <header class="dau-trang">
-        <div class="dau-trang__noi-dung">
-            <div class="dau-trang__cum-thuong-hieu">
-    <a class="thuong-hieu" href="index.php">
-        EduGPA
-    </a>
-
-    <a
-        class="dau-trang__yeu-thich"
-        href="danh-sach.php"
-    >
-        <span aria-hidden="true">♥</span>
-        <span>Yêu thích:</span>
-        <span
-            data-so-luong-yeu-thich
-            aria-live="polite"
-            aria-atomic="true"
-        >0</span>
-    </a>
-</div>
-            <p class="dau-trang__mo-ta">
-                Hệ thống hỗ trợ theo dõi và lập kế hoạch học tập cho sinh viên
-            </p>
-        </div>
-    </header>
-
-    <nav class="dieu-huong" aria-label="Điều hướng chính">
-        <button
-            class="nut-menu"
-            type="button"
-            aria-controls="menu-chinh"
-            aria-expanded="false"
-            aria-label="Mở menu chính"
-        >
-            <span aria-hidden="true">☰</span>
-            <span>Menu</span>
-        </button>
-
-        <ul id="menu-chinh" class="dieu-huong__danh-sach menu-chinh">
-            <li class="dieu-huong__muc">
-                <a class="dieu-huong__lien-ket" href="index.php">
-                    Trang chủ
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a class="dieu-huong__lien-ket" href="danh-sach.php">
-                    Danh sách
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a class="dieu-huong__lien-ket" href="chi-tiet.php">
-                    Chi tiết
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a class="dieu-huong__lien-ket" href="gioi-thieu.php">
-                    Giới thiệu
-                </a>
-            </li>
-
-            <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket dieu-huong__lien-ket--hien-tai"
-                    href="lien-he.php"
-                    aria-current="page"
-                >
-                    Liên hệ
-                </a>
-            </li>
-        </ul>
-    </nav>
+<?php
+require __DIR__ . '/inc/config.php';
+require __DIR__ . '/inc/header.php';
+?>
 
     <main class="noi-dung-chinh">
 
@@ -465,15 +376,6 @@
 
     </main>
 
-    <footer class="chan-trang">
-        <p class="chan-trang__ban-quyen">
-            &copy; 2026 Nhóm 3 - Khoa Toán - Tin.
-        </p>
-    </footer>
-
-    <script type="module" src="js/main.js"></script>
-    <script type="module" src="js/trang-lien-he.js"></script>
-
-</body>
-
-</html>
+<?php
+require __DIR__ . '/inc/footer.php';
+?>

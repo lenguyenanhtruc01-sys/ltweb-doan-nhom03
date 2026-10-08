@@ -5,9 +5,9 @@
  *   - Giới thiệu bản thân, lịch học, roadmap DevOps.
  *   - Sử dụng header và footer chung của nhóm thông qua biến gốc $goc = '../../'.
  *   - Tích hợp 2 chức năng xử lý tại máy chủ: Tra cứu thông tin mạng & Kiểm tra mật khẩu (Entropy).
+ *   - Giữ lại giá trị ô input và chống cuộn trang khi submit.
  * Cách thử:
  *   - Mở qua URL: http://localhost:8000/thanhvien/3120224064_phanvanhop/gioithieu.php
- *   - Thử tra cứu IP/Domain hoặc kiểm tra độ mạnh mật khẩu ở phần công cụ bên dưới.
  */
 
 // Định nghĩa đường dẫn gốc để header/footer gọi đúng file css/js chung của nhóm
@@ -34,8 +34,13 @@ $netLogFile = $storageDir . '/3120224064_netlog.jsonl';
 // ===== XỬ LÝ CHỨC NĂNG 1: TRA CỨU THÔNG TIN MẠNG =====
 $ketQuaNet = null;
 $loiNet = '';
+$savedTarget = $_SESSION['saved_target'] ?? ''; // Lấy lại giá trị domain cũ nếu có
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hanh_dong']) && $_POST['hanh_dong'] === 'tra_cuu_mang') {
     $target = trim($_POST['target'] ?? '');
+    $savedTarget = $target;
+    $_SESSION['saved_target'] = $target; // Lưu vào session
+
     if (empty($target)) {
         $loiNet = 'Vui lòng nhập tên miền hoặc địa chỉ IP cần tra cứu!';
     } else {
@@ -63,8 +68,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hanh_dong']) && $_POS
 // ===== XỬ LÝ CHỨC NĂNG 2: KIỂM TRA ĐỘ MẠNH MẬT KHẨU & ENTROPY =====
 $ketQuaPass = null;
 $loiPass = '';
+$savedPass = $_SESSION['saved_pass'] ?? ''; // Lấy lại mật khẩu cũ nếu có
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hanh_dong']) && $_POST['hanh_dong'] === 'kiem_tra_pass') {
     $password = $_POST['password'] ?? '';
+    $savedPass = $password;
+    $_SESSION['saved_pass'] = $password; // Lưu vào session
+
     if (strlen($password) === 0) {
         $loiPass = 'Vui lòng nhập mật khẩu cần kiểm tra!';
     } else {
@@ -224,7 +234,7 @@ include __DIR__ . '/../../inc/header.php';
     </section>
 
     <!-- ===== CHỨC NĂNG XỬ LÝ MÁY CHỦ 1 & 2 ===== -->
-    <section class="the-noi-dung">
+    <section class="the-noi-dung" id="cong-cu-section">
         <h2 class="the-noi-dung__tieu-de">Công cụ hệ thống mạng & Bảo mật</h2>
         
         <div class="cong-cu-server">
@@ -239,9 +249,10 @@ include __DIR__ . '/../../inc/header.php';
                         IP: <code><?= $ketQuaNet['ip'] ?></code> (<?= $ketQuaNet['type'] ?>) - Trễ: <?= $ketQuaNet['latency'] ?>
                     </p>
                 <?php endif; ?>
-                <form action="gioithieu.php" method="POST" class="cong-cu-form">
+                <!-- Giữ vị trí cuộn trang bằng #cong-cu-section -->
+                <form action="gioithieu.php#cong-cu-section" method="POST" class="cong-cu-form">
                     <input type="hidden" name="hanh_dong" value="tra_cuu_mang">
-                    <input type="text" name="target" placeholder="Nhập domain hoặc IP..." required>
+                    <input type="text" name="target" placeholder="Nhập domain hoặc IP..." value="<?= e($savedTarget) ?>" required>
                     <button type="submit" class="btn-net">Tra cứu</button>
                 </form>
             </div>
@@ -257,9 +268,10 @@ include __DIR__ . '/../../inc/header.php';
                         Entropy: <strong><?= $ketQuaPass['entropy'] ?> bits</strong> - Mức độ: <strong style="color: <?= $ketQuaPass['mau'] ?>;"><?= $ketQuaPass['muc_do'] ?></strong>
                     </p>
                 <?php endif; ?>
-                <form action="gioithieu.php" method="POST" class="cong-cu-form">
+                <!-- Giữ vị trí cuộn trang bằng #cong-cu-section -->
+                <form action="gioithieu.php#cong-cu-section" method="POST" class="cong-cu-form">
                     <input type="hidden" name="hanh_dong" value="kiem_tra_pass">
-                    <input type="password" name="password" placeholder="Nhập mật khẩu cần kiểm tra..." required>
+                    <input type="password" name="password" placeholder="Nhập mật khẩu cần kiểm tra..." value="<?= e($savedPass) ?>" required>
                     <button type="submit" class="btn-pass">Kiểm tra</button>
                 </form>
             </div>

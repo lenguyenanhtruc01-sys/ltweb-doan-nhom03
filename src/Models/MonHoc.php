@@ -13,10 +13,9 @@ class MonHoc {
     public function __construct($data = []) {
         $this->id = $data['id'] ?? null;
         $this->maMon = $data['maMon'] ?? '';
-        $this->tenMon = $data['tenMon'] ?? '';
+        // Ánh xạ khóa 'ten' (hoặc 'tenMon') từ JSON vào thuộc tính tenMon của đối tượng
+        $this->tenMon = $data['tenMon'] ?? $data['ten'] ?? ''; 
         $this->soTinChi = $data['soTinChi'] ?? 0;
-        $this->diemChu = $data['diemChu'] ?? '';
-        $this->diemHe4 = $data['diemHe4'] ?? 0.0;
-        $this->ketQua = $data['ketQua'] ?? '';
+        // Các thuộc tính khác nếu có...
     }
 }

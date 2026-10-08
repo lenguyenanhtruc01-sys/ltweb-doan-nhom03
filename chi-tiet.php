@@ -2,7 +2,7 @@
 require __DIR__ . '/inc/config.php';
 require __DIR__ . '/inc/header.php';
 ?>
-
+<link rel="stylesheet" href="css/chi-tiet.css">
     <!-- ================= NỘI DUNG CHÍNH ================= -->
     <main class="noi-dung-chinh">
 

@@ -182,3 +182,20 @@ body.trang-chi-tiet {
         min-width: 5rem;
     }
 }
+/* Thu nhỏ và làm gọn nút thêm vào kế hoạch học tập */
+.form-them-gio-hang .nut-them-ke-hoach-ct {
+    padding: 6px 12px;       /* Giảm khoảng cách đệm (trên/dưới 6px, trái/phải 12px) */
+    font-size: 13px;         /* Thu nhỏ kích thước chữ cho vừa phải */
+    font-weight: 500;        /* Độ đậm vừa phải */
+    background-color: #007bff; /* Màu nền (có thể đổi theo tone màu nhóm EduGPA) */
+    color: #fff;             /* Màu chữ trắng */
+    border: none;            /* Bỏ viền mặc định */
+    border-radius: 4px;      /* Bo tròn nhẹ góc */
+    cursor: pointer;         /* Hiển thị con trỏ tay khi rê chuột */
+    transition: background 0.2s ease; /* Hiệu ứng chuyển màu mượt */
+}
+
+/* Hiệu ứng khi rê chuột vào nút */
+.form-them-gio-hang .nut-them-ke-hoach-ct:hover {
+    background-color: #0056b3; /* Màu tối hơn khi hover */
+}

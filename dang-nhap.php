@@ -31,20 +31,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: quan-tri.php');
         exit;
     } else {
-        // ĐĂNG NHẬP THẤT BẠI -> Báo lỗi chung và ghi Log
+        // ĐĂNG NHẬP THẤT BẠI -> Báo lỗi chung và ghi log chuẩn đề vào logs/php-error.log
         $thongBaoLoi = 'Tên đăng nhập hoặc mật khẩu không chính xác.';
         
-        // Ghi log đăng nhập sai vào file log.txt
-        $thoiGian = date('Y-m-d H:i:s');
         $ip = $_SERVER['REMOTE_ADDR'] ?? 'UNKNOWN';
-        $noiDungLog = "[{$thoiGian}] Đăng nhập thất bại với tài khoản: '{$username}' từ IP: {$ip}\n";
+        $noiDungLog = "Đăng nhập thất bại với tài khoản: '{$username}' từ IP: {$ip}";
         
-        $fileLog = __DIR__ . '/data/login-error.log';
-        // Đảm bảo thư mục data tồn tại
-        if (!is_dir(dirname($fileLog))) {
-            mkdir(dirname($fileLog), 0777, true);
-        }
-        file_put_contents($fileLog, $noiDungLog, FILE_APPEND);
+        error_log($noiDungLog);
     }
 }
 

@@ -89,6 +89,42 @@ function taoNutYeuThich(mon) {
 }
 
 /**
+ * Tạo form POST gửi đến gio-hang.php để thêm môn học vào kế hoạch học tập.
+ */
+function taoFormThemGioHang(mon) {
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "gio-hang.php";
+    form.className = "form-them-gio-hang";
+
+    // Các input hidden: hanh_dong, id, so_luong
+    const inputHanhDong = document.createElement("input");
+    inputHanhDong.type = "hidden";
+    inputHanhDong.name = "hanh_dong";
+    inputHanhDong.value = "them";
+
+    const inputId = document.createElement("input");
+    inputId.type = "hidden";
+    inputId.name = "id";
+    inputId.value = String(mon.id);
+
+    const inputSoLuong = document.createElement("input");
+    inputSoLuong.type = "hidden";
+    inputSoLuong.name = "so_luong";
+    inputSoLuong.value = "1";
+
+    // Nút bấm submit
+    const nutSubmit = document.createElement("button");
+    nutSubmit.type = "submit";
+    nutSubmit.className = "nut-them-ke-hoach-ct";
+    nutSubmit.textContent = " Thêm vào kế hoạch học tập";
+
+    form.append(inputHanhDong, inputId, inputSoLuong, nutSubmit);
+
+    return form;
+}
+
+/**
  * Hiển thị đầy đủ thông tin một môn học.
  */
 function hienThiChiTiet(mon) {
@@ -164,9 +200,13 @@ function hienThiChiTiet(mon) {
     const nutYeuThich =
         taoNutYeuThich(mon);
 
+    // Tạo form thêm vào kế hoạch học tập
+    const formThemGioHang = taoFormThemGioHang(mon);
+
     vungHanhDong.append(
         nutQuayLai,
-        nutYeuThich
+        nutYeuThich,
+        formThemGioHang
     );
 
     khung.append(

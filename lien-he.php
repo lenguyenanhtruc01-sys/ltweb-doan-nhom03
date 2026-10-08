@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 // Nạp cấu hình chung và class xử lý dữ liệu
 require __DIR__ . '/inc/config.php';
 use App\Data\KhoLienHe;
@@ -216,7 +215,6 @@ require __DIR__ . '/inc/header.php';
 <?php 
 // Nhúng Footer chung
 require __DIR__ . '/inc/footer.php'; 
-=======
 require __DIR__ . '/inc/config.php';
 require __DIR__ . '/inc/header.php';
 ?>
@@ -596,5 +594,4 @@ require __DIR__ . '/inc/header.php';
 
 <?php
 require __DIR__ . '/inc/footer.php';
->>>>>>> e4f884c5f2a09736dfe7dce2153772f1d6c89f32
 ?>

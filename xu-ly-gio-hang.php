@@ -3,7 +3,9 @@ require_once __DIR__ . '/vendor/autoload.php';
 use App\Services\KeHoachHocTap;
 
 $keHoach = new KeHoachHocTap();
-$hanhDong = $_POST['action'] ?? $_GET['action'] ?? '';
+
+// Đồng bộ bắt cả 'hanh_dong' (từ form HTML) lẫn 'action' (phòng hờ)
+$hanhDong = $_POST['hanh_dong'] ?? $_GET['hanh_dong'] ?? $_POST['action'] ?? $_GET['action'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     switch ($hanhDong) {
@@ -14,10 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 'cap_nhat':
-            $danhSachSoLuong = $_POST['so_luong'] ?? [];
-            foreach ($danhSachSoLuong as $id => $sl) {
-                $keHoach->capNhat($id, $sl);
-            }
+            $id = $_POST['id'] ?? 0;
+            $soLuong = $_POST['so_luong'] ?? 1;
+            $keHoach->capNhat($id, $soLuong);
             break;
 
         case 'xoa':
@@ -25,7 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $keHoach->xoa($id);
             break;
 
-        case 'xoa_tat_ca':
+        // Đồng bộ khớp với 'xoa_het' từ nút trong giao diện giỏ hàng
+        case 'xoa_het':
             $keHoach->xoaTatCa();
             break;
     }

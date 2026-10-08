@@ -35,95 +35,8 @@ $tongTinChi = $duLieuGio['tong_so_tin_chi'];
 require __DIR__ . '/inc/header.php';
 ?>
 
-<!-- CSS Tối ưu giao diện trang Kế hoạch học tập -->
-<style>
-    .noi-dung-chinh {
-        max-width: 900px;
-        margin: 30px auto;
-        padding: 25px;
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        font-family: Arial, sans-serif;
-    }
-    .noi-dung-chinh h1 {
-        margin-bottom: 20px;
-        color: #333;
-        font-size: 24px;
-        border-bottom: 2px solid #eaeaea;
-        padding-bottom: 10px;
-    }
-    .cart-summary {
-        background: #f8f9fa;
-        padding: 12px 18px;
-        border-radius: 6px;
-        margin-bottom: 20px;
-        font-size: 15px;
-        color: #555;
-        border-left: 4px solid #007bff;
-    }
-    .table-cart {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-    }
-    .table-cart th, .table-cart td {
-        padding: 12px 15px;
-        text-align: left;
-        border-bottom: 1px solid #e0e0e0;
-    }
-    .table-cart th {
-        background-color: #f1f3f5;
-        color: #333;
-        font-weight: bold;
-    }
-    .table-cart tr:hover {
-        background-color: #fafbfc;
-    }
-    .btn {
-        padding: 6px 12px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 13px;
-        font-weight: 500;
-        transition: background 0.2s;
-    }
-    .btn-update {
-        background-color: #e9ecef;
-        color: #333;
-        border: 1px solid #ced4da;
-    }
-    .btn-update:hover {
-        background-color: #dde2e6;
-    }
-    .btn-danger {
-        background-color: #dc3545;
-        color: white;
-    }
-    .btn-danger:hover {
-        background-color: #c82333;
-    }
-    .input-number {
-        width: 50px;
-        padding: 5px;
-        text-align: center;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-    }
-    .empty-cart {
-        text-align: center;
-        padding: 40px;
-        color: #666;
-    }
-    .empty-cart a {
-        color: #007bff;
-        text-decoration: none;
-    }
-    .empty-cart a:hover {
-        text-decoration: underline;
-    }
-</style>
+<!-- Khai báo file CSS riêng đúng vị trí -->
+<link rel="stylesheet" href="css/gio-hang.css">
 
 <main class="noi-dung-chinh">
     <h1>Kế hoạch học tập</h1>
@@ -151,21 +64,21 @@ require __DIR__ . '/inc/header.php';
             <tbody>
                 <?php foreach ($danhSachMon as $item): ?>
                     <tr>
-                        <td><code><?= e($item['maMon']) ?></code></td>
-                        <td><strong><?= e($item['tenMon']) ?></strong></td>
-                        <td><?= (int) $item['soTinChi'] ?></td>
+                        <td><code><?= e($item['maMon'] ?? $item['ma_mon'] ?? '') ?></code></td>
+                        <td><strong><?= e($item['tenMon'] ?? $item['ten_mon'] ?? '') ?></strong></td>
+                        <td><?= (int) ($item['soTinChi'] ?? $item['so_tin_chi'] ?? 0) ?></td>
                         <td>
                             <form action="gio-hang.php" method="post" style="display:inline-flex; gap:6px; align-items:center;">
                                 <input type="hidden" name="hanh_dong" value="cap_nhat">
-                                <input type="hidden" name="id" value="<?= (int) $item['id'] ?>">
-                                <input type="number" name="so_luong" value="<?= (int) $item['soLuong'] ?>" min="1" max="5" class="input-number">
+                                <input type="hidden" name="id" value="<?= (int) ($item['id'] ?? 0) ?>">
+                                <input type="number" name="so_luong" value="<?= (int) ($item['soLuong'] ?? $item['so_luong'] ?? 1) ?>" min="1" max="5" class="input-number">
                                 <button type="submit" class="btn btn-update">Cập nhật</button>
                             </form>
                         </td>
                         <td>
                             <form action="gio-hang.php" method="post" style="display:inline;">
                                 <input type="hidden" name="hanh_dong" value="xoa">
-                                <input type="hidden" name="id" value="<?= (int) $item['id'] ?>">
+                                <input type="hidden" name="id" value="<?= (int) ($item['id'] ?? 0) ?>">
                                 <button type="submit" class="btn btn-danger">Xóa</button>
                             </form>
                         </td>

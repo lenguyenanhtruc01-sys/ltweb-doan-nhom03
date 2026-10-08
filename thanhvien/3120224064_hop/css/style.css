@@ -467,7 +467,9 @@ button:focus-visible {
         width: 100%;
     }
 }
-/* ===== Bổ sung hoàn chỉnh CSS cho 2 chức năng máy chủ (Tra cứu mạng & Kiểm tra mật khẩu) ===== */
+/* ==========================================================
+   CSS CHO 2 CHỨC NĂNG XỬ LÝ MÁY CHỦ (TRA CỨU MẠNG & MẬT KHẨU)
+   ================================================---------- */
 .cong-cu-server {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -476,11 +478,10 @@ button:focus-visible {
 }
 
 .cong-cu-box {
-    background: #ffffff;
+    background: #f8fafc;
     padding: 20px;
     border-radius: 8px;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .cong-cu-box h3 {
@@ -543,14 +544,15 @@ button:focus-visible {
 
 .cong-cu-form button {
     border: none;
-    padding: 10px 16px;
+    padding: 8px 16px;          /* Nút gọn gàng, vừa vặn */
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     color: #fff;
     transition: background 0.2s;
-    width: 100%;
+    width: auto;                 /* Ôm sát nội dung chữ, không bị full width */
+    align-self: flex-start;      /* Căn lề trái */
 }
 
 .btn-net {

@@ -12,7 +12,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $soLuong = filter_var($_POST['so_luong'] ?? 1, FILTER_VALIDATE_INT);
 
     if ($hanhDong === 'them') {
-        $keHoachService->them($id, $soLuong);
+        // Lấy danh sách hiện tại để kiểm tra
+        $dsHienTai = $keHoachService->layDanhSachChiTiet()['danh_sach'] ?? [];
+        
+        $daTonTai = false;
+        foreach ($dsHienTai as $item) {
+            if (isset($item['id']) && $item['id'] == $id) {
+                $daTonTai = true;
+                break;
+            }
+        }
+        
+        if ($daTonTai) {
+            // Chặn ghi đè (NO EDIT): Báo lỗi qua session nếu đã có trong giỏ
+            $_SESSION['flash_error'] = 'Môn học này đã có trong kế hoạch của bạn!';
+        } else {
+            // Thêm mới nếu chưa có
+            $keHoachService->them($id, $soLuong);
+            $_SESSION['flash_success'] = 'Đã thêm vào kế hoạch học tập.';
+        }
     } elseif ($hanhDong === 'cap_nhat') {
         $keHoachService->capNhat($id, $soLuong);
     } elseif ($hanhDong === 'xoa') {
@@ -40,6 +58,21 @@ require __DIR__ . '/inc/header.php';
 
 <main class="noi-dung-chinh">
     <h1>Kế hoạch học tập</h1>
+
+    <!-- Hiển thị thông báo khi thêm trùng môn -->
+    <?php if (isset($_SESSION['flash_error'])): ?>
+        <p style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+            <?= e($_SESSION['flash_error']) ?>
+        </p>
+        <?php unset($_SESSION['flash_error']); ?>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['flash_success'])): ?>
+        <p style="color: #155724; background-color: #d4edda; border: 1px solid #c3e6cb; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+            <?= e($_SESSION['flash_success']) ?>
+        </p>
+        <?php unset($_SESSION['flash_success']); ?>
+    <?php endif; ?>
 
     <?php if (empty($danhSachMon)): ?>
         <div class="empty-cart">
@@ -98,4 +131,4 @@ require __DIR__ . '/inc/header.php';
 
 <?php
 require __DIR__ . '/inc/footer.php';
-?>
+?>git commit -m "Fix no edit/no update cho gio hang"

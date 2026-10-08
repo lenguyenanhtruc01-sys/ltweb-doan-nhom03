@@ -1,0 +1,13 @@
+{
+    "name": "nhom03/ltweb-doan",
+    "description": "Website EduGPA - Bai tap nhom 5",
+    "type": "project",
+    "require": {
+        "php": ">=8.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}

@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 // Nạp cấu hình chung và class xử lý dữ liệu
 require __DIR__ . '/inc/config.php';
 use App\Data\KhoLienHe;
@@ -215,4 +216,385 @@ require __DIR__ . '/inc/header.php';
 <?php 
 // Nhúng Footer chung
 require __DIR__ . '/inc/footer.php'; 
+=======
+require __DIR__ . '/inc/config.php';
+require __DIR__ . '/inc/header.php';
+?>
+
+    <main class="noi-dung-chinh">
+
+        <h1>Liên hệ với EduGPA</h1>
+
+        <p>
+            Nếu bạn có câu hỏi, góp ý hoặc gặp vấn đề khi sử dụng EduGPA,
+            hãy liên hệ với đội ngũ hỗ trợ qua các kênh bên dưới. Chúng tôi
+            luôn sẵn sàng lắng nghe và phản hồi trong thời gian sớm nhất.
+        </p>
+
+        <section class="lien-he__bieu-mau">
+            <h2>Gửi câu hỏi cho chúng tôi</h2>
+
+            <p>
+                Điền biểu mẫu bên dưới để gửi câu hỏi hoặc yêu cầu hỗ trợ.
+                Đội ngũ EduGPA sẽ phản hồi qua email trong vòng 24 giờ làm việc.
+            </p>
+
+            <form
+                id="form-lien-he"
+                class="form-lien-he"
+                action="https://jsonplaceholder.typicode.com/posts"
+                method="post"
+                novalidate
+            >
+                <fieldset>
+                    <legend>Thông tin người liên hệ</legend>
+
+                    <p>
+                        <label for="hoten">
+                            Họ và tên
+                            <span aria-hidden="true">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="hoten"
+                            name="hoten"
+                            minlength="3"
+                            maxlength="50"
+                            placeholder="Nguyễn Văn A"
+                            autocomplete="name"
+                            aria-describedby="loi-hoten"
+                            required
+                        >
+
+                        <small
+                            id="loi-hoten"
+                            class="loi-bieu-mau"
+                            aria-live="polite"
+                        ></small>
+                    </p>
+
+                    <p>
+                        <label for="email">
+                            Email liên hệ
+                            <span aria-hidden="true">*</span>
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="ban@example.com"
+                            autocomplete="email"
+                            aria-describedby="loi-email"
+                            required
+                        >
+
+                        <small
+                            id="loi-email"
+                            class="loi-bieu-mau"
+                            aria-live="polite"
+                        ></small>
+                    </p>
+
+                    <p>
+                        <label for="sdt">Số điện thoại</label>
+
+                        <input
+                            type="tel"
+                            id="sdt"
+                            name="sdt"
+                            pattern="0[0-9]{9}"
+                            title="Số điện thoại phải bắt đầu bằng số 0 và gồm đúng 10 chữ số"
+                            placeholder="0901234567"
+                            autocomplete="tel"
+                            aria-describedby="loi-sdt"
+                        >
+
+                        <small
+                            id="loi-sdt"
+                            class="loi-bieu-mau"
+                            aria-live="polite"
+                        ></small>
+                    </p>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Nội dung liên hệ</legend>
+
+                    <p>
+                        <label for="chude">
+                            Chủ đề cần hỗ trợ
+                            <span aria-hidden="true">*</span>
+                        </label>
+
+                        <select
+                            id="chude"
+                            name="chude"
+                            aria-describedby="loi-chude"
+                            required
+                        >
+                            <option value="">-- Chọn chủ đề --</option>
+                            <option value="gpa">Lỗi tính GPA</option>
+                            <option value="diem">Lỗi nhập điểm</option>
+                            <option value="taikhoan">Vấn đề tài khoản</option>
+                            <option value="tailieu">Tài liệu học tập</option>
+                            <option value="gopy">
+                                Góp ý cải thiện hệ thống
+                            </option>
+                            <option value="khac">Khác</option>
+                        </select>
+
+                        <small
+                            id="loi-chude"
+                            class="loi-bieu-mau"
+                            aria-live="polite"
+                        ></small>
+                    </p>
+
+                    <p>
+                        <strong>Mức độ ưu tiên</strong>
+                    </p>
+
+                    <p>
+                        <input
+                            type="radio"
+                            id="thap"
+                            name="uutien"
+                            value="thap"
+                        >
+                        <label for="thap">Thấp</label>
+
+                        <input
+                            type="radio"
+                            id="trungbinh"
+                            name="uutien"
+                            value="trungbinh"
+                            checked
+                        >
+                        <label for="trungbinh">Trung bình</label>
+
+                        <input
+                            type="radio"
+                            id="cao"
+                            name="uutien"
+                            value="cao"
+                        >
+                        <label for="cao">Cao</label>
+                    </p>
+
+                    <p>
+                        <label for="noidung">
+                            Nội dung câu hỏi
+                            <span aria-hidden="true">*</span>
+                        </label>
+
+                        <textarea
+                            id="noidung"
+                            name="noidung"
+                            rows="5"
+                            cols="40"
+                            minlength="10"
+                            maxlength="1000"
+                            placeholder="Mô tả chi tiết câu hỏi hoặc vấn đề bạn gặp phải..."
+                            aria-describedby="loi-noidung"
+                            required
+                        ></textarea>
+
+                        <small
+                            id="loi-noidung"
+                            class="loi-bieu-mau"
+                            aria-live="polite"
+                        ></small>
+                    </p>
+
+                    <p>
+                        <input
+                            type="checkbox"
+                            id="phanhoi"
+                            name="phanhoi"
+                            checked
+                        >
+
+                        <label for="phanhoi">
+                            Tôi muốn nhận phản hồi qua email
+                        </label>
+                    </p>
+                </fieldset>
+
+                <p class="form-lien-he__nhom-nut">
+                    <button id="nut-gui" type="submit">
+                        Gửi liên hệ
+                    </button>
+
+                    <button id="nut-nhap-lai" type="reset">
+                        Nhập lại
+                    </button>
+                </p>
+
+                <p
+                    id="thong-bao-lien-he"
+                    class="thong-bao-bieu-mau"
+                    aria-live="polite"
+                ></p>
+            </form>
+        </section>
+
+        <section class="lien-he__thong-tin">
+            <h2>Thông tin liên hệ trực tiếp</h2>
+
+            <ul>
+                <li>
+                    <strong>Địa chỉ:</strong>
+                    Khoa Toán - Tin, Trường Đại học Sư phạm -
+                    Đại học Đà Nẵng
+                </li>
+
+                <li>
+                    <strong>Hotline:</strong>
+                    <a href="tel:0901234567">0901 234 567</a>
+                </li>
+
+                <li>
+                    <strong>Email:</strong>
+                    <a href="mailto:support@edugpa.vn">
+                        support@edugpa.vn
+                    </a>
+                </li>
+
+                <li>
+                    <strong>Fanpage:</strong>
+                    <a
+                        href="https://facebook.com/edugpa"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        facebook.com/edugpa
+                    </a>
+                </li>
+
+                <li>
+                    <strong>Giờ làm việc:</strong>
+                    Thứ 2 - Thứ 6 (8:00 - 17:00),
+                    Thứ 7 (8:00 - 11:30)
+                </li>
+            </ul>
+
+            <h3>Bản đồ</h3>
+
+            <figure>
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.0739377611776!2d108.15654371138382!3d16.061652539575185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31421924682e8689%3A0x48eb0bdbeec05215!2zVHLGsOG7nW5nIMSQ4bqhaSBI4buNYyBTxrAgUGjhuqFtIC0gxJDhuqFpIGjhu41jIMSQw6AgTuG6tW5n!5e0!3m2!1svi!2s!4v1789143046077!5m2!1svi!2s"
+                    width="600"
+                    height="400"
+                    title="Bản đồ vị trí Khoa Toán - Tin, Trường Đại học Sư phạm - Đại học Đà Nẵng"
+                    loading="lazy"
+                    allowfullscreen
+                ></iframe>
+
+                <figcaption>
+                    Vị trí Khoa Toán - Tin trên bản đồ.
+                </figcaption>
+            </figure>
+        </section>
+
+        <section class="lien-he__cau-hoi">
+            <h2>Câu hỏi thường gặp</h2>
+
+            <details>
+                <summary>
+                    Làm sao để tính GPA học kỳ trên EduGPA?
+                </summary>
+
+                <p>
+                    Sau khi nhập điểm và số tín chỉ của từng môn trong học kỳ,
+                    EduGPA sẽ tự động tính GPA học kỳ dựa trên công thức
+                    trung bình có trọng số theo tín chỉ.
+                </p>
+            </details>
+
+            <details>
+                <summary>
+                    EduGPA có hỗ trợ mô phỏng GPA không?
+                </summary>
+
+                <p>
+                    Có. Bạn có thể thử các mức điểm dự kiến như A, B+, B, C
+                    cho những môn chưa có điểm để xem GPA dự kiến thay đổi
+                    như thế nào.
+                </p>
+            </details>
+
+            <details>
+                <summary>
+                    Tôi quên mật khẩu thì phải làm sao?
+                </summary>
+
+                <p>
+                    Hãy gửi yêu cầu hỗ trợ ở biểu mẫu phía trên với chủ đề
+                    “Vấn đề tài khoản”. Đội ngũ EduGPA sẽ phản hồi qua email
+                    trong vòng 24 giờ làm việc.
+                </p>
+            </details>
+
+            <details>
+                <summary>
+                    Dữ liệu điểm của tôi có được bảo mật không?
+                </summary>
+
+                <p>
+                    Có. Dữ liệu điểm chỉ hiển thị cho chính tài khoản của bạn
+                    và quản trị viên hệ thống. EduGPA không chia sẻ dữ liệu
+                    cho bên thứ ba.
+                </p>
+            </details>
+
+            <details>
+                <summary>
+                    EduGPA có hỗ trợ trên điện thoại không?
+                </summary>
+
+                <p>
+                    Có. Giao diện EduGPA được thiết kế responsive, có thể
+                    sử dụng trên máy tính, máy tính bảng và điện thoại
+                    thông minh.
+                </p>
+            </details>
+        </section>
+
+        <aside class="kham-pha">
+            <h2>Khám phá EduGPA</h2>
+
+            <ul>
+                <li>
+                    <a href="index.php">
+                        Quay lại trang chủ EduGPA
+                    </a>
+                </li>
+
+                <li>
+                    <a href="danh-sach.php">
+                        Xem danh sách môn học
+                    </a>
+                </li>
+
+                <li>
+                    <a href="chi-tiet.php">
+                        Xem chi tiết kết quả học tập
+                    </a>
+                </li>
+
+                <li>
+                    <a href="gioi-thieu.php">
+                        Tìm hiểu về EduGPA và nhóm thực hiện
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+    </main>
+
+<?php
+require __DIR__ . '/inc/footer.php';
+>>>>>>> e4f884c5f2a09736dfe7dce2153772f1d6c89f32
 ?>

@@ -175,6 +175,7 @@ button {
 .trang {
     min-height: 100vh;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
         "dau"
         "menu"
@@ -615,7 +616,7 @@ figcaption,
 }
 
 
-/* Ho tro truc tiep HTML cu cua index.html trong kho hien tai */
+/* Ho tro truc tiep HTML cu cua index.php trong kho hien tai */
 .trang-chu main > h1 {
     margin: 0;
     padding: clamp(1.5rem, 5vw, 3.5rem);
@@ -1372,7 +1373,7 @@ details > p {
 .form-lien-he input:focus-visible, .form-lien-he textarea:focus-visible, .form-lien-he button:focus-visible { outline: 3px solid var(--mau-nhan, #ffc72c); outline-offset: 2px; border-color: transparent; }
 .form-lien-he button { padding: 12px 24px; background-color: var(--mau-chinh, #123b6d); color: var(--nen, #fff); border: none; border-radius: var(--bo-goc, 8px); cursor: pointer; transition: all 0.2s ease; }
 .form-lien-he button:hover { opacity: 0.9; transform: translateY(-2px); }
-/* Bổ sung class BEM cho thẻ môn học ở trang danh-sach.html */
+/* Bổ sung class BEM cho thẻ môn học ở trang danh-sach.php */
 .the-san-pham__than {
     padding: 15px;
     border: 1px solid #eeeeee;
@@ -1439,10 +1440,13 @@ details > p {
         align-items: stretch;
     }
 
-    .js .menu-chinh > li {
-        width: 100%;
-        max-width: none;
-    }
+    
+.js .menu-chinh > li {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: none;
+}
+
 }
 
 /* Máy tính: ẩn nút và luôn hiển thị menu */
@@ -1465,3 +1469,196 @@ details > p {
     color: #b42318;
     font-weight: 700;
 }
+.dau-trang__cum-thuong-hieu {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--kc-2);
+}
+
+.dau-trang__yeu-thich {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.4rem 0.7rem;
+    color: #ffffff;
+    font-size: var(--co-chu-nho);
+    font-weight: 700;
+    text-decoration: none;
+    border: 1px solid rgb(255 255 255 / 45%);
+    border-radius: var(--bo-goc);
+    background: rgb(255 255 255 / 12%);
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.dau-trang__yeu-thich:hover {
+    color: #ffffff;
+    background-color: rgb(255 255 255 / 22%);
+}
+
+.dau-trang__yeu-thich:active {
+    transform: translateY(1px);
+}
+
+.dau-trang__yeu-thich:focus-visible {
+    outline: 3px solid var(--mau-nhan);
+    outline-offset: 3px;
+}
+.the-san-pham__hanh-dong {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.the-san-pham__hanh-dong > .nut-yeu-thich {
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 34px;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid var(--mau-chinh);
+    border-radius: 0.5rem;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.nut-yeu-thich:hover {
+    transform: translateY(-1px);
+}
+
+.nut-yeu-thich:active {
+    transform: translateY(0);
+}
+
+.nut-yeu-thich:focus-visible {
+    outline: 3px solid var(--mau-nhan);
+    outline-offset: 3px;
+}
+.chi-tiet__hanh-dong {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: var(--kc-4);
+}
+
+.chi-tiet__hanh-dong .nut-yeu-thich {
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 34px;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.875rem;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.chi-tiet__mo-ta {
+    max-width: 65ch;
+}
+/* =========================================================
+   DANH SÁCH THÀNH VIÊN TRANG GIỚI THIỆU
+   ========================================================= */
+
+.gioi-thieu__thanh-vien .danh-sach-thanh-vien {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--kc-4, 1rem);
+
+    width: 100%;
+    margin: var(--kc-4, 1rem) 0 0;
+    padding: 0;
+
+    list-style: none;
+}
+
+.gioi-thieu__thanh-vien .danh-sach-thanh-vien__muc {
+    flex: 1 1 220px;
+    min-width: 0;
+    margin: 0;
+}
+
+.gioi-thieu__thanh-vien .danh-sach-thanh-vien__lien-ket {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    min-height: 84px;
+    padding: 1rem;
+
+    border: 1px solid var(--mau-vien, #ccd8ec);
+    border-radius: var(--bo-goc, 12px);
+
+    color: var(--mau-chinh-dam, #0b3577);
+    background-color: var(--mau-nen-phu, #f4f7fc);
+
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.gioi-thieu__thanh-vien
+.danh-sach-thanh-vien__lien-ket:hover {
+    color: #ffffff;
+    border-color: var(--mau-chinh, #174ea6);
+    background-color: var(--mau-chinh, #174ea6);
+    box-shadow: 0 8px 18px rgb(15 47 111 / 15%);
+    transform: translateY(-2px);
+}
+
+.gioi-thieu__thanh-vien
+.danh-sach-thanh-vien__lien-ket:active {
+    transform: translateY(0);
+}
+
+.gioi-thieu__thanh-vien
+.danh-sach-thanh-vien__lien-ket:focus-visible {
+    outline: 3px solid var(--mau-nhan, #f4b400);
+    outline-offset: 3px;
+}
+
+@media (min-width: 768px) {
+    .gioi-thieu__thanh-vien
+    .danh-sach-thanh-vien__muc {
+        flex-basis: calc(33.333% - 1rem);
+    }
+}
+
+/* Menu điện thoại vẫn hiển thị gọn khi tắt JavaScript */
+@media (max-width: 767px) {
+    .dieu-huong__danh-sach {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: stretch;
+    }
+
+    .trang > nav li,
+    .dieu-huong__muc {
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: none;
+    }
+
+    .dieu-huong__lien-ket {
+        overflow-wrap: anywhere;
+    }
+}
+

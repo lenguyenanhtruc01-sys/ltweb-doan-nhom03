@@ -1,111 +1,284 @@
-// js/trang-chi-tiet.js
-// Đọc tham số ?id= trên URL, tải data/mon-hoc.json,
-// tìm môn học theo id và render vào #chi-tiet.
-// Đủ 3 trạng thái: đang tải – lỗi – không tìm thấy.
-// Đổi document.title theo tên môn.
+/**
+ * trang-chi-tiet.js
+ * Đọc id môn học từ URL và tải dữ liệu từ data/mon-hoc.json.
+ * Hiển thị chi tiết môn học an toàn bằng createElement và textContent.
+ * Hỗ trợ trạng thái đang tải, không tìm thấy và lỗi tải dữ liệu.
+ */
 
-import { taiJSON } from './api.js';
+import { taiJSON } from "./api.js";
 
-const khung = document.querySelector('#chi-tiet');
+const khung = document.querySelector("#chi-tiet");
 
-// Lấy id từ URL: chi-tiet.html?id=3
-const thamSo = new URLSearchParams(location.search);
-const id = Number(thamSo.get('id'));
+const thamSo = new URLSearchParams(
+    window.location.search
+);
 
-// Hiển thị trạng thái (đang tải / lỗi / rỗng)
+const id = Number(
+    thamSo.get("id")
+);
+
+/**
+ * Hiển thị trạng thái trong vùng chi tiết.
+ */
 function hienThiTrangThai(noiDung) {
-  if (!khung) return;
-  khung.textContent = '';
-  const p = document.createElement('p');
-  p.className = 'trang-thai';
-  p.textContent = noiDung;
-  khung.appendChild(p);
-}
-
-async function chay() {
-  if (!khung) return;
-
-  // Thiếu id hoặc id không hợp lệ
-  if (!id || Number.isNaN(id)) {
-    hienThiTrangThai('Không tìm thấy môn học (thiếu tham số id).');
-    return;
-  }
-
-  // Trạng thái đang tải
-  hienThiTrangThai('Đang tải dữ liệu...');
-
-  try {
-    const danhSach = await taiJSON('data/mon-hoc.json');
-    const mon = danhSach.find((x) => x.id === id);
-
-    // Không tìm thấy
-    if (!mon) {
-      hienThiTrangThai(
-        `Không tìm thấy môn học có id = ${id}. Vui lòng kiểm tra lại đường dẫn.`
-      );
-      return;
+    if (!khung) {
+        return;
     }
 
-    // Đổi tiêu đề trang
-    document.title = `${mon.ten} | EduGPA`;
+    khung.replaceChildren();
 
-    // Xoá nội dung cũ
-    khung.textContent = '';
+    const thongBao = document.createElement("p");
 
-    // Tiêu đề môn
-    const h2 = document.createElement('h2');
-    h2.textContent = mon.ten;
-    khung.appendChild(h2);
+    thongBao.className = "trang-thai";
+    thongBao.textContent = noiDung;
 
-    // Ảnh minh hoạ
-    const hinh = document.createElement('img');
-    hinh.src = mon.hinhAnh;
-    hinh.alt = `Minh hoạ môn ${mon.ten}`;
-    hinh.loading = 'lazy';
-    khung.appendChild(hinh);
+    khung.append(thongBao);
+}
 
-    // Danh sách thông tin
-    const ul = document.createElement('ul');
-    ul.className = 'thong-tin-mon';
+/**
+ * Tạo một mục thông tin môn học.
+ */
+function taoMucThongTin(nhan, giaTri) {
+    const muc = document.createElement("li");
+
+    const tenThongTin =
+        document.createElement("strong");
+
+    tenThongTin.textContent = `${nhan}: `;
+
+    const noiDung = document.createTextNode(
+        String(giaTri)
+    );
+
+    muc.append(
+        tenThongTin,
+        noiDung
+    );
+
+    return muc;
+}
+
+/**
+ * Tạo nút yêu thích.
+ * main.js sẽ xử lý sự kiện bằng event delegation.
+ */
+function taoNutYeuThich(mon) {
+    const nutYeuThich =
+        document.createElement("button");
+
+    nutYeuThich.type = "button";
+    nutYeuThich.className = "nut-yeu-thich";
+
+    nutYeuThich.dataset.yeuThichId =
+        String(mon.id);
+
+    nutYeuThich.setAttribute(
+        "aria-pressed",
+        "false"
+    );
+
+    const nhanNut =
+        document.createElement("span");
+
+    nhanNut.dataset.nhanYeuThich = "";
+    nhanNut.textContent = "Yêu thích";
+
+    nutYeuThich.append(nhanNut);
+
+    return nutYeuThich;
+}
+
+/**
+ * Hiển thị đầy đủ thông tin một môn học.
+ */
+function hienThiChiTiet(mon) {
+    if (!khung) {
+        return;
+    }
+
+    khung.replaceChildren();
+
+    const tieuDe = document.createElement("h2");
+    tieuDe.textContent = mon.ten;
+
+    const hinh = document.createElement("img");
+
+    hinh.src = mon.anh;
+    hinh.alt = `Minh họa môn học ${mon.ten}`;
+    hinh.width = 400;
+    hinh.height = 250;
+    hinh.decoding = "async";
+
+    const danhSachThongTin =
+        document.createElement("ul");
+
+    danhSachThongTin.className =
+        "thong-tin-mon";
 
     const thongTin = [
-      ['Mã môn', mon.maMon],
-      ['Số tín chỉ', mon.soTinChi],
-      ['Giảng viên', mon.giangVien],
-      ['Học kỳ', mon.hocKy],
-      ['Điểm chữ', mon.diemChu],
-      ['Điểm hệ 4', mon.diemHe4],
-      ['Trạng thái', mon.trangThai]
+        ["Mã môn", mon.maMon],
+        ["Số tín chỉ", mon.soTinChi],
+        ["Trạng thái", mon.trangThai]
     ];
 
     thongTin.forEach(([nhan, giaTri]) => {
-      const li = document.createElement('li');
-      const strong = document.createElement('strong');
-      strong.textContent = `${nhan}: `;
-      li.appendChild(strong);
-      li.appendChild(document.createTextNode(String(giaTri)));
-      ul.appendChild(li);
+        danhSachThongTin.append(
+            taoMucThongTin(
+                nhan,
+                giaTri
+            )
+        );
     });
 
-    khung.appendChild(ul);
+    const moTa = document.createElement("p");
 
-    // Mô tả
-    const moTa = document.createElement('p');
-    moTa.textContent = mon.moTa;
-    khung.appendChild(moTa);
+    moTa.className = "chi-tiet__mo-ta";
 
-    // Nút quay lại danh sách
-    const nutQuayLai = document.createElement('a');
-    nutQuayLai.href = 'danh-sach.html';
-    nutQuayLai.className = 'nut-quay-lai';
-    nutQuayLai.textContent = '← Quay lại danh sách môn học';
-    khung.appendChild(nutQuayLai);
-  } catch (loi) {
-    console.error(loi);
-    hienThiTrangThai(
-      'Không tải được dữ liệu. Vui lòng kiểm tra kết nối mạng và thử lại.'
+    if (
+        typeof mon.moTa === "string" &&
+        mon.moTa.trim() !== ""
+    ) {
+        moTa.textContent = mon.moTa;
+    } else {
+        moTa.textContent =
+            `${mon.ten} là môn học có ` +
+            `${mon.soTinChi} tín chỉ. ` +
+            `Trạng thái hiện tại: ` +
+            `${mon.trangThai}.`;
+    }
+
+    const vungHanhDong =
+        document.createElement("div");
+
+    vungHanhDong.className =
+        "chi-tiet__hanh-dong";
+
+    const nutQuayLai =
+        document.createElement("a");
+
+    nutQuayLai.href = "danh-sach.php";
+    nutQuayLai.className = "nut-quay-lai";
+    nutQuayLai.textContent =
+        "← Quay lại danh sách";
+
+    const nutYeuThich =
+        taoNutYeuThich(mon);
+
+    vungHanhDong.append(
+        nutQuayLai,
+        nutYeuThich
     );
-  }
+
+    khung.append(
+        tieuDe,
+        hinh,
+        danhSachThongTin,
+        moTa,
+        vungHanhDong
+    );
 }
 
-chay();
+/**
+ * Hiển thị trạng thái khi URL không có id.
+ */
+function hienThiThieuId() {
+    hienThiTrangThai(
+        "Vui lòng chọn một môn học từ trang danh sách."
+    );
+
+    if (!khung) {
+        return;
+    }
+
+    const lienKet =
+        document.createElement("a");
+
+    lienKet.href = "danh-sach.php";
+    lienKet.className = "nut-quay-lai";
+    lienKet.textContent =
+        "Xem danh sách môn học";
+
+    khung.append(lienKet);
+}
+
+/**
+ * Hiển thị trạng thái không tìm thấy môn học.
+ */
+function hienThiKhongTimThay() {
+    hienThiTrangThai(
+        `Không tìm thấy môn học có id = ${id}.`
+    );
+
+    if (!khung) {
+        return;
+    }
+
+    const lienKet =
+        document.createElement("a");
+
+    lienKet.href = "danh-sach.php";
+    lienKet.className = "nut-quay-lai";
+    lienKet.textContent =
+        "Quay lại danh sách môn học";
+
+    khung.append(lienKet);
+}
+
+/**
+ * Tải dữ liệu và tìm môn học theo id.
+ */
+async function taiChiTietMonHoc() {
+    if (!khung) {
+        return;
+    }
+
+    if (
+        !Number.isInteger(id) ||
+        id <= 0
+    ) {
+        hienThiThieuId();
+        return;
+    }
+
+    hienThiTrangThai(
+        "Đang tải dữ liệu môn học..."
+    );
+
+    try {
+        const danhSach = await taiJSON(
+            "data/mon-hoc.json"
+        );
+
+        if (!Array.isArray(danhSach)) {
+            throw new Error(
+                "Dữ liệu môn học không hợp lệ."
+            );
+        }
+
+        const mon = danhSach.find(
+            (muc) => Number(muc.id) === id
+        );
+
+        if (!mon) {
+            hienThiKhongTimThay();
+            return;
+        }
+
+        document.title =
+            `${mon.ten} | EduGPA`;
+
+        hienThiChiTiet(mon);
+    } catch (loi) {
+        console.error(
+            "Lỗi tải chi tiết môn học:",
+            loi
+        );
+
+        hienThiTrangThai(
+            "Không tải được dữ liệu môn học. " +
+            "Vui lòng kiểm tra kết nối và thử lại."
+        );
+    }
+}
+
+taiChiTietMonHoc();

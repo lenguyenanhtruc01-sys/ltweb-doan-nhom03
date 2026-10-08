@@ -1,4 +1,10 @@
-/**
+/.
+\
+?
+
+
+
+**
  * main.js quản lý các chức năng dùng chung trên năm trang chính.
  * Tệp xử lý việc mở và đóng menu trên điện thoại.
  * Menu hỗ trợ chuột, bàn phím và cập nhật thuộc tính aria-expanded.

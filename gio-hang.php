@@ -131,4 +131,4 @@ require __DIR__ . '/inc/header.php';
 
 <?php
 require __DIR__ . '/inc/footer.php';
-?>git commit -m "Fix no edit/no update cho gio hang"
+?>git commit -m "Fix no edit/no update cho gio hang" 

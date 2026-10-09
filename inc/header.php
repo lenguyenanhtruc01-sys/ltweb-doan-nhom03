@@ -169,9 +169,12 @@ if (!is_string($nguoiDung) || $nguoiDung === '') {
             <?php if ($nguoiDung !== null): ?>
 
                 <li class="dieu-huong__muc">
-                    <span class="dieu-huong__lien-ket">
+                    <a
+                        class="dieu-huong__lien-ket <?= $trang === 'quan-tri' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>"
+                        href="<?= e($goc) ?>quan-tri.php"
+                        <?= $trang === 'quan-tri' ? 'aria-current="page"' : '' ?>>
                         <?= e($nguoiDung) ?>
-                    </span>
+                    </a>
                 </li>
 
                 <li class="dieu-huong__muc">

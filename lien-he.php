@@ -1,54 +1,62 @@
 <?php
-// Nạp cấu hình chung và class xử lý dữ liệu
+declare(strict_types=1);
 require_once __DIR__ . '/inc/config.php';
+
 use App\Data\KhoLienHe;
 
-// Khởi tạo mảng lưu dữ liệu người dùng nhập và mảng chứa lỗi
 $du  = ['hoten' => '', 'email' => '', 'sdt' => '', 'chude' => '', 'uutien' => 'trungbinh', 'noidung' => ''];
 $loi = [];
 $tenAnh = null;
 
-// Nếu người dùng bấm Gửi form (phương thức POST)
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // 1. Nhận và làm sạch dữ liệu
-    $du['hoten']   = trim($_POST['hoten'] ?? '');
-    $du['email']   = trim($_POST['email'] ?? '');
-    $du['sdt']     = trim($_POST['sdt'] ?? '');
-    $du['chude']   = trim($_POST['chude'] ?? '');
-    $du['uutien']  = trim($_POST['uutien'] ?? '');
-    $du['noidung'] = trim($_POST['noidung'] ?? '');
+$chudeChoPhep  = ['gpa', 'diem', 'taikhoan', 'tailieu', 'gopy', 'khac'];
+$uutienChoPhep = ['thap', 'trungbinh', 'cao'];
 
-    // 2. Kiểm tra lỗi (Validation Server)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $du['hoten']   = trim((string) ($_POST['hoten']   ?? ''));
+    $du['email']   = trim((string) ($_POST['email']   ?? ''));
+    $du['sdt']     = trim((string) ($_POST['sdt']     ?? ''));
+    $du['chude']   = trim((string) ($_POST['chude']   ?? ''));
+    $du['uutien']  = trim((string) ($_POST['uutien']  ?? 'trungbinh'));
+    $du['noidung'] = trim((string) ($_POST['noidung'] ?? ''));
+
     if (mb_strlen($du['hoten']) < 3 || mb_strlen($du['hoten']) > 50) {
         $loi['hoten'] = 'Họ tên bắt buộc phải từ 3 đến 50 ký tự.';
     }
-    
+
     if (!filter_var($du['email'], FILTER_VALIDATE_EMAIL)) {
         $loi['email'] = 'Định dạng email không hợp lệ.';
     }
-    
+
     if ($du['sdt'] !== '' && !preg_match('/^0[0-9]{9}$/', $du['sdt'])) {
         $loi['sdt'] = 'Số điện thoại phải bắt đầu bằng số 0 và gồm đúng 10 chữ số.';
     }
-    
-    if (empty($du['chude'])) {
+
+    // Whitelist chủ đề
+    if ($du['chude'] === '') {
         $loi['chude'] = 'Vui lòng chọn chủ đề cần hỗ trợ.';
+    } elseif (!in_array($du['chude'], $chudeChoPhep, true)) {
+        $loi['chude'] = 'Chủ đề không hợp lệ.';
     }
-    
+
+    // Whitelist ưu tiên
+    if (!in_array($du['uutien'], $uutienChoPhep, true)) {
+        $du['uutien'] = 'trungbinh';
+        $loi['uutien'] = 'Mức độ ưu tiên không hợp lệ.';
+    }
+
     if (mb_strlen($du['noidung']) < 10 || mb_strlen($du['noidung']) > 1000) {
         $loi['noidung'] = 'Nội dung bắt buộc phải từ 10 đến 1000 ký tự.';
     }
 
-    // 3. Xử lý Upload ảnh (nếu có đính kèm)
+    // Upload ảnh
     if (isset($_FILES['anh']) && $_FILES['anh']['error'] !== UPLOAD_ERR_NO_FILE) {
         $file = $_FILES['anh'];
-        
+
         if ($file['error'] !== UPLOAD_ERR_OK) {
             $loi['anh'] = 'Có lỗi trong quá trình tải ảnh lên.';
-        } elseif ($file['size'] > 2 * 1024 * 1024) { // Giới hạn 2MB
+        } elseif ($file['size'] > 2 * 1024 * 1024) {
             $loi['anh'] = 'Kích thước ảnh không được vượt quá 2MB.';
         } else {
-            // Dùng finfo kiểm tra định dạng
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $mime  = finfo_file($finfo, $file['tmp_name']);
             finfo_close($finfo);
@@ -60,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $phanMoRong = pathinfo($file['name'], PATHINFO_EXTENSION);
                 $tenAnh     = uniqid('lh_', true) . '.' . $phanMoRong;
                 $duongDan   = __DIR__ . '/uploads/' . $tenAnh;
-                
+
                 if (!move_uploaded_file($file['tmp_name'], $duongDan)) {
                     $loi['anh'] = 'Không thể lưu ảnh vào máy chủ, vui lòng thử lại.';
                     $tenAnh = null;
@@ -69,10 +77,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // 4. Nếu không có lỗi nào -> Lưu dữ liệu và Chuyển hướng (PRG)
     if (empty($loi)) {
-        $kho = new KhoLienHe(__DIR__ . '/storage/lien-he.jsonl');
-        $kho->them([
+        (new KhoLienHe(__DIR__ . '/storage/lien-he.jsonl'))->them([
             'thoiGian' => date('Y-m-d H:i:s'),
             'hoTen'    => $du['hoten'],
             'email'    => $du['email'],
@@ -80,21 +86,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'chuDe'    => $du['chude'],
             'uuTien'   => $du['uutien'],
             'noiDung'  => $du['noidung'],
-            'anh'      => $tenAnh
+            'anh'      => $tenAnh,
         ]);
-        
-        // Lưu thông báo vào Session
+
         $_SESSION['flash'] = 'Đã gửi liên hệ thành công. Đội ngũ EduGPA sẽ phản hồi qua email của bạn sớm nhất!';
-        header('Location: lien-he.php'); // Chuyển hướng PRG
+        header('Location: lien-he.php');
         exit;
     }
 }
 
-// Lấy thông báo flash và xóa ngay
 $tb = $_SESSION['flash'] ?? '';
 unset($_SESSION['flash']);
 
-// Thiết lập tiêu đề và nhúng Header
 $tieuDe = 'Liên hệ';
 $trang  = 'lien-he';
 require_once __DIR__ . '/inc/header.php';
@@ -150,12 +153,12 @@ require_once __DIR__ . '/inc/header.php';
                     <label for="chude">Chủ đề cần hỗ trợ <span aria-hidden="true">*</span></label>
                     <select id="chude" name="chude" required>
                         <option value="">-- Chọn chủ đề --</option>
-                        <option value="gpa" <?= $du['chude'] === 'gpa' ? 'selected' : '' ?>>Lỗi tính GPA</option>
-                        <option value="diem" <?= $du['chude'] === 'diem' ? 'selected' : '' ?>>Lỗi nhập điểm</option>
+                        <option value="gpa"      <?= $du['chude'] === 'gpa'      ? 'selected' : '' ?>>Lỗi tính GPA</option>
+                        <option value="diem"     <?= $du['chude'] === 'diem'     ? 'selected' : '' ?>>Lỗi nhập điểm</option>
                         <option value="taikhoan" <?= $du['chude'] === 'taikhoan' ? 'selected' : '' ?>>Vấn đề tài khoản</option>
-                        <option value="tailieu" <?= $du['chude'] === 'tailieu' ? 'selected' : '' ?>>Tài liệu học tập</option>
-                        <option value="gopy" <?= $du['chude'] === 'gopy' ? 'selected' : '' ?>>Góp ý cải thiện hệ thống</option>
-                        <option value="khac" <?= $du['chude'] === 'khac' ? 'selected' : '' ?>>Khác</option>
+                        <option value="tailieu"  <?= $du['chude'] === 'tailieu'  ? 'selected' : '' ?>>Tài liệu học tập</option>
+                        <option value="gopy"     <?= $du['chude'] === 'gopy'     ? 'selected' : '' ?>>Góp ý cải thiện hệ thống</option>
+                        <option value="khac"     <?= $du['chude'] === 'khac'     ? 'selected' : '' ?>>Khác</option>
                     </select>
                     <?php if (isset($loi['chude'])): ?>
                         <small class="loi-bieu-mau" style="color: red; display:block; margin-top:5px;"><?= e($loi['chude']) ?></small>
@@ -172,6 +175,10 @@ require_once __DIR__ . '/inc/header.php';
 
                     <input type="radio" id="cao" name="uutien" value="cao" <?= $du['uutien'] === 'cao' ? 'checked' : '' ?>>
                     <label for="cao">Cao</label>
+
+                    <?php if (isset($loi['uutien'])): ?>
+                        <small class="loi-bieu-mau" style="color: red; display:block; margin-top:5px;"><?= e($loi['uutien']) ?></small>
+                    <?php endif; ?>
                 </p>
 
                 <p>
@@ -181,7 +188,7 @@ require_once __DIR__ . '/inc/header.php';
                         <small class="loi-bieu-mau" style="color: red; display:block; margin-top:5px;"><?= e($loi['noidung']) ?></small>
                     <?php endif; ?>
                 </p>
-                
+
                 <p>
                     <label for="anh">Ảnh đính kèm minh họa lỗi (nếu có - tối đa 2MB)</label>
                     <input type="file" id="anh" name="anh" accept="image/jpeg, image/png, image/webp" style="margin-top: 5px;">
@@ -223,7 +230,7 @@ require_once __DIR__ . '/inc/header.php';
         <h2>Câu hỏi thường gặp</h2>
         <details><summary>Làm sao để tính GPA học kỳ trên EduGPA?</summary><p>Sau khi nhập điểm và số tín chỉ của từng môn trong học kỳ, EduGPA sẽ tự động tính GPA học kỳ dựa trên công thức trung bình có trọng số theo tín chỉ.</p></details>
         <details><summary>EduGPA có hỗ trợ mô phỏng GPA không?</summary><p>Có. Bạn có thể thử các mức điểm dự kiến như A, B+, B, C cho những môn chưa có điểm để xem GPA dự kiến thay đổi như thế nào.</p></details>
-        <details><summary>Tôi quên mật khẩu thì phải làm sao?</summary><p>Hãy gửi yêu cầu hỗ trợ ở biểu mẫu phía trên với chủ đề “Vấn đề tài khoản”. Đội ngũ EduGPA sẽ phản hồi qua email trong vòng 24 giờ làm việc.</p></details>
+        <details><summary>Tôi quên mật khẩu thì phải làm sao?</summary><p>Hãy gửi yêu cầu hỗ trợ ở biểu mẫu phía trên với chủ đề "Vấn đề tài khoản". Đội ngũ EduGPA sẽ phản hồi qua email trong vòng 24 giờ làm việc.</p></details>
         <details><summary>Dữ liệu điểm của tôi có được bảo mật không?</summary><p>Có. Dữ liệu điểm chỉ hiển thị cho chính tài khoản của bạn và quản trị viên hệ thống. EduGPA không chia sẻ dữ liệu cho bên thứ ba.</p></details>
         <details><summary>EduGPA có hỗ trợ trên điện thoại không?</summary><p>Có. Giao diện EduGPA được thiết kế responsive, có thể sử dụng trên máy tính, máy tính bảng và điện thoại thông minh.</p></details>
     </section>

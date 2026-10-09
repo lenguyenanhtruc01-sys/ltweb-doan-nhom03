@@ -209,10 +209,29 @@ body { background-color: var(--bg-main); color: var(--text-main); }
 </main>
 
 <script>
-// Script xử lý nút Yêu thích
+// Script xử lý nút Yêu thích và cập nhật Header
 document.addEventListener('DOMContentLoaded', function() {
     const dsNutYeuThich = document.querySelectorAll('.nut-yeu-thich');
     
+    // [HÀM MỚI] Đếm số tim đã lưu và sửa chữ trên thanh Header
+    function capNhatHeader() {
+        let count = 0;
+        for (let i = 0; i < localStorage.length; i++) {
+            if (localStorage.key(i).startsWith('yeu_thich_')) count++;
+        }
+        
+        // Quét tự động để tìm thẻ chứa chữ "Yêu thích:" trên toàn bộ trang
+        const theBao = document.querySelectorAll('a, button, span, div');
+        theBao.forEach(function(el) {
+            if (el.childNodes.length === 1 && el.textContent.includes('Yêu thích:')) {
+                el.textContent = '♥ Yêu thích: ' + count;
+            }
+        });
+    }
+
+    // Cập nhật số đếm ngay khi vừa mở trang
+    capNhatHeader();
+
     dsNutYeuThich.forEach(function(nut) {
         const idMonHoc = nut.getAttribute('data-yeu-thich-id');
         const iconTraiTim = nut.querySelector('.nut-yeu-thich__icon');
@@ -234,11 +253,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 iconTraiTim.textContent = '♡';
                 localStorage.removeItem('yeu_thich_' + idMonHoc);
             }
+            
+            // Cập nhật lại số đếm sau mỗi lần click
+            capNhatHeader();
         });
     });
 });
 </script>
 
-<?php
-require __DIR__ . '/inc/footer.php';
-?>
+<?php require __DIR__ . '/inc/footer.php'; ?>

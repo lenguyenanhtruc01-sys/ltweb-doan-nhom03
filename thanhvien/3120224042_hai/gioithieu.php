@@ -1,13 +1,16 @@
 <?php
-// 1. Nạp cấu hình chung từ thư mục gốc (lùi 2 cấp thư mục)
+// 1. Nạp cấu hình chung từ thư mục gốc
 require_once __DIR__ . '/../../inc/config.php';
 
+// Cài đặt múi giờ Việt Nam
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+
 // ==========================================
-// CHỨC NĂNG 1: XỬ LÝ UPLOAD ẢNH ĐẠI DIỆN
+// CHỨC NĂNG 1: XỬ LÝ UPLOAD ẢNH ĐẠI DIỆN (POST / PRG)
 // ==========================================
 $thongBaoAnh = $_SESSION['flash_avatar'] ?? '';
 $loiAnh      = $_SESSION['loi_avatar'] ?? '';
-unset($_SESSION['flash_avatar'], $_SESSION['loi_avatar']); // Lấy xong xóa ngay (PRG)
+unset($_SESSION['flash_avatar'], $_SESSION['loi_avatar']);
 
 $thuMucAnh = __DIR__ . '/images/';
 if (!is_dir($thuMucAnh)) {
@@ -22,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['avatar'])) {
     } elseif ($file['size'] > 2 * 1024 * 1024) {
         $_SESSION['loi_avatar'] = 'Kích thước ảnh không được vượt quá 2MB.';
     } else {
-        // Kiểm tra định dạng bằng finfo
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mime  = finfo_file($finfo, $file['tmp_name']);
         finfo_close($finfo);
@@ -31,8 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['avatar'])) {
         if (!in_array($mime, $choPhep, true)) {
             $_SESSION['loi_avatar'] = 'Chỉ chấp nhận ảnh JPG, PNG hoặc WEBP.';
         } else {
-            $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-            $tenMoi = 'avatar_3120224042.' . $ext; // Đổi tên file ngẫu nhiên/cố định theo MSSV
+            $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            $tenMoi = 'avatar_3120224042.' . $ext;
             
             if (move_uploaded_file($file['tmp_name'], $thuMucAnh . $tenMoi)) {
                 $_SESSION['flash_avatar'] = 'Cập nhật ảnh đại diện thành công!';
@@ -41,47 +43,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['avatar'])) {
             }
         }
     }
-    // Chuyển hướng để tránh người dùng F5 gửi lại Form (PRG)
     header('Location: gioithieu.php');
     exit;
 }
 
-// Tìm file avatar hiện tại (nếu đã upload thì dùng, chưa thì dùng mặc định)
+// Kiểm tra avatar hiện tại
 $avatarHienTai = 'hoanghai.jpg'; 
 $cacDuoi = ['jpg', 'png', 'webp', 'jpeg'];
 foreach ($cacDuoi as $d) {
-    if (file_exists(__DIR__ . '/images/avatar_3120224042.' . $d)) {
+    if (file_exists($thuMucAnh . 'avatar_3120224042.' . $d)) {
         $avatarHienTai = 'avatar_3120224042.' . $d;
         break;
     }
 }
 
 // ==========================================
-// CHỨC NĂNG 2: LỌC DANH SÁCH KỸ NĂNG BẰNG GET
+// CHỨC NĂNG 2: MÁY TẠO CHÂM NGÔN IT NGẪU NHIÊN
 // ==========================================
-$danhSachKyNang = [
-    ['loai' => 'ngon-ngu', 'nhom' => 'Ngôn ngữ', 'chitiet' => 'C++, Python, SQL.'],
-    ['loai' => 'mobile',   'nhom' => 'Mobile',   'chitiet' => 'Jetpack Compose (Kotlin).'],
-    ['loai' => 'cv',       'nhom' => 'Computer Vision', 'chitiet' => 'OpenCV, YOLOv8, YOLO-NAS.'],
-    ['loai' => 'cong-cu',  'nhom' => 'Công cụ',  'chitiet' => 'VS Code, SSMS, Git.']
+$danhSachChamNgon = [
+    "Code is like humor. When you have to explain it, it’s bad. – Cory House",
+    "First, solve the problem. Then, write the code. – John Johnson",
+    "It’s not a bug, it’s an undocumented feature! – Anonymous",
+    "Clean code always looks like it was written by someone who cares. – Robert C. Martin",
+    "The only way to learn a new programming language is by writing programs in it. – Dennis Ritchie"
 ];
+$chamNgonNgauNhien = $danhSachChamNgon[array_rand($danhSachChamNgon)];
 
-// Lấy tham số loại từ URL (GET)
-$loaiLoc = $_GET['loai'] ?? 'tat-ca';
+// ==========================================
+// CHỨC NĂNG 3: BỘ ĐẾM NGƯỢC NGÀY BẢO VỆ ĐỒ ÁN (DATETIME)
+// ==========================================
+$ngayBaoVe = new DateTime('2026-10-25 08:00:00');
+$ngayHienTai = new DateTime();
+$thoiGianConLai = $ngayHienTai->diff($ngayBaoVe);
 
-// Lọc mảng dữ liệu dựa trên tham số GET
-$duLieuLoc = array_filter($danhSachKyNang, function($kn) use ($loaiLoc) {
-    return $loaiLoc === 'tat-ca' || $kn['loai'] === $loaiLoc;
-});
-
-
-// 3. Nạp Tiêu đề & Header dùng chung
+// 2. Nạp Header
 $tieuDe = 'Lê Dương Hoàng Hải | Giới thiệu cá nhân';
 $trang  = 'gioi-thieu';
 require_once __DIR__ . '/../../inc/header.php';
 ?>
 
-<!-- Gọi riêng CSS cá nhân của Hải để không ảnh hưởng trang khác -->
+<!-- Gọi riêng CSS cá nhân của Hải -->
 <link rel="stylesheet" href="style.css">
 
 <main class="container">
@@ -90,16 +91,15 @@ require_once __DIR__ . '/../../inc/header.php';
     <section class="profile grid-col">
         <h2>Lê Dương Hoàng Hải</h2>
         
-        <!-- HIỂN THỊ VÀ UPLOAD ẢNH ĐẠI DIỆN -->
+        <!-- HIỂN THỊ ẢNH ĐẠI DIỆN -->
         <img src="images/<?= e($avatarHienTai) ?>" alt="Ảnh chân dung của Lê Dương Hoàng Hải" width="150" height="150" style="object-fit: cover; border-radius: 5px;">
         
-        <!-- Form đổi ảnh cá nhân -->
+        <!-- FORM ĐỔI ẢNH ĐẠI DIỆN (CHỨC NĂNG 1) -->
         <form action="gioithieu.php" method="post" enctype="multipart/form-data" style="margin: 10px 0; padding: 10px; background: #f4f4f4; border-radius: 5px;">
             <label for="avatar" style="font-size: 0.9em; font-weight: bold;">Đổi ảnh đại diện (≤ 2MB):</label><br>
             <input type="file" name="avatar" id="avatar" accept="image/jpeg, image/png, image/webp" required style="font-size: 0.85em; margin: 5px 0;">
             <button type="submit" class="btn-primary" style="padding: 3px 10px; font-size: 0.85em;">Tải lên</button>
             
-            <!-- In thông báo upload -->
             <?php if ($thongBaoAnh !== ''): ?>
                 <p style="color: green; font-size: 0.85em; margin-top: 5px;"><?= e($thongBaoAnh) ?></p>
             <?php endif; ?>
@@ -107,6 +107,21 @@ require_once __DIR__ . '/../../inc/header.php';
                 <p style="color: red; font-size: 0.85em; margin-top: 5px;"><?= e($loiAnh) ?></p>
             <?php endif; ?>
         </form>
+
+        <!-- KHỐI ĐẾM NGƯỢC BẢO VỆ ĐỒ ÁN (CHỨC NĂNG 3) -->
+        <div style="margin: 10px 0; padding: 10px 12px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; font-size: 0.88em; color: #856404;">
+            ⏳ <strong>Đếm ngược bảo vệ Đồ án:</strong> 
+            <?php if ($ngayHienTai < $ngayBaoVe): ?>
+                Còn <strong><?= $thoiGianConLai->days ?></strong> ngày <strong><?= $thoiGianConLai->h ?></strong> giờ nữa!
+            <?php else: ?>
+                Đã đến ngày bảo vệ đồ án!
+            <?php endif; ?>
+        </div>
+
+        <!-- KHỐI CHÂM NGÔN IT NGẪU NHIÊN (CHỨC NĂNG 2) -->
+        <div style="margin: 10px 0 15px 0; padding: 10px 12px; background: #eef2ff; border-left: 4px solid #4f46e5; border-radius: 4px; font-style: italic; font-size: 0.88em; color: #3730a3;">
+            💡 <strong>Châm ngôn hôm nay:</strong> "<?= e($chamNgonNgauNhien) ?>"
+        </div>
 
         <p>Xin chào! Mình là sinh viên ngành Công nghệ Thông tin tại Khoa Toán - Tin, Trường Đại học Sư phạm - Đại học Đà Nẵng. Mình đam mê phát triển phần mềm và ứng dụng thị giác máy tính.</p>
         
@@ -116,33 +131,18 @@ require_once __DIR__ . '/../../inc/header.php';
             </button>
         </div>
 
-        <!-- LỌC DANH SÁCH KỸ NĂNG BẰNG GET -->
         <div class="skills-box">
             <h3>Kỹ năng công nghệ:</h3>
-            
-            <!-- Nút bấm chuyển hướng truyền tham số GET trên URL -->
-            <div style="margin-bottom: 10px; display: flex; gap: 5px; flex-wrap: wrap;">
-                <a href="gioithieu.php?loai=tat-ca"   class="<?= $loaiLoc === 'tat-ca' ? 'btn-primary' : 'btn-secondary' ?>" style="padding: 2px 8px; text-decoration: none; font-size: 0.85em;">Tất cả</a>
-                <a href="gioithieu.php?loai=ngon-ngu" class="<?= $loaiLoc === 'ngon-ngu' ? 'btn-primary' : 'btn-secondary' ?>" style="padding: 2px 8px; text-decoration: none; font-size: 0.85em;">Ngôn ngữ</a>
-                <a href="gioithieu.php?loai=mobile"   class="<?= $loaiLoc === 'mobile' ? 'btn-primary' : 'btn-secondary' ?>" style="padding: 2px 8px; text-decoration: none; font-size: 0.85em;">Mobile</a>
-                <a href="gioithieu.php?loai=cv"       class="<?= $loaiLoc === 'cv' ? 'btn-primary' : 'btn-secondary' ?>" style="padding: 2px 8px; text-decoration: none; font-size: 0.85em;">AI / CV</a>
-                <a href="gioithieu.php?loai=cong-cu"  class="<?= $loaiLoc === 'cong-cu' ? 'btn-primary' : 'btn-secondary' ?>" style="padding: 2px 8px; text-decoration: none; font-size: 0.85em;">Công cụ</a>
-            </div>
-
-            <!-- In danh sách kỹ năng đã được lọc bằng PHP -->
             <ul>
-                <?php if (empty($duLieuLoc)): ?>
-                    <li>Không tìm thấy kỹ năng nào.</li>
-                <?php else: ?>
-                    <?php foreach ($duLieuLoc as $kn): ?>
-                        <li><strong><?= e($kn['nhom']) ?>:</strong> <?= e($kn['chitiet']) ?></li>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                <li><strong>Ngôn ngữ:</strong> C++, Python, SQL.</li>
+                <li><strong>Mobile:</strong> Jetpack Compose (Kotlin).</li>
+                <li><strong>Computer Vision:</strong> OpenCV, YOLOv8, YOLO-NAS.</li>
+                <li><strong>Công cụ:</strong> VS Code, SSMS, Git.</li>
             </ul>
         </div>
     </section>
 
-    <!-- CỘT PHẢI: Sở thích & Thời khóa biểu (GIỮ NGUYÊN HTML CỦA BẠN) -->
+    <!-- CỘT PHẢI: Sở thích & Thời khóa biểu -->
     <div class="grid-col">
         <article class="hobby-card">
             <h2>Sở thích và Hoạt động</h2>
@@ -175,28 +175,28 @@ require_once __DIR__ . '/../../inc/header.php';
                         <!-- Tiết 1 -->
                         <tr>
                             <td class="tiet">1</td>
-                            <td rowspan="2"><strong>An toàn thông tin</strong>Phòng: B3-206</td>
+                            <td rowspan="2"><strong>An toàn thông tin</strong><br>Phòng: B3-206</td>
                             <td></td><td></td>
-                            <td rowspan="3"><strong>Khai phá dữ liệu</strong>Phòng: A5-404B</td>
-                            <td rowspan="3"><strong>Lập trình mạng</strong>Phòng: B3-303</td>
-                            <td rowspan="3"><strong>Thiết kế và lập trình web</strong>Phòng: B3-303</td>
+                            <td rowspan="3"><strong>Khai phá dữ liệu</strong><br>Phòng: A5-404B</td>
+                            <td rowspan="3"><strong>Lập trình mạng</strong><br>Phòng: B3-303</td>
+                            <td rowspan="3"><strong>Thiết kế và lập trình web</strong><br>Phòng: B3-303</td>
                             <td></td>
                         </tr>
                         <!-- Tiết 2 -->
                         <tr>
                             <td class="tiet">2</td><td></td>
-                            <td rowspan="3"><strong>Hệ quản trị cơ sở dữ liệu</strong>Phòng: B3-402</td><td></td>
+                            <td rowspan="3"><strong>Hệ quản trị cơ sở dữ liệu</strong><br>Phòng: B3-402</td><td></td>
                         </tr>
                         <!-- Tiết 3 -->
                         <tr>
                             <td class="tiet">3</td>
-                            <td rowspan="2"><strong>Lịch sử Đảng Cộng sản Việt Nam</strong>Phòng: A5-404C</td>
+                            <td rowspan="2"><strong>Lịch sử Đảng Cộng sản Việt Nam</strong><br>Phòng: A5-404C</td>
                             <td></td><td></td>
                         </tr>
                         <!-- Tiết 4 -->
                         <tr>
                             <td class="tiet">4</td><td></td>
-                            <td rowspan="2"><strong>Hệ phân tán</strong>Phòng: B3-303</td><td></td><td></td><td></td>
+                            <td rowspan="2"><strong>Hệ phân tán</strong><br>Phòng: B3-303</td><td></td><td></td><td></td>
                         </tr>
                         <!-- Tiết 5 -->
                         <tr><td class="tiet">5</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
@@ -205,7 +205,7 @@ require_once __DIR__ . '/../../inc/header.php';
                         <!-- Tiết 7 -->
                         <tr>
                             <td class="tiet">7</td><td></td><td></td><td></td>
-                            <td rowspan="3"><strong>Công nghệ phần mềm</strong>Phòng: B3-303</td><td></td><td></td><td></td>
+                            <td rowspan="3"><strong>Công nghệ phần mềm</strong><br>Phòng: B3-303</td><td></td><td></td><td></td>
                         </tr>
                         <!-- Tiết 8 -->
                         <tr><td class="tiet">8</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
@@ -224,10 +224,9 @@ require_once __DIR__ . '/../../inc/header.php';
     </div>
 </main>
 
-<!-- Nạp JS của riêng Hải (Vì footer sẽ đóng thẻ body nên để trước footer) -->
 <script type="module" src="js/canhan.js"></script>
 
 <?php 
-// 4. Nạp Footer dùng chung
+// 3. Nạp Footer dùng chung
 require_once __DIR__ . '/../../inc/footer.php'; 
 ?>

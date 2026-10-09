@@ -1,5 +1,42 @@
 <?php
+/**
+ * Tệp: index.php (Duy — Phần A, khối Đã xem gần đây)
+ * Trang chủ EduGPA — dùng chung header/footer.
+ * Đọc cookie da_xem (do chi-tiet.php set) và hiển thị khối
+ * "Đã xem gần đây" (tối đa 4 môn). Giá trị cookie luôn được
+ * kiểm tra lại (filter_var), bỏ qua id rác.
+ */
+declare(strict_types=1);
 require __DIR__ . '/inc/config.php';
+
+use App\Data\KhoMonHoc;
+
+$kho = new KhoMonHoc();
+
+// ============================================================
+// KHỐI "ĐÃ XEM GẦN ĐÂY" — đọc cookie da_xem, kiểm tra từng id
+// ============================================================
+$daXem = [];
+$rawCookie = (string) ($_COOKIE['da_xem'] ?? '');
+
+if ($rawCookie !== '') {
+    foreach (explode(',', $rawCookie) as $x) {
+        $id = filter_var($x, FILTER_VALIDATE_INT);
+        if ($id === false || $id <= 0) {
+            continue; // bỏ qua giá trị lạ, âm, không phải số
+        }
+        $mon = $kho->timTheoId($id);
+        if ($mon !== null) {
+            $daXem[] = $mon;
+        }
+        if (count($daXem) >= 4) {
+            break;
+        }
+    }
+}
+
+$tieuDe = 'Trang chủ';
+$trang  = 'index';
 require __DIR__ . '/inc/header.php';
 ?>
 
@@ -66,6 +103,77 @@ require __DIR__ . '/inc/header.php';
             </div>
 
         </section>
+
+
+        <!-- ================= ĐÃ XEM GẦN ĐÂY ================= -->
+        <?php if (!empty($daXem)): ?>
+        <section
+            class="khu-vuc khu-vuc--da-xem"
+            aria-labelledby="tieu-de-da-xem">
+
+            <div class="bao">
+
+                <div class="tieu-de-khu-vuc">
+
+                    <p class="tieu-de-khu-vuc__nhan">
+                        Gần đây
+                    </p>
+
+                    <h2
+                        id="tieu-de-da-xem"
+                        class="tieu-de-khu-vuc__tieu-de">
+                        Đã xem gần đây
+                    </h2>
+
+                    <p class="tieu-de-khu-vuc__mo-ta">
+                        Bốn môn học bạn vừa mở gần nhất.
+                    </p>
+
+                </div>
+
+
+                <div class="luoi-the">
+
+                    <?php foreach ($daXem as $mon): ?>
+
+                        <article class="the">
+
+                            <div
+                                class="the__bieu-tuong"
+                                aria-hidden="true">
+                                ĐX
+                            </div>
+
+                            <h3 class="the__tieu-de">
+                                <a
+                                    class="the__lien-ket"
+                                    href="chi-tiet.php?id=<?= (int) $mon->id ?>">
+                                    <?= e((string) $mon->tenMon) ?>
+                                </a>
+                            </h3>
+
+                            <p class="the__noi-dung">
+                                Mã môn:
+                                <strong><?= e((string) $mon->maMon) ?></strong>
+                                — <?= (int) $mon->soTinChi ?> tín chỉ
+                            </p>
+
+                            <a
+                                class="the__lien-ket"
+                                href="chi-tiet.php?id=<?= (int) $mon->id ?>">
+                                Xem lại
+                            </a>
+
+                        </article>
+
+                    <?php endforeach; ?>
+
+                </div>
+
+            </div>
+
+        </section>
+        <?php endif; ?>
 
 
         <!-- ================= CÁC CHỨC NĂNG ================= -->

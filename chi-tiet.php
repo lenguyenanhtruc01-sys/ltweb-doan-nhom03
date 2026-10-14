@@ -1,73 +1,208 @@
 <?php
 /**
- * Tệp: chi-tiet.php (Duy — Phần A)
- * Trang chi tiết môn học theo ?id=
- * - filter_var kiểm tra id là số nguyên; id sai / không tồn tại -> 404.php.
- * - Ghi cookie da_xem (tối đa 4 id, mới nhất đầu) TRƯỚC output.
- * Thử: ?id=1 (OK) | ?id=abc | ?id=999999 | không id -> 404.
- * Kiểm tra cookie: DevTools > Application > Cookies > da_xem.
+ * Tệp: chi-tiet.php
+ * Hiển thị thông tin chi tiết môn học theo tham số ?id=.
+ * ID không hợp lệ hoặc không tồn tại sẽ trả về trang 404.
+ * Lưu tối đa 4 môn đã xem gần đây bằng cookie da_xem.
  */
 declare(strict_types=1);
-require __DIR__ . '/inc/config.php';
 
 use App\Data\KhoMonHoc;
 
+require __DIR__ . '/inc/config.php';
+
 $kho = new KhoMonHoc();
 
-$id = filter_var($_GET['id'] ?? '', FILTER_VALIDATE_INT);
-$mh = ($id !== false && $id > 0) ? $kho->timTheoId($id) : null;
+// Chỉ nhận ID dạng số nguyên đơn; chặn trường hợp ?id[]=1.
+$giaTriId = $_GET['id'] ?? null;
 
+$id = (is_string($giaTriId) || is_int($giaTriId))
+    ? filter_var($giaTriId, FILTER_VALIDATE_INT)
+    : false;
+
+$mh = ($id !== false && $id > 0)
+    ? $kho->timTheoId($id)
+    : null;
+
+// ID sai hoặc môn học không tồn tại: trả về trang 404.
 if ($mh === null) {
     http_response_code(404);
     require __DIR__ . '/404.php';
     exit;
 }
 
-// Cookie "đã xem gần đây": tối đa 4 id, mới nhất đứng đầu.
-$cu  = array_filter(
-    array_map('intval', explode(',', $_COOKIE['da_xem'] ?? '')),
-    static fn(int $x): bool => $x > 0
-);
-$moi = array_slice(array_unique(array_merge([(int) $mh->id], $cu)), 0, 4);
+// Đọc cookie như dữ liệu không đáng tin cậy.
+$idsCu = [];
+$cookieRaw = $_COOKIE['da_xem'] ?? '';
 
-setcookie('da_xem', implode(',', $moi), [
-    'expires'  => time() + 30 * 24 * 3600,
+if (is_string($cookieRaw) && $cookieRaw !== '') {
+    // Cookie bình thường chỉ có tối đa 4 ID.
+    // Giới hạn số mục đọc nếu cookie bị chỉnh sửa.
+    $cacIdCu = array_slice(explode(',', $cookieRaw), 0, 20);
+
+    foreach ($cacIdCu as $giaTriCu) {
+        $idCu = filter_var(
+            trim($giaTriCu),
+            FILTER_VALIDATE_INT
+        );
+
+        // Bỏ giá trị không phải số nguyên dương.
+        if ($idCu === false || $idCu <= 0) {
+            continue;
+        }
+
+        // Không thêm lại môn hiện tại hoặc ID đã có.
+        if (
+            $idCu === (int) $mh->id
+            || in_array($idCu, $idsCu, true)
+        ) {
+            continue;
+        }
+
+        // Chỉ giữ ID của môn thực sự tồn tại.
+        if ($kho->timTheoId($idCu) === null) {
+            continue;
+        }
+
+        $idsCu[] = $idCu;
+
+        // Môn hiện tại đứng đầu nên chỉ giữ thêm 3 môn cũ.
+        if (count($idsCu) >= 3) {
+            break;
+        }
+    }
+}
+
+$dsDaXemMoi = array_merge(
+    [(int) $mh->id],
+    $idsCu
+);
+
+// Ghi cookie trước khi xuất HTML.
+setcookie('da_xem', implode(',', $dsDaXemMoi), [
+    'expires'  => time() + 30 * 24 * 60 * 60,
     'path'     => '/',
+    'secure'   => isset($_SERVER['HTTPS'])
+        && $_SERVER['HTTPS'] !== 'off',
     'httponly' => true,
     'samesite' => 'Lax',
 ]);
 
+// Các biến dùng chung với header.php.
 $tieuDe   = (string) $mh->tenMon;
 $trang    = 'danh-sach';
+$lopBody  = 'trang-chi-tiet';
 $cssTrang = 'css/chi-tiet.css';
+
 require __DIR__ . '/inc/header.php';
 ?>
 
 <main class="noi-dung-chinh">
-  <h1><?= e((string) $mh->tenMon) ?></h1>
+    <h1 id="tieu-de-chi-tiet">
+        <?= e((string) $mh->tenMon) ?>
+    </h1>
 
-  <article class="chi-tiet__noi-dung">
-    <p><strong>Mã môn:</strong> <?= e((string) $mh->maMon) ?></p>
-    <p><strong>Số tín chỉ:</strong> <?= (int) $mh->soTinChi ?></p>
-    <?php if ($mh->diemChu !== null && $mh->diemChu !== ''): ?>
-      <p><strong>Điểm chữ:</strong> <?= e((string) $mh->diemChu) ?></p>
-    <?php endif; ?>
-    <?php if ($mh->diemHe4 !== null): ?>
-      <p><strong>Điểm hệ 4:</strong> <?= e((string) $mh->diemHe4) ?></p>
-    <?php endif; ?>
-    <?php if ($mh->ketQua !== null && $mh->ketQua !== ''): ?>
-      <p><strong>Kết quả:</strong> <?= e((string) $mh->ketQua) ?></p>
-    <?php endif; ?>
-  </article>
+    <article
+        id="chi-tiet"
+        class="chi-tiet__noi-dung"
+        aria-labelledby="tieu-de-chi-tiet">
 
-  <form action="gio-hang.php" method="post">
-    <input type="hidden" name="hanh_dong" value="them">
-    <input type="hidden" name="id" value="<?= (int) $mh->id ?>">
-    <input type="hidden" name="so_luong" value="1">
-    <button type="submit" class="nut nut--chinh">Thêm vào kế hoạch học tập</button>
-  </form>
+        <?php if (trim((string) $mh->anh) !== ''): ?>
+            <figure>
+                <img
+                    src="<?= e((string) $mh->anh) ?>"
+                    alt="<?= e(
+                        'Hình minh họa môn học '
+                        . (string) $mh->tenMon
+                    ) ?>"
+                    width="600"
+                    height="400">
 
-  <p><a href="danh-sach.php">← Về danh sách môn học</a></p>
+                <figcaption>
+                    <?= e((string) $mh->tenMon) ?>
+                </figcaption>
+            </figure>
+        <?php endif; ?>
+
+        <ul class="thong-tin-mon">
+            <li>
+                <strong>Mã môn:</strong>
+                <?= e((string) $mh->maMon) ?>
+            </li>
+
+            <li>
+                <strong>Số tín chỉ:</strong>
+                <?= (int) $mh->soTinChi ?>
+            </li>
+
+            <?php if (trim((string) $mh->trangThai) !== ''): ?>
+                <li>
+                    <strong>Trạng thái:</strong>
+                    <?= e((string) $mh->trangThai) ?>
+                </li>
+            <?php endif; ?>
+
+            <?php if (
+                $mh->diemChu !== null
+                && $mh->diemChu !== ''
+            ): ?>
+                <li>
+                    <strong>Điểm chữ:</strong>
+                    <?= e((string) $mh->diemChu) ?>
+                </li>
+            <?php endif; ?>
+
+            <?php if ($mh->diemHe4 !== null): ?>
+                <li>
+                    <strong>Điểm hệ 4:</strong>
+                    <?= e((string) $mh->diemHe4) ?>
+                </li>
+            <?php endif; ?>
+
+            <?php if (
+                $mh->ketQua !== null
+                && $mh->ketQua !== ''
+            ): ?>
+                <li>
+                    <strong>Kết quả:</strong>
+                    <?= e((string) $mh->ketQua) ?>
+                </li>
+            <?php endif; ?>
+        </ul>
+
+        <div class="form-them-gio-hang">
+            <form action="gio-hang.php" method="post">
+                <input
+                    type="hidden"
+                    name="hanh_dong"
+                    value="them">
+
+                <input
+                    type="hidden"
+                    name="id"
+                    value="<?= (int) $mh->id ?>">
+
+                <input
+                    type="hidden"
+                    name="so_luong"
+                    value="1">
+
+                <button
+                    type="submit"
+                    class="nut nut--chinh nut-them-ke-hoach-ct">
+                    Thêm vào kế hoạch học tập
+                </button>
+            </form>
+        </div>
+
+        <p>
+            <a
+                class="nut-quay-lai"
+                href="danh-sach.php">
+                ← Về danh sách môn học
+            </a>
+        </p>
+    </article>
 </main>
 
 <?php require __DIR__ . '/inc/footer.php'; ?>

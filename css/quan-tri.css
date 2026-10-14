@@ -1,0 +1,127 @@
+/* ================================
+   BẢNG DANH SÁCH LIÊN HỆ
+   ================================ */
+
+.bang-lien-he {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 24px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 15px;
+}
+
+/* Tiêu đề bảng */
+.bang-lien-he thead th {
+    background: #123b72;
+    color: #ffffff;
+    font-weight: 700;
+    text-align: left;
+    padding: 15px 14px;
+    border-right: 1px solid #31598a;
+    border-bottom: 2px solid #0d2f5c;
+    white-space: nowrap;
+}
+
+.bang-lien-he thead th:last-child {
+    border-right: none;
+}
+
+/* Nội dung */
+.bang-lien-he tbody td {
+    padding: 14px;
+    color: #172b4d;
+    background: #ffffff;
+    border-right: 1px solid #dbe3ee;
+    border-bottom: 1px solid #dbe3ee;
+    vertical-align: top;
+    line-height: 1.6;
+}
+
+.bang-lien-he tbody td:last-child {
+    border-right: none;
+}
+
+/* Dòng xen kẽ */
+.bang-lien-he tbody tr:nth-child(even) td {
+    background: #f5f8fc;
+}
+
+/* Hover */
+.bang-lien-he tbody tr:hover td {
+    background: #eaf2fb;
+}
+
+/* Dòng cuối */
+.bang-lien-he tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Họ tên */
+.bang-lien-he tbody td:nth-child(2) {
+    font-weight: 700;
+    color: #102f5d;
+}
+
+/* Email */
+.bang-lien-he tbody td:nth-child(3) {
+    min-width: 170px;
+}
+
+/* Nội dung liên hệ */
+.bang-lien-he tbody td:nth-child(6) {
+    min-width: 220px;
+    max-width: 360px;
+    word-break: break-word;
+}
+
+/* Ảnh */
+.bang-lien-he tbody td:last-child {
+    text-align: center;
+    vertical-align: middle;
+    min-width: 130px;
+}
+
+.bang-lien-he tbody td img {
+    display: block;
+    width: 90px;
+    max-width: 100%;
+    height: 65px;
+    object-fit: cover;
+    margin: 0 auto;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+}
+
+/* Khi không có ảnh */
+.bang-lien-he tbody td em {
+    color: #64748b;
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .bang-lien-he {
+        font-size: 14px;
+    }
+
+    .bang-lien-he thead th,
+    .bang-lien-he tbody td {
+        padding: 11px 10px;
+    }
+}
+
+@media (max-width: 700px) {
+    .bang-lien-he {
+        display: block;
+        overflow-x: auto;
+        white-space: normal;
+    }
+
+    .bang-lien-he thead th {
+        white-space: nowrap;
+    }
+}

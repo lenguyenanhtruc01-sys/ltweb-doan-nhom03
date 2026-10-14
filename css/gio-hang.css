@@ -1,206 +1,109 @@
-<!-- CSS Tối ưu giao diện trang Kế hoạch học tập (Modern UI) -->
+/*
+ * Tệp: css/gio-hang.css
+ * Giao diện trang Kế hoạch học tập.
+ */
 
-    :root {
-        --primary: #2563eb;
-        --primary-hover: #1d4ed8;
-        --accent: #0f766e;
-        --danger: #ef4444;
-        --danger-hover: #dc2626;
-        --bg-main: #f8fafc;
-        --card-bg: #ffffff;
-        --text-main: #1e293b;
-        --text-muted: #64748b;
-        --border-color: #e2e8f0;
-        --radius: 12px;
-        --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-        --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-    }
-
-    body {
-        background-color: var(--bg-main);
-        color: var(--text-main);
-    }
-
-    .noi-dung-chinh {
-        max-width: 1000px;
-        margin: 40px auto;
-        padding: 35px;
-        background: var(--card-bg);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--border-color);
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
-    .noi-dung-chinh h1 {
-        margin-bottom: 24px;
-        color: #0f172a;
-        font-size: 26px;
-        font-weight: 700;
-        border-bottom: 2px solid var(--border-color);
-        padding-bottom: 14px;
-    }
-
-    .cart-summary {
-        background: #eff6ff;
-        padding: 16px 20px;
-        border-radius: 8px;
-        margin-bottom: 25px;
-        font-size: 15px;
-        color: #1e3a8a;
-        border-left: 5px solid var(--primary);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .table-cart {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        margin-bottom: 25px;
-        border-radius: 8px;
-        overflow: hidden;
-        border: 1px solid var(--border-color);
-    }
-
-    .table-cart th, .table-cart td {
-        padding: 14px 18px;
-        text-align: left;
-    }
-
-    .table-cart th {
-        background-color: #f1f5f9;
-        color: #334155;
-        font-weight: 600;
-        font-size: 14px;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .table-cart td {
-        border-bottom: 1px solid var(--border-color);
-        font-size: 14px;
-        background-color: #ffffff;
-    }
-
-    .table-cart tr:last-child td {
-        border-bottom: none;
-    }
-
-    .table-cart tr:hover td {
-        background-color: #f8fafc;
-    }
-
-    .table-cart code {
-        background: #f1f5f9;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-family: monospace;
-        color: #0f172a;
-        font-weight: 600;
-    }
-
-    .btn {
-        padding: 8px 14px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 13px;
-        font-weight: 600;
-        transition: all 0.2s ease;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-    }
-
-    .btn-update {
-        background-color: #f1f5f9;
-        color: #334155;
-        border: 1px solid var(--border-color);
-    }
-
-    .btn-update:hover {
-        background-color: #e2e8f0;
-        color: #0f172a;
-    }
-
-   .btn-danger {
-    background-color: #dc3545;
-    color: #fff;
-    border: 1px solid #dc3545;
-    padding: 8px 14px;
-    border-radius: 6px;
-    cursor: pointer;
+:root {
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --accent: #0f766e;
+    --danger: #ef4444;
+    --danger-hover: #dc2626;
+    --bg-main: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --radius: 12px;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.05),
+        0 8px 10px -6px rgba(0, 0, 0, 0.05);
 }
 
-.btn-danger:hover {
-    background-color: #bb2d3b;
-    border-color: #bb2d3b;
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
 }
 
-    .input-number {
-        width: 60px;
-        padding: 7px 10px;
-        text-align: center;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        font-size: 14px;
-        background: #fff;
-        color: var(--text-main);
-    }
+.noi-dung-chinh {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 35px;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
+}
 
-    .input-number:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
+.noi-dung-chinh h1 {
+    margin-bottom: 24px;
+    color: #0f172a;
+    font-size: 26px;
+    font-weight: 700;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 14px;
+}
 
-    .empty-cart {
-        text-align: center;
-        padding: 50px 20px;
-        color: var(--text-muted);
-    }
+/* Tổng quan kế hoạch */
+.cart-summary {
+    background: #eff6ff;
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    font-size: 15px;
+    color: #1e3a8a;
+    border-left: 5px solid var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
 
-    .empty-cart p {
-        font-size: 16px;
-        margin-bottom: 15px;
-    }
-
-    .empty-cart a.btn-primary-link {
-        background: var(--primary);
-        color: #fff;
-        padding: 10px 20px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-weight: 600;
-        display: inline-block;
-        transition: background 0.2s;
-    }
-
-    .empty-cart a.btn-primary-link:hover {
-        background: var(--primary-hover);
-    }
-
-    .cart-actions {
-        margin-top: 20px;
-        display: flex;
-        justify-content: flex-end;
-    }
+/* Bảng */
 .table-cart {
     width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
     box-sizing: border-box;
 }
 
 .table-cart th,
 .table-cart td {
     box-sizing: border-box;
+    padding: 14px 18px;
+    text-align: left;
 }
 
+.table-cart th {
+    background-color: #f1f5f9;
+    color: #334155;
+    font-weight: 600;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table-cart td {
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+    background-color: #ffffff;
+}
+
+.table-cart tr:last-child td {
+    border-bottom: none;
+}
+
+.table-cart tr:hover td {
+    background-color: #f8fafc;
+}
+
+/* Độ rộng các cột */
 .table-cart th:nth-child(1),
 .table-cart td:nth-child(1) {
     width: 12%;
@@ -224,4 +127,172 @@
 .table-cart th:nth-child(5),
 .table-cart td:nth-child(5) {
     width: 15%;
+}
+
+/* Mã môn */
+.table-cart code {
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: monospace;
+    color: #0f172a;
+    font-weight: 600;
+}
+
+/* Nút */
+.btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-update {
+    background-color: #f1f5f9;
+    color: #334155;
+    border: 1px solid var(--border-color);
+}
+
+.btn-update:hover {
+    background-color: #e2e8f0;
+    color: #0f172a;
+}
+
+.btn-danger {
+    background-color: var(--danger);
+    color: #fff;
+    border: 1px solid var(--danger);
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-danger:hover {
+    background-color: var(--danger-hover);
+    border-color: var(--danger-hover);
+}
+
+/* Ô số lượng */
+.input-number {
+    width: 60px;
+    padding: 7px 10px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+    color: var(--text-main);
+}
+
+.input-number:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Form */
+.form-cap-nhat {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.form-xoa {
+    display: inline;
+}
+
+/* Thông báo */
+.thong-bao {
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.thong-bao--loi {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+.thong-bao--thanh-cong {
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+/* Giỏ hàng rỗng */
+.empty-cart {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--text-muted);
+}
+
+.empty-cart p {
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.empty-cart .btn {
+    background: var(--primary);
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+}
+
+.empty-cart .btn:hover {
+    background: var(--primary-hover);
+}
+
+/* Khu vực xóa hết */
+.cart-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+    .noi-dung-chinh {
+        margin: 20px 12px;
+        padding: 20px;
+    }
+
+    .table-cart {
+        display: block;
+        overflow-x: auto;
+    }
+}
+
+/* Điện thoại */
+@media (max-width: 480px) {
+    .noi-dung-chinh {
+        margin: 12px 8px;
+        padding: 14px;
+    }
+
+    .table-cart th,
+    .table-cart td {
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+
+    .cart-summary {
+        display: block;
+    }
+
+    .form-cap-nhat {
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 7px 10px;
+        font-size: 12px;
+    }
 }

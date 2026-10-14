@@ -1661,4 +1661,32 @@ details > p {
         overflow-wrap: anywhere;
     }
 }
+.thong-bao-khong-co {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    border: 1px dashed var(--border-color);
+}
 
+.trang-thai {
+    font-weight: 500;
+}
+
+.trang-thai--dang-hoc {
+    color: blue;
+}
+
+.trang-thai--hoan-thanh {
+    color: gray;
+}
+
+.trang-thai--dang-ky {
+    color: green;
+}
+
+.trang-thai--mac-dinh {
+    color: gray;
+}

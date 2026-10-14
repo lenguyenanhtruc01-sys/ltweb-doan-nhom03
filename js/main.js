@@ -1,23 +1,9 @@
-<<<<<<< HEAD
-/.
-\
-?
-
-
-
-**
- * main.js quản lý các chức năng dùng chung trên năm trang chính.
- * Tệp xử lý việc mở và đóng menu trên điện thoại.
- * Menu hỗ trợ chuột, bàn phím và cập nhật thuộc tính aria-expanded.
- * Khi JavaScript bị tắt, CSS mặc định vẫn hiển thị toàn bộ menu.
-=======
 /**
  * main.js quản lý menu điện thoại và danh sách môn học yêu thích.
  * Menu hỗ trợ chuột, bàn phím, phím Escape và aria-expanded.
  * Môn yêu thích được lưu bằng JSON trong localStorage.
  * Số lượng yêu thích được cập nhật trên header của năm trang chính.
  * Các nút yêu thích được xử lý bằng event delegation.
->>>>>>> e4f884c5f2a09736dfe7dce2153772f1d6c89f32
  */
 
 document.documentElement.classList.add("js");
@@ -99,7 +85,6 @@ if (nutMenu !== null && danhSachMenu !== null) {
 const KHOA_YEU_THICH =
     "edugpa-mon-hoc-yeu-thich";
 
-
 function docDanhSachYeuThich() {
     try {
         const duLieuDaLuu =
@@ -136,9 +121,6 @@ function docDanhSachYeuThich() {
     }
 }
 
-/**
- * Lưu danh sách ID môn học yêu thích.
- */
 function luuDanhSachYeuThich(danhSach) {
     try {
         localStorage.setItem(
@@ -157,9 +139,6 @@ function luuDanhSachYeuThich(danhSach) {
     }
 }
 
-/**
- * Cập nhật số đếm trên header và trạng thái nút.
- */
 function capNhatGiaoDienYeuThich() {
     const danhSachYeuThich =
         docDanhSachYeuThich();
@@ -210,16 +189,10 @@ function capNhatGiaoDienYeuThich() {
             if (noiDungNut !== null) {
                 noiDungNut.textContent =
                     nhanNut;
-            } else {
-                nut.textContent =
-                    nhanNut;
             }
         });
 }
 
-/**
- * Thêm hoặc xóa một môn học yêu thích.
- */
 function doiTrangThaiYeuThich(id) {
     const danhSachYeuThich =
         docDanhSachYeuThich();
@@ -278,7 +251,7 @@ document.addEventListener(
 );
 
 /* =========================================================
-   4. ĐỒNG BỘ CÁC NÚT ĐƯỢC TẠO ĐỘNG TỪ JSON
+   4. THEO DÕI NÚT YÊU THÍCH TẠO ĐỘNG
    ========================================================= */
 
 const boQuanSatYeuThich =
@@ -312,7 +285,6 @@ boQuanSatYeuThich.observe(
     }
 );
 
-/* Đồng bộ khi localStorage thay đổi ở tab khác. */
 window.addEventListener(
     "storage",
     (suKien) => {
@@ -324,5 +296,4 @@ window.addEventListener(
     }
 );
 
-/* Hiển thị số lượng ngay khi trang tải xong. */
 capNhatGiaoDienYeuThich();

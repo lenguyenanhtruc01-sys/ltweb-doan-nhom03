@@ -1,81 +1,188 @@
 <?php
-// Bắt buộc phải nhúng file bảo vệ ở dòng đầu tiên
+declare(strict_types=1);
+
+/**
+ * Tệp: quan-tri.php
+ * Chức năng: Trang quản trị, hiển thị danh sách liên hệ đã nhận.
+ */
+
 require_once __DIR__ . '/inc/bao-ve.php';
 require_once __DIR__ . '/inc/config.php';
 
-// Đọc danh sách liên hệ từ file JSON (giả sử lưu tại data/lien-he.json)
-$fileLienHe = __DIR__ . '/data/lien-he.json';
-$danhSachLienHe = [];
+use App\Data\KhoLienHe;
 
-if (file_exists($fileLienHe)) {
-    $noiDungJson = file_get_contents($fileLienHe);
-    $danhSachLienHe = json_decode($noiDungJson, true);
-    if (!is_array($danhSachLienHe)) {
-        $danhSachLienHe = [];
-    }
-}
+$khoLienHe = new KhoLienHe(
+    __DIR__ . '/storage/lien-he.jsonl'
+);
 
-// Sắp xếp mới nhất lên trước (dựa vào thời gian hoặc ID giảm dần)
-usort($danhSachLienHe, function($a, $b) {
-    $timeA = $a['thoi_gian'] ?? '';
-    $timeB = $b['thoi_gian'] ?? '';
-    return strcmp($timeB, $timeA); // Đảo ngược thời gian để mới nhất lên đầu
-});
+$danhSachLienHe = $khoLienHe->tatCa();
+
+$tieuDe = 'Quản trị hệ thống';
+$trang = '';
+$goc = '';
+$cssTrang = 'css/quan-tri.css';
 
 require __DIR__ . '/inc/header.php';
 ?>
 
-    <main class="noi-dung-chinh">
-        <div class="bao">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                <h1>Trang quản trị hệ thống EduGPA</h1>
-                <div>
-                    <span>Xin chào, <strong><?= htmlspecialchars($_SESSION['ho_ten'] ?? 'Admin', ENT_QUOTES, 'UTF-8') ?></strong></span>
-                    <a href="dang-xuat.php" class="nut" style="margin-left: 1rem; background: #dc3545; color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 4px;">Đăng xuất</a>
-                </div>
+<main class="noi-dung-chinh quan-tri">
+    <div class="quan-tri__dau-trang">
+        <div>
+            <h1>Trang quản trị hệ thống EduGPA</h1>
+
+            <p class="quan-tri__loi-chao">
+                Xin chào,
+                <strong>
+                    <?= e($_SESSION['ho_ten'] ?? 'Admin') ?>
+                </strong>
+            </p>
+        </div>
+
+        <a
+            href="dang-xuat.php"
+            class="nut nut--nguy-hiem"
+        >
+            Đăng xuất
+        </a>
+    </div>
+
+    <section class="quan-tri__noi-dung">
+        <h2>Danh sách các liên hệ đã nhận</h2>
+
+        <p class="quan-tri__mo-ta">
+            Các thông tin liên hệ gửi từ người dùng được hiển thị
+            theo thứ tự mới nhất lên trước.
+        </p>
+
+        <?php if (empty($danhSachLienHe)): ?>
+
+            <div class="quan-tri__rong">
+                <p>
+                    Chưa có liên hệ nào được gửi tới hệ thống.
+                </p>
             </div>
 
-            <h2>Danh sách các liên hệ đã nhận</h2>
-            <p>Các thông tin liên hệ gửi từ người dùng được hiển thị theo thứ tự mới nhất lên trước.</p>
+        <?php else: ?>
 
-            <div class="bang-cuon" style="margin-top: 1.5rem;">
-                <table style="width: 100%; border-collapse: collapse;">
+            <div class="bang-cuon">
+                <table class="bang-lien-he">
+                    <caption>
+                        Danh sách liên hệ từ người dùng
+                    </caption>
+
                     <thead>
-                        <tr style="background: #e9ecef; text-align: left;">
-                            <th style="padding: 10px; border: 1px solid #dee2e6;">Thời gian</th>
-                            <th style="padding: 10px; border: 1px solid #dee2e6;">Họ tên</th>
-                            <th style="padding: 10px; border: 1px solid #dee2e6;">Email / SĐT</th>
-                            <th style="padding: 10px; border: 1px solid #dee2e6;">Nội dung</th>
-                            <th style="padding: 10px; border: 1px solid #dee2e6;">Hình ảnh đính kèm</th>
+                        <tr>
+                            <th scope="col">Thời gian</th>
+                            <th scope="col">Họ tên</th>
+                            <th scope="col">Email / SĐT</th>
+                            <th scope="col">Chủ đề</th>
+                            <th scope="col">Ưu tiên</th>
+                            <th scope="col">Nội dung</th>
+                            <th scope="col">Hình ảnh</th>
                         </tr>
                     </thead>
+
                     <tbody>
-                        <?php if (empty($danhSachLienHe)): ?>
+                        <?php foreach ($danhSachLienHe as $lh): ?>
+
                             <tr>
-                                <td colspan="5" style="text-align: center; padding: 20px;">Chưa có liên hệ nào được gửi tới hệ thống.</td>
+                                <td>
+                                    <?= e(
+                                        (string) (
+                                            $lh['thoiGian']
+                                            ?? 'N/A'
+                                        )
+                                    ) ?>
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        <?= e(
+                                            (string) (
+                                                $lh['hoTen']
+                                                ?? ''
+                                            )
+                                        ) ?>
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <div>
+                                        <?= e(
+                                            (string) (
+                                                $lh['email']
+                                                ?? ''
+                                            )
+                                        ) ?>
+                                    </div>
+
+                                    <?php if (!empty($lh['sdt'])): ?>
+                                        <div class="thong-tin-phu">
+                                            <?= e(
+                                                (string) $lh['sdt']
+                                            ) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </td>
+
+                                <td>
+                                    <?= e(
+                                        (string) (
+                                            $lh['chuDe']
+                                            ?? ''
+                                        )
+                                    ) ?>
+                                </td>
+
+                                <td>
+                                    <?= e(
+                                        (string) (
+                                            $lh['uuTien']
+                                            ?? ''
+                                        )
+                                    ) ?>
+                                </td>
+
+                                <td class="noi-dung-lien-he">
+                                    <?= nl2br(
+                                        e(
+                                            (string) (
+                                                $lh['noiDung']
+                                                ?? ''
+                                            )
+                                        )
+                                    ) ?>
+                                </td>
+
+                                <td class="anh-lien-he">
+                                    <?php if (!empty($lh['anh'])): ?>
+
+                                        <img
+                                            src="<?= e(
+                                                'uploads/' . $lh['anh']
+                                            ) ?>"
+                                            alt="Ảnh đính kèm của liên hệ"
+                                            class="anh-dinh-kem"
+                                        >
+
+                                    <?php else: ?>
+
+                                        <span class="khong-co-anh">
+                                            Không có ảnh
+                                        </span>
+
+                                    <?php endif; ?>
+                                </td>
                             </tr>
-                        <?php else: ?>
-                            <?php foreach ($danhSachLienHe as $lh): ?>
-                                <tr>
-                                    <td style="padding: 10px; border: 1px solid #dee2e6; white-space: nowrap;"><?= htmlspecialchars($lh['thoi_gian'] ?? 'N/A', ENT_QUOTES, 'UTF-8') ?></td>
-                                    <td style="padding: 10px; border: 1px solid #dee2e6; font-weight: bold;"><?= htmlspecialchars($lh['ho_ten'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                                    <td style="padding: 10px; border: 1px solid #dee2e6;"><?= htmlspecialchars($lh['email'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                                    <td style="padding: 10px; border: 1px solid #dee2e6;"><?= nl2br(htmlspecialchars($lh['noi_dung'] ?? '', ENT_QUOTES, 'UTF-8')) ?></td>
-                                    <td style="padding: 10px; border: 1px solid #dee2e6; text-align: center;">
-                                        <?php if (!empty($lh['hinh_anh'])): ?>
-                                            <img src="<?= htmlspecialchars($lh['hinh_anh'], ENT_QUOTES, 'UTF-8') ?>" alt="Ảnh đính kèm" style="max-width: 80px; height: auto; border-radius: 4px;">
-                                        <?php else: ?>
-                                            <span style="color: #6c757d; font-style: italic;">Không có ảnh</span>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
-        </div>
-    </main>
+
+        <?php endif; ?>
+    </section>
+</main>
 
 <?php
 require __DIR__ . '/inc/footer.php';

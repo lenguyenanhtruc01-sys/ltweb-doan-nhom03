@@ -1,9 +1,12 @@
 <?php
 /**
  * File: thanhvien/3120224159_anhtruc/gioithieu.php
- * Chức năng: Giới thiệu thành viên và tính chi phí học kỳ với mục tiêu GPA.
- * Xử lý: PHP server-side, validation, POST/PRG.
- * Kiểm thử: GPA hợp lệ/không hợp lệ, số tín chỉ, học phí và mục tiêu GPA.
+ * Chức năng:
+ * - Giới thiệu thành viên.
+ * - Tính chi phí học kỳ với mục tiêu GPA.
+ * - Mini Quiz kiến thức IT xử lý bằng PHP.
+ * Xử lý: PHP server-side, validation và POST/PRG.
+ * Kiểm thử: dữ liệu GPA, học phí, tín chỉ và câu trả lời Quiz.
  */
 
 require_once __DIR__ . '/../../inc/config.php';
@@ -11,36 +14,105 @@ require_once __DIR__ . '/../../inc/config.php';
 $pageTitle = 'Giới thiệu - Lê Nguyễn Anh Trúc';
 $tieuDe = $pageTitle;
 
-/*
- * Khởi tạo session nếu hệ thống chưa khởi tạo.
- * Bình thường inc/config.php của project đã xử lý session.
- */
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
-/* ==============================
-   XỬ LÝ KẾT QUẢ SAU POST/PRG
-   ============================== */
+
+/* =========================================================
+   DỮ LIỆU MINI QUIZ
+   ========================================================= */
+
+$quizQuestions = [
+    [
+        'question' => 'HTML được sử dụng chủ yếu để làm gì?',
+        'options' => [
+            'a' => 'Quản lý cơ sở dữ liệu',
+            'b' => 'Tạo cấu trúc nội dung trang web',
+            'c' => 'Biên dịch chương trình',
+            'd' => 'Quản lý hệ điều hành'
+        ],
+        'answer' => 'b'
+    ],
+    [
+        'question' => 'CSS được sử dụng chủ yếu để làm gì?',
+        'options' => [
+            'a' => 'Tạo và quản lý cơ sở dữ liệu',
+            'b' => 'Xử lý yêu cầu HTTP',
+            'c' => 'Định dạng và trình bày giao diện trang web',
+            'd' => 'Lưu trữ phiên đăng nhập'
+        ],
+        'answer' => 'c'
+    ],
+    [
+        'question' => 'PHP là ngôn ngữ được thực thi chủ yếu ở đâu?',
+        'options' => [
+            'a' => 'Phía máy chủ',
+            'b' => 'Phía trình duyệt',
+            'c' => 'Trong cơ sở dữ liệu',
+            'd' => 'Trong CSS'
+        ],
+        'answer' => 'a'
+    ],
+    [
+        'question' => 'HTTP status code 404 thường có ý nghĩa gì?',
+        'options' => [
+            'a' => 'Yêu cầu thành công',
+            'b' => 'Không có quyền truy cập',
+            'c' => 'Không tìm thấy tài nguyên',
+            'd' => 'Lỗi máy chủ'
+        ],
+        'answer' => 'c'
+    ],
+    [
+        'question' => 'SQL được sử dụng chủ yếu để làm gì?',
+        'options' => [
+            'a' => 'Thiết kế giao diện',
+            'b' => 'Làm việc với cơ sở dữ liệu',
+            'c' => 'Tạo hình ảnh',
+            'd' => 'Quản lý CSS'
+        ],
+        'answer' => 'b'
+    ]
+];
+
+
+/* =========================================================
+   KHỞI TẠO CÂU HỎI QUIZ
+   ========================================================= */
+
+if (!isset($_SESSION['quiz_current'])) {
+    $_SESSION['quiz_current'] = array_rand($quizQuestions);
+}
+
+
+/* =========================================================
+   LẤY KẾT QUẢ SAU POST/PRG
+   ========================================================= */
 
 $gpaResult = $_SESSION['gpa_result'] ?? null;
 $gpaErrors = $_SESSION['gpa_errors'] ?? [];
 
-unset($_SESSION['gpa_result'], $_SESSION['gpa_errors']);
+$quizResult = $_SESSION['quiz_result'] ?? null;
+$quizErrors = $_SESSION['quiz_errors'] ?? [];
+
+unset(
+    $_SESSION['gpa_result'],
+    $_SESSION['gpa_errors'],
+    $_SESSION['quiz_result'],
+    $_SESSION['quiz_errors']
+);
 
 
-/* ==============================
-   CHỨC NĂNG:
+/* =========================================================
+   CHỨC NĂNG 1:
    CHI PHÍ HỌC KỲ VỚI MỤC TIÊU GPA
-   ============================== */
+   ========================================================= */
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST'
-    && isset($_POST['tinh_chi_phi_gpa'])) {
-
-    /*
-     * Lấy dữ liệu từ POST.
-     * Không tin tưởng dữ liệu người dùng gửi lên.
-     */
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset($_POST['tinh_chi_phi_gpa'])
+) {
     $gpaHienTai = filter_input(
         INPUT_POST,
         'gpa_hien_tai',
@@ -74,10 +146,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
     $errors = [];
 
 
-    /* ==============================
-       KIỂM TRA GPA HIỆN TẠI
-       ============================== */
-
     if (
         $gpaHienTai === false
         || $gpaHienTai === null
@@ -87,10 +155,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
         $errors[] = 'GPA hiện tại phải nằm trong khoảng từ 0 đến 4.';
     }
 
-
-    /* ==============================
-       KIỂM TRA GPA MỤC TIÊU
-       ============================== */
 
     if (
         $gpaMucTieu === false
@@ -102,10 +166,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
     }
 
 
-    /* ==============================
-       KIỂM TRA SỐ TÍN CHỈ ĐÃ HỌC
-       ============================== */
-
     if (
         $tinChiDaHoc === false
         || $tinChiDaHoc === null
@@ -114,10 +174,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
         $errors[] = 'Số tín chỉ đã học phải là số nguyên không âm.';
     }
 
-
-    /* ==============================
-       KIỂM TRA SỐ TÍN CHỈ HỌC KỲ
-       ============================== */
 
     if (
         $tinChiHocKy === false
@@ -128,10 +184,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
     }
 
 
-    /* ==============================
-       KIỂM TRA HỌC PHÍ
-       ============================== */
-
     if (
         $hocPhiTinChi === false
         || $hocPhiTinChi === null
@@ -141,10 +193,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
     }
 
 
-    /* ==============================
-       KIỂM TRA MỤC TIÊU GPA
-       ============================== */
-
     if (
         empty($errors)
         && $gpaMucTieu < $gpaHienTai
@@ -153,42 +201,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
     }
 
 
-    /* ==============================
-       NẾU DỮ LIỆU KHÔNG HỢP LỆ
-       ============================== */
-
     if (!empty($errors)) {
-
         $_SESSION['gpa_errors'] = $errors;
 
-        /*
-         * POST/PRG:
-         * Sau POST chuyển hướng về trang.
-         */
         header('Location: ' . $_SERVER['PHP_SELF']);
         exit;
     }
 
-
-    /* ==============================
-       TÍNH TOÁN
-       ============================== */
-
-    /*
-     * Công thức:
-     *
-     * GPA mục tiêu =
-     * (GPA hiện tại × tín chỉ đã học
-     *  + GPA học kỳ × tín chỉ học kỳ)
-     * / tổng tín chỉ
-     *
-     * Suy ra:
-     *
-     * GPA học kỳ cần đạt =
-     * [GPA mục tiêu × tổng tín chỉ
-     *  - GPA hiện tại × tín chỉ đã học]
-     * / tín chỉ học kỳ
-     */
 
     $tongTinChi = $tinChiDaHoc + $tinChiHocKy;
 
@@ -198,30 +217,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
     ) / $tinChiHocKy;
 
 
-    /*
-     * Tổng học phí học kỳ.
-     */
     $tongHocPhi = $tinChiHocKy * $hocPhiTinChi;
 
-
-    /*
-     * GPA tối đa theo hệ 4.0.
-     */
     $coTheDat = $gpaCanDat <= 4;
 
-
-    /*
-     * Trường hợp GPA cần đạt nhỏ hơn 0
-     * thì xem như chỉ cần đạt tối thiểu 0.
-     */
     if ($gpaCanDat < 0) {
         $gpaCanDat = 0;
     }
 
-
-    /* ==============================
-       LƯU KẾT QUẢ VÀO SESSION
-       ============================== */
 
     $_SESSION['gpa_result'] = [
         'gpa_hien_tai' => $gpaHienTai,
@@ -235,24 +238,153 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
     ];
 
 
-    /*
-     * POST/PRG:
-     * Chuyển hướng sau khi xử lý thành công.
-     */
     header('Location: ' . $_SERVER['PHP_SELF']);
     exit;
 }
 
+
+/* =========================================================
+   CHỨC NĂNG 2:
+   MINI QUIZ KIẾN THỨC IT
+   ========================================================= */
+
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset($_POST['tra_loi_quiz'])
+) {
+    $questionIndex = $_SESSION['quiz_current'] ?? null;
+    $selectedAnswer = $_POST['quiz_answer'] ?? '';
+
+    $errors = [];
+
+
+    /* Kiểm tra câu hỏi hiện tại */
+
+    if (
+        $questionIndex === null
+        || !isset($quizQuestions[$questionIndex])
+    ) {
+        $errors[] = 'Không xác định được câu hỏi. Vui lòng thử lại.';
+    }
+
+
+    /* Kiểm tra câu trả lời */
+
+    $allowedAnswers = ['a', 'b', 'c', 'd'];
+
+    if (
+        !is_string($selectedAnswer)
+        || !in_array($selectedAnswer, $allowedAnswers, true)
+    ) {
+        $errors[] = 'Vui lòng chọn một đáp án hợp lệ.';
+    }
+
+
+    if (!empty($errors)) {
+        $_SESSION['quiz_errors'] = $errors;
+
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit;
+    }
+
+
+    $currentQuestion = $quizQuestions[$questionIndex];
+
+    $isCorrect = $selectedAnswer === $currentQuestion['answer'];
+
+
+    /* Khởi tạo điểm Quiz */
+
+    if (!isset($_SESSION['quiz_score'])) {
+        $_SESSION['quiz_score'] = 0;
+    }
+
+    if (!isset($_SESSION['quiz_total'])) {
+        $_SESSION['quiz_total'] = 0;
+    }
+
+
+    $_SESSION['quiz_total']++;
+
+    if ($isCorrect) {
+        $_SESSION['quiz_score']++;
+    }
+
+
+    $quizResult = [
+        'correct' => $isCorrect,
+        'correct_answer' => $currentQuestion['answer'],
+        'score' => $_SESSION['quiz_score'],
+        'total' => $_SESSION['quiz_total']
+    ];
+
+    $_SESSION['quiz_result'] = $quizResult;
+
+
+    /*
+     * Chọn câu hỏi mới sau khi trả lời.
+     * Không chọn lại ngay câu vừa làm.
+     */
+
+    $availableQuestions = array_keys($quizQuestions);
+
+    if (count($availableQuestions) > 1) {
+        $availableQuestions = array_values(
+            array_diff($availableQuestions, [$questionIndex])
+        );
+    }
+
+    $_SESSION['quiz_current'] = $availableQuestions[
+        array_rand($availableQuestions)
+    ];
+
+
+    header('Location: ' . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+
+/* =========================================================
+   RESET ĐIỂM QUIZ
+   ========================================================= */
+
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset($_POST['reset_quiz'])
+) {
+    $_SESSION['quiz_score'] = 0;
+    $_SESSION['quiz_total'] = 0;
+    $_SESSION['quiz_current'] = array_rand($quizQuestions);
+
+    header('Location: ' . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+
+/* =========================================================
+   LẤY CÂU HỎI HIỆN TẠI
+   ========================================================= */
+
+$currentQuestionIndex = $_SESSION['quiz_current'];
+
+$currentQuestion = $quizQuestions[$currentQuestionIndex];
+
+$currentScore = $_SESSION['quiz_score'] ?? 0;
+$currentTotal = $_SESSION['quiz_total'] ?? 0;
+
+
 require_once __DIR__ . '/../../inc/header.php';
 ?>
 
+
 <main class="container">
 
-    <!-- ==============================
+    <!-- =====================================================
          GIỚI THIỆU THÀNH VIÊN
-         ============================== -->
+         ===================================================== -->
 
     <section class="profile-section">
+
         <h1>Giới thiệu thành viên</h1>
 
         <h2>Lê Nguyễn Anh Trúc</h2>
@@ -265,12 +397,13 @@ require_once __DIR__ . '/../../inc/header.php';
             Phụ trách phát triển một số chức năng PHP
             phía server và hỗ trợ hoàn thiện hệ thống.
         </p>
+
     </section>
 
 
-    <!-- ==============================
-         CHỨC NĂNG TÍNH CHI PHÍ GPA
-         ============================== -->
+    <!-- =====================================================
+         CHỨC NĂNG 1: CHI PHÍ HỌC KỲ VỚI MỤC TIÊU GPA
+         ===================================================== -->
 
     <section class="profile-section">
 
@@ -282,8 +415,6 @@ require_once __DIR__ . '/../../inc/header.php';
         </p>
 
 
-        <!-- HIỂN THỊ LỖI -->
-
         <?php if (!empty($gpaErrors)): ?>
 
             <div class="form-error" role="alert">
@@ -291,6 +422,7 @@ require_once __DIR__ . '/../../inc/header.php';
                 <strong>Không thể tính toán:</strong>
 
                 <ul>
+
                     <?php foreach ($gpaErrors as $error): ?>
 
                         <li>
@@ -298,14 +430,13 @@ require_once __DIR__ . '/../../inc/header.php';
                         </li>
 
                     <?php endforeach; ?>
+
                 </ul>
 
             </div>
 
         <?php endif; ?>
 
-
-        <!-- FORM -->
 
         <form
             method="post"
@@ -416,20 +547,12 @@ require_once __DIR__ . '/../../inc/header.php';
 
         </form>
 
-    </section>
 
-
-    <!-- ==============================
-         KẾT QUẢ
-         ============================== -->
-
-    <?php if ($gpaResult !== null): ?>
-
-        <section class="profile-section">
-
-            <h2>Kết quả tính toán</h2>
+        <?php if ($gpaResult !== null): ?>
 
             <div class="result-box">
+
+                <h3>Kết quả</h3>
 
                 <p>
                     <strong>GPA hiện tại:</strong>
@@ -439,7 +562,6 @@ require_once __DIR__ . '/../../inc/header.php';
                     )) ?>
                 </p>
 
-
                 <p>
                     <strong>GPA mục tiêu:</strong>
                     <?= e(number_format(
@@ -448,18 +570,15 @@ require_once __DIR__ . '/../../inc/header.php';
                     )) ?>
                 </p>
 
-
                 <p>
                     <strong>Số tín chỉ đã học:</strong>
                     <?= e($gpaResult['tin_chi_da_hoc']) ?>
                 </p>
 
-
                 <p>
                     <strong>Số tín chỉ học kỳ:</strong>
                     <?= e($gpaResult['tin_chi_hoc_ky']) ?>
                 </p>
-
 
                 <p>
                     <strong>Học phí mỗi tín chỉ:</strong>
@@ -472,28 +591,19 @@ require_once __DIR__ . '/../../inc/header.php';
                     VNĐ
                 </p>
 
-
                 <p>
-                    <strong>
-                        Tổng học phí học kỳ:
-                    </strong>
-
+                    <strong>Tổng học phí học kỳ:</strong>
                     <?= e(number_format(
                         $gpaResult['tong_hoc_phi'],
                         0,
                         ',',
                         '.'
                     )) ?>
-
                     VNĐ
                 </p>
 
-
                 <p>
-                    <strong>
-                        GPA cần đạt trong học kỳ:
-                    </strong>
-
+                    <strong>GPA cần đạt trong học kỳ:</strong>
                     <?= e(number_format(
                         $gpaResult['gpa_can_dat'],
                         2
@@ -513,7 +623,7 @@ require_once __DIR__ . '/../../inc/header.php';
 
                     <p>
                         GPA cần đạt vượt quá 4.0.
-                        Mục tiêu GPA này không thể đạt
+                        Mục tiêu này không thể đạt
                         chỉ trong một học kỳ.
                     </p>
 
@@ -521,11 +631,161 @@ require_once __DIR__ . '/../../inc/header.php';
 
             </div>
 
-        </section>
+        <?php endif; ?>
 
-    <?php endif; ?>
+    </section>
+
+
+    <!-- =====================================================
+         CHỨC NĂNG 2: MINI QUIZ KIẾN THỨC IT
+         ===================================================== -->
+
+    <section class="profile-section">
+
+        <h2>Mini Quiz kiến thức IT</h2>
+
+        <p>
+            Trả lời câu hỏi để kiểm tra kiến thức cơ bản
+            về công nghệ thông tin.
+        </p>
+
+
+        <?php if (!empty($quizErrors)): ?>
+
+            <div class="form-error" role="alert">
+
+                <strong>Có lỗi:</strong>
+
+                <ul>
+
+                    <?php foreach ($quizErrors as $error): ?>
+
+                        <li>
+                            <?= e($error) ?>
+                        </li>
+
+                    <?php endforeach; ?>
+
+                </ul>
+
+            </div>
+
+        <?php endif; ?>
+
+
+        <?php if ($quizResult !== null): ?>
+
+            <div class="result-box">
+
+                <?php if ($quizResult['correct']): ?>
+
+                    <p>
+                        <strong>🎉 Chính xác!</strong>
+                        Bạn đã chọn đúng đáp án.
+                    </p>
+
+                <?php else: ?>
+
+                    <p>
+                        <strong>Chưa chính xác.</strong>
+                        Đáp án đúng là:
+                        <?= e(
+                            strtoupper(
+                                $quizResult['correct_answer']
+                            )
+                        ) ?>
+                    </p>
+
+                <?php endif; ?>
+
+
+                <p>
+                    <strong>Điểm hiện tại:</strong>
+                    <?= e($quizResult['score']) ?>
+                    /
+                    <?= e($quizResult['total']) ?>
+                </p>
+
+            </div>
+
+        <?php endif; ?>
+
+
+        <div class="quiz-box">
+
+            <h3>
+                <?= e($currentQuestion['question']) ?>
+            </h3>
+
+
+            <form
+                method="post"
+                action=""
+            >
+
+                <?php foreach (
+                    $currentQuestion['options'] as $key => $option
+                ): ?>
+
+                    <div class="form-group">
+
+                        <label>
+
+                            <input
+                                type="radio"
+                                name="quiz_answer"
+                                value="<?= e($key) ?>"
+                                required
+                            >
+
+                            <?= e(strtoupper($key)) ?>.
+                            <?= e($option) ?>
+
+                        </label>
+
+                    </div>
+
+                <?php endforeach; ?>
+
+
+                <button
+                    type="submit"
+                    name="tra_loi_quiz"
+                >
+                    Trả lời
+                </button>
+
+            </form>
+
+
+            <form
+                method="post"
+                action=""
+            >
+
+                <button
+                    type="submit"
+                    name="reset_quiz"
+                >
+                    Đặt lại điểm
+                </button>
+
+            </form>
+
+
+            <p>
+                <strong>Điểm:</strong>
+                <?= e($currentScore) ?>
+                /
+                <?= e($currentTotal) ?>
+            </p>
+
+        </div>
+
+    </section>
 
 </main>
+
 
 <?php
 require_once __DIR__ . '/../../inc/footer.php';

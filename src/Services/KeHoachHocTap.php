@@ -1,113 +1,160 @@
 <?php
+/**
+ * Tệp: src/Services/KeHoachHocTap.php
+ * Chức năng: Quản lý kế hoạch học tập bằng session.
+ * Kiểm tra ID môn học và số lượng ở phía máy chủ.
+ * Thử: thêm môn, cập nhật 1-5, nhập 0/-3/1000 và xóa môn.
+ */
+
 namespace App\Services;
 
 use App\Data\KhoMonHoc;
 
-class KeHoachHocTap {
+class KeHoachHocTap
+{
     private const SESSION_KEY = 'ke_hoach_dang_ky';
-    private $khoMonHoc;
 
-    public function __construct() {
+    private KhoMonHoc $khoMonHoc;
+
+    public function __construct()
+    {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        if (!isset($_SESSION[self::SESSION_KEY])) {
+
+        if (!isset($_SESSION[self::SESSION_KEY])
+            || !is_array($_SESSION[self::SESSION_KEY])
+        ) {
             $_SESSION[self::SESSION_KEY] = [];
         }
+
         $this->khoMonHoc = new KhoMonHoc();
     }
 
-    // Thêm môn học với số lượng/nhóm đăng ký
-    public function them($id, $soLuong = 1) {
-        $id = filter_var($id, FILTER_VALIDATE_INT);
-        if ($id === false) return false;
+    /**
+     * Thêm một môn học vào kế hoạch.
+     */
+    public function them(int $id, int $soLuong = 1): bool
+    {
+        if ($id <= 0 || $soLuong < 1 || $soLuong > 5) {
+            return false;
+        }
 
         $monHoc = $this->khoMonHoc->timTheoId($id);
-        if (!$monHoc) return false;
 
-        $soLuong = filter_var($soLuong, FILTER_VALIDATE_INT, [
-            "options" => ["min_range" => 1, "max_range" => 5]
-        ]);
-        if ($soLuong === false) return false;
-
-        if (isset($_SESSION[self::SESSION_KEY][$id])) {
-            $_SESSION[self::SESSION_KEY][$id] += $soLuong;
-        } else {
-            $_SESSION[self::SESSION_KEY][$id] = $soLuong;
+        if ($monHoc === null) {
+            return false;
         }
+
+        // Không cho thêm trùng môn.
+        if (isset($_SESSION[self::SESSION_KEY][$id])) {
+            return false;
+        }
+
+        $_SESSION[self::SESSION_KEY][$id] = $soLuong;
+
         return true;
     }
 
-    // Cập nhật đổi số lượng trực tiếp
-    public function capNhat($id, $soLuong) {
-        $id = filter_var($id, FILTER_VALIDATE_INT);
-        $soLuong = filter_var($soLuong, FILTER_VALIDATE_INT, [
-            "options" => ["min_range" => 0, "max_range" => 5]
-        ]);
-
-        if ($id === false || $soLuong === false) return false;
-
-        if ($soLuong === 0) {
-            $this->xoa($id);
-        } else {
-            if ($this->khoMonHoc->timTheoId($id)) {
-                $_SESSION[self::SESSION_KEY][$id] = $soLuong;
-            }
+    /**
+     * Cập nhật số lượng môn.
+     * Chỉ chấp nhận từ 1 đến 5.
+     */
+    public function capNhat(int $id, int $soLuong): bool
+    {
+        if ($id <= 0 || $soLuong < 1 || $soLuong > 5) {
+            return false;
         }
+
+        $monHoc = $this->khoMonHoc->timTheoId($id);
+
+        if ($monHoc === null) {
+            return false;
+        }
+
+        if (!isset($_SESSION[self::SESSION_KEY][$id])) {
+            return false;
+        }
+
+        $_SESSION[self::SESSION_KEY][$id] = $soLuong;
+
         return true;
     }
 
-    // Xóa một mục
-    public function xoa($id) {
-        if (isset($_SESSION[self::SESSION_KEY][$id])) {
-            unset($_SESSION[self::SESSION_KEY][$id]);
+    /**
+     * Xóa một môn khỏi kế hoạch.
+     */
+    public function xoa(int $id): bool
+    {
+        if ($id <= 0) {
+            return false;
         }
+
+        if (!isset($_SESSION[self::SESSION_KEY][$id])) {
+            return false;
+        }
+
+        unset($_SESSION[self::SESSION_KEY][$id]);
+
+        return true;
     }
 
-    // Xóa hết kế hoạch
-    public function xoaTatCa() {
+    /**
+     * Xóa toàn bộ kế hoạch học tập.
+     */
+    public function xoaTatCa(): void
+    {
         $_SESSION[self::SESSION_KEY] = [];
     }
 
-    // Lấy chi tiết các mục kèm thông tin chuẩn từ dữ liệu gốc + tính tổng
-    public function layDanhSachChiTiet() {
+    /**
+     * Lấy danh sách môn trong kế hoạch
+     * và tính tổng số môn, tổng tín chỉ.
+     */
+    public function layDanhSachChiTiet(): array
+    {
         $chiTiet = [];
         $tongSoTinChi = 0;
         $tongSoMon = 0;
 
         foreach ($_SESSION[self::SESSION_KEY] as $id => $soLuong) {
+            $id = (int) $id;
+            $soLuong = (int) $soLuong;
+
             $mon = $this->khoMonHoc->timTheoId($id);
-            if ($mon) {
-                // Ép đối tượng thành mảng để truy xuất an toàn tuyệt đối
-                $monArr = (array) $mon;
-                
-                $maMonHoc = $monArr["\0App\Models\MonHoc\0maMon"] ?? $monArr['maMon'] ?? $mon->maMon ?? 'N/A';
-                $tenMonHoc = $monArr["\0App\Models\MonHoc\0ten"] ?? $monArr['ten'] ?? $monArr['tenMon'] ?? $mon->ten ?? 'Chưa có tên';
-                $tinChiMon = $monArr["\0App\Models\MonHoc\0soTinChi"] ?? $monArr['soTinChi'] ?? $mon->soTinChi ?? 0;
-                $monId = $monArr["\0App\Models\MonHoc\0id"] ?? $monArr['id'] ?? $mon->id ?? $id;
 
-                $tongTinChiMon = (int)$tinChiMon * (int)$soLuong;
-
-                $chiTiet[] = [
-                    'id' => $monId,
-                    'maMon' => $maMonHoc,
-                    'tenMon' => $tenMonHoc,
-                    'soTinChi' => (int)$tinChiMon,
-                    'soLuong' => (int)$soLuong,
-                    'tongTinChi' => $tongTinChiMon
-                ];
-
-                $tongSoTinChi += $tongTinChiMon;
-                $tongSoMon += (int)$soLuong;
-            } else {
+            // Nếu dữ liệu session chứa ID không còn tồn tại,
+            // tự loại bỏ khỏi kế hoạch.
+            if ($mon === null) {
                 unset($_SESSION[self::SESSION_KEY][$id]);
+                continue;
             }
+
+            // Session có thể bị chỉnh sửa nên kiểm tra lại số lượng.
+            if ($soLuong < 1 || $soLuong > 5) {
+                unset($_SESSION[self::SESSION_KEY][$id]);
+                continue;
+            }
+
+            $tongTinChiMon = $mon->soTinChi * $soLuong;
+
+            $chiTiet[] = [
+                'id' => $mon->id,
+                'maMon' => $mon->maMon,
+                'tenMon' => $mon->tenMon,
+                'soTinChi' => $mon->soTinChi,
+                'soLuong' => $soLuong,
+                'tongTinChi' => $tongTinChiMon,
+            ];
+
+            $tongSoTinChi += $tongTinChiMon;
+            $tongSoMon += $soLuong;
         }
 
         return [
             'danh_sach' => $chiTiet,
             'tong_so_mon' => $tongSoMon,
-            'tong_so_tin_chi' => $tongSoTinChi
+            'tong_so_tin_chi' => $tongSoTinChi,
         ];
     }
 }

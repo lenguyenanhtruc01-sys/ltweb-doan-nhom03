@@ -11,6 +11,7 @@
 $tieuDe ??= 'Trang chủ';
 $trang ??= '';
 $goc ??= '';
+$phienBanCss = filemtime(__DIR__ . '/../css/style.css') ?: 1;
 
 // Lấy tổng số môn từ dịch vụ Kế hoạch học tập OOP
 $soMonTrongGio = 0;
@@ -47,7 +48,7 @@ if (!is_string($nguoiDung) || $nguoiDung === '') {
 
     <link
         rel="stylesheet"
-        href="<?= e($goc) ?>css/style.css?v=4">
+        href="<?= e($goc) ?>css/style.css?v=<?= (int) $phienBanCss ?>">
     <?php if (!empty($cssTrang)): ?>
     <link rel="stylesheet" href="<?= e($cssTrang) ?>">
     <?php endif; ?>

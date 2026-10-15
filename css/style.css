@@ -1469,6 +1469,46 @@ details > p {
     color: #b42318;
     font-weight: 700;
 }
+
+/* Toast sau khi thêm môn mà vẫn giữ nguyên trang đang xem. */
+.thong-bao-ke-hoach {
+    position: fixed;
+    z-index: 1000;
+    top: 1.25rem;
+    right: 1.25rem;
+    width: min(22rem, calc(100vw - 2.5rem));
+    margin: 0;
+    padding: 0.8rem 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1.25rem rgb(15 23 42 / 18%);
+    font-weight: 700;
+    animation: thong-bao-truot-vao 0.25s ease-out;
+}
+
+.thong-bao-ke-hoach--thanh-cong {
+    color: #155724;
+    background: #d4edda;
+    border-color: #a9d9b4;
+}
+
+.thong-bao-ke-hoach--loi {
+    color: #842029;
+    background: #f8d7da;
+    border-color: #f1aeb5;
+}
+
+@keyframes thong-bao-truot-vao {
+    from {
+        opacity: 0;
+        transform: translateX(1rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
 .dau-trang__cum-thuong-hieu {
     display: flex;
     flex-wrap: wrap;

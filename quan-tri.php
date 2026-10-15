@@ -18,7 +18,7 @@ $khoLienHe = new KhoLienHe(
 $danhSachLienHe = $khoLienHe->tatCa();
 
 $tieuDe = 'Quản trị hệ thống';
-$trang = '';
+$trang = 'quan-tri';
 $goc = '';
 $cssTrang = 'css/quan-tri.css';
 

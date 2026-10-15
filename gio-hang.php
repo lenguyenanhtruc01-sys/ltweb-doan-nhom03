@@ -22,6 +22,19 @@ $keHoachService = new KeHoachHocTap();
  */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hanhDong = (string) ($_POST['hanh_dong'] ?? '');
+    $trangQuayLai = 'gio-hang.php';
+
+    // Chỉ cho phép quay lại các trang nội bộ đã định trước sau khi thêm môn.
+    if ($hanhDong === 'them') {
+        $quayLai = (string) ($_POST['quay_lai'] ?? '');
+
+        if (
+            $quayLai === 'danh-sach.php'
+            || preg_match('/^chi-tiet\\.php\\?id=[1-9][0-9]*$/', $quayLai) === 1
+        ) {
+            $trangQuayLai = $quayLai;
+        }
+    }
 
     $id = filter_var(
         $_POST['id'] ?? null,
@@ -46,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $thanhCong = $keHoachService->them($id, $soLuong);
 
             if ($thanhCong) {
-                $_SESSION['flash_success'] = 'Đã thêm môn học vào kế hoạch.';
+                $_SESSION['flash_success'] = 'Môn học đã được thêm vào kế hoạch học tập.';
             } else {
                 $_SESSION['flash_error'] =
                     'Không thể thêm môn học. Môn học không tồn tại hoặc dữ liệu không hợp lệ.';
@@ -98,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     /*
      * PRG: chuyển hướng sau POST để tránh gửi lại form khi F5.
      */
-    header('Location: gio-hang.php');
+    header('Location: ' . $trangQuayLai);
     exit;
 }
 
@@ -110,6 +123,11 @@ $duLieuGio = $keHoachService->layDanhSachChiTiet();
 $danhSachMon = $duLieuGio['danh_sach'];
 $soMon = $duLieuGio['tong_so_mon'];
 $tongTinChi = $duLieuGio['tong_so_tin_chi'];
+
+// Dữ liệu cho thanh điều hướng dùng chung.
+$tieuDe = 'Giỏ hàng';
+$trang = 'gio-hang';
+$goc = '';
 
 require __DIR__ . '/inc/header.php';
 ?>

@@ -13,6 +13,11 @@ if (isset($_SESSION['da_dang_nhap']) && $_SESSION['da_dang_nhap'] === true) {
 
 $thongBaoLoi = '';
 
+// Dữ liệu cho thanh điều hướng dùng chung.
+$tieuDe = 'Đăng nhập';
+$trang = 'dang-nhap';
+$goc = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = trim($_POST['password'] ?? '');

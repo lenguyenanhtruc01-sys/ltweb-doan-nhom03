@@ -143,6 +143,20 @@ require __DIR__ . '/inc/header.php';
 
     <h1>Danh sách môn học</h1>
 
+    <?php if (isset($_SESSION['flash_success'])): ?>
+        <div class="thong-bao-ke-hoach thong-bao-ke-hoach--thanh-cong" role="status">
+            <?= e($_SESSION['flash_success']) ?>
+        </div>
+        <?php unset($_SESSION['flash_success']); ?>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['flash_error'])): ?>
+        <div class="thong-bao-ke-hoach thong-bao-ke-hoach--loi" role="alert">
+            <?= e($_SESSION['flash_error']) ?>
+        </div>
+        <?php unset($_SESSION['flash_error']); ?>
+    <?php endif; ?>
+
     <section class="section-bo-loc">
 
         <h2>Tra cứu và lọc môn học</h2>
@@ -387,6 +401,12 @@ require __DIR__ . '/inc/header.php';
                                     method="post"
                                     class="form-them-ke-hoach"
                                 >
+
+                                    <input
+                                        type="hidden"
+                                        name="quay_lai"
+                                        value="danh-sach.php"
+                                    >
 
                                     <input
                                         type="hidden"

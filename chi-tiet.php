@@ -102,6 +102,20 @@ require __DIR__ . '/inc/header.php';
         <?= e((string) $mh->tenMon) ?>
     </h1>
 
+    <?php if (isset($_SESSION['flash_success'])): ?>
+        <div class="thong-bao-ke-hoach thong-bao-ke-hoach--thanh-cong" role="status">
+            <?= e($_SESSION['flash_success']) ?>
+        </div>
+        <?php unset($_SESSION['flash_success']); ?>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['flash_error'])): ?>
+        <div class="thong-bao-ke-hoach thong-bao-ke-hoach--loi" role="alert">
+            <?= e($_SESSION['flash_error']) ?>
+        </div>
+        <?php unset($_SESSION['flash_error']); ?>
+    <?php endif; ?>
+
     <article
         id="chi-tiet"
         class="chi-tiet__noi-dung"
@@ -172,6 +186,11 @@ require __DIR__ . '/inc/header.php';
 
         <div class="form-them-gio-hang">
             <form action="gio-hang.php" method="post">
+                <input
+                    type="hidden"
+                    name="quay_lai"
+                    value="chi-tiet.php?id=<?= (int) $mh->id ?>">
+
                 <input
                     type="hidden"
                     name="hanh_dong"

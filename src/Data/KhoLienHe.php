@@ -7,10 +7,23 @@ class KhoLienHe
 
     public function them(array $lh): void
     {
+        $thuMuc = dirname($this->tep);
+
+        if (!is_dir($thuMuc) && !mkdir($thuMuc, 0775, true) && !is_dir($thuMuc)) {
+            throw new \RuntimeException('Không thể tạo thư mục lưu liên hệ.');
+        }
+
         $dong = json_encode($lh,
                     JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
-        file_put_contents($this->tep, $dong . PHP_EOL,
-                          FILE_APPEND | LOCK_EX);    // khóa tệp khi ghi
+        $soByteDaGhi = file_put_contents(
+            $this->tep,
+            $dong . PHP_EOL,
+            FILE_APPEND | LOCK_EX
+        );
+
+        if ($soByteDaGhi === false) {
+            throw new \RuntimeException('Không thể lưu liên hệ.');
+        }
     }
 
     public function tatCa(): array                  // mới nhất đứng đầu

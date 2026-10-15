@@ -5,25 +5,17 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Xóa tất cả các biến session
-$_SESSION = array();
+// Giỏ hàng là dữ liệu độc lập với tài khoản quản trị nên vẫn được giữ lại.
+$gioHang = $_SESSION['ke_hoach_dang_ky'] ?? [];
 
-// Nếu muốn xóa hoàn toàn session cookie, hãy xóa nó bằng cách thiết lập thời gian hết hạn về quá khứ
-if (ini_get("session.use_cookies")) {
-    $params = session_get_cookie_params();
-    setcookie(
-        session_name(), 
-        '', 
-        time() - 42000,
-        $params["path"], 
-        $params["domain"],
-        $params["secure"], 
-        $params["httponly"]
-    );
+if (!is_array($gioHang)) {
+    $gioHang = [];
 }
 
-// Hủy session trên server
-session_destroy();
+// Xóa trạng thái đăng nhập và đổi mã phiên để đăng xuất an toàn.
+$_SESSION = [];
+session_regenerate_id(true);
+$_SESSION['ke_hoach_dang_ky'] = $gioHang;
 
 // Dùng đường dẫn tuyệt đối hoặc tương đối rõ ràng để về trang đăng nhập
 header("Location: dang-nhap.php");

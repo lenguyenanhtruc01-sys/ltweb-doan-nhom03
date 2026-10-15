@@ -177,22 +177,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             __DIR__ . '/storage/lien-he.jsonl'
         );
 
-        $kho->them([
-            'thoiGian' => date('Y-m-d H:i:s'),
-            'hoTen' => $du['hoten'],
-            'email' => $du['email'],
-            'sdt' => $du['sdt'],
-            'chuDe' => $du['chude'],
-            'uuTien' => $du['uutien'],
-            'noiDung' => $du['noidung'],
-            'anh' => $tenAnh
-        ]);
+        try {
+            $kho->them([
+                'thoiGian' => date('Y-m-d H:i:s'),
+                'hoTen' => $du['hoten'],
+                'email' => $du['email'],
+                'sdt' => $du['sdt'],
+                'chuDe' => $du['chude'],
+                'uuTien' => $du['uutien'],
+                'noiDung' => $du['noidung'],
+                'anh' => $tenAnh
+            ]);
+        } catch (\Throwable $e) {
+            error_log((string) $e);
+            $loi['he_thong'] =
+                'Không thể gửi liên hệ lúc này. Vui lòng thử lại sau.';
+        }
 
-        $_SESSION['flash_success'] =
-            'Đã gửi liên hệ thành công. Đội ngũ EduGPA sẽ phản hồi qua email của bạn sớm nhất!';
+        if (empty($loi)) {
+            $_SESSION['flash_success'] =
+                'Đã gửi liên hệ thành công. Đội ngũ EduGPA sẽ phản hồi qua email của bạn sớm nhất!';
 
-        header('Location: lien-he.php?gui=thanh-cong');
-        exit;
+            header('Location: lien-he.php?gui=thanh-cong');
+            exit;
+        }
     }
 }
 
@@ -218,7 +226,6 @@ if (
 $tieuDe = 'Liên hệ';
 $trang = 'lien-he';
 $goc = '';
-$cssTrang = 'css/lien-he.css';
 
 require_once __DIR__ . '/inc/header.php';
 ?>
@@ -249,13 +256,29 @@ require_once __DIR__ . '/inc/header.php';
             </p>
         <?php endif; ?>
 
+        <?php if (isset($loi['he_thong'])): ?>
+            <p class="thong-bao-loi" role="alert">
+                <?= e($loi['he_thong']) ?>
+            </p>
+        <?php endif; ?>
+
+        <?php if (!empty($loi)): ?>
+            <div class="thong-bao-lien-he-loi" role="alert">
+                <strong>Chưa thể gửi liên hệ. Vui lòng kiểm tra các mục sau:</strong>
+                <ul>
+                    <?php foreach ($loi as $thongBaoLoi): ?>
+                        <li><?= e($thongBaoLoi) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
+
         <form
             id="form-lien-he"
             class="form-lien-he"
             action="lien-he.php"
             method="post"
             enctype="multipart/form-data"
-            novalidate
         >
             <fieldset>
                 <legend>Thông tin người liên hệ</legend>

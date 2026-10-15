@@ -1470,6 +1470,26 @@ details > p {
     font-weight: 700;
 }
 
+.thong-bao-lien-he-loi {
+    margin: 0 0 var(--kc-4);
+    padding: var(--kc-3) var(--kc-4);
+    color: #842029;
+    background: #f8d7da;
+    border: 1px solid #f1aeb5;
+    border-radius: var(--bo-goc-vua);
+}
+
+.thong-bao-lien-he-loi ul {
+    margin: var(--kc-2) 0 0;
+    padding-left: 1.25rem;
+}
+
+.nut-them-ke-hoach-ct--da-them:disabled {
+    background-color: #15803d !important;
+    cursor: not-allowed;
+    opacity: 0.9;
+}
+
 /* Toast sau khi thêm môn mà vẫn giữ nguyên trang đang xem. */
 .thong-bao-ke-hoach {
     position: fixed;

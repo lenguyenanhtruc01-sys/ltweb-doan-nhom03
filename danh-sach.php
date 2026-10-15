@@ -11,6 +11,7 @@ declare(strict_types=1);
 require __DIR__ . '/inc/config.php';
 
 use App\Data\KhoMonHoc;
+use App\Services\KeHoachHocTap;
 
 // ==========================================
 // 1. CẤU HÌNH TRANG
@@ -102,6 +103,13 @@ $danhSach = array_filter(
         return $matchTen || $matchMa;
     }
 );
+
+$keHoachHocTap = new KeHoachHocTap();
+$idMonDaThem = [];
+
+foreach ($keHoachHocTap->layDanhSachChiTiet()['danh_sach'] as $monDaThem) {
+    $idMonDaThem[(int) $monDaThem['id']] = true;
+}
 
 // ==========================================
 // 5. SẮP XẾP
@@ -428,9 +436,12 @@ require __DIR__ . '/inc/header.php';
 
                                     <button
                                         type="submit"
-                                        class="nut-them-ke-hoach"
+                                        class="nut-them-ke-hoach<?= isset($idMonDaThem[(int) $mon->id]) ? ' nut-them-ke-hoach--da-them' : '' ?>"
+                                        <?= isset($idMonDaThem[(int) $mon->id]) ? 'disabled aria-disabled="true"' : '' ?>
                                     >
-                                        Thêm vào kế hoạch học tập
+                                        <?= isset($idMonDaThem[(int) $mon->id])
+                                            ? 'Đã thêm vào kế hoạch học tập'
+                                            : 'Thêm vào kế hoạch học tập' ?>
                                     </button>
 
                                 </form>

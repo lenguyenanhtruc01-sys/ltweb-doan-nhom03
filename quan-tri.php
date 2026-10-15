@@ -17,6 +17,16 @@ $khoLienHe = new KhoLienHe(
 
 $danhSachLienHe = $khoLienHe->tatCa();
 
+// Đổi mã lưu trong dữ liệu liên hệ thành nhãn giống ở form liên hệ.
+$nhanChuDe = [
+    'gpa' => 'Lỗi tính GPA',
+    'diem' => 'Lỗi nhập điểm',
+    'taikhoan' => 'Vấn đề tài khoản',
+    'tailieu' => 'Tài liệu học tập',
+    'gopy' => 'Góp ý cải thiện hệ thống',
+    'khac' => 'Khác',
+];
+
 $tieuDe = 'Quản trị hệ thống';
 $trang = 'quan-tri';
 $goc = '';
@@ -127,10 +137,8 @@ require __DIR__ . '/inc/header.php';
 
                                 <td>
                                     <?= e(
-                                        (string) (
-                                            $lh['chuDe']
-                                            ?? ''
-                                        )
+                                        $nhanChuDe[(string) ($lh['chuDe'] ?? '')]
+                                        ?? (string) ($lh['chuDe'] ?? '')
                                     ) ?>
                                 </td>
 

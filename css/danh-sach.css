@@ -46,6 +46,8 @@ body { background-color: var(--bg-main); color: var(--text-main); }
 .nut-yeu-thich--da-chon { background: #fee2e2; color: #ef4444; border-color: #fca5a5; }
 .nut-them-ke-hoach { width: 100%; padding: 10px; border: none; border-radius: 6px; background: var(--accent); color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; transition: background 0.2s; text-align: center; }
 .nut-them-ke-hoach:hover { background: var(--accent-hover); }
+.nut-them-ke-hoach--da-them,
+.nut-them-ke-hoach--da-them:hover { background: #15803d; cursor: not-allowed; opacity: 0.9; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .thong-bao-khong-co {
     grid-column: 1 / -1;

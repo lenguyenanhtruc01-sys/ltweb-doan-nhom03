@@ -8,6 +8,7 @@
 declare(strict_types=1);
 
 use App\Data\KhoMonHoc;
+use App\Services\KeHoachHocTap;
 
 require __DIR__ . '/inc/config.php';
 
@@ -93,6 +94,13 @@ $tieuDe   = (string) $mh->tenMon;
 $trang    = 'danh-sach';
 $lopBody  = 'trang-chi-tiet';
 $cssTrang = 'css/chi-tiet.css';
+
+$keHoachHocTap = new KeHoachHocTap();
+$idMonDaThem = array_column(
+    $keHoachHocTap->layDanhSachChiTiet()['danh_sach'],
+    'id'
+);
+$monDaCoTrongKeHoach = in_array((int) $mh->id, $idMonDaThem, true);
 
 require __DIR__ . '/inc/header.php';
 ?>
@@ -208,8 +216,11 @@ require __DIR__ . '/inc/header.php';
 
                 <button
                     type="submit"
-                    class="nut nut--chinh nut-them-ke-hoach-ct">
-                    Thêm vào kế hoạch học tập
+                    class="nut nut--chinh nut-them-ke-hoach-ct<?= $monDaCoTrongKeHoach ? ' nut-them-ke-hoach-ct--da-them' : '' ?>"
+                    <?= $monDaCoTrongKeHoach ? 'disabled aria-disabled="true"' : '' ?>>
+                    <?= $monDaCoTrongKeHoach
+                        ? 'Đã thêm vào kế hoạch học tập'
+                        : 'Thêm vào kế hoạch học tập' ?>
                 </button>
             </form>
         </div>

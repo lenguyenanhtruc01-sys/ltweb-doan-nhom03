@@ -22,6 +22,7 @@ class KeHoachHocTap
             session_start();
         }
 
+        // Giỏ hàng độc lập với tài khoản quản trị và thuộc về phiên duyệt web.
         if (!isset($_SESSION[self::SESSION_KEY])
             || !is_array($_SESSION[self::SESSION_KEY])
         ) {
@@ -48,7 +49,7 @@ class KeHoachHocTap
 
         // Không cho thêm trùng môn.
         if (isset($_SESSION[self::SESSION_KEY][$id])) {
-            return false;
+            return true;
         }
 
         $_SESSION[self::SESSION_KEY][$id] = $soLuong;

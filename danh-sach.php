@@ -34,7 +34,7 @@ $danhSach = $kho->tatCa();
 // ==========================================
 
 // Tìm kiếm: ?q=...
-$tuKhoa = trim((string) ($_GET['q'] ?? ''));
+$tuKhoa = layChuoiDauVao($_GET['q'] ?? '');
 
 // Lọc trạng thái: ?dm=...
 $trangThaiChoPhep = [
@@ -44,7 +44,7 @@ $trangThaiChoPhep = [
     'Đăng ký mới',
 ];
 
-$trangThai = (string) ($_GET['dm'] ?? 'tat-ca');
+$trangThai = layChuoiDauVao($_GET['dm'] ?? 'tat-ca', 'tat-ca');
 
 if (!in_array($trangThai, $trangThaiChoPhep, true)) {
     $trangThai = 'tat-ca';
@@ -58,7 +58,7 @@ $sapXepChoPhep = [
     'tin-chi-tang',
 ];
 
-$sapXep = (string) ($_GET['sx'] ?? 'mac-dinh');
+$sapXep = layChuoiDauVao($_GET['sx'] ?? 'mac-dinh', 'mac-dinh');
 
 if (!in_array($sapXep, $sapXepChoPhep, true)) {
     $sapXep = 'mac-dinh';

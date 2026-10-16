@@ -31,8 +31,8 @@ unset($_SESSION['hop_flash_net']);
 $loiNet = '';
 $savedTarget = $_SESSION['hop_saved_target'] ?? '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hanh_dong']) && $_POST['hanh_dong'] === 'tra_cuu_mang') {
-    $target = trim($_POST['target'] ?? '');
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && layChuoiDauVao($_POST['hanh_dong'] ?? '') === 'tra_cuu_mang') {
+    $target = layChuoiDauVao($_POST['target'] ?? '');
     $savedTarget = $target;
     $_SESSION['hop_saved_target'] = $target;
 
@@ -73,8 +73,8 @@ unset($_SESSION['hop_flash_pass']);
 $loiPass = '';
 $savedPass = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hanh_dong']) && $_POST['hanh_dong'] === 'kiem_tra_pass') {
-    $password = $_POST['password'] ?? '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && layChuoiDauVao($_POST['hanh_dong'] ?? '') === 'kiem_tra_pass') {
+    $password = layChuoiDauVao($_POST['password'] ?? '');
     if (strlen($password) === 0) {
         $loiPass = 'Vui lòng nhập mật khẩu cần kiểm tra!';
     } else {

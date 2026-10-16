@@ -33,12 +33,12 @@ $uutienChoPhep = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $du['hoten'] = trim((string) ($_POST['hoten'] ?? ''));
-    $du['email'] = trim((string) ($_POST['email'] ?? ''));
-    $du['sdt'] = trim((string) ($_POST['sdt'] ?? ''));
-    $du['chude'] = trim((string) ($_POST['chude'] ?? ''));
-    $du['uutien'] = trim((string) ($_POST['uutien'] ?? 'trungbinh'));
-    $du['noidung'] = trim((string) ($_POST['noidung'] ?? ''));
+    $du['hoten'] = layChuoiDauVao($_POST['hoten'] ?? '');
+    $du['email'] = layChuoiDauVao($_POST['email'] ?? '');
+    $du['sdt'] = layChuoiDauVao($_POST['sdt'] ?? '');
+    $du['chude'] = layChuoiDauVao($_POST['chude'] ?? '');
+    $du['uutien'] = layChuoiDauVao($_POST['uutien'] ?? 'trungbinh', 'trungbinh');
+    $du['noidung'] = layChuoiDauVao($_POST['noidung'] ?? '');
 
     if (
         mb_strlen($du['hoten']) < 3
@@ -198,7 +198,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['flash_success'] =
                 'Đã gửi liên hệ thành công. Đội ngũ EduGPA sẽ phản hồi qua email của bạn sớm nhất!';
 
-            header('Location: lien-he.php?gui=thanh-cong');
+            // Flash trong session chỉ được đọc và xóa một lần ở request kế tiếp.
+            // Không dùng tham số URL để tránh thông báo xuất hiện lại khi F5.
+            header('Location: lien-he.php');
             exit;
         }
     }
@@ -212,15 +214,6 @@ $tb = '';
 if (isset($_SESSION['flash_success'])) {
     $tb = (string) $_SESSION['flash_success'];
     unset($_SESSION['flash_success']);
-}
-
-if (
-    $tb === ''
-    && isset($_GET['gui'])
-    && $_GET['gui'] === 'thanh-cong'
-) {
-    $tb =
-        'Đã gửi liên hệ thành công. Đội ngũ EduGPA sẽ phản hồi qua email của bạn sớm nhất!';
 }
 
 $tieuDe = 'Liên hệ';

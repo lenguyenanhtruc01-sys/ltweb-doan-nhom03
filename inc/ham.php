@@ -18,6 +18,18 @@ function e(mixed $giaTri): string
     );
 }
 
+/**
+ * Đọc một giá trị đầu vào chỉ khi đó là chuỗi.
+ *
+ * Dữ liệu GET/POST có thể bị gửi dưới dạng mảng (ví dụ: ?q[]=abc).
+ * Không ép mảng sang chuỗi vì PHP sẽ phát Warning; thay vào đó trả về giá trị
+ * mặc định để phần kiểm tra dữ liệu của từng trang xử lý an toàn.
+ */
+function layChuoiDauVao(mixed $giaTri, string $macDinh = ''): string
+{
+    return is_string($giaTri) ? trim($giaTri) : $macDinh;
+}
+
 // Định dạng số theo cách hiển thị thông dụng tại Việt Nam.
 function dinhDangSo(int|float $giaTri): string
 {

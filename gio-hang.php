@@ -21,12 +21,12 @@ $keHoachService = new KeHoachHocTap();
  * Xử lý form trước khi xuất HTML.
  */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $hanhDong = (string) ($_POST['hanh_dong'] ?? '');
+    $hanhDong = layChuoiDauVao($_POST['hanh_dong'] ?? '');
     $trangQuayLai = 'gio-hang.php';
 
     // Chỉ cho phép quay lại các trang nội bộ đã định trước sau khi thêm môn.
     if ($hanhDong === 'them') {
-        $quayLai = (string) ($_POST['quay_lai'] ?? '');
+        $quayLai = layChuoiDauVao($_POST['quay_lai'] ?? '');
 
         if (
             $quayLai === 'danh-sach.php'
@@ -36,16 +36,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    $id = filter_var(
-        $_POST['id'] ?? null,
-        FILTER_VALIDATE_INT,
-        ['options' => ['min_range' => 1]]
-    );
+    $idDauVao = $_POST['id'] ?? null;
+    $id = (is_string($idDauVao) || is_int($idDauVao))
+        ? filter_var(
+            $idDauVao,
+            FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 1]]
+        )
+        : false;
 
-    $soLuong = filter_var(
-        $_POST['so_luong'] ?? null,
-        FILTER_VALIDATE_INT
-    );
+    $soLuongDauVao = $_POST['so_luong'] ?? null;
+    $soLuong = (is_string($soLuongDauVao) || is_int($soLuongDauVao))
+        ? filter_var($soLuongDauVao, FILTER_VALIDATE_INT)
+        : false;
 
     $thanhCong = false;
 

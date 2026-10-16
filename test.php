@@ -1,6 +1,12 @@
 <?php
+/**
+ * Tệp: test.php
+ * Chức năng: kiểm tra thủ công lớp dữ liệu, tài khoản và kế hoạch học tập.
+ */
+
 // Nạp Composer Autoloader
 require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/inc/ham.php';
 
 use App\Data\KhoMonHoc;
 use App\Services\KeHoachHocTap;
@@ -55,7 +61,7 @@ try {
         echo "<p style='color: orange;'>[CẢNH BÁO] Thêm môn học vào session cần kiểm tra lại ID thực tế.</p>";
     }
 } catch (\Exception $e) {
-    echo "<p style='color: red;'>[LỖI] Lớp `KeHoachHocTap` gặp ngoại lệ: " . $e->getMessage() . "</p>";
+    echo "<p style='color: red;'>[LỖI] Lớp `KeHoachHocTap` gặp ngoại lệ: " . e($e->getMessage()) . "</p>";
     $loi++;
 }
 

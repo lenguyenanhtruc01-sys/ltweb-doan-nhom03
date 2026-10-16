@@ -267,8 +267,8 @@ include __DIR__ . '/../../inc/header.php';
                     <p class="loi"><?= e($loiPass) ?></p>
                 <?php endif; ?>
                 <?php if ($ketQuaPass): ?>
-                    <p class="ket-qua-pass" style="border-left: 4px solid <?= $ketQuaPass['mau'] ?>;">
-                        Entropy: <strong><?= $ketQuaPass['entropy'] ?> bits</strong> - Mức độ: <strong style="color: <?= $ketQuaPass['mau'] ?>;"><?= $ketQuaPass['muc_do'] ?></strong>
+                    <p class="ket-qua-pass" style="border-left: 4px solid <?= e($ketQuaPass['mau']) ?>;">
+                        Entropy: <strong><?= e((string) $ketQuaPass['entropy']) ?> bits</strong> - Mức độ: <strong style="color: <?= e($ketQuaPass['mau']) ?>;"><?= e($ketQuaPass['muc_do']) ?></strong>
                     </p>
                 <?php endif; ?>
                 <!-- Giữ vị trí cuộn trang bằng #cong-cu-section -->

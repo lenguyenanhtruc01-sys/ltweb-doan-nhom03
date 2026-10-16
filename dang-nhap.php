@@ -1,4 +1,9 @@
 <?php
+/**
+ * Tệp: dang-nhap.php
+ * Chức năng: xác thực tài khoản quản trị và thiết lập phiên đăng nhập.
+ */
+
 require_once __DIR__ . '/inc/config.php';
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -61,7 +66,7 @@ require __DIR__ . '/inc/header.php';
             
             <?php if (!empty($thongBaoLoi)): ?>
                 <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 1rem;">
-                    <?= htmlspecialchars($thongBaoLoi, ENT_QUOTES, 'UTF-8') ?>
+                    <?= e($thongBaoLoi) ?>
                 </div>
             <?php endif; ?>
 

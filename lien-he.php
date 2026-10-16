@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Tệp: lien-he.php
+ * Chức năng: kiểm tra, lưu liên hệ và xử lý tệp đính kèm ảnh an toàn.
+ */
+
 require_once __DIR__ . '/inc/config.php';
 
 use App\Data\KhoLienHe;

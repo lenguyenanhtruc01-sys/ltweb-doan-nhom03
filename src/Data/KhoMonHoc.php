@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Tệp: src/Data/KhoMonHoc.php
  * Chức năng: Lớp truy cập dữ liệu (Data Access) cho môn học, là nơi duy nhất đọc tệp JSON 
@@ -10,16 +12,19 @@ namespace App\Data;
 
 use App\Models\MonHoc;
 
-class KhoMonHoc {
+class KhoMonHoc
+{
     private string $filePath;
 
-    public function __construct() {
+    public function __construct()
+    {
         // Đường dẫn trỏ tới file JSON chứa danh sách môn học
         $this->filePath = __DIR__ . '/../../data/mon-hoc.json';
     }
 
-    // Lấy tất cả môn học
-    public function tatCa(): array {
+    /** @return list<MonHoc> */
+    public function tatCa(): array
+    {
         if (!is_file($this->filePath)) {
             throw new \RuntimeException('Không tìm thấy tệp dữ liệu môn học.');
         }
@@ -56,19 +61,20 @@ class KhoMonHoc {
         return $danhSach;
     }
 
-    // Tìm môn học theo ID
-    public function timTheoId($id) {
+    public function timTheoId(int $id): ?MonHoc
+    {
         $tatCa = $this->tatCa();
         foreach ($tatCa as $mon) {
-            if ($mon->id == $id) {
+            if ($mon->id === $id) {
                 return $mon;
             }
         }
         return null;
     }
 
-    // Tìm kiếm môn học theo từ khóa (tên hoặc mã môn)
-    public function timKiem($tuKhoa) {
+    /** @return list<MonHoc> */
+    public function timKiem(string $tuKhoa): array
+    {
         $tatCa = $this->tatCa();
         $ketQua = [];
         $tuKhoa = mb_strtolower(trim($tuKhoa), 'UTF-8');

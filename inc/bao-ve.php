@@ -1,5 +1,8 @@
 <?php
-// inc/bao-ve.php
+/**
+ * Tệp: inc/bao-ve.php
+ * Chức năng: chặn truy cập trang quản trị khi phiên chưa được xác thực.
+ */
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

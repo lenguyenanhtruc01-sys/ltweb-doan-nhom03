@@ -1,5 +1,9 @@
 <?php
-// inc/tai-khoan.php
+/**
+ * Tệp: inc/tai-khoan.php
+ * Chức năng: trả về cấu hình tài khoản quản trị dùng cho môi trường phát triển.
+ */
+
 return [
     'admin' => [
         'username' => 'admin',

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Tệp: xu-ly-gio-hang.php
+ * Chức năng: điểm cuối tương thích cũ để xử lý thao tác kế hoạch học tập rồi PRG.
+ */
+
 require_once __DIR__ . '/vendor/autoload.php';
 use App\Services\KeHoachHocTap;
 

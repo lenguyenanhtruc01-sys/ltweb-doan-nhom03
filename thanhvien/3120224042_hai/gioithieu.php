@@ -1,4 +1,8 @@
 <?php
+/**
+ * Tệp: gioithieu.php
+ * Chức năng: trang cá nhân của Lê Dương Hoàng Hải, có tải ảnh đại diện an toàn.
+ */
 // 1. Nạp cấu hình chung từ thư mục gốc
 require_once __DIR__ . '/../../inc/config.php';
 
@@ -120,7 +124,7 @@ require_once __DIR__ . '/../../inc/header.php';
         <h2>Lê Dương Hoàng Hải</h2>
         
         <!-- HIỂN THỊ ẢNH ĐẠI DIỆN -->
-        <img src="images/<?= htmlspecialchars($avatarHienTai) ?>" alt="Ảnh chân dung của Lê Dương Hoàng Hải" width="150" height="150" style="object-fit: cover; border-radius: 5px;">
+        <img src="images/<?= e($avatarHienTai) ?>" alt="Ảnh chân dung của Lê Dương Hoàng Hải" width="150" height="150" style="object-fit: cover; border-radius: 5px;">
         
         <!-- FORM ĐỔI ẢNH ĐẠI DIỆN (CHỨC NĂNG 1) -->
         <form action="gioithieu.php" method="post" enctype="multipart/form-data" style="margin: 10px 0; padding: 10px; background: #f4f4f4; border-radius: 5px;">
@@ -129,10 +133,10 @@ require_once __DIR__ . '/../../inc/header.php';
             <button type="submit" class="btn-primary" style="padding: 3px 10px; font-size: 0.85em;">Tải lên</button>
             
             <?php if ($thongBaoAnh !== ''): ?>
-                <p style="color: green; font-size: 0.85em; margin-top: 5px;"><?= htmlspecialchars($thongBaoAnh) ?></p>
+                <p style="color: green; font-size: 0.85em; margin-top: 5px;"><?= e($thongBaoAnh) ?></p>
             <?php endif; ?>
             <?php if ($loiAnh !== ''): ?>
-                <p style="color: red; font-size: 0.85em; margin-top: 5px;"><?= htmlspecialchars($loiAnh) ?></p>
+                <p style="color: red; font-size: 0.85em; margin-top: 5px;"><?= e($loiAnh) ?></p>
             <?php endif; ?>
         </form>
 
@@ -148,7 +152,7 @@ require_once __DIR__ . '/../../inc/header.php';
 
         <!-- KHỐI CHÂM NGÔN IT NGẪU NHIÊN (CHỨC NĂNG 2) -->
         <div style="margin: 10px 0 15px 0; padding: 10px 12px; background: #eef2ff; border-left: 4px solid #4f46e5; border-radius: 4px; font-style: italic; font-size: 0.88em; color: #3730a3;">
-            💡 <strong>Châm ngôn hôm nay:</strong> "<?= htmlspecialchars($chamNgonNgauNhien) ?>"
+            💡 <strong>Châm ngôn hôm nay:</strong> "<?= e($chamNgonNgauNhien) ?>"
         </div>
 
         <p>Xin chào! Mình là sinh viên ngành Công nghệ Thông tin tại Khoa Toán - Tin, Trường Đại học Sư phạm - Đại học Đà Nẵng. Mình đam mê phát triển phần mềm và ứng dụng thị giác máy tính.</p>

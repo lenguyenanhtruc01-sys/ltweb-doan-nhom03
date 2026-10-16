@@ -1,5 +1,8 @@
 <?php
-// Bắt buộc phải đảm bảo không có bất kỳ khoảng trắng hay ký tự nào trước dòng này
+/**
+ * Tệp: dang-xuat.php
+ * Chức năng: xóa phiên quản trị, đổi mã phiên và giữ kế hoạch học tập độc lập.
+ */
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

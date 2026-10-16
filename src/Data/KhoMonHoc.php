@@ -11,7 +11,7 @@ namespace App\Data;
 use App\Models\MonHoc;
 
 class KhoMonHoc {
-    private $filePath;
+    private string $filePath;
 
     public function __construct() {
         // Đường dẫn trỏ tới file JSON chứa danh sách môn học
@@ -19,20 +19,40 @@ class KhoMonHoc {
     }
 
     // Lấy tất cả môn học
-    public function tatCa() {
-        if (!file_exists($this->filePath)) {
-            return [];
+    public function tatCa(): array {
+        if (!is_file($this->filePath)) {
+            throw new \RuntimeException('Không tìm thấy tệp dữ liệu môn học.');
         }
-        
+
+        if (!is_readable($this->filePath)) {
+            throw new \RuntimeException('Không thể đọc tệp dữ liệu môn học.');
+        }
+
         $jsonContent = file_get_contents($this->filePath);
-        $data = json_decode($jsonContent, true);
-        
-        $danhSach = [];
-        if (is_array($data)) {
-            foreach ($data as $item) {
-                $danhSach[] = new MonHoc($item);
-            }
+
+        if ($jsonContent === false) {
+            throw new \RuntimeException('Không thể đọc nội dung tệp dữ liệu môn học.');
         }
+
+        try {
+            $data = json_decode($jsonContent, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $loi) {
+            throw new \RuntimeException('Tệp dữ liệu môn học chứa JSON không hợp lệ.', 0, $loi);
+        }
+
+        if (!is_array($data)) {
+            throw new \UnexpectedValueException('Dữ liệu môn học phải là một mảng JSON.');
+        }
+
+        $danhSach = [];
+        foreach ($data as $item) {
+            if (!is_array($item)) {
+                throw new \UnexpectedValueException('Mỗi môn học trong dữ liệu phải là một đối tượng JSON.');
+            }
+
+            $danhSach[] = new MonHoc($item);
+        }
+
         return $danhSach;
     }
 

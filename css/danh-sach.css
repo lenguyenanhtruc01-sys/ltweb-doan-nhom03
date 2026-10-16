@@ -29,7 +29,7 @@ body { background-color: var(--bg-main); color: var(--text-main); }
 .btn-loc { padding: 10px 24px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; height: 42px; }
 .btn-loc:hover { background: var(--primary-hover); }
 .tieu-de-phan { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #334155; }
-.luoi-san-pham { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+.luoi-san-pham { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 24px; }
 .the-san-pham { background: var(--card-bg); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); display: flex; flex-direction: column; transition: transform 0.25s ease, box-shadow 0.25s ease; position: relative; }
 .the-san-pham:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
 .the-san-pham img { width: 100%; height: 180px; object-fit: cover; background: #f1f5f9; border-bottom: 1px solid var(--border-color); }

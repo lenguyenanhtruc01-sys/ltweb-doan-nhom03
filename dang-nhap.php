@@ -19,8 +19,13 @@ $trang = 'dang-nhap';
 $goc = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
-    $password = trim($_POST['password'] ?? '');
+    $usernameRaw = $_POST['username'] ?? '';
+    $passwordRaw = $_POST['password'] ?? '';
+
+    // Chỉ chấp nhận dữ liệu chuỗi; username[]=admin là mảng và không được
+    // phép đi vào trim() hoặc password_verify().
+    $username = is_string($usernameRaw) ? trim($usernameRaw) : '';
+    $password = is_string($passwordRaw) ? trim($passwordRaw) : '';
 
     $danhSachTaiKhoan = require __DIR__ . '/inc/tai-khoan.php';
 
@@ -40,7 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $thongBaoLoi = 'Tên đăng nhập hoặc mật khẩu không chính xác.';
         
         $ip = $_SERVER['REMOTE_ADDR'] ?? 'UNKNOWN';
-        $noiDungLog = "Đăng nhập thất bại với tài khoản: '{$username}' từ IP: {$ip}";
+        $tenDangNhapLog = $username === '' ? '[du-lieu-khong-hop-le]' : $username;
+        $noiDungLog = "Đăng nhập thất bại với tài khoản: '{$tenDangNhapLog}' từ IP: {$ip}";
         
         error_log($noiDungLog);
     }

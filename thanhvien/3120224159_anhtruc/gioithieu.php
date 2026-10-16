@@ -13,7 +13,9 @@ require_once __DIR__ . '/../../inc/config.php';
 
 $pageTitle = 'Giới thiệu - Lê Nguyễn Anh Trúc';
 $tieuDe = $pageTitle;
-$cssTrang = 'thanhvien/3120224159_anhtruc/css/style.css';
+$goc = '../../';
+$cssTrang = 'css/style.css';
+$scriptsTrang = ['thanhvien/3120224159_anhtruc/js/canhan.js'];
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }

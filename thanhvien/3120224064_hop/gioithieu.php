@@ -12,34 +12,29 @@
 
 // Định nghĩa đường dẫn gốc để header/footer gọi đúng file css/js chung của nhóm
 $goc = '../../';
+$tieuDe = 'Trang cá nhân Phan Văn Hợp';
+$trang = 'gioi-thieu';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../../inc/config.php';
 
 // Hàm escape dữ liệu chống XSS an toàn
-if (!function_exists('e')) {
-    function e($str) {
-        return htmlspecialchars($str ?? '', ENT_QUOTES, 'UTF-8');
-    }
-}
-
 // Thư mục lưu trữ log cá nhân
-$storageDir = __DIR__ . '/storage';
+$storageDir = __DIR__ . '/../../storage';
 if (!is_dir($storageDir)) {
     mkdir($storageDir, 0755, true);
 }
 $netLogFile = $storageDir . '/3120224064_netlog.jsonl';
 
 // ===== XỬ LÝ CHỨC NĂNG 1: TRA CỨU THÔNG TIN MẠNG =====
-$ketQuaNet = null;
+$ketQuaNet = $_SESSION['hop_flash_net'] ?? null;
+unset($_SESSION['hop_flash_net']);
 $loiNet = '';
-$savedTarget = $_SESSION['saved_target'] ?? ''; // Lấy lại giá trị domain cũ nếu có
+$savedTarget = $_SESSION['hop_saved_target'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hanh_dong']) && $_POST['hanh_dong'] === 'tra_cuu_mang') {
     $target = trim($_POST['target'] ?? '');
     $savedTarget = $target;
-    $_SESSION['saved_target'] = $target; // Lưu vào session
+    $_SESSION['hop_saved_target'] = $target;
 
     if (empty($target)) {
         $loiNet = 'Vui lòng nhập tên miền hoặc địa chỉ IP cần tra cứu!';
@@ -54,27 +49,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hanh_dong']) && $_POS
             $latency = rand(5, 40) . ' ms';
             
             $ketQuaNet = [
-                'target' => e($target),
-                'ip' => e($resolvedIp),
+                'target' => $target,
+                'ip' => $resolvedIp,
                 'type' => $loaiIp,
                 'latency' => $latency,
                 'time' => date('Y-m-d H:i:s')
             ];
-            file_put_contents($netLogFile, json_encode($ketQuaNet, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
+            file_put_contents(
+                $netLogFile,
+                json_encode($ketQuaNet, JSON_UNESCAPED_UNICODE) . PHP_EOL,
+                FILE_APPEND | LOCK_EX
+            );
+            $_SESSION['hop_flash_net'] = $ketQuaNet;
+            header('Location: gioithieu.php?cong-cu=mang#cong-cu-section');
+            exit;
         }
     }
 }
 
 // ===== XỬ LÝ CHỨC NĂNG 2: KIỂM TRA ĐỘ MẠNH MẬT KHẨU & ENTROPY =====
-$ketQuaPass = null;
+$ketQuaPass = $_SESSION['hop_flash_pass'] ?? null;
+unset($_SESSION['hop_flash_pass']);
 $loiPass = '';
-$savedPass = $_SESSION['saved_pass'] ?? ''; // Lấy lại mật khẩu cũ nếu có
+$savedPass = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hanh_dong']) && $_POST['hanh_dong'] === 'kiem_tra_pass') {
     $password = $_POST['password'] ?? '';
-    $savedPass = $password;
-    $_SESSION['saved_pass'] = $password; // Lưu vào session
-
     if (strlen($password) === 0) {
         $loiPass = 'Vui lòng nhập mật khẩu cần kiểm tra!';
     } else {
@@ -93,6 +93,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hanh_dong']) && $_POS
         elseif ($entropy >= 30) { $mucDo = 'Trung bình'; $mau = '#d97706'; }
 
         $ketQuaPass = ['len' => $len, 'entropy' => $entropy, 'muc_do' => $mucDo, 'mau' => $mau];
+        $_SESSION['hop_flash_pass'] = $ketQuaPass;
+        header('Location: gioithieu.php?cong-cu=mat-khau#cong-cu-section');
+        exit;
     }
 }
 
@@ -246,7 +249,7 @@ include __DIR__ . '/../../inc/header.php';
                 <?php endif; ?>
                 <?php if ($ketQuaNet): ?>
                     <p class="ket-qua-net">
-                        IP: <code><?= $ketQuaNet['ip'] ?></code> (<?= $ketQuaNet['type'] ?>) - Trễ: <?= $ketQuaNet['latency'] ?>
+                        IP: <code><?= e($ketQuaNet['ip']) ?></code> (<?= e($ketQuaNet['type']) ?>) - Trễ: <?= e($ketQuaNet['latency']) ?>
                     </p>
                 <?php endif; ?>
                 <!-- Giữ vị trí cuộn trang bằng #cong-cu-section -->

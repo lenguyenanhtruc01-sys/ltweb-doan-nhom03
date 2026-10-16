@@ -26,17 +26,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['avatar'])) {
         $_SESSION['loi_avatar'] = 'Kích thước ảnh không được vượt quá 2MB.';
     } else {
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime  = finfo_file($finfo, $file['tmp_name']);
-        finfo_close($finfo);
-        
-        $choPhep = ['image/jpeg', 'image/png', 'image/webp'];
-        if (!in_array($mime, $choPhep, true)) {
+        $mime = $finfo === false ? false : finfo_file($finfo, $file['tmp_name']);
+
+        if ($finfo !== false) {
+            finfo_close($finfo);
+        }
+
+        // Không tin tên file do người dùng gửi lên. MIME thực tế và phần mở
+        // rộng được xác định hoàn toàn ở phía máy chủ.
+        $duoiTheoMime = [
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/webp' => 'webp',
+        ];
+        $thongTinAnh = getimagesize($file['tmp_name']);
+
+        if (
+            !is_string($mime)
+            || !isset($duoiTheoMime[$mime])
+            || !is_array($thongTinAnh)
+            || ($thongTinAnh['mime'] ?? '') !== $mime
+        ) {
             $_SESSION['loi_avatar'] = 'Chỉ chấp nhận ảnh JPG, PNG hoặc WEBP.';
         } else {
-            $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-            $tenMoi = 'avatar_3120224042.' . $ext;
+            $tenMoi = 'avatar_3120224042.' . $duoiTheoMime[$mime];
             
             if (move_uploaded_file($file['tmp_name'], $thuMucAnh . $tenMoi)) {
+                // Avatar mới thay thế các avatar sinh tự động trước đó.
+                foreach (['jpg', 'jpeg', 'png', 'webp'] as $duoiCu) {
+                    if ($duoiCu === $duoiTheoMime[$mime]) {
+                        continue;
+                    }
+
+                    $tepAvatarCu = $thuMucAnh . 'avatar_3120224042.' . $duoiCu;
+
+                    if (is_file($tepAvatarCu)) {
+                        unlink($tepAvatarCu);
+                    }
+                }
+
                 $_SESSION['flash_avatar'] = 'Cập nhật ảnh đại diện thành công!';
             } else {
                 $_SESSION['loi_avatar'] = 'Không thể lưu ảnh vào máy chủ.';
@@ -79,12 +107,11 @@ $thoiGianConLai = $ngayHienTai->diff($ngayBaoVe);
 // 2. Nạp Header
 $tieuDe = 'Lê Dương Hoàng Hải | Giới thiệu cá nhân';
 $trang  = 'gioi-thieu';
-$goc    = '/ltweb-doan-nhom05/'; // THÊM DÒNG NÀY ĐỂ SỬA LỖI ĐƯỜNG DẪN
+$goc    = '../../';
+$cssTrang = 'style.css';
+$scriptsTrang = ['thanhvien/3120224042_hai/js/canhan.js'];
 require_once __DIR__ . '/../../inc/header.php';
 ?>
-
-<!-- Gọi riêng CSS cá nhân của Hải -->
-<link rel="stylesheet" href="style.css">
 
 <main class="container">
     
@@ -224,8 +251,6 @@ require_once __DIR__ . '/../../inc/header.php';
         </div>
     </div>
 </main>
-
-<script type="module" src="js/canhan.js"></script>
 
 <?php 
 // 3. Nạp Footer dùng chung

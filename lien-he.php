@@ -45,6 +45,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $du['uutien'] = layChuoiDauVao($_POST['uutien'] ?? 'trungbinh', 'trungbinh');
     $du['noidung'] = layChuoiDauVao($_POST['noidung'] ?? '');
 
+    foreach (array_keys($du) as $truong) {
+        if (isset($_POST[$truong]) && !is_string($_POST[$truong])) {
+            $loi[$truong] = 'Dữ liệu phải là một giá trị văn bản hợp lệ.';
+        }
+    }
+
     if (
         mb_strlen($du['hoten']) < 3
         || mb_strlen($du['hoten']) > 50
@@ -91,86 +97,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'Nội dung bắt buộc phải từ 10 đến 1000 ký tự.';
     }
 
-    /*
-     * KIỂM TRA VÀ LƯU ẢNH
-     */
-    if (
-        empty($loi)
-        && isset($_FILES['anh'])
-        && $_FILES['anh']['error'] !== UPLOAD_ERR_NO_FILE
-    ) {
-        $file = $_FILES['anh'];
-
-        if ($file['error'] !== UPLOAD_ERR_OK) {
-            $loi['anh'] =
-                'Có lỗi trong quá trình tải ảnh lên.';
-        } elseif ($file['size'] > 2 * 1024 * 1024) {
-            $loi['anh'] =
-                'Kích thước ảnh không được vượt quá 2MB.';
-        } else {
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-
-            if ($finfo === false) {
-                $loi['anh'] =
-                    'Không thể kiểm tra định dạng ảnh.';
-            } else {
-                $mime = finfo_file(
-                    $finfo,
-                    $file['tmp_name']
-                );
-
-                finfo_close($finfo);
-
-                $choPhep = [
-                    'image/jpeg',
-                    'image/png',
-                    'image/webp'
-                ];
-
-                if (!in_array($mime, $choPhep, true)) {
-                    $loi['anh'] =
-                        'Hệ thống chỉ chấp nhận ảnh JPG, PNG hoặc WebP.';
-                } else {
-                    $phanMoRongTheoMime = [
-                        'image/jpeg' => 'jpg',
-                        'image/png' => 'png',
-                        'image/webp' => 'webp'
-                    ];
-
-                    $phanMoRong =
-                        $phanMoRongTheoMime[$mime];
-
-                    $tenAnh =
-                        uniqid('lh_', true)
-                        . '.'
-                        . $phanMoRong;
-
-                    $thuMucUpload =
-                        __DIR__ . '/uploads';
-
-                    if (!is_dir($thuMucUpload)) {
-                        $loi['anh'] =
-                            'Thư mục uploads không tồn tại.';
-                        $tenAnh = null;
-                    } else {
-                        $duongDan =
-                            $thuMucUpload
-                            . DIRECTORY_SEPARATOR
-                            . $tenAnh;
-
-                        if (
-                            !move_uploaded_file(
-                                $file['tmp_name'],
-                                $duongDan
-                            )
-                        ) {
-                            $loi['anh'] =
-                                'Không thể lưu ảnh vào máy chủ, vui lòng thử lại.';
-                            $tenAnh = null;
-                        }
-                    }
-                }
-            }
+    // Dùng chung bộ kiểm tra upload, tự tạo thư mục khi tải kho sạch.
+    if (empty($loi) && isset($_FILES['anh'])) {
+        try {
+            if (!is_array($_FILES['anh'])) throw new \RuntimeException('Dữ liệu ảnh tải lên không hợp lệ.');
+            $tenAnh = (new \App\Services\TaiAnh(__DIR__ . '/uploads'))->luu($_FILES['anh']);
+        } catch (\RuntimeException $loiAnh) {
+            $loi['anh'] = $loiAnh->getMessage();
         }
     }
 
@@ -195,6 +128,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
         } catch (\Throwable $e) {
             error_log((string) $e);
+            if ($tenAnh !== null) {
+                @unlink(__DIR__ . '/uploads/' . $tenAnh);
+                $tenAnh = null;
+            }
             $loi['he_thong'] =
                 'Không thể gửi liên hệ lúc này. Vui lòng thử lại sau.';
         }
@@ -682,7 +619,7 @@ require_once __DIR__ . '/inc/header.php';
             </li>
 
             <li>
-                <a href="chi-tiet.php">
+                <a href="chi-tiet.php?id=1">
                     Xem chi tiết kết quả học tập
                 </a>
             </li>

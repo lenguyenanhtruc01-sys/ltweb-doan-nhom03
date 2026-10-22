@@ -442,7 +442,7 @@ require_once __DIR__ . '/../../inc/header.php';
 
         <form
             method="post"
-            action=""
+            action="gioithieu.php"
             class="gpa-form"
         >
 
@@ -722,7 +722,7 @@ require_once __DIR__ . '/../../inc/header.php';
 
             <form
                 method="post"
-                action=""
+                action="gioithieu.php"
             >
 
                 <?php foreach (
@@ -762,7 +762,7 @@ require_once __DIR__ . '/../../inc/header.php';
 
             <form
                 method="post"
-                action=""
+                action="gioithieu.php"
             >
 
                 <button

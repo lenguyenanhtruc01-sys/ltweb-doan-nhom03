@@ -16,78 +16,29 @@ $thongBaoAnh = $_SESSION['flash_avatar'] ?? '';
 $loiAnh      = $_SESSION['loi_avatar'] ?? '';
 unset($_SESSION['flash_avatar'], $_SESSION['loi_avatar']);
 
-$thuMucAnh = __DIR__ . '/images/';
-if (!is_dir($thuMucAnh)) {
-    mkdir($thuMucAnh, 0777, true);
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['avatar'])) {
-    $file = $_FILES['avatar'];
-    
-    if ($file['error'] !== UPLOAD_ERR_OK) {
-        $_SESSION['loi_avatar'] = 'Có lỗi xảy ra khi tải ảnh lên.';
-    } elseif ($file['size'] > 2 * 1024 * 1024) { 
-        $_SESSION['loi_avatar'] = 'Kích thước ảnh không được vượt quá 2MB.';
-    } else {
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime = $finfo === false ? false : finfo_file($finfo, $file['tmp_name']);
-
-        if ($finfo !== false) {
-            finfo_close($finfo);
-        }
-
-        // Không tin tên file do người dùng gửi lên. MIME thực tế và phần mở
-        // rộng được xác định hoàn toàn ở phía máy chủ.
-        $duoiTheoMime = [
-            'image/jpeg' => 'jpg',
-            'image/png' => 'png',
-            'image/webp' => 'webp',
-        ];
-        $thongTinAnh = getimagesize($file['tmp_name']);
-
-        if (
-            !is_string($mime)
-            || !isset($duoiTheoMime[$mime])
-            || !is_array($thongTinAnh)
-            || ($thongTinAnh['mime'] ?? '') !== $mime
-        ) {
-            $_SESSION['loi_avatar'] = 'Chỉ chấp nhận ảnh JPG, PNG hoặc WEBP.';
-        } else {
-            $tenMoi = 'avatar_3120224042.' . $duoiTheoMime[$mime];
-            
-            if (move_uploaded_file($file['tmp_name'], $thuMucAnh . $tenMoi)) {
-                // Avatar mới thay thế các avatar sinh tự động trước đó.
-                foreach (['jpg', 'jpeg', 'png', 'webp'] as $duoiCu) {
-                    if ($duoiCu === $duoiTheoMime[$mime]) {
-                        continue;
-                    }
-
-                    $tepAvatarCu = $thuMucAnh . 'avatar_3120224042.' . $duoiCu;
-
-                    if (is_file($tepAvatarCu)) {
-                        unlink($tepAvatarCu);
-                    }
-                }
-
-                $_SESSION['flash_avatar'] = 'Cập nhật ảnh đại diện thành công!';
-            } else {
-                $_SESSION['loi_avatar'] = 'Không thể lưu ảnh vào máy chủ.';
-            }
-        }
+$thuMucAnh = __DIR__ . '/../../uploads';
+$khoAnh = new \App\Data\KhoAnhDaiDien(__DIR__ . '/../../storage/3120224042_avatar.json');
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $tenMoi = null;
+    try {
+        $file = $_FILES['avatar'] ?? null;
+        if (!is_array($file)) throw new \RuntimeException('Vui lòng chọn ảnh đại diện.');
+        $tenMoi = (new \App\Services\TaiAnh($thuMucAnh))->luu($file);
+        if ($tenMoi === null) throw new \RuntimeException('Vui lòng chọn ảnh đại diện.');
+        $tenCu = $khoAnh->lay();
+        $khoAnh->luu($tenMoi);
+        if ($tenCu !== null && $tenCu !== $tenMoi) @unlink($thuMucAnh . '/' . $tenCu);
+        $_SESSION['flash_avatar'] = 'Cập nhật ảnh đại diện thành công!';
+    } catch (\RuntimeException $loiUpload) {
+        if ($tenMoi !== null) @unlink($thuMucAnh . '/' . $tenMoi);
+        $_SESSION['loi_avatar'] = $loiUpload->getMessage();
     }
     header('Location: gioithieu.php');
     exit;
 }
-
-// Kiểm tra avatar hiện tại
-$avatarHienTai = 'hoanghai.jpg'; 
-$cacDuoi = ['jpg', 'png', 'webp', 'jpeg'];
-foreach ($cacDuoi as $d) {
-    if (file_exists($thuMucAnh . 'avatar_3120224042.' . $d)) {
-        $avatarHienTai = 'avatar_3120224042.' . $d;
-        break;
-    }
-}
+$tenAvatar = $khoAnh->lay();
+$avatarHienTai = $tenAvatar !== null && is_file($thuMucAnh . '/' . $tenAvatar)
+    ? '../../uploads/' . $tenAvatar : 'images/hoanghai.jpg';
 
 // ==========================================
 // CHỨC NĂNG 2: MÁY TẠO CHÂM NGÔN IT NGẪU NHIÊN
@@ -121,10 +72,10 @@ require_once __DIR__ . '/../../inc/header.php';
     
     <!-- CỘT TRÁI: Thông tin cá nhân & Kỹ năng -->
     <section class="profile grid-col">
-        <h2>Lê Dương Hoàng Hải</h2>
+        <h1>Lê Dương Hoàng Hải</h1>
         
         <!-- HIỂN THỊ ẢNH ĐẠI DIỆN -->
-        <img src="images/<?= e($avatarHienTai) ?>" alt="Ảnh chân dung của Lê Dương Hoàng Hải" width="150" height="150" style="object-fit: cover; border-radius: 5px;">
+        <img src="<?= e($avatarHienTai) ?>" alt="Ảnh chân dung của Lê Dương Hoàng Hải" width="150" height="150" style="object-fit: cover; border-radius: 5px;">
         
         <!-- FORM ĐỔI ẢNH ĐẠI DIỆN (CHỨC NĂNG 1) -->
         <form action="gioithieu.php" method="post" enctype="multipart/form-data" style="margin: 10px 0; padding: 10px; background: #f4f4f4; border-radius: 5px;">

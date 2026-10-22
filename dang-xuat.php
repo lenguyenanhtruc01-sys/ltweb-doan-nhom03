@@ -4,9 +4,7 @@
  * Chức năng: xóa phiên quản trị, đổi mã phiên và giữ kế hoạch học tập độc lập.
  */
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/inc/config.php';
 
 // Giỏ hàng là dữ liệu độc lập với tài khoản quản trị nên vẫn được giữ lại.
 $gioHang = $_SESSION['ke_hoach_dang_ky'] ?? [];

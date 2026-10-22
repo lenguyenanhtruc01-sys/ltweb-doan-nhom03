@@ -22,6 +22,13 @@ ini_set(
     MOI_TRUONG === 'dev' ? '1' : '0'
 );
 
+foreach (['logs', 'storage'] as $thuMuc) {
+    $duongDan = __DIR__ . '/../' . $thuMuc;
+    if (!is_dir($duongDan) && !@mkdir($duongDan, 0775, true) && !is_dir($duongDan)) {
+        throw new RuntimeException('Không thể tạo thư mục ' . $thuMuc . '.');
+    }
+}
+
 ini_set('log_errors', '1');
 
 ini_set(

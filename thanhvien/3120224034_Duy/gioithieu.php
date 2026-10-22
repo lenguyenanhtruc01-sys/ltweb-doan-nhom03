@@ -16,7 +16,7 @@ $trang    = '';
 $cssTrang = 'css/canhan.css';
 $lopBody  = 'trang-ca-nhan';
 
-$hanhDong = (string) ($_POST['hanh_dong'] ?? '');
+$hanhDong = layChuoiDauVao($_POST['hanh_dong'] ?? '');
 
 // Phát hiện AJAX (JS gửi kèm header X-Requested-With)
 $laAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH'])
@@ -25,9 +25,30 @@ $laAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH'])
 /** Trả JSON rồi dừng. */
 function traJson(array $data): void
 {
+    // Fetch tự theo redirect sang GET, vẫn giữ giao diện không tải lại trang.
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($data['ok'] ?? false) === true) {
+        $ma = bin2hex(random_bytes(16));
+        $_SESSION['duy_phan_hoi'][$ma] = $data;
+        $_SESSION['duy_phan_hoi'] = array_slice($_SESSION['duy_phan_hoi'], -10, null, true);
+        header('Location: gioithieu.php?phan_hoi=' . $ma, true, 303);
+        exit;
+    }
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    header('Cache-Control: no-store');
+    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
     exit;
+}
+
+// GET phản hồi AJAX chỉ đọc một lần sau PRG; không thực hiện lại thao tác.
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['phan_hoi'])) {
+    $ma = layChuoiDauVao($_GET['phan_hoi']);
+    if (preg_match('/^[a-f0-9]{32}$/D', $ma) !== 1 || !isset($_SESSION['duy_phan_hoi'][$ma])) {
+        http_response_code(404);
+        traJson(['ok' => false, 'loi' => ['phan_hoi' => 'Phản hồi đã hết hạn.']]);
+    }
+    $phanHoi = $_SESSION['duy_phan_hoi'][$ma];
+    unset($_SESSION['duy_phan_hoi'][$ma]);
+    traJson($phanHoi);
 }
 
 // ============================================================
@@ -79,8 +100,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ---------- Chức năng 1: chọn món ----------
     if ($hanhDong === 'chon_mon') {
-        $dsMonText = trim((string) ($_POST['dsMon'] ?? ''));
-        $bua       = (string) ($_POST['bua'] ?? 'bat_ky');
+        $dsMonText = layChuoiDauVao($_POST['dsMon'] ?? '');
+        $bua       = layChuoiDauVao($_POST['bua'] ?? 'bat_ky');
 
         $mangMon = array_values(array_filter(
             array_map('trim', explode("\n", $dsMonText)),
@@ -148,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ---------- Chức năng 2: chơi oẳn tù tì ----------
     if ($hanhDong === 'choi_oan_tu_ti') {
-        $nguoiChon = (string) ($_POST['chon'] ?? '');
+        $nguoiChon = layChuoiDauVao($_POST['chon'] ?? '');
         $hopLe = ['keo', 'bua', 'bao'];
 
         if (!in_array($nguoiChon, $hopLe, true)) {

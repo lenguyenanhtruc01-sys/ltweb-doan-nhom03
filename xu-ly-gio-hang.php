@@ -1,43 +1,15 @@
 <?php
+declare(strict_types=1);
 /**
- * Tệp: xu-ly-gio-hang.php
- * Chức năng: điểm cuối tương thích cũ để xử lý thao tác kế hoạch học tập rồi PRG.
+ * URL tương thích cũ dùng chung validation, session và PRG của gio-hang.php.
+ * GET không được thay đổi kế hoạch; action cũ được ánh xạ sang hanh_dong.
  */
-
-require_once __DIR__ . '/vendor/autoload.php';
-use App\Services\KeHoachHocTap;
-
-$keHoach = new KeHoachHocTap();
-
-// Đồng bộ bắt cả 'hanh_dong' (từ form HTML) lẫn 'action' (phòng hờ)
-$hanhDong = $_POST['hanh_dong'] ?? $_GET['hanh_dong'] ?? $_POST['action'] ?? $_GET['action'] ?? '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    switch ($hanhDong) {
-        case 'them':
-            $id = $_POST['id'] ?? 0;
-            $soLuong = $_POST['so_luong'] ?? 1;
-            $keHoach->them($id, $soLuong);
-            break;
-
-        case 'cap_nhat':
-            $id = $_POST['id'] ?? 0;
-            $soLuong = $_POST['so_luong'] ?? 1;
-            $keHoach->capNhat($id, $soLuong);
-            break;
-
-        case 'xoa':
-            $id = $_POST['id'] ?? 0;
-            $keHoach->xoa($id);
-            break;
-
-        // Đồng bộ khớp với 'xoa_het' từ nút trong giao diện giỏ hàng
-        case 'xoa_het':
-            $keHoach->xoaTatCa();
-            break;
-    }
+require_once __DIR__ . '/inc/config.php';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['hanh_dong'])) {
+    $_POST['hanh_dong'] = $_POST['action'] ?? '';
 }
-
-// Áp dụng mô hình PRG: Chuyển hướng (Redirect) về trang hiển thị giỏ hàng
-header('Location: gio-hang.php');
-exit;
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: gio-hang.php');
+    exit;
+}
+require __DIR__ . '/gio-hang.php';

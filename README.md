@@ -6,7 +6,7 @@ Website PHP hỗ trợ sinh viên tra cứu môn học, lập kế hoạch học
 
 - PHP 8.1 trở lên (đã thử nghiệm với PHP 8.2).
 - Apache có PHP, ví dụ XAMPP.
-- Tiện ích PHP `fileinfo` để kiểm tra ảnh tải lên.
+- Tiện ích PHP `fileinfo` và `mbstring`.
 - Composer (chỉ cần khi thư mục `vendor/` chưa có).
 
 ## 2. Cài đặt và chạy
@@ -27,6 +27,15 @@ Website PHP hỗ trợ sinh viên tra cứu môn học, lập kế hoạch học
 
 Không chạy dự án trực tiếp bằng cách mở tệp PHP trên ổ đĩa, vì session, upload và chuyển hướng HTTP sẽ không hoạt động đúng.
 
+### Chạy không cần Apache
+
+```bash
+composer install
+php -S localhost:8000
+```
+
+Mở http://localhost:8000/index.php. Thư mục uploads được tự tạo khi cần; PHP cần quyền ghi tại thư mục dự án.
+
 ## 3. Tài khoản quản trị mẫu
 
 | Tên đăng nhập | Mật khẩu |
@@ -41,7 +50,7 @@ Không chạy dự án trực tiếp bằng cách mở tệp PHP trên ổ đĩa
 | --- | --- |
 | [index.php](index.php) | Trang chủ, giới thiệu hệ thống. |
 | [danh-sach.php](danh-sach.php) | Tìm kiếm, lọc, sắp xếp và xem danh sách môn học. |
-| [chi-tiet.php](chi-tiet.php) | Xem chi tiết một môn học theo `?id=`. |
+| [chi-tiet.php?id=1](chi-tiet.php?id=1) | Xem chi tiết một môn học theo `?id=`. |
 | [gio-hang.php](gio-hang.php) | Quản lý kế hoạch học tập: thêm, cập nhật số lượng, xóa và xóa toàn bộ. |
 | [lien-he.php](lien-he.php) | Gửi liên hệ, có kiểm tra dữ liệu và tải ảnh minh họa. |
 | [dang-nhap.php](dang-nhap.php) | Đăng nhập quản trị. |
@@ -169,3 +178,17 @@ Nếu dùng Git:
 ```bash
 git diff --check
 ```
+
+## 12. Upload và log runtime
+
+Ảnh liên hệ và avatar Hải dùng chung kiểm tra tối đa 2 MB, MIME và nội dung ảnh. Tên ngẫu nhiên lưu trong `uploads/`, tự tạo thư mục khi cần. Thông tin avatar lưu trong `storage/3120224042_avatar.json`. Đăng nhập sai ghi tại `logs/php-error.log`, không dùng `data/login-error.log`.
+
+| Chức năng | URL | Tệp PHP |
+| --- | --- | --- |
+| Trang chủ | `index.php` | `index.php` |
+| Tìm kiếm | `danh-sach.php` | `danh-sach.php` |
+| Chi tiết | `chi-tiet.php?id=1` | `chi-tiet.php` |
+| Kế hoạch | `gio-hang.php` | `gio-hang.php` |
+| Liên hệ | `lien-he.php` | `lien-he.php` |
+| Đăng nhập | `dang-nhap.php` | `dang-nhap.php` |
+| Quản trị | `quan-tri.php` | `quan-tri.php` |

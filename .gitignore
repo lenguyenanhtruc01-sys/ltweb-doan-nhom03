@@ -8,3 +8,8 @@
 
 /logs/*
 !/logs/.htaccess
+
+/data/*.log
+/.tmp-repair/
+
+/thanhvien/*/images/avatar_*

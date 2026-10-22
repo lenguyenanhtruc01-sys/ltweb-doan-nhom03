@@ -30,7 +30,7 @@ $kho = new KhoMonHoc();
 
 $daXem = [];
 
-$rawCookie = (string) ($_COOKIE['da_xem'] ?? '');
+$rawCookie = layChuoiDauVao($_COOKIE['da_xem'] ?? '');
 
 if ($rawCookie !== '') {
 

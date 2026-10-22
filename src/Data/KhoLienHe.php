@@ -1,4 +1,10 @@
 <?php
+declare(strict_types=1);
+
+/**
+ * Đọc và ghi liên hệ JSONL, trả bản mới nhất trước.
+ * Kiểm tra lỗi đọc/ghi thay vì truyền false vào xử lý mảng.
+ */
 namespace App\Data;
 
 class KhoLienHe
@@ -29,8 +35,11 @@ class KhoLienHe
     public function tatCa(): array                  // mới nhất đứng đầu
     {
         if (!is_file($this->tep)) return [];
-        $dong = file($this->tep,
+        $dong = @file($this->tep,
                      FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        if ($dong === false) {
+            throw new \RuntimeException('Không thể đọc danh sách liên hệ.');
+        }
         $ds = array_map(fn($d) => json_decode($d, true), $dong);
         return array_reverse(array_filter($ds, 'is_array'));
     }

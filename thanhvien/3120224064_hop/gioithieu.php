@@ -7,7 +7,7 @@
  *   - Tích hợp 2 chức năng xử lý tại máy chủ: Tra cứu thông tin mạng & Kiểm tra mật khẩu (Entropy).
  *   - Giữ lại giá trị ô input và chống cuộn trang khi submit.
  * Cách thử:
- *   - Mở qua URL: http://localhost:8000/thanhvien/3120224064_phanvanhop/gioithieu.php
+ *   - Mở qua URL: http://localhost:8000/thanhvien/3120224064_hop/gioithieu.php
  */
 
 // Định nghĩa đường dẫn gốc để header/footer gọi đúng file css/js chung của nhóm
@@ -38,6 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && layChuoiDauVao($_POST['hanh_dong'] 
 
     if (empty($target)) {
         $loiNet = 'Vui lòng nhập tên miền hoặc địa chỉ IP cần tra cứu!';
+    } elseif (strlen($target) > 253 || preg_match('/[\x00-\x20\x7f]/', $target)
+        || (!filter_var($target, FILTER_VALIDATE_IP)
+            && !filter_var($target, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME))) {
+        $loiNet = 'Vui lòng nhập địa chỉ IP hoặc tên miền hợp lệ, không có ký tự điều khiển.';
     } else {
         $isIp = filter_var($target, FILTER_VALIDATE_IP);
         $resolvedIp = $isIp ? $target : gethostbyname($target);
@@ -46,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && layChuoiDauVao($_POST['hanh_dong'] 
             $loiNet = 'Không thể phân giải tên miền này. Vui lòng kiểm tra lại!';
         } else {
             $loaiIp = filter_var($resolvedIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) ? 'IPv6' : 'IPv4';
-            $latency = rand(5, 40) . ' ms';
+            $latency = 'Chưa đo';
             
             $ketQuaNet = [
                 'target' => $target,

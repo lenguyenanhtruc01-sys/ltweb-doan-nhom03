@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Chỉ chấp nhận dữ liệu chuỗi; username[]=admin là mảng và không được
     // phép đi vào trim() hoặc password_verify().
     $username = is_string($usernameRaw) ? trim($usernameRaw) : '';
-    $password = is_string($passwordRaw) ? trim($passwordRaw) : '';
+    $password = is_string($passwordRaw) ? $passwordRaw : '';
 
     $danhSachTaiKhoan = require __DIR__ . '/inc/tai-khoan.php';
 
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $thongBaoLoi = 'Tên đăng nhập hoặc mật khẩu không chính xác.';
         
         $ip = $_SERVER['REMOTE_ADDR'] ?? 'UNKNOWN';
-        $tenDangNhapLog = $username === '' ? '[du-lieu-khong-hop-le]' : $username;
+        $tenDangNhapLog = json_encode(mb_substr($username, 0, 100), JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
         $noiDungLog = "Đăng nhập thất bại với tài khoản: '{$tenDangNhapLog}' từ IP: {$ip}";
         
         error_log($noiDungLog);

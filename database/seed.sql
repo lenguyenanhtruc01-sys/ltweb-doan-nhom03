@@ -6,10 +6,10 @@ USE ltweb_nhom03;
 -- ============================================
 -- 1. TÀI KHOẢN MẪU (Mật khẩu của cả 3 tài khoản đều là: matkhau123)
 -- ============================================
-INSERT INTO nguoi_dung (id, ten_dang_nhap, mat_khau, ho_ten, vai_tro) VALUES
-(1, 'admin', '$2y$12$qHb8qF.xgsQsDEN5nvxo6OsTDLDQmDQmTnjDdlNCp7MqAzd4fkWBG', 'Quản trị viên', 'quan_tri'),
-(2, 'an', '$2y$12$u.0T5HsnlVJWcPLCbRUsIO9EXccEweLCYOD7R46J.TJ9bH4ju5eGC', 'Trần Văn An', 'khach_hang'),
-(3, 'binh', '$2y$12$3ZoP8Zw46/1SUlmMu/unR.ZIvgTjCuo2NGWs2F9ttQBE.FmFo83bO', 'Nguyễn Thị Bình', 'khach_hang');
+INSERT INTO nguoi_dung (id, email, ten_dang_nhap, mat_khau, ho_ten, vai_tro) VALUES
+(1, 'admin@example.com', 'admin', '$2y$12$qHb8qF.xgsQsDEN5nvxo6OsTDLDQmDQmTnjDdlNCp7MqAzd4fkWBG', 'Quản trị viên', 'quan_tri'),
+(2, 'an@example.com', 'an', '$2y$12$u.0T5HsnlVJWcPLCbRUsIO9EXccEweLCYOD7R46J.TJ9bH4ju5eGC', 'Trần Văn An', 'khach_hang'),
+(3, 'binh@example.com', 'binh', '$2y$12$3ZoP8Zw46/1SUlmMu/unR.ZIvgTjCuo2NGWs2F9ttQBE.FmFo83bO', 'Nguyễn Thị Bình', 'khach_hang');
 
 -- ============================================
 -- 2. DANH MỤC MÔN HỌC
@@ -36,6 +36,10 @@ INSERT INTO mon_hoc (id, danh_muc_id, ma_mon, ten_mon, so_tin_chi, mo_ta) VALUES
 INSERT INTO thanh_vien (mssv, ho_ten)
 SELECT '3120224064', 'Phan Văn Hợp'
 WHERE NOT EXISTS (SELECT 1 FROM thanh_vien WHERE mssv = '3120224064');
+
+INSERT INTO thanh_vien (mssv, ho_ten)
+SELECT '3120224042', 'Lê Dương Hoàng Hải'
+WHERE NOT EXISTS (SELECT 1 FROM thanh_vien WHERE mssv = '3120224042');
 
 INSERT INTO tv_tra_cuu_mang (mssv, muc_tieu, dia_chi_ip, loai_ip)
 SELECT '3120224064', '127.0.0.1', '127.0.0.1', 'IPv4'

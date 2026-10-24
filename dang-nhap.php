@@ -1,91 +1,63 @@
 <?php
-/**
- * Tệp: dang-nhap.php
- * Chức năng: xác thực tài khoản quản trị và thiết lập phiên đăng nhập.
- */
+declare(strict_types=1);
 
 require_once __DIR__ . '/inc/config.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+$thongBao = '';
+$emailNhap = '';
+$flashDangKy = $_SESSION['flash_dang_ky'] ?? '';
+unset($_SESSION['flash_dang_ky']);
+
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+    $emailRaw = $_POST['email'] ?? '';
+    $matKhauRaw = $_POST['mat_khau'] ?? '';
+    $emailNhap = is_string($emailRaw) ? trim($emailRaw) : '';
+    $matKhau = is_string($matKhauRaw) ? $matKhauRaw : '';
+
+    try {
+        $truyVan = db()->prepare('SELECT id, mat_khau FROM nguoi_dung WHERE email = :email LIMIT 1');
+        $truyVan->execute(['email' => $emailNhap]);
+        $nguoiDung = $truyVan->fetch();
+
+        if (is_array($nguoiDung) && password_verify($matKhau, $nguoiDung['mat_khau'])) {
+            session_regenerate_id(true);
+            $_SESSION = ['uid' => (int) $nguoiDung['id']];
+            header('Location: index.php', true, 303);
+            exit;
+        }
+    } catch (PDOException $loi) {
+        error_log((string) $loi);
+    }
+
+    $thongBao = 'Email hoặc mật khẩu không đúng';
 }
 
-// Nếu đã đăng nhập rồi thì chuyển hướng thẳng vào trang quản trị
-if (isset($_SESSION['da_dang_nhap']) && $_SESSION['da_dang_nhap'] === true) {
-    header('Location: quan-tri.php');
-    exit;
-}
-
-$thongBaoLoi = '';
-
-// Dữ liệu cho thanh điều hướng dùng chung.
 $tieuDe = 'Đăng nhập';
 $trang = 'dang-nhap';
 $goc = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $usernameRaw = $_POST['username'] ?? '';
-    $passwordRaw = $_POST['password'] ?? '';
-
-    // Chỉ chấp nhận dữ liệu chuỗi; username[]=admin là mảng và không được
-    // phép đi vào trim() hoặc password_verify().
-    $username = is_string($usernameRaw) ? trim($usernameRaw) : '';
-    $password = is_string($passwordRaw) ? $passwordRaw : '';
-
-    $danhSachTaiKhoan = require __DIR__ . '/inc/tai-khoan.php';
-
-    if (isset($danhSachTaiKhoan[$username]) && password_verify($password, $danhSachTaiKhoan[$username]['password'])) {
-        // ĐĂNG NHẬP THÀNH CÔNG
-        // Cấp mã phiên mới (chống tấn công Session Fixation)
-        session_regenerate_id(true);
-
-        $_SESSION['da_dang_nhap'] = true;
-        $_SESSION['username'] = $username;
-        $_SESSION['ho_ten'] = $danhSachTaiKhoan[$username]['ho_ten'];
-
-        header('Location: quan-tri.php');
-        exit;
-    } else {
-        // ĐĂNG NHẬP THẤT BẠI -> Báo lỗi chung và ghi log chuẩn đề vào logs/php-error.log
-        $thongBaoLoi = 'Tên đăng nhập hoặc mật khẩu không chính xác.';
-        
-        $ip = $_SERVER['REMOTE_ADDR'] ?? 'UNKNOWN';
-        $tenDangNhapLog = json_encode(mb_substr($username, 0, 100), JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
-        $noiDungLog = "Đăng nhập thất bại với tài khoản: '{$tenDangNhapLog}' từ IP: {$ip}";
-        
-        error_log($noiDungLog);
-    }
-}
-
 require __DIR__ . '/inc/header.php';
 ?>
-
-    <main class="noi-dung-chinh">
-        <div class="bao" style="max-width: 500px; margin: 2rem auto;">
-            <h1>Đăng nhập hệ thống quản trị</h1>
-            
-            <?php if (!empty($thongBaoLoi)): ?>
-                <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 1rem;">
-                    <?= e($thongBaoLoi) ?>
-                </div>
-            <?php endif; ?>
-
-            <form method="POST" action="dang-nhap.php" class="form-lien-he" style="background: #f8f9fa; padding: 2rem; border-radius: 8px;">
-                <div style="margin-bottom: 1rem;">
-                    <label for="username" style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Tên đăng nhập:</label>
-                    <input type="text" id="username" name="username" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" placeholder="Nhập admin...">
-                </div>
-
-                <div style="margin-bottom: 1.5rem;">
-                    <label for="password" style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Mật khẩu:</label>
-                    <input type="password" id="password" name="password" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" placeholder="Mật khẩu mặc định: 123456">
-                </div>
-
-                <button type="submit" class="nut nut--chinh" style="width: 100%; padding: 0.75rem; cursor: pointer;">Đăng nhập</button>
-            </form>
-        </div>
-    </main>
-
-<?php
-require __DIR__ . '/inc/footer.php';
-?>
+<main class="noi-dung-chinh">
+    <div class="bao" style="max-width: 500px; margin: 2rem auto;">
+        <h1>Đăng nhập</h1>
+        <?php if ($thongBao !== ''): ?>
+            <p role="alert"><?= e($thongBao) ?></p>
+        <?php endif; ?>
+        <?php if (is_string($flashDangKy) && $flashDangKy !== ''): ?>
+            <p role="status"><?= e($flashDangKy) ?></p>
+        <?php endif; ?>
+        <form method="post" action="dang-nhap.php" class="form-lien-he">
+            <div>
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" maxlength="100" autocomplete="email" required value="<?= e($emailNhap) ?>">
+            </div>
+            <div>
+                <label for="mat-khau">Mật khẩu</label>
+                <input id="mat-khau" name="mat_khau" type="password" autocomplete="current-password" required>
+            </div>
+            <button type="submit" class="nut nut--chinh">Đăng nhập</button>
+        </form>
+        <p><a href="dang-ky.php">Tạo tài khoản</a></p>
+    </div>
+</main>
+<?php require __DIR__ . '/inc/footer.php'; ?>

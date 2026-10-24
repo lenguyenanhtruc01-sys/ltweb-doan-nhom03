@@ -1,23 +1,26 @@
 <?php
-/**
- * Tệp: dang-xuat.php
- * Chức năng: xóa phiên quản trị, đổi mã phiên và giữ kế hoạch học tập độc lập.
- */
+declare(strict_types=1);
 
 require_once __DIR__ . '/inc/config.php';
 
-// Giỏ hàng là dữ liệu độc lập với tài khoản quản trị nên vẫn được giữ lại.
-$gioHang = $_SESSION['ke_hoach_dang_ky'] ?? [];
+$_SESSION = [];
 
-if (!is_array($gioHang)) {
-    $gioHang = [];
+if (ini_get('session.use_cookies')) {
+    $thamSoCookie = session_get_cookie_params();
+    setcookie(
+        session_name(),
+        '',
+        [
+            'expires' => time() - 42000,
+            'path' => $thamSoCookie['path'],
+            'domain' => $thamSoCookie['domain'],
+            'secure' => $thamSoCookie['secure'],
+            'httponly' => $thamSoCookie['httponly'],
+            'samesite' => $thamSoCookie['samesite'] ?? 'Lax',
+        ]
+    );
 }
 
-// Xóa trạng thái đăng nhập và đổi mã phiên để đăng xuất an toàn.
-$_SESSION = [];
-session_regenerate_id(true);
-$_SESSION['ke_hoach_dang_ky'] = $gioHang;
-
-// Dùng đường dẫn tuyệt đối hoặc tương đối rõ ràng để về trang đăng nhập
-header("Location: dang-nhap.php");
+session_destroy();
+header('Location: index.php', true, 303);
 exit;

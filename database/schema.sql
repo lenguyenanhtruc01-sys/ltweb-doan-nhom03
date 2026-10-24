@@ -13,7 +13,8 @@ USE ltweb_nhom03;
 CREATE TABLE nguoi_dung (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     ten_dang_nhap VARCHAR(50) NOT NULL UNIQUE,
-    mat_khau VARCHAR(255) NOT NULL, -- chứa chuỗi băm password_hash
+    email VARCHAR(254) NOT NULL UNIQUE,
+    mat_khau VARCHAR(255) NOT NULL,
     ho_ten VARCHAR(100) NOT NULL,
     vai_tro ENUM('quan_tri', 'khach_hang') NOT NULL DEFAULT 'khach_hang',
     ngay_tao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP

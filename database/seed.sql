@@ -4,12 +4,13 @@ SET NAMES utf8mb4;
 USE ltweb_nhom03;
 
 -- ============================================
--- 1. TÀI KHOẢN MẪU (Mật khẩu của cả 3 tài khoản đều là: matkhau123)
+-- 1. TÀI KHOẢN MẪU (Mật khẩu của cả 4 tài khoản đều là: 123456)
 -- ============================================
-INSERT INTO nguoi_dung (id, ten_dang_nhap, mat_khau, ho_ten, vai_tro) VALUES
-(1, 'admin', '$2y$12$qHb8qF.xgsQsDEN5nvxo6OsTDLDQmDQmTnjDdlNCp7MqAzd4fkWBG', 'Quản trị viên', 'quan_tri'),
-(2, 'an', '$2y$12$u.0T5HsnlVJWcPLCbRUsIO9EXccEweLCYOD7R46J.TJ9bH4ju5eGC', 'Trần Văn An', 'khach_hang'),
-(3, 'binh', '$2y$12$3ZoP8Zw46/1SUlmMu/unR.ZIvgTjCuo2NGWs2F9ttQBE.FmFo83bO', 'Nguyễn Thị Bình', 'khach_hang');
+INSERT INTO nguoi_dung (id, ten_dang_nhap, email, mat_khau, ho_ten, vai_tro) VALUES
+(1, 'admin', 'admin@edugpa.local', '$2y$10$GX8yjPude4OUS2oJZ.tYnOI/rHzXKYYzccZ5CPtWZEvotsoUPsFCG', 'Quản trị viên', 'quan_tri'),
+(2, 'truc', 'truc@edugpa.local', '$2y$10$GX8yjPude4OUS2oJZ.tYnOI/rHzXKYYzccZ5CPtWZEvotsoUPsFCG', 'Lê Nguyễn Anh Trúc', 'khach_hang'),
+(3, 'duy', 'duy@edugpa.local', '$2y$10$GX8yjPude4OUS2oJZ.tYnOI/rHzXKYYzccZ5CPtWZEvotsoUPsFCG', 'Dương Bảo Duy', 'khach_hang'),
+(4, 'uyen', 'uyen@edugpa.local', '$2y$10$GX8yjPude4OUS2oJZ.tYnOI/rHzXKYYzccZ5CPtWZEvotsoUPsFCG', 'Huỳnh Phương Uyên', 'khach_hang');
 
 -- ============================================
 -- 2. DANH MỤC MÔN HỌC

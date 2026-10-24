@@ -7,20 +7,37 @@
 // Hàm lấy thông tin người dùng hiện tại (nếu đã đăng nhập)
 function nguoiDung(): ?array
 {
-    static $nd = false; // Cache lại để không truy vấn nhiều lần trong 1 request
+    static $daTai = false;
+    static $nd = null;
 
-    if ($nd === false) {
-        // Nếu chưa có session uid thì trả về null luôn
-        if (empty($_SESSION['uid'])) {
-            return $nd = null;
-        }
-
-        $st = db()->prepare('SELECT id, ten_dang_nhap, ho_ten, vai_tro FROM nguoi_dung WHERE id = ?');
-        $st->execute([$_SESSION['uid']]);
-        $user = $st->fetch();
-        
-        $nd = $user ? $user : null;
+    // Trong cùng một request, chỉ truy vấn user một lần.
+    if ($daTai) {
+        return $nd;
     }
+    $daTai = true;
+
+    // Session chỉ giữ uid; thông tin còn lại đọc từ database.
+    $uid = $_SESSION['uid'] ?? null;
+
+    if (!is_int($uid) && !(is_string($uid) && ctype_digit($uid))) {
+        return null;
+    }
+
+    $uid = (int) $uid;
+
+    if ($uid < 1) {
+        return null;
+    }
+
+    $st = db()->prepare(
+        'SELECT id, ten_dang_nhap, email, ho_ten, vai_tro
+         FROM nguoi_dung
+         WHERE id = ?'
+    );
+    $st->execute([$uid]);
+
+    $nd = $st->fetch() ?: null;
+
     return $nd;
 }
 

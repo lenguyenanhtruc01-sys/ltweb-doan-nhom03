@@ -1,91 +1,108 @@
 <?php
 /**
  * Tệp: dang-nhap.php
- * Chức năng: xác thực tài khoản quản trị và thiết lập phiên đăng nhập.
+ * Chức năng: Xác thực người dùng từ MySQL (Slide 38 - 41)
  */
-
+declare(strict_types=1);
 require_once __DIR__ . '/inc/config.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+// Nếu đã đăng nhập thì chuyển hướng về trang chủ
+$nguoiDungHienTai = nguoiDung();
 
-// Nếu đã đăng nhập rồi thì chuyển hướng thẳng vào trang quản trị
-if (isset($_SESSION['da_dang_nhap']) && $_SESSION['da_dang_nhap'] === true) {
-    header('Location: quan-tri.php');
+if ($nguoiDungHienTai !== null) {
+    $trangDich = $nguoiDungHienTai['vai_tro'] === 'quan_tri'
+        ? 'quan-tri.php'
+        : 'index.php';
+
+    header('Location: ' . $trangDich);
     exit;
 }
 
 $thongBaoLoi = '';
+$thongBaoThanhCong = (($_GET['dang_ky'] ?? '') === '1')
+    ? 'Đăng ký thành công. Hãy đăng nhập.'
+    : '';
 
-// Dữ liệu cho thanh điều hướng dùng chung.
+// Cấu hình trang
 $tieuDe = 'Đăng nhập';
 $trang = 'dang-nhap';
 $goc = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $usernameRaw = $_POST['username'] ?? '';
+    $thongBaoLoi = 'Email hoặc mật khẩu không chính xác.';
+
+    $emailRaw = $_POST['email'] ?? '';
     $passwordRaw = $_POST['password'] ?? '';
 
-    // Chỉ chấp nhận dữ liệu chuỗi; username[]=admin là mảng và không được
-    // phép đi vào trim() hoặc password_verify().
-    $username = is_string($usernameRaw) ? trim($usernameRaw) : '';
+    $email = is_string($emailRaw) ? trim($emailRaw) : '';
     $password = is_string($passwordRaw) ? $passwordRaw : '';
 
-    $danhSachTaiKhoan = require __DIR__ . '/inc/tai-khoan.php';
+    if (filter_var($email, FILTER_VALIDATE_EMAIL) && $password !== '') {
+        $st = db()->prepare(
+            'SELECT id, mat_khau, vai_tro
+            FROM nguoi_dung
+             WHERE email = ?'
+        );
+        $st->execute([$email]);
+        $nd = $st->fetch();
 
-    if (isset($danhSachTaiKhoan[$username]) && password_verify($password, $danhSachTaiKhoan[$username]['password'])) {
-        // ĐĂNG NHẬP THÀNH CÔNG
-        // Cấp mã phiên mới (chống tấn công Session Fixation)
-        session_regenerate_id(true);
+        if ($nd && password_verify($password, $nd['mat_khau'])) {
+            if (password_needs_rehash($nd['mat_khau'], PASSWORD_DEFAULT)) {
+                $hashMoi = password_hash($password, PASSWORD_DEFAULT);
 
-        $_SESSION['da_dang_nhap'] = true;
-        $_SESSION['username'] = $username;
-        $_SESSION['ho_ten'] = $danhSachTaiKhoan[$username]['ho_ten'];
+                $capNhat = db()->prepare(
+                    'UPDATE nguoi_dung
+                     SET mat_khau = ?
+                     WHERE id = ?'
+                );
+                $capNhat->execute([$hashMoi, (int) $nd['id']]);
+            }
 
-        header('Location: quan-tri.php');
-        exit;
-    } else {
-        // ĐĂNG NHẬP THẤT BẠI -> Báo lỗi chung và ghi log chuẩn đề vào logs/php-error.log
-        $thongBaoLoi = 'Tên đăng nhập hoặc mật khẩu không chính xác.';
-        
-        $ip = $_SERVER['REMOTE_ADDR'] ?? 'UNKNOWN';
-        $tenDangNhapLog = json_encode(mb_substr($username, 0, 100), JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
-        $noiDungLog = "Đăng nhập thất bại với tài khoản: '{$tenDangNhapLog}' từ IP: {$ip}";
-        
-        error_log($noiDungLog);
+            session_regenerate_id(true);
+            $_SESSION['uid'] = (int) $nd['id'];
+
+            $trangDich = $nd['vai_tro'] === 'quan_tri'
+    ? 'quan-tri.php'
+    : 'index.php';
+
+header('Location: ' . $trangDich);
+            exit;
+        }
     }
 }
 
 require __DIR__ . '/inc/header.php';
 ?>
 
-    <main class="noi-dung-chinh">
-        <div class="bao" style="max-width: 500px; margin: 2rem auto;">
-            <h1>Đăng nhập hệ thống quản trị</h1>
-            
-            <?php if (!empty($thongBaoLoi)): ?>
-                <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 1rem;">
-                    <?= e($thongBaoLoi) ?>
-                </div>
-            <?php endif; ?>
+<main class="noi-dung-chinh">
+    <div class="bao" style="max-width: 500px; margin: 2rem auto;">
+        <h1>Đăng nhập</h1>
+        <?php if ($thongBaoThanhCong !== ''): ?>
+    <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 1rem;">
+        <?= e($thongBaoThanhCong) ?>
+    </div>
+    <?php endif; ?>
+        <?php if (!empty($thongBaoLoi)): ?>
+            <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 1rem;">
+                <?= e($thongBaoLoi) ?>
+            </div>
+        <?php endif; ?>
 
-            <form method="POST" action="dang-nhap.php" class="form-lien-he" style="background: #f8f9fa; padding: 2rem; border-radius: 8px;">
-                <div style="margin-bottom: 1rem;">
-                    <label for="username" style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Tên đăng nhập:</label>
-                    <input type="text" id="username" name="username" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" placeholder="Nhập admin...">
-                </div>
+        <form method="POST" action="dang-nhap.php" class="form-lien-he" style="background: #f8f9fa; padding: 2rem; border-radius: 8px;">
+            <div style="margin-bottom: 1rem;">
+                <label for="email" style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Email:</label>
+                <input type="email" id="email" name="email" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" placeholder="Nhập email...">
+            </div>
 
-                <div style="margin-bottom: 1.5rem;">
-                    <label for="password" style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Mật khẩu:</label>
-                    <input type="password" id="password" name="password" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" placeholder="Mật khẩu mặc định: 123456">
-                </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label for="password" style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Mật khẩu:</label>
+                <input type="password" id="password" name="password" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" placeholder="Mật khẩu mặc định: 123456">
+            </div>
 
-                <button type="submit" class="nut nut--chinh" style="width: 100%; padding: 0.75rem; cursor: pointer;">Đăng nhập</button>
-            </form>
-        </div>
-    </main>
+            <button type="submit" class="nut nut--chinh" style="width: 100%; padding: 0.75rem; cursor: pointer;">Đăng nhập</button>
+            <p>Chưa có tài khoản? <a href="dang-ky.php">Đăng ký ngay</a></p>
+        </form>
+    </div>
+</main>
 
-<?php
-require __DIR__ . '/inc/footer.php';
-?>
+<?php require __DIR__ . '/inc/footer.php'; ?>

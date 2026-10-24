@@ -1,5 +1,20 @@
 # EduGPA — Đồ án nhóm 03
 
+## Bài 6 — phần cá nhân Phan Văn Hợp
+
+Trang: `thanhvien/3120224064_hop/gioithieu.php`.
+
+- Tra cứu mạng ghi bảng `tv_tra_cuu_mang`, hiển thị 10 lần gần nhất; không ghi thêm JSONL.
+- Bình chọn `tv_binh_chon`: mỗi tài khoản một phiếu, số phiếu và tỉ lệ theo lựa chọn; PRG và thông báo một lần.
+- PDO chung: `inc/db.php`, database `ltweb_nhom03`, XAMPP mặc định root/mật khẩu rỗng; bật `pdo_mysql`.
+- SQL của Hợp đã ghép vào `database/schema.sql`, `database/seed.sql` cùng các bảng và dữ liệu chung từ GitHub. Lưu ý: schema chung có `DROP DATABASE`, chỉ import khi chủ động dựng lại CSDL và đã sao lưu dữ liệu cần giữ. Việc đồng bộ Git không tự import SQL.
+- Phần đăng nhập MySQL của Hải cần lưu `$_SESSION['uid']` sau khi xác thực và đổi mã session. Đăng nhập bằng tệp tài khoản bài 5 hiện chưa cấp uid, nên chưa dùng được bỏ phiếu. Không tự lấy quyền/ID từ form.
+- Log JSONL cũ được giữ trên máy để đối chiếu, không tự nhập hay xóa lịch sử cũ.
+
+Kiểm thử sau khi ghép CSDL: tra cứu `127.0.0.1`, xem lịch sử rồi F5 (không thêm dòng); vote một lần rồi vote lại (báo đã bình chọn); F5 thông báo biến mất; thống kê có tỉ lệ và tổng đúng; gửi `target[]`/`tuy_chon[]` không phát Warning. Chụp bằng chứng vào `kiemtra/`, điền Bảng 5 và tự commit/push từ tài khoản cá nhân.
+
+Các phần đặt hàng/REST API của Hợp chưa có trong checkout hiện tại; mục này chỉ mô tả phần cá nhân đã tích hợp, không xác nhận hoàn thành toàn bộ Bài 6.
+
 Website PHP hỗ trợ sinh viên tra cứu môn học, lập kế hoạch học tập, gửi liên hệ và quản trị các liên hệ đã nhận.
 
 ## 1. Yêu cầu môi trường

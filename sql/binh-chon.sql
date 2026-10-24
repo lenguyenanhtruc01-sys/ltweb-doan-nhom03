@@ -1,0 +1,2 @@
+-- Đã chuyển SQL bình chọn sang database/schema.sql và database/seed.sql.
+-- Dùng hai tệp trên để tránh tạo bảng MSSV khác kiểu với schema chung.

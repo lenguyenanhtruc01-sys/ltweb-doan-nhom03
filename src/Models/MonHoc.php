@@ -25,7 +25,7 @@ class MonHoc
         $this->tenMon = $data['tenMon'] ?? $data['ten_mon'] ?? $data['ten'] ?? '';
         $this->soTinChi = isset($data['soTinChi'])
             ? (int) $data['soTinChi']
-            : (int) ($data['tin_chi'] ?? 0);
+            : (int) ($data['so_tin_chi'] ?? $data['tin_chi'] ?? 0);
 
         $this->diemChu = $data['diemChu'] ?? null;
         $this->diemHe4 = isset($data['diemHe4'])

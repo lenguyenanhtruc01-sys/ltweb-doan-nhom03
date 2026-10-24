@@ -13,7 +13,7 @@ require __DIR__ . '/inc/config.php';
 
 use App\Data\KhoMonHoc;
 
-$kho = new KhoMonHoc();
+$kho = new KhoMonHoc(db());
 
 /*
  * ============================================================

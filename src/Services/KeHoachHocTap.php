@@ -29,7 +29,7 @@ class KeHoachHocTap
             $_SESSION[self::SESSION_KEY] = [];
         }
 
-        $this->khoMonHoc = new KhoMonHoc();
+        $this->khoMonHoc = new KhoMonHoc(db());
     }
 
     /**

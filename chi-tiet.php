@@ -12,7 +12,7 @@ use App\Services\KeHoachHocTap;
 
 require __DIR__ . '/inc/config.php';
 
-$kho = new KhoMonHoc();
+$kho = new KhoMonHoc(db());
 
 // Chỉ nhận ID dạng số nguyên đơn; chặn trường hợp ?id[]=1.
 $giaTriId = $_GET['id'] ?? null;

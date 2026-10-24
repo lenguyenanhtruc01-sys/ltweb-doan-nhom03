@@ -16,14 +16,11 @@ $tieuDe = 'Trang cá nhân Phan Văn Hợp';
 $trang = 'gioi-thieu';
 
 require_once __DIR__ . '/../../inc/config.php';
+require __DIR__ . '/../../inc/binh-chon-hop.php';
 
-// Hàm escape dữ liệu chống XSS an toàn
-// Thư mục lưu trữ log cá nhân
-$storageDir = __DIR__ . '/../../storage';
-if (!is_dir($storageDir)) {
-    mkdir($storageDir, 0755, true);
-}
-$netLogFile = $storageDir . '/3120224064_netlog.jsonl';
+// Phần B: tra cứu mạng và lịch sử dùng bảng tv_tra_cuu_mang.
+$lichSuMang = [];
+$loiLichSuMang = '';
 
 // ===== XỬ LÝ CHỨC NĂNG 1: TRA CỨU THÔNG TIN MẠNG =====
 $ketQuaNet = $_SESSION['hop_flash_net'] ?? null;
@@ -59,14 +56,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && layChuoiDauVao($_POST['hanh_dong'] 
                 'latency' => $latency,
                 'time' => date('Y-m-d H:i:s')
             ];
-            file_put_contents(
-                $netLogFile,
-                json_encode($ketQuaNet, JSON_UNESCAPED_UNICODE) . PHP_EOL,
-                FILE_APPEND | LOCK_EX
-            );
-            $_SESSION['hop_flash_net'] = $ketQuaNet;
-            header('Location: gioithieu.php?cong-cu=mang#cong-cu-section');
-            exit;
+            try {
+                $tokenMang = $_POST['csrf_mang'] ?? null;
+                if (!is_string($tokenMang) || !hash_equals($hopVoteToken, $tokenMang)) {
+                    $loiNet = 'Phiên biểu mẫu không hợp lệ. Vui lòng thử lại.';
+                } else {
+                    (new \App\Data\KhoTraCuuMang(db()))->them('3120224064', $target, $resolvedIp, $loaiIp);
+                    $_SESSION['hop_flash_net'] = $ketQuaNet;
+                    header('Location: gioithieu.php?cong-cu=mang#cong-cu-section', true, 303);
+                    exit;
+                }
+            } catch (Throwable $error) {
+                error_log((string) $error);
+                $ketQuaNet = null;
+                $loiNet = 'Chưa lưu được tra cứu vào CSDL. Vui lòng thử lại sau.';
+            }
         }
     }
 }
@@ -101,6 +105,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && layChuoiDauVao($_POST['hanh_dong'] 
         header('Location: gioithieu.php?cong-cu=mat-khau#cong-cu-section');
         exit;
     }
+}
+
+try {
+    $lichSuMang = (new \App\Data\KhoTraCuuMang(db()))->ganDay('3120224064');
+} catch (Throwable $error) {
+    error_log((string) $error);
+    $loiLichSuMang = 'Chưa tải được lịch sử tra cứu. Vui lòng kiểm tra CSDL.';
 }
 
 // Gọi Header chung của nhóm (dùng $goc để trỏ đúng đường dẫn)
@@ -259,6 +270,7 @@ include __DIR__ . '/../../inc/header.php';
                 <!-- Giữ vị trí cuộn trang bằng #cong-cu-section -->
                 <form action="gioithieu.php#cong-cu-section" method="POST" class="cong-cu-form">
                     <input type="hidden" name="hanh_dong" value="tra_cuu_mang">
+                    <input type="hidden" name="csrf_mang" value="<?= e($hopVoteToken) ?>">
                     <input type="text" name="target" placeholder="Nhập domain hoặc IP..." value="<?= e($savedTarget) ?>" required>
                     <button type="submit" class="btn-net">Tra cứu</button>
                 </form>
@@ -374,6 +386,19 @@ include __DIR__ . '/../../inc/header.php';
         </div>
     </section>
 
+    <section class="the-noi-dung" id="lich-su-mang" aria-labelledby="tieu-de-lich-su-mang">
+        <h2 class="the-noi-dung__tieu-de" id="tieu-de-lich-su-mang">Lịch sử tra cứu mạng</h2>
+        <p>Mười kết quả gần nhất trên trang của Hợp.</p>
+        <?php if ($loiLichSuMang !== ''): ?><p role="status"><?= e($loiLichSuMang) ?></p>
+        <?php elseif ($lichSuMang === []): ?><p>Chưa có lần tra cứu nào.</p>
+        <?php else: ?><ul>
+            <?php foreach ($lichSuMang as $lanTraCuu): ?>
+                <li><?= e($lanTraCuu['muc_tieu']) ?> → <?= e($lanTraCuu['dia_chi_ip']) ?>
+                    (<?= e($lanTraCuu['loai_ip']) ?>), <?= e($lanTraCuu['thoi_gian']) ?></li>
+            <?php endforeach; ?>
+        </ul><?php endif; ?>
+    </section>
+    <?php require __DIR__ . '/../../inc/binh-chon-hop-giao-dien.php'; ?>
 </main>
 
 <!-- JavaScript riêng của cá nhân -->

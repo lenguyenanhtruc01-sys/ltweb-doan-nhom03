@@ -102,8 +102,38 @@ CREATE TABLE tv_luu_but (
     FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
 );
 
+CREATE TABLE tv_luot_xem (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    mssv CHAR(10) NOT NULL,
+    ngay DATE NOT NULL,
+    so_luot INT UNSIGNED NOT NULL DEFAULT 1,
+    UNIQUE KEY uq_tv_luot_xem_mssv_ngay (mssv, ngay),
+    FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ============================================
 -- CHỈ MỤC (Index) cho các cột hay lọc, sắp xếp
 -- ============================================
 CREATE INDEX idx_mon_hoc_ten ON mon_hoc (ten_mon);
 CREATE INDEX idx_mon_hoc_tin_chi ON mon_hoc (so_tin_chi);
+
+CREATE TABLE IF NOT EXISTS tv_binh_chon (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    mssv CHAR(10) NOT NULL,
+    nguoi_dung_id INT UNSIGNED NOT NULL,
+    tuy_chon ENUM('huu_ich', 'sang_tao', 'de_hieu') NOT NULL,
+    UNIQUE KEY uq_vote (mssv, nguoi_dung_id),
+    FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE,
+    FOREIGN KEY (nguoi_dung_id) REFERENCES nguoi_dung(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS tv_tra_cuu_mang (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    mssv CHAR(10) NOT NULL,
+    muc_tieu VARCHAR(253) NOT NULL,
+    dia_chi_ip VARCHAR(45) NOT NULL,
+    loai_ip ENUM('IPv4', 'IPv6') NOT NULL,
+    thoi_gian DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_mssv_id (mssv, id),
+    FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

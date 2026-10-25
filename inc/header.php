@@ -64,8 +64,14 @@ if (!is_string($nguoiDung) || $nguoiDung === '') {
                     <span style="color: #fff; font-weight: bold; font-size: 1.1em; margin-right: 10px;">
                         Xin chào, <?= e($nguoiDung) ?>
                     </span>
+                    <?php if (($ndHeader['vai_tro'] ?? null) === 'quan_tri'): ?>
+                        <a href="<?= e($goc) ?>quan-tri.php" style="background: #6f42c1; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.9em;">Quản trị</a>
+                    <?php endif; ?>
                     <a href="<?= e($goc) ?>don-hang.php" style="background: #0d6efd; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.9em;">Kế hoạch của tôi</a>
-                    <a href="<?= e($goc) ?>dang-xuat.php" style="background: #dc3545; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.9em;">Đăng xuất</a>
+                    <form action="<?= e($goc) ?>dang-xuat.php" method="post">
+                        <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
+                        <button type="submit" style="background: #dc3545; color: white; padding: 8px 12px; border: 0; border-radius: 5px; font-weight: bold; font-size: 0.9em; cursor: pointer;">Đăng xuất</button>
+                    </form>
                 <?php else: ?>
                     <a href="<?= e($goc) ?>dang-nhap.php" style="background: #198754; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: bold;">Đăng nhập</a>
                 <?php endif; ?>

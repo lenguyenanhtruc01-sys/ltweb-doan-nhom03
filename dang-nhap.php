@@ -14,55 +14,21 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     $emailNhap = is_string($emailRaw) ? trim($emailRaw) : '';
     $matKhau = is_string($matKhauRaw) ? $matKhauRaw : '';
 
-    try {
-        $truyVan = db()->prepare('SELECT id, mat_khau FROM nguoi_dung WHERE email = :email LIMIT 1');
-        $truyVan->execute(['email' => $emailNhap]);
-        $nguoiDung = $truyVan->fetch();
-
-        if (is_array($nguoiDung) && password_verify($matKhau, $nguoiDung['mat_khau'])) {
-            session_regenerate_id(true);
-            $_SESSION = ['uid' => (int) $nguoiDung['id']];
-            header('Location: index.php', true, 303);
-            exit;
-        }
-    } catch (PDOException $loi) {
-        error_log((string) $loi);
-    }
-
-    $thongBao = 'Email hoặc mật khẩu không đúng';
-}
-
-$tieuDe = 'Đăng nhập';
-$trang = 'dang-nhap';
-$goc = '';
-
-if (($_GET['dat_lai'] ?? '') === '1') {
-    $thongBaoThanhCong = 'Đã đổi mật khẩu. Hãy đăng nhập với mật khẩu mới.';
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $thongBaoLoi = 'Email hoặc mật khẩu không chính xác.';
-
-    $emailRaw = $_POST['email'] ?? '';
-    $passwordRaw = $_POST['password'] ?? '';
     $ghiNhoRaw = $_POST['ghi_nho'] ?? '';
-
-    $email = is_string($emailRaw) ? trim($emailRaw) : '';
-    $password = is_string($passwordRaw) ? $passwordRaw : '';
     $ghiNho = $ghiNhoRaw === '1';
 
-    if (filter_var($email, FILTER_VALIDATE_EMAIL) && $password !== '') {
+    if (filter_var($emailNhap, FILTER_VALIDATE_EMAIL) && $matKhau !== '') {
         $st = db()->prepare(
             'SELECT id, mat_khau, vai_tro
             FROM nguoi_dung
              WHERE email = ?'
         );
-        $st->execute([$email]);
+        $st->execute([$emailNhap]);
         $nd = $st->fetch();
 
-        if ($nd && password_verify($password, $nd['mat_khau'])) {
+        if ($nd && password_verify($matKhau, $nd['mat_khau'])) {
             if (password_needs_rehash($nd['mat_khau'], PASSWORD_DEFAULT)) {
-                $hashMoi = password_hash($password, PASSWORD_DEFAULT);
+                $hashMoi = password_hash($matKhau, PASSWORD_DEFAULT);
 
                 $capNhat = db()->prepare(
                     'UPDATE nguoi_dung
@@ -89,6 +55,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
     }
+
+    $thongBao = 'Email hoặc mật khẩu không chính xác.';
+}
+
+$tieuDe = 'Đăng nhập';
+$trang = 'dang-nhap';
+$goc = '';
+
+if (($_GET['dat_lai'] ?? '') === '1') {
+    $thongBaoThanhCong = 'Đã đổi mật khẩu. Hãy đăng nhập với mật khẩu mới.';
 }
 
 require __DIR__ . '/inc/header.php';
@@ -101,6 +77,9 @@ require __DIR__ . '/inc/header.php';
         <?php endif; ?>
         <?php if (is_string($flashDangKy) && $flashDangKy !== ''): ?>
             <p role="status"><?= e($flashDangKy) ?></p>
+        <?php endif; ?>
+        <?php if (isset($thongBaoThanhCong)): ?>
+            <p role="status"><?= e($thongBaoThanhCong) ?></p>
         <?php endif; ?>
         <form method="post" action="dang-nhap.php" class="form-lien-he">
             <div>

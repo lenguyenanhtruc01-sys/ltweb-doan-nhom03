@@ -68,8 +68,8 @@ $trangHienTai = min($trangHienTai, $soTrang);
 // Lấy danh sách môn của trang hiện tại
 $danhSach = $kho->trang($loc, $sapXep, $moiTrang, ($trangHienTai - 1) * $moiTrang);
 
-// Lấy danh sách Danh mục để làm ô lọc
-$dsDanhMuc = db()->query('SELECT id, ten FROM danh_muc ORDER BY ten')->fetchAll();
+// ĐÃ SỬA LỖI 7: Đưa truy vấn vào lớp Data (KhoMonHoc)
+$dsDanhMuc = $kho->layDanhMuc();
 
 // Lấy kế hoạch học tập (Giữ nguyên logic cũ)
 $keHoachHocTap = new KeHoachHocTap();
@@ -123,7 +123,8 @@ require __DIR__ . '/inc/header.php';
                 <select id="loc-danh-muc" name="dm" class="form-control">
                     <option value="">Tất cả danh mục</option>
                     <?php foreach ($dsDanhMuc as $dm): ?>
-                        <option value="<?= $dm['id'] ?>" <?= $danhMucId == $dm['id'] ? 'selected' : '' ?>>
+                        <!-- ĐÃ SỬA LỖI 6: Bọc e() cho ID danh mục -->
+                        <option value="<?= e((string) $dm['id']) ?>" <?= $danhMucId == $dm['id'] ? 'selected' : '' ?>>
                             <?= e($dm['ten']) ?>
                         </option>
                     <?php endforeach; ?>
@@ -132,15 +133,8 @@ require __DIR__ . '/inc/header.php';
 
             <div class="form-group">
                 <label for="tc-toi-da">Tín chỉ tối đa</label>
-                <input
-                    type="number"
-                    id="tc-toi-da"
-                    name="tc_toi_da"
-                    class="form-control"
-                    min="1"
-                    max="20"
-                    value="<?= e((string) ($tinChiToiDa ?? '')) ?>"
-                    placeholder="Ví dụ: 3">
+                <input type="number" id="tc-toi-da" name="tc_toi_da" class="form-control" min="1" max="20"
+                       value="<?= e((string) ($tinChiToiDa ?? '')) ?>" placeholder="Ví dụ: 3">
             </div>
 
             <div class="form-group">
@@ -159,7 +153,8 @@ require __DIR__ . '/inc/header.php';
 
     <section>
         <h2 class="tieu-de-phan">
-            Kết quả tìm kiếm (<?= $tongSoMon ?> môn)
+            <!-- ĐÃ SỬA LỖI 6: Bọc e() cho số lượng -->
+            Kết quả tìm kiếm (<?= e((string) $tongSoMon) ?> môn)
         </h2>
 
         <div class="luoi-san-pham">
@@ -177,11 +172,20 @@ require __DIR__ . '/inc/header.php';
                         elseif ($mon->trangThai === 'Đã hoàn thành') $classTrangThai = 'trang-thai--hoan-thanh';
                         elseif ($mon->trangThai === 'Đăng ký mới') $classTrangThai = 'trang-thai--dang-ky';
                     }
+
+                    // Không tạo thẻ ảnh khi dữ liệu không có ảnh.
+                    $anh = trim((string)($mon->anh ?? ''));
+                    $duongDanAnh = $anh === ''
+                        ? ''
+                        : (str_starts_with($anh, 'http') || str_starts_with($anh, 'images/')
+                            ? $anh
+                            : 'images/' . $anh);
                     ?>
 
                     <article class="the-san-pham">
-                        <!-- Đã sửa đường dẫn ảnh: Thêm thư mục images/ và xử lý ảnh mặc định -->
-                        <img src="images/<?= e($mon->anh ?? 'no-image.jpg') ?>" alt="<?= e($mon->tenMon) ?>" width="400" height="250" style="object-fit: cover;" loading="lazy">
+                        <?php if ($duongDanAnh !== ''): ?>
+                            <img src="<?= e($duongDanAnh) ?>" alt="<?= e($mon->tenMon) ?>" width="400" height="250" style="object-fit: cover;" loading="lazy">
+                        <?php endif; ?>
                         
                         <div class="the-san-pham__than">
                             <h3><?= e($mon->tenMon) ?></h3>
@@ -200,13 +204,7 @@ require __DIR__ . '/inc/header.php';
                                         Xem chi tiết &rarr;
                                     </a>
 
-                                    <button
-                                        type="button"
-                                        class="nut-yeu-thich"
-                                        data-yeu-thich-id="<?= e((string) $mon->id) ?>"
-                                        aria-pressed="false"
-                                        aria-label="Thêm vào yêu thích"
-                                    >
+                                    <button type="button" class="nut-yeu-thich" data-yeu-thich-id="<?= e((string) $mon->id) ?>" aria-pressed="false" aria-label="Thêm vào yêu thích">
                                         <span class="nut-yeu-thich__icon" aria-hidden="true">♡</span>
                                         <span class="visually-hidden" data-nhan-yeu-thich>Thêm vào yêu thích</span>
                                     </button>
@@ -234,10 +232,11 @@ require __DIR__ . '/inc/header.php';
                 <ul class="pagination" style="display: inline-flex; gap: 8px; list-style: none; padding: 0;">
                     <?php for ($i = 1; $i <= $soTrang; $i++): ?>
                         <li>
-                            <a href="<?= lienKetTrang($i) ?>" 
+                            <a href="<?= e(lienKetTrang($i)) ?>"
                                style="padding: 8px 14px; border: 1px solid #ddd; text-decoration: none; border-radius: 4px; 
                                       <?= $i === $trangHienTai ? 'background-color: #0d6efd; color: white; border-color: #0d6efd;' : 'background-color: #fff; color: #333;' ?>">
-                                <?= $i ?>
+
+                                <?= e((string) $i) ?>
                             </a>
                         </li>
                     <?php endfor; ?>

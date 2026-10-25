@@ -64,6 +64,44 @@ INSERT INTO mon_hoc (id, danh_muc_id, ma_mon, ten_mon, so_tin_chi, mo_ta) VALUES
 (30, 4, 'LOG401', 'Tư duy logic và giải quyết vấn đề', 2, 'Phương pháp luận, tư duy phản biện');
 
 -- ============================================
+-- 3a. ẢNH MÔN HỌC (tên file trong thư mục images/)
+-- ENG101 không có ảnh riêng nên để anh = NULL.
+-- ============================================
+UPDATE mon_hoc
+SET anh = CASE ma_mon
+    WHEN 'AI401' THEN 'AI401.png'
+    WHEN 'AI402' THEN 'AI402.png'
+    WHEN 'DB301' THEN 'DB301.png'
+    WHEN 'DB302' THEN 'DB302.png'
+    WHEN 'DEVOPS01' THEN 'DEVOPS01.png'
+    WHEN 'ENG201' THEN 'ENG201.png'
+    WHEN 'ENG202' THEN 'ENG202.png'
+    WHEN 'INT101' THEN 'INT101.png'
+    WHEN 'INT102' THEN 'INT102.png'
+    WHEN 'INT201' THEN 'INT201.png'
+    WHEN 'INT202' THEN 'INT202.png'
+    WHEN 'INT301' THEN 'INT301.png'
+    WHEN 'INT303' THEN 'INT303.png'
+    WHEN 'INT304' THEN 'INT304.png'
+    WHEN 'INT305' THEN 'INT305.png'
+    WHEN 'LOG401' THEN 'LOG401.png'
+    WHEN 'MAT101' THEN 'MAT101.png'
+    WHEN 'MAT102' THEN 'MAT102.png'
+    WHEN 'MAT201' THEN 'MAT201.png'
+    WHEN 'MAT301' THEN 'MAT301.png'
+    WHEN 'MOB401' THEN 'MOB401.png'
+    WHEN 'PHY101' THEN 'PHY101.png'
+    WHEN 'POL101' THEN 'POL101.png'
+    WHEN 'SEC401' THEN 'SEC401.png'
+    WHEN 'SOFT201' THEN 'SOFT201.png'
+    WHEN 'START01' THEN 'START01.png'
+    WHEN 'WEB301' THEN 'WEB301.png'
+    WHEN 'WEB302' THEN 'WEB302.png'
+    WHEN 'WEB401' THEN 'WEB401.png'
+    ELSE NULL
+END;
+
+-- ============================================
 -- 3b. KẾ HOẠCH HỌC TẬP MẪU
 -- ============================================
 INSERT INTO ke_hoach_hoc_tap (id, nguoi_dung_id, trang_thai, ghi_chu) VALUES

@@ -120,4 +120,9 @@ class KhoMonHoc
         }
         return $danhSach;
     }
+        // Hàm lấy danh sách danh mục cho ô lọc
+    public function layDanhMuc(): array
+    {
+        return $this->db->query('SELECT id, ten FROM danh_muc ORDER BY ten')->fetchAll();
+    }
 }

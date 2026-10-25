@@ -15,13 +15,27 @@ Website PHP hỗ trợ sinh viên tra cứu môn học, lập kế hoạch học
 1. Chép thư mục dự án vào `C:\xampp\htdocs\ltweb-doan-nhom03`.
 2. Mở XAMPP Control Panel, khởi động Apache và MySQL.
 3. Tại thư mục dự án, chạy `composer install`.
-4. Cài mới: import `database/schema.sql`, rồi `database/seed.sql` bằng phpMyAdmin.
+4. Tạo/nâng cấp CSDL bằng một lệnh tại thư mục dự án:
 
-   **Lưu ý:** schema có `DROP DATABASE`. Sao lưu trước khi tạo lại CSDL; không import lại schema chỉ để cập nhật code.
+   ```bash
+   php database/cai-dat.php
+   ```
+
+   PowerShell chưa nhận lệnh `php` thì dùng PHP của XAMPP:
+
+   ```powershell
+   C:\xampp\php\php.exe database\cai-dat.php
+   ```
+
+   Máy mới: bộ cài tạo `ltweb_nhom03`, nạp `schema.sql` và `seed.sql`, có đủ tài khoản mẫu. Máy đã có dữ liệu: tự sao lưu các bảng vào tệp SQL ngoài webroot (đường dẫn được in ra), bổ sung bảng/cột và môn còn thiếu, giữ mật khẩu/giỏ/kế hoạch cũ. Bộ cài không chạy `DROP DATABASE`.
 
 5. Mở http://localhost/ltweb-doan-nhom03/
 
 Kết nối chung trong `inc/db.php`: database `ltweb_nhom03`, host `127.0.0.1`, port `3306`, user `root`, mật khẩu rỗng, charset `utf8mb4`. Có thể cấu hình `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS` qua môi trường PHP/Apache.
+
+**Sau mỗi lần `git pull`:** chạy lại `php database/cai-dat.php`. Git chỉ kéo code; lệnh này áp dụng các nâng cấp CSDL đã được khai báo trong bộ cài. Chạy lại không đặt mật khẩu về mặc định. Chủ trang Hải chưa có sẽ được tạo bằng `hai / matkhau123`; nếu đã có chủ thì giữ nguyên tài khoản và mật khẩu. Ảnh upload/dữ liệu runtime của máy khác không được tải xuống qua Git.
+
+Cài mới thủ công theo đề vẫn có thể import `database/schema.sql` rồi `database/seed.sql` bằng phpMyAdmin thay cho bộ cài. **Schema thủ công có `DROP DATABASE`**, không import lại để cập nhật máy đang có dữ liệu. Các lệnh nâng cấp riêng bên dưới chỉ cần khi muốn chạy từng bước thay cho bộ cài chung.
 
 Với database cũ chưa có email, sao lưu rồi chạy `php database/migrate-email.php`; migration giữ tài khoản và dữ liệu, không thay thế toàn bộ schema.
 

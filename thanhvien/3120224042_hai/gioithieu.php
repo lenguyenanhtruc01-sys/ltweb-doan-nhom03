@@ -132,7 +132,7 @@ require_once __DIR__ . '/../../inc/header.php';
         <p>Xin chào! Mình là sinh viên ngành Công nghệ Thông tin tại Khoa Toán - Tin, Trường Đại học Sư phạm - Đại học Đà Nẵng. Mình đam mê phát triển phần mềm và ứng dụng thị giác máy tính.</p>
         
         <div class="like-section">
-            <button id="btn-like" class="btn-primary" type="button">
+            <button id="btn-like" class="btn-primary" type="button" style="background-color: #123b6d; color: #ffffff;">
                 Ủng hộ Hải: ❤️ <span id="like-count">0</span>
             </button>
         </div>

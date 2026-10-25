@@ -27,7 +27,9 @@ Website PHP hỗ trợ sinh viên tra cứu môn học, lập kế hoạch học
    C:\xampp\php\php.exe database\cai-dat.php
    ```
 
-   Máy mới: bộ cài tạo `ltweb_nhom03`, nạp `schema.sql` và `seed.sql`, có đủ tài khoản mẫu. Máy đã có dữ liệu: tự sao lưu các bảng vào tệp SQL ngoài webroot (đường dẫn được in ra), bổ sung bảng/cột và môn còn thiếu, giữ mật khẩu/giỏ/kế hoạch cũ. Bộ cài không chạy `DROP DATABASE`.
+   Bộ cài tạo đủ bảng và bổ sung dữ liệu còn thiếu ở cả máy mới, máy có bản cũ và máy đã tạo bảng nhưng chưa nạp seed. Trước khi nâng cấp máy có dữ liệu, nó sao lưu các bảng vào tệp SQL ngoài webroot (đường dẫn được in ra). Mật khẩu, quyền, giỏ, yêu thích, chủ trang và kế hoạch hiện có được giữ nguyên.
+
+   Dữ liệu mẫu được đối chiếu bằng tên đăng nhập, slug danh mục, mã môn và MSSV; không ép ID mẫu lên dữ liệu thật. Bộ cài dùng một CSDL mẫu tạm để kiểm tra schema/seed và gộp dữ liệu, sau đó xóa CSDL tạm đó; **không xóa CSDL dự án**. Tài khoản MySQL chạy bộ cài cần quyền tạo/xóa CSDL (root mặc định của XAMPP đáp ứng).
 
 5. Mở http://localhost/ltweb-doan-nhom03/
 
@@ -244,7 +246,13 @@ Danh sách tìm kiếm có debounce 350ms; thêm giỏ bằng fetch cập nhật
 
 Kiểm thử API bằng [api.http](api.http), đổi `@goc` theo cách chạy. Ảnh và kết quả kiểm thử của các thành viên lưu tại `kiemtra/`; số liệu Bảng 2–5 và ERD được tổng hợp trong báo cáo chung.
 
-Hiện việc chuyển MySQL chưa hoàn tất toàn bộ: liên hệ vẫn lưu JSONL, chức năng giao dịch đăng ký/đơn hàng và ERD còn cần ghép; seed mới có 8 môn. Chỉ ghi tính năng đã có và kết quả đã đo khi chốt bài.
+Schema hiện có 20 bảng. Seed có 30 môn trong 4 danh mục có dữ liệu và 1 danh mục trống; 4 tài khoản, 5 thành viên, 3 kế hoạch/5 chi tiết. Hải có 7 ngày lượt xem và dòng metadata avatar; Hợp có mẫu bình chọn/tra cứu; Uyên có 5 kỹ năng/6 môn trong lịch; Duy có 3 món ăn/2 ván oẳn tù tì mẫu. Dòng thành viên Trúc đã có, chức năng CSDL trên trang cá nhân Trúc vẫn cần hoàn thiện. Liên hệ hiện vẫn lưu JSONL.
+
+Môn học có `so_cho` là số chỗ còn lại. API/form thêm/cập nhật giỏ kiểm tra đủ chỗ, nhưng chưa giữ chỗ. Gửi kế hoạch dùng transaction với UPDATE có điều kiện và rowCount; thiếu chỗ rollback, giữ giỏ. SEC401 hết chỗ và LOG401 còn 1 chỗ trong dữ liệu mẫu. Bộ cài giữ số chỗ của môn đã có, chỉ lấy giá trị mẫu cho môn mới.
+
+Quản trị môn học: đăng nhập admin, mở `quan-tri-mon-hoc.php` từ trang quản trị. Có phân trang, thêm/sửa, ảnh và xác nhận xóa, bắt 1062/1451. Chủ trang Hải mới cài dùng `hai / matkhau123`; tài khoản đã có giữ mật khẩu cũ. Tham khảo kết quả tại `kiemtra/hai-chuc-nang-3-va-ca-nhan.md` và `kiemtra/hop-chuc-nang-6.md`.
+
+Chạy lại bộ cài sẽ bổ sung thành viên và dữ liệu Uyên còn thiếu trên máy cũ. Lịch sử, phiếu bầu và lượt xem mẫu chỉ được nạp khi trang đó chưa có dữ liệu tương ứng, tránh pha thêm mẫu vào số liệu đã phát sinh. Kế hoạch mẫu chỉ thêm cho tài khoản mẫu chưa có kế hoạch. Bộ cài không tự thu hồi/xóa dữ liệu đã bị bỏ khỏi seed; các thay đổi cấu trúc cột vẫn cần migration được khai báo trong mã.
 
 ### Trang cá nhân Huỳnh Phương Uyên
 

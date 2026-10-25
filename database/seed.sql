@@ -126,6 +126,10 @@ INSERT INTO chi_tiet_ke_hoach
 -- ============================================
 -- 4. THÀNH VIÊN & DỮ LIỆU PHẦN B
 -- ============================================
+INSERT INTO thanh_vien (mssv, ho_ten) VALUES
+('3120224034', 'Dương Bảo Duy'),
+('3120224159', 'Lê Nguyễn Anh Trúc');
+
 INSERT INTO thanh_vien (mssv, ho_ten)
 SELECT '3120224064', 'Phan Văn Hợp'
 WHERE NOT EXISTS (SELECT 1 FROM thanh_vien WHERE mssv = '3120224064');
@@ -175,3 +179,13 @@ VALUES
 ('3120224174', '31231016', 'Công nghệ phần mềm', '24-0103', 5, 10, 12, 'B3-304'),
 ('3120224174', '21221904', 'Lịch sử Đảng Cộng sản Việt Nam', '24-0318', 2, 11, 12, 'A6-502'),
 ('3120224174', '31221010', 'An toàn thông tin', '24-0103', 7, 11, 12, 'B3-506');
+
+-- Mẫu riêng của Duy; không cần truy cập trang để nạp dữ liệu lần đầu.
+INSERT INTO tv_mon_an (mssv,ten_mon,bua) VALUES
+('3120224034','Phở bò','sang'),
+('3120224034','Cơm gà','trua'),
+('3120224034','Bún bò Huế','toi');
+
+INSERT INTO tv_lich_su_ott (mssv,nguoi_chon,may_chon,ket_qua) VALUES
+('3120224034','bua','keo','thang'),
+('3120224034','bao','keo','thua');

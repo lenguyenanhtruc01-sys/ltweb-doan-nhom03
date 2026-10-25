@@ -169,11 +169,6 @@ CREATE TABLE tv_tra_cuu_mang (
     INDEX idx_mssv_id (mssv, id),
     FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
--- Thêm Duy vào bảng thành viên
-INSERT INTO thanh_vien (mssv, ho_ten) 
-VALUES ('3120224034', 'Dương Bảo Duy')
-ON DUPLICATE KEY UPDATE ho_ten = 'Dương Bảo Duy';
-
 -- Bảng lưu danh sách món ăn
 CREATE TABLE IF NOT EXISTS tv_mon_an (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -220,4 +215,22 @@ CREATE TABLE tv_uyen_thoi_khoa_bieu (
     UNIQUE KEY uq_tv_uyen_lich_mon (mssv, ma_mon, thu, tiet_bat_dau),
     INDEX idx_tv_uyen_lich_thu_tiet (mssv, thu, tiet_bat_dau),
     FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Bảng dùng chung phải có cả khi cài mới, không chỉ trên máy đã nâng cấp.
+CREATE TABLE gio_hang_nguoi_dung (
+    nguoi_dung_id INT UNSIGNED NOT NULL,
+    mon_hoc_id INT UNSIGNED NOT NULL,
+    so_luong SMALLINT UNSIGNED NOT NULL CHECK (so_luong BETWEEN 1 AND 5),
+    PRIMARY KEY (nguoi_dung_id, mon_hoc_id),
+    FOREIGN KEY (nguoi_dung_id) REFERENCES nguoi_dung(id) ON DELETE CASCADE,
+    FOREIGN KEY (mon_hoc_id) REFERENCES mon_hoc(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE mon_yeu_thich (
+    nguoi_dung_id INT UNSIGNED NOT NULL,
+    mon_hoc_id INT UNSIGNED NOT NULL,
+    PRIMARY KEY (nguoi_dung_id, mon_hoc_id),
+    FOREIGN KEY (nguoi_dung_id) REFERENCES nguoi_dung(id) ON DELETE CASCADE,
+    FOREIGN KEY (mon_hoc_id) REFERENCES mon_hoc(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -1,214 +1,219 @@
 # EduGPA — Đồ án nhóm 03
 
-Website PHP thuần hỗ trợ tra cứu môn học, lập kế hoạch học tập, tài khoản và các trang cá nhân. Dự án đang chuyển từ dữ liệu tệp của Bài 5 sang MySQL/PDO theo Bài tập nhóm 6.
+Website PHP hỗ trợ sinh viên tra cứu môn học, lập kế hoạch học tập, gửi liên hệ và quản trị các liên hệ đã nhận.
 
-## 1. Môi trường
+## 1. Yêu cầu môi trường
 
-- PHP >= 8.1; đã chạy thử với PHP 8.2 trên XAMPP.
-- MySQL/MariaDB, bật các extension PHP `pdo_mysql`, `mbstring`, `fileinfo`.
-- Composer để nạp các lớp theo PSR-4.
-- Apache/XAMPP hoặc máy chủ tích hợp của PHP; cả hai đều cần MySQL chạy.
-- PHP cần quyền ghi `storage/`, `logs/`, `uploads/`.
+- PHP 8.1 trở lên (đã thử nghiệm với PHP 8.2).
+- Apache có PHP, ví dụ XAMPP; hoặc máy chủ tích hợp PHP.
+- MySQL/MariaDB và extension PHP `pdo_mysql`.
+- Tiện ích PHP `fileinfo` và `mbstring`.
+- Composer (chỉ cần khi thư mục `vendor/` chưa có).
 
-## 2. Cài đặt mới
+## 2. Cài đặt và chạy
 
-1. Đặt mã nguồn tại `C:\xampp\htdocs\ltweb-doan-nhom03` hoặc clone repository vào thư mục làm việc.
-2. Tại thư mục dự án, chạy:
+1. Chép thư mục dự án vào `C:\xampp\htdocs\ltweb-doan-nhom03`.
+2. Mở XAMPP Control Panel, khởi động Apache và MySQL.
+3. Tại thư mục dự án, chạy `composer install`.
+4. Cài mới: import `database/schema.sql`, rồi `database/seed.sql` bằng phpMyAdmin.
 
-   ```bash
-   composer install
-   ```
+   **Lưu ý:** schema có `DROP DATABASE`. Sao lưu trước khi tạo lại CSDL; không import lại schema chỉ để cập nhật code.
 
-3. Bật MySQL trong XAMPP.
-4. Import `database/schema.sql`, sau đó `database/seed.sql` bằng phpMyAdmin.
+5. Mở http://localhost/ltweb-doan-nhom03/
 
-   **Lưu ý:** schema có `DROP DATABASE IF EXISTS ltweb_nhom03`. Chỉ dùng để dựng mới hoặc chủ động tạo lại dữ liệu; sao lưu trước nếu database đã có dữ liệu cần giữ.
+Kết nối chung trong `inc/db.php`: database `ltweb_nhom03`, host `127.0.0.1`, port `3306`, user `root`, mật khẩu rỗng, charset `utf8mb4`. Có thể cấu hình `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS` qua môi trường PHP/Apache.
 
-   Với CMD/Git Bash có lệnh mysql:
+Với database cũ chưa có email, sao lưu rồi chạy `php database/migrate-email.php`; migration giữ tài khoản và dữ liệu, không thay thế toàn bộ schema.
 
-   ```bash
-   mysql -u root < database/schema.sql
-   mysql -u root ltweb_nhom03 < database/seed.sql
-   ```
+Không mở trực tiếp tệp PHP bằng đường dẫn ổ đĩa.
 
-   Không dùng cú pháp chuyển hướng `<` trực tiếp trong PowerShell; dùng phpMyAdmin hoặc chạy các lệnh trên trong CMD.
-
-5. Chọn một cách chạy website:
-
-   - XAMPP: bật Apache, mở http://localhost/ltweb-doan-nhom03/
-   - PHP tích hợp:
-
-     ```bash
-     php -S localhost:8000
-     ```
-
-     Mở http://localhost:8000/
-
-Không mở tệp PHP trực tiếp bằng đường dẫn ổ đĩa.
-
-### Kết nối PDO
-
-`inc/db.php` cung cấp `db()`, mặc định:
-
-| Thuộc tính | Giá trị |
-| --- | --- |
-| Host | `127.0.0.1` |
-| Port | `3306` |
-| Database | `ltweb_nhom03` |
-| User | `root` |
-| Password | Rỗng |
-| Charset | `utf8mb4` |
-
-Có thể đặt `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS` trong môi trường PHP/Apache. Database cố định là `ltweb_nhom03`. Kết nối dùng `ERRMODE_EXCEPTION`, `FETCH_ASSOC`, `EMULATE_PREPARES = false`.
-
-### Nâng cấp database cũ, giữ dữ liệu
-
-Nếu đã có database phiên bản trước khi thêm email, sao lưu rồi chạy:
+### Chạy không cần Apache
 
 ```bash
-php database/migrate-email.php
+composer install
+php -S localhost:8000
 ```
 
-Migration bổ sung email cho tài khoản hiện có theo dạng `<ten_dang_nhap>@edugpa.local`, tạo bảng lượt xem và dòng thành viên Hải nếu thiếu; không đổi mật khẩu hoặc xóa phiếu bầu/lịch sử. Đây không phải migration tổng quát cho mọi phiên bản và không thay thế schema khi cài mới.
+Mở http://localhost:8000/index.php; MySQL vẫn cần chạy. PHP cần quyền ghi vào `storage/`, `uploads/`, `logs/`.
 
-## 3. Đăng nhập và tài khoản thử
+## 3. Tài khoản thử
 
-Mở `dang-nhap.php`; có thể nhập **tên đăng nhập hoặc email** trong cùng một ô.
-
-Các tài khoản sau được tạo bởi seed hiện tại, mật khẩu đều là `123456`:
+Đăng nhập bằng **tên đăng nhập hoặc email**. Các tài khoản trong seed hiện tại đều dùng mật khẩu `123456`:
 
 | Tên đăng nhập | Email | Vai trò |
 | --- | --- | --- |
-| `admin` | `admin@edugpa.local` | `quan_tri` |
-| `truc` | `truc@edugpa.local` | `khach_hang` |
-| `duy` | `duy@edugpa.local` | `khach_hang` |
-| `uyen` | `uyen@edugpa.local` | `khach_hang` |
+| `admin` | `admin@edugpa.local` | Quản trị |
+| `truc` | `truc@edugpa.local` | Khách hàng |
+| `duy` | `duy@edugpa.local` | Khách hàng |
+| `uyen` | `uyen@edugpa.local` | Khách hàng |
 
-Nếu giữ lại database local cũ, tài khoản có thể khác seed. Ví dụ `an`, `binh` vẫn có thể dùng mật khẩu cũ `matkhau123`; không giả định chúng tồn tại trên bản cài mới.
+Đăng nhập tại [dang-nhap.php](dang-nhap.php); quản trị viên được chuyển đến [quan-tri.php](quan-tri.php), khách về trang chủ. Database nâng cấp có thể giữ tài khoản/mật khẩu cũ khác seed.
 
-Đăng nhập dùng `password_verify()`, đổi mã phiên và lưu `uid`; tên/quyền đọc từ database. Quản trị viên vào trang quản trị, khách về trang chủ. Đăng xuất xóa đăng nhập và đổi mã phiên nhưng **giữ giỏ học tập**, độc lập với tài khoản.
+## 4. Chức năng chính
 
-## 4. Chức năng và URL
+| Trang | Chức năng |
+| --- | --- |
+| [index.php](index.php) | Trang chủ, giới thiệu hệ thống. |
+| [danh-sach.php](danh-sach.php) | Tìm kiếm, lọc, sắp xếp và xem danh sách môn học. |
+| [chi-tiet.php?id=1](chi-tiet.php?id=1) | Xem chi tiết một môn học theo `?id=`. |
+| [gio-hang.php](gio-hang.php) | Quản lý kế hoạch học tập: thêm, cập nhật số lượng, xóa và xóa toàn bộ. |
+| [lien-he.php](lien-he.php) | Gửi liên hệ, có kiểm tra dữ liệu và tải ảnh minh họa. |
+| [dang-ky.php](dang-ky.php) | Đăng ký tài khoản khách hàng. |
+| [dang-nhap.php](dang-nhap.php) | Đăng nhập bằng tên hoặc email. |
+| [quan-tri.php](quan-tri.php) | Xem liên hệ đã nhận; chỉ tài khoản quản trị. |
+| `thanhvien/*/gioithieu.php` | Trang giới thiệu và chức năng riêng của từng thành viên. |
 
-Các URL dưới đây tương đối với thư mục website.
+## 5. Cấu trúc thư mục
+
+```text
+ltweb-doan-nhom03/
+├── css/                 CSS dùng chung và CSS từng trang
+├── data/                Dữ liệu tệp cũ của Bài 5
+├── database/            Schema, seed và migration MySQL
+├── api/                 API JSON môn học và giỏ học tập
+├── kiemtra/             Ảnh và kết quả kiểm thử
+├── images/              Ảnh dùng chung
+├── inc/                 Cấu hình, header, footer, kiểm soát truy cập
+├── js/                  JavaScript dùng chung
+├── src/
+│   ├── Data/            Lớp đọc/ghi dữ liệu
+│   ├── Models/          Mô hình `MonHoc`
+│   └── Services/        Nghiệp vụ kế hoạch học tập
+├── storage/             Liên hệ và log ứng dụng (không commit dữ liệu runtime)
+├── uploads/             Ảnh đính kèm liên hệ (không commit dữ liệu runtime)
+├── thanhvien/           Trang cá nhân các thành viên
+├── 404.php
+├── 500.php
+├── composer.json
+└── README.md
+```
+
+## 6. Dữ liệu và trạng thái
+
+- Môn học, danh mục và người dùng: MySQL `ltweb_nhom03` qua PDO. Dữ liệu JSON của Bài 5 còn trong kho để đối chiếu.
+- Kế hoạch học tập: session PHP, độc lập với tài khoản quản trị và vẫn được giữ khi đăng xuất.
+- Liên hệ: `storage/lien-he.jsonl`; trang quản trị hiển thị bản ghi mới nhất trước.
+- Ảnh liên hệ: `uploads/`.
+- Log PHP: `logs/php-error.log`.
+- Dữ liệu cá nhân đã tích hợp: các bảng `tv_binh_chon`, `tv_tra_cuu_mang`, `tv_luot_xem`; phần lưu JSONL cũ không được dùng để ghi thêm lịch sử tra cứu.
+
+Các thư mục `storage/`, `uploads/` và `logs/` cần có quyền ghi cho tiến trình Apache/PHP. Dữ liệu runtime trong các thư mục này được `.gitignore` bỏ qua.
+
+## 7. Kiểm thử thủ công
+
+### Danh sách, chi tiết và kế hoạch học tập
+
+1. Mở `danh-sach.php`, tìm kiếm/lọc/sắp xếp môn học.
+2. Chọn **Thêm vào kế hoạch học tập**.
+3. Hệ thống ở lại trang hiện tại, hiển thị toast thành công ở góc phải và số lượng giỏ hàng tăng.
+4. Nút của môn đã thêm đổi thành **Đã thêm vào kế hoạch học tập** và bị vô hiệu hóa trên cả danh sách lẫn trang chi tiết.
+5. Mở `gio-hang.php`, thử cập nhật số lượng, xóa một môn và xóa toàn bộ.
+6. Đăng nhập rồi đăng xuất; kế hoạch học tập vẫn không phụ thuộc tài khoản quản trị.
+
+### Liên hệ và quản trị
+
+1. Mở `lien-he.php`.
+2. Nhập họ tên từ 3 ký tự, email hợp lệ, chọn chủ đề và nhập nội dung tối thiểu 10 ký tự.
+3. Gửi thành công sẽ redirect theo PRG; bản ghi mới xuất hiện trong `storage/lien-he.jsonl`.
+4. Đăng nhập bằng tài khoản mẫu, mở `quan-tri.php` và kiểm tra liên hệ ở đầu bảng.
+5. Kiểm tra nhãn chủ đề ở quản trị khớp nhãn trên form, không hiển thị mã nội bộ như `gpa` hoặc `taikhoan`.
+
+### Đăng nhập và dữ liệu không tin cậy
+
+1. Đăng nhập sai: hiển thị thông báo chung, không lộ mật khẩu.
+2. Gửi trường đăng nhập dạng mảng, ví dụ `email[]=admin`: phải báo lỗi đăng nhập, không phải HTTP 500.
+3. Tài khoản khách mở `quan-tri.php`: nhận HTTP 403.
+4. Truy cập trực tiếp `quan-tri.php` khi chưa đăng nhập: phải chuyển về `dang-nhap.php`.
+
+### Lỗi dữ liệu và kết nối
+
+Bài 5 đã có xử lý tệp JSON lỗi; phiên bản MySQL hiện dùng ngoại lệ PDO và handler trong `inc/config.php`. Khi kiểm thử kết nối lỗi, trang/API phải phản hồi theo cấu hình môi trường và ghi chi tiết vào `logs/php-error.log`. API luôn trả JSON 500 `{"loi":"Lỗi máy chủ"}`; khôi phục cấu hình ngay sau khi thử.
+
+### Upload ảnh avatar của Hải
+
+1. Mở `thanhvien/3120224042_hai/gioithieu.php`.
+2. Chỉ ảnh JPEG, PNG hoặc WebP thật, tối đa 2MB, được chấp nhận.
+3. Tên tệp do người dùng gửi không được sử dụng khi lưu: PNG thật đặt tên `.php` vẫn phải được lưu bằng phần mở rộng `.png` do server xác định.
+
+### Responsive và tài nguyên
+
+1. Dùng DevTools giả lập chiều rộng 360px tại `danh-sach.php`.
+2. Trang không được cuộn ngang; lưới thẻ môn tự co theo chiều rộng phần nội dung.
+3. Mở DevTools → Network tại trang Hải và Anh Trúc; CSS/JS chung và riêng phải trả HTTP 200, không có 404.
+
+## 8. Bảo mật và kiểm tra dữ liệu
+
+- Hàm `e()` trong `inc/ham.php` được dùng để escape HTML.
+- Mật khẩu lưu dưới dạng băm, kiểm tra bằng `password_verify()`; truy vấn có dữ liệu người dùng dùng prepared statement.
+- Đăng nhập tạo mã session mới để giảm rủi ro session fixation.
+- Trang quản trị kiểm tra quyền bằng `yeuCauQuyen('quan_tri')` trong `inc/xac-thuc.php`; session chỉ giữ `uid` làm thông tin xác thực.
+- Dữ liệu POST được kiểm tra kiểu và giá trị trước khi xử lý.
+- Upload kiểm tra kích thước, MIME thực tế (`finfo`), nội dung ảnh (`getimagesize`) và tự xác định phần mở rộng an toàn ở server.
+- Các luồng POST thành công sử dụng Post/Redirect/Get (PRG), tránh gửi lại biểu mẫu khi F5.
+
+## 9. Xử lý lỗi
+
+- `404.php`: trang hoặc môn học không tồn tại.
+- `500.php`: lỗi máy chủ/dữ liệu không đọc được.
+- `inc/config.php`: cấu hình log và exception handler chung.
+- Trong môi trường phát triển, lỗi được ghi tại `logs/php-error.log`.
+
+## 10. Thành viên
+
+Các trang cá nhân nằm trong `thanhvien/`:
+
+- `3120224034_Duy`
+- `3120224042_hai`
+- `3120224064_hop`
+- `3120224159_anhtruc`
+- `3120224174_uyen`
+
+## 11. Lệnh kiểm tra nhanh
+
+Tại thư mục dự án:
+
+```bash
+php -l danh-sach.php
+php -l chi-tiet.php
+php -l gio-hang.php
+php -l lien-he.php
+php -l dang-nhap.php
+php -l quan-tri.php
+```
+
+Nếu dùng Git:
+
+```bash
+git diff --check
+```
+
+## 12. Upload và log runtime
+
+Ảnh liên hệ và avatar Hải dùng chung kiểm tra tối đa 2 MB, MIME và nội dung ảnh. Tên ngẫu nhiên lưu trong `uploads/`, tự tạo thư mục khi cần. Thông tin avatar lưu trong `storage/3120224042_avatar.json`. Đăng nhập sai ghi tại `logs/php-error.log`, không dùng `data/login-error.log`.
 
 | Chức năng | URL | Tệp PHP |
 | --- | --- | --- |
 | Trang chủ | `index.php` | `index.php` |
-| Tìm kiếm, lọc, sắp xếp, phân trang | `danh-sach.php?q=Web` | `danh-sach.php` |
-| Chi tiết môn học | `chi-tiet.php?id=1` | `chi-tiet.php` |
-| Kế hoạch học tập | `gio-hang.php` | `gio-hang.php` |
-| Liên hệ và ảnh đính kèm | `lien-he.php` | `lien-he.php` |
-| Đăng ký | `dang-ky.php` | `dang-ky.php` |
+| Tìm kiếm | `danh-sach.php` | `danh-sach.php` |
+| Chi tiết | `chi-tiet.php?id=1` | `chi-tiet.php` |
+| Kế hoạch | `gio-hang.php` | `gio-hang.php` |
+| Liên hệ | `lien-he.php` | `lien-he.php` |
 | Đăng nhập | `dang-nhap.php` | `dang-nhap.php` |
-| Đăng xuất, giữ giỏ | `dang-xuat.php` | `dang-xuat.php` |
-| Xem liên hệ, chỉ quản trị | `quan-tri.php` | `quan-tri.php` |
-| Bình chọn và thống kê Hợp | `thanhvien/3120224064_hop/gioithieu.php#binh-chon` | Trang Hợp, `inc/binh-chon-hop*.php` |
-| Tra cứu IP/domain và lịch sử Hợp | `thanhvien/3120224064_hop/gioithieu.php#cong-cu-section` | Trang Hợp, `KhoTraCuuMang` |
-| Trang cá nhân thành viên | `thanhvien/<MSSV>_<ten>/gioithieu.php` | Các thư mục trong `thanhvien/` |
+| Quản trị | `quan-tri.php` | `quan-tri.php` |
 
-## 5. REST API và JavaScript — chức năng 6
+## 13. Bổ sung Bài 6 — MySQL và REST API
 
-| Endpoint | Phương thức | Mục đích |
+| Endpoint | Phương thức | Chức năng |
 | --- | --- | --- |
-| `api/san-pham.php?q=Web&dm=&tc_toi_da=&sx=moi&trang=1` | GET | Tìm môn, lọc, sắp xếp, phân trang 6 môn/trang |
-| `api/san-pham.php?id=1` | GET | Xem một môn |
-| `api/gio-hang.php` | GET | Đọc giỏ của session và token `csrf` |
-| `api/gio-hang.php` | POST | Thêm môn với JSON `{"id":1,"sl":2}` |
+| `api/san-pham.php?q=Web` | GET | Tìm môn; hỗ trợ `dm`, `tc_toi_da`, `sx`, `trang` |
+| `api/san-pham.php?id=1` | GET | Chi tiết một môn, chỉ trả trường công khai |
+| `api/gio-hang.php` | GET | Giỏ của session và token `csrf` |
+| `api/gio-hang.php` | POST | JSON `{"id":1,"sl":2}`, cùng cookie và header `X-CSRF-Token` |
 
-Mọi phản hồi có `Content-Type: application/json; charset=utf-8`. Mô hình `MonHoc` implement `JsonSerializable`, chỉ trả `id`, `maMon`, `tenMon`, `soTinChi`, `anh`, `trangThai`; không trả điểm, kết quả hoặc các cột nội bộ khác.
+Phản hồi có `Content-Type: application/json; charset=utf-8`. Các mã: 200 thành công; 400 JSON/ID sai; 401 token giỏ thiếu/sai; 404 môn không có; 405 sai phương thức kèm Allow; 422 dữ liệu/số lượng sai; 500 lỗi máy chủ.
 
-POST giỏ cần cùng cookie session và header `X-CSRF-Token`, lấy từ GET giỏ hoặc meta `csrf-gio-hang` của trang. Không cần đăng nhập để dùng giỏ riêng của phiên; thiếu/sai token trả 401.
+Danh sách tìm kiếm có debounce 350ms; thêm giỏ bằng fetch cập nhật số món và nút ngay. Giữ form GET/POST dự phòng khi tắt JavaScript. Kế hoạch giới hạn số lượng 1–5, không thêm trùng môn; giỏ vẫn được giữ khi đăng xuất.
 
-| Mã | Trường hợp |
-| --- | --- |
-| 200 | Thành công |
-| 400 | JSON sai cú pháp hoặc ID chi tiết sai định dạng |
-| 401 | Token phiên giỏ hàng thiếu/không hợp lệ |
-| 404 | Môn học không tồn tại |
-| 405 | Sai phương thức, có header Allow |
-| 422 | Tham số sai kiểu hoặc số lượng ngoài 1–5 |
-| 500 | Lỗi máy chủ; body chỉ `{"loi":"Lỗi máy chủ"}` |
+Kiểm thử API bằng [api.http](api.http), đổi `@goc` theo cách chạy. Ảnh và kết quả kiểm thử của các thành viên lưu tại `kiemtra/`; số liệu Bảng 2–5 và ERD được tổng hợp trong báo cáo chung.
 
-`js/tim-kiem.js` debounce 350ms, hủy request cũ, tránh phản hồi cũ ghi đè và giữ bộ lọc/phân trang. `js/gio-hang.js` cập nhật `#cart-count` bằng `textContent`, đổi nút đã thêm và hiện toast. Giỏ đọc bằng một truy vấn `IN (...)`, không truy vấn trong vòng lặp. Thêm lại môn có sẵn không tăng số lượng; `so_mon` là tổng số lượng giống header PHP.
-
-Các form vẫn có action GET/POST để hoạt động khi tắt JavaScript. Chạy bộ request trong `api.http` bằng VS Code REST Client; sửa `@goc` theo URL đang chạy.
-
-## 6. Phần cá nhân Hợp
-
-- MSSV `3120224064`; dữ liệu thành viên nằm trong bảng `thanh_vien`.
-- `tv_binh_chon`: mỗi tài khoản một phiếu trên trang Hợp nhờ UNIQUE `(mssv, nguoi_dung_id)`; bắt lỗi 1062, thống kê bằng GROUP BY và hiển thị số phiếu/tỉ lệ.
-- `tv_tra_cuu_mang`: thay log JSONL cũ bằng MySQL; tra cứu IP/domain và hiển thị 10 kết quả gần nhất. Không hiển thị độ trễ giả và không lưu mật khẩu từ công cụ entropy.
-- POST thành công chuyển hướng PRG; thông báo session đọc một lần, F5 không gửi lại dữ liệu.
-- Thông báo bình chọn thành công/đã bình chọn hiện popup xanh bên phải; lỗi xử lý hiện popup đỏ.
-- Để thử phiếu mới, dùng tài khoản chưa bình chọn; seed đã tạo một phiếu mẫu của khách đầu tiên.
-- Lịch sử JSONL từ bản cũ không tự nhập hoặc xóa.
-
-## 7. Dữ liệu và cấu trúc
-
-```text
-api/              API môn học và giỏ
-database/         schema.sql, seed.sql, migrate-email.php
-inc/              config.php, db.php, xac-thuc.php, helper, giao diện chung
-src/Data/         Lớp truy cập dữ liệu
-src/Models/       Model môn học, giới hạn dữ liệu JSON
-src/Services/     Kế hoạch học tập và upload
-js/               main.js, tim-kiem.js, gio-hang.js
-thanhvien/        Trang cá nhân các thành viên
-kiemtra/          Ảnh và ghi nhận kiểm thử
-storage/          Liên hệ JSONL, dữ liệu runtime
-uploads/          Ảnh runtime
-logs/             php-error.log
-api.http          Request kiểm thử
-README.md         Hướng dẫn
-```
-
-- Môn học, danh mục, người dùng, bình chọn, tra cứu mạng và lượt xem dùng MySQL.
-- Giỏ hiện lưu session `ke_hoach_dang_ky`; các môn trong giỏ đọc từ MySQL.
-- Liên hệ vẫn lưu `storage/lien-he.jsonl` qua `KhoLienHe`, dù schema đã có bảng `lien_he`.
-- Dữ liệu `data/*.json` còn trong repository là phần cũ; `KhoMonHoc` hiện truy vấn MySQL.
-- `.gitignore` loại dữ liệu runtime, vendor và ảnh upload; `uploads/.gitkeep` giữ thư mục trên bản clone mới.
-
-## 8. Kiểm thử và minh chứng
-
-1. Đăng nhập bằng cả `admin` và `admin@edugpa.local`; nhập sai/đầu vào mảng phải báo lỗi, không Warning. Khách vào quản trị nhận 403.
-2. Tìm nhanh `web` ở danh sách: kết quả đổi, Network có API; xóa Network rồi gõ liền mạch để kiểm tra debounce.
-3. Thêm môn từ danh sách/chi tiết: không reload, số món tăng, nút đổi; thêm trùng không tăng. Đăng xuất vẫn giữ giỏ.
-4. Tắt JavaScript: dùng nút Lọc kết quả và form thêm giỏ; tải lại trang nhưng thao tác vẫn thành công.
-5. Trang Hợp: vote một lần, vote trùng bị chặn; F5 xóa thông báo. Tra cứu `8.8.8.8`, xem lịch sử và kiểm tra F5 không thêm bản ghi.
-6. Chạy các ca lỗi trong `api.http`; không suy ra tất cả mã lỗi chỉ từ ảnh 404.
-7. W3C: Ctrl+U lấy HTML do PHP sinh ra rồi kiểm tra Text input; không đưa nguyên PHP vào validator. Đo Lighthouse/360px theo bảng yêu cầu của đề.
-
-Ảnh Bài 6 của Hợp tại `kiemtra/hop-bai6-*`: W3C không lỗi, vote thành công/trùng, lịch sử MySQL, tìm kiếm một request, fetch giỏ, API 404 và thêm giỏ khi tắt JavaScript. Kết quả kiểm thử chức năng 6 trước đó ghi trong `kiemtra/hop-chuc-nang-6.md`; các ghi chú “chưa đo” trong tệp là trạng thái tại thời điểm ghi nhận, không thay thế bằng chứng bổ sung sau đó. Bảng 3–5 trong báo cáo cần điền theo các lượt kiểm tra thực tế, không mặc định đạt toàn bộ website.
-
-Kiểm tra cú pháp và khoảng trắng tại thư mục dự án:
-
-```powershell
-Get-ChildItem -Recurse -Filter *.php -File |
-  Where-Object FullName -NotMatch '\\vendor\\' |
-  ForEach-Object { php -l $_.FullName }
-git diff --check
-```
-
-## 9. Trạng thái ghép bài và giới hạn hiện tại
-
-- Schema hiện có 11 bảng; seed có 8 môn/4 danh mục đều có dữ liệu, 4 tài khoản và 2 dòng thành viên. Chưa đạt yêu cầu tối thiểu 30 môn và danh mục trống; các thành viên cần bổ sung trước khi chốt bài.
-- Chưa có `database/erd.png`, bảng dự án/kỹ năng riêng của các thành viên còn lại trong schema hiện tại.
-- Chưa có trang đặt hàng/đơn hàng hoặc giao dịch đăng ký tương đương; hai bảng kế hoạch trong schema chưa được dùng để tạo giao dịch.
-- Không có cột tồn kho của môn học. API giỏ hiện kiểm tra giới hạn số lượng 1–5; điều này không thay thế kiểm thử tồn kho/transaction của chức năng 5.
-- Trang quản trị hiện xem liên hệ, chưa xác nhận hoàn tất CRUD chung.
-- README mô tả code đang có, không xác nhận cả nhóm đã hoàn thành toàn bộ đề.
-
-Khi đóng gói, lấy phiên bản Git cuối đã thống nhất, loại runtime/log/backup và thử chạy bản giải nén theo hướng dẫn cài mới. Không chạy schema có DROP DATABASE lên dữ liệu đang dùng. Tên PDF/ZIP bắt đầu bằng `Nhom03`.
-
-## 10. Thành viên và phân công chức năng chung
-
-| Thành viên | MSSV | Phân công mới của nhóm |
-| --- | --- | --- |
-| Lê Nguyễn Anh Trúc | 3120224159 | Chức năng 1 |
-| Huỳnh Phương Uyên | 3120224174 | Chức năng 2 và 4 |
-| Lê Dương Hoàng Hải | 3120224042 | Chức năng 3 |
-| Dương Bảo Duy | 3120224034 | Chức năng 5 |
-| Phan Văn Hợp | 3120224064 | Chức năng 6; bình chọn/lịch sử tra cứu ở trang cá nhân |
-
-Mỗi thành viên cập nhật schema/seed, minh chứng và commit phần của mình; nhóm trưởng ghép ERD, bảng kiểm thử và báo cáo cuối.
+Hiện việc chuyển MySQL chưa hoàn tất toàn bộ: liên hệ vẫn lưu JSONL, chức năng giao dịch đăng ký/đơn hàng và ERD còn cần ghép; seed mới có 8 môn. Chỉ ghi tính năng đã có và kết quả đã đo khi chốt bài.

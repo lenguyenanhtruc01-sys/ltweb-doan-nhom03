@@ -8,7 +8,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/inc/config.php';
 
-$gioHang = $_SESSION['ke_hoach_dang_ky'] ?? [];
+xoaGhiNhoHienTai();
+
 $_SESSION = [];
 session_regenerate_id(true);
 $_SESSION['ke_hoach_dang_ky'] = is_array($gioHang) ? $gioHang : [];

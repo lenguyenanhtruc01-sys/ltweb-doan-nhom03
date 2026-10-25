@@ -46,6 +46,8 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // 5. Xử lý ngoại lệ chưa được bắt.
+khoiPhucDangNhapTuCookie();
+
 set_exception_handler(
     static function (Throwable $loi): void {
 

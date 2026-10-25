@@ -8,6 +8,17 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/inc/config.php';
 
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
+    header('Allow: POST');
+    http_response_code(405);
+    exit('Phương thức không được hỗ trợ.');
+}
+$token = $_POST['_csrf'] ?? null;
+if (!is_string($token) || !csrfKiemTra($token)) {
+    http_response_code(403);
+    exit('Yêu cầu không hợp lệ.');
+}
+
 $nd = nguoiDung();
 if ($nd !== null) {
     $gio = new \App\Services\KeHoachHocTap();

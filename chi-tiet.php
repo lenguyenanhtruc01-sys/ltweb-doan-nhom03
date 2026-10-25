@@ -25,6 +25,14 @@ $mh = ($id !== false && $id > 0)
     ? $kho->timTheoId($id)
     : null;
 
+// Seed lưu tên file (ví dụ MAT101.png); nối với thư mục ảnh của website.
+$anhMonHoc = trim((string) ($mh?->anh ?? ''));
+if ($anhMonHoc !== ''
+    && !str_starts_with($anhMonHoc, 'http')
+    && !str_starts_with($anhMonHoc, 'images/')) {
+    $anhMonHoc = 'images/' . $anhMonHoc;
+}
+
 // ID sai hoặc môn học không tồn tại: trả về trang 404.
 if ($mh === null) {
     http_response_code(404);
@@ -130,10 +138,10 @@ require __DIR__ . '/inc/header.php';
         class="chi-tiet__noi-dung"
         aria-labelledby="tieu-de-chi-tiet">
 
-        <?php if (trim((string) $mh->anh) !== ''): ?>
+        <?php if ($anhMonHoc !== ''): ?>
             <figure>
                 <img
-                    src="<?= e((string) $mh->anh) ?>"
+                    src="<?= e($anhMonHoc) ?>"
                     alt="<?= e(
                         'Hình minh họa môn học '
                         . (string) $mh->tenMon

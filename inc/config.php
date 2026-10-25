@@ -13,6 +13,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/ham.php';
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/csrf.php';
 require_once __DIR__ . '/xac-thuc.php';
 // 2. Cấu hình môi trường.
 const MOI_TRUONG = 'dev';

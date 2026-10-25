@@ -7,7 +7,8 @@ $tieuDe = 'Đăng ký';
 $trang = 'dang-ky';
 $goc = '';
 
-$thongBaoLoi = '';
+$loi = []; // Mảng chứa lỗi của từng ô
+// Giữ lại dữ liệu người dùng đã nhập để không bị mất khi load lại trang
 $tenDangNhap = '';
 $email = '';
 $hoTen = '';
@@ -25,20 +26,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $matKhau = is_string($matKhauRaw) ? $matKhauRaw : '';
     $xacNhan = is_string($xacNhanRaw) ? $xacNhanRaw : '';
 
-    // ĐÃ SỬA: Thêm điều kiện mb_strlen($matKhau) >= 6
-    $duLieuHopLe =
-        mb_strlen($tenDangNhap) >= 3
-        && mb_strlen($tenDangNhap) <= 50
-        && filter_var($email, FILTER_VALIDATE_EMAIL)
-        && mb_strlen($email) <= 254
-        && mb_strlen($hoTen) >= 2
-        && mb_strlen($hoTen) <= 100
-        && mb_strlen($matKhau) >= 6 // Kiểm tra độ dài >= 6
-        && $matKhau === $xacNhan;
+    // 1. Kiểm tra dữ liệu và gán lỗi cạnh từng ô
+    if (mb_strlen($tenDangNhap) < 3 || mb_strlen($tenDangNhap) > 50) {
+        $loi['ten_dang_nhap'] = 'Tên đăng nhập phải từ 3 đến 50 ký tự.';
+    }
 
-    if (!$duLieuHopLe) {
-        $thongBaoLoi = 'Thông tin không hợp lệ (Mật khẩu tối thiểu 6 ký tự) hoặc tên đăng nhập/email đã được sử dụng.';
-    } else {
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 100) {
+        $loi['email'] = 'Email không hợp lệ.';
+    }
+
+    if (mb_strlen($hoTen) < 2 || mb_strlen($hoTen) > 100) {
+        $loi['ho_ten'] = 'Họ tên phải từ 2 đến 100 ký tự.';
+    }
+
+    if (mb_strlen($matKhau) < 8) {
+        $loi['mat_khau'] = 'Mật khẩu phải tối thiểu 8 ký tự.';
+    } elseif ($matKhau !== $xacNhan) {
+        $loi['xac_nhan_mat_khau'] = 'Mật khẩu xác nhận không khớp.';
+    }
+
+    // 2. Nếu không có lỗi nào thì INSERT vào CSDL
+    if (empty($loi)) {
         try {
             $st = db()->prepare(
                 "INSERT INTO nguoi_dung
@@ -53,13 +61,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $hoTen,
             ]);
 
-            header('Location: dang-nhap.php?dang_ky=1');
+            $_SESSION['flash_dang_ky'] = 'Đăng ký thành công. Hãy đăng nhập bằng tài khoản vừa tạo.';
+            header('Location: dang-nhap.php', true, 303);
             exit;
-        } catch (PDOException $loi) {
-            if ((int) ($loi->errorInfo[1] ?? 0) === 1062) {
-                $thongBaoLoi = 'Tên đăng nhập hoặc email này đã được sử dụng.';
+        } catch (PDOException $e) {
+            if ((int) ($e->errorInfo[1] ?? 0) === 1062) {
+                // Bắt lỗi trùng lặp, kiểm tra xem trùng email hay tên đăng nhập
+                if (str_contains($e->getMessage(), 'email')) {
+                    $loi['email'] = 'Email này đã được đăng ký.';
+                } elseif (str_contains($e->getMessage(), 'ten_dang_nhap')) {
+                    $loi['ten_dang_nhap'] = 'Tên đăng nhập này đã có người sử dụng.';
+                } else {
+                    $loi['chung'] = 'Thông tin đăng ký đã tồn tại.';
+                }
             } else {
-                throw $loi;
+                throw $e;
             }
         }
     }
@@ -72,67 +88,56 @@ require __DIR__ . '/inc/header.php';
     <div class="bao" style="max-width: 500px; margin: 2rem auto;">
         <h1>Đăng ký tài khoản</h1>
 
-        <?php if ($thongBaoLoi !== ''): ?>
+        <?php if (isset($loi['chung'])): ?>
             <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 1rem;">
-                <?= e($thongBaoLoi) ?>
+                <?= e($loi['chung']) ?>
             </div>
         <?php endif; ?>
 
         <form method="POST" action="dang-ky.php" class="form-lien-he">
             <div>
                 <label for="ho_ten">Họ tên:</label>
-                <input
-                    type="text"
-                    id="ho_ten"
-                    name="ho_ten"
-                    maxlength="100"
-                    value="<?= e($hoTen) ?>"
-                    required>
+                <input type="text" id="ho_ten" name="ho_ten" maxlength="100" value="<?= e($hoTen) ?>" required
+                    <?= isset($loi['ho_ten']) ? 'aria-invalid="true" aria-describedby="loi-ho-ten"' : '' ?>>
+                <?php if (isset($loi['ho_ten'])): ?>
+                    <span id="loi-ho-ten" role="alert" style="color: red; font-size: 0.9em;"><?= e($loi['ho_ten']) ?></span>
+                <?php endif; ?>
             </div>
 
             <div>
                 <label for="ten_dang_nhap">Tên đăng nhập:</label>
-                <input
-                    type="text"
-                    id="ten_dang_nhap"
-                    name="ten_dang_nhap"
-                    maxlength="50"
-                    value="<?= e($tenDangNhap) ?>"
-                    required>
+                <input type="text" id="ten_dang_nhap" name="ten_dang_nhap" maxlength="50" value="<?= e($tenDangNhap) ?>" required
+                    <?= isset($loi['ten_dang_nhap']) ? 'aria-invalid="true" aria-describedby="loi-ten-dang-nhap"' : '' ?>>
+                <?php if (isset($loi['ten_dang_nhap'])): ?>
+                    <span id="loi-ten-dang-nhap" role="alert" style="color: red; font-size: 0.9em;"><?= e($loi['ten_dang_nhap']) ?></span>
+                <?php endif; ?>
             </div>
 
             <div>
                 <label for="email">Email:</label>
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    maxlength="254"
-                    value="<?= e($email) ?>"
-                    required>
+                <input type="email" id="email" name="email" maxlength="100" value="<?= e($email) ?>" required
+                    <?= isset($loi['email']) ? 'aria-invalid="true" aria-describedby="loi-email"' : '' ?>>
+                <?php if (isset($loi['email'])): ?>
+                    <span id="loi-email" role="alert" style="color: red; font-size: 0.9em;"><?= e($loi['email']) ?></span>
+                <?php endif; ?>
             </div>
 
             <div>
-                <!-- ĐÃ SỬA: Cập nhật label -->
-                <label for="mat_khau">Mật khẩu (tối thiểu 6 ký tự):</label>
-                <input
-                    type="password"
-                    id="mat_khau"
-                    name="mat_khau"
-                    minlength="6"
-                    autocomplete="new-password"
-                    required>
+                <label for="mat_khau">Mật khẩu (tối thiểu 8 ký tự):</label>
+                <input type="password" id="mat_khau" name="mat_khau" minlength="8" autocomplete="new-password" required
+                    <?= isset($loi['mat_khau']) ? 'aria-invalid="true" aria-describedby="loi-mat-khau"' : '' ?>>
+                <?php if (isset($loi['mat_khau'])): ?>
+                    <span id="loi-mat-khau" role="alert" style="color: red; font-size: 0.9em;"><?= e($loi['mat_khau']) ?></span>
+                <?php endif; ?>
             </div>
 
             <div>
                 <label for="xac_nhan_mat_khau">Nhập lại mật khẩu:</label>
-                <input
-                    type="password"
-                    id="xac_nhan_mat_khau"
-                    name="xac_nhan_mat_khau"
-                    minlength="6"
-                    autocomplete="new-password"
-                    required>
+                <input type="password" id="xac_nhan_mat_khau" name="xac_nhan_mat_khau" minlength="8" autocomplete="new-password" required
+                    <?= isset($loi['xac_nhan_mat_khau']) ? 'aria-invalid="true" aria-describedby="loi-xac-nhan-mat-khau"' : '' ?>>
+                <?php if (isset($loi['xac_nhan_mat_khau'])): ?>
+                    <span id="loi-xac-nhan-mat-khau" role="alert" style="color: red; font-size: 0.9em;"><?= e($loi['xac_nhan_mat_khau']) ?></span>
+                <?php endif; ?>
             </div>
 
             <button type="submit" class="nut nut--chinh">Tạo tài khoản</button>

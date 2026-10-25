@@ -360,13 +360,13 @@ window.addEventListener(
 capNhatGiaoDienYeuThich();
 
 // Chờ các lần bấm yêu thích hoàn tất trước khi chuyển sang đăng xuất.
-document.addEventListener('click', (event) => {
-    const link = event.target instanceof Element ? event.target.closest('a') : null;
-    if (!dungTaiKhoan || !link || new URL(link.href).pathname.split('/').pop() !== 'dang-xuat.php'
-        || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
+document.addEventListener('submit', (event) => {
+    const form = event.target;
+    if (!dungTaiKhoan || !(form instanceof HTMLFormElement)
+        || new URL(form.action).pathname.split('/').pop() !== 'dang-xuat.php') return;
     event.preventDefault();
     hangDoiYeuThich.then(() => {
-        if (!loiDongBoYeuThich) location.href = link.href;
+        if (!loiDongBoYeuThich) HTMLFormElement.prototype.submit.call(form);
         else baoLoiYeuThich(new Error('Chưa lưu được yêu thích. Vui lòng thử lại trước khi đăng xuất.'));
     });
 });

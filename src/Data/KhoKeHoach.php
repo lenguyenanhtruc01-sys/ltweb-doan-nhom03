@@ -1,6 +1,12 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Tạo kế hoạch, lưu snapshot và trừ số chỗ bằng UPDATE có điều kiện.
+ * Thiếu chỗ ở bất kỳ môn nào sẽ rollback toàn bộ, giữ giỏ để thử lại.
+ * Thử: hai môn còn chỗ; môn thứ hai hết chỗ; hai tài khoản tranh chỗ cuối.
+ */
+
 namespace App\Data;
 
 use PDO;
@@ -33,9 +39,12 @@ final class KhoKeHoach
 
         $ids = []; $soLuongMap = [];
         foreach ($gioSession as $id => $sl) {
-            if ((int)$id > 0 && (int)$sl >= 1 && (int)$sl <= 5) {
+            if ((is_int($id) || is_string($id)) && ctype_digit((string) $id)
+                && is_int($sl) && (int)$id > 0 && $sl >= 1 && $sl <= 5) {
                 $ids[(int)$id] = (int)$id;
                 $soLuongMap[(int)$id] = (int)$sl;
+            } else {
+                throw new RuntimeException('Dữ liệu môn hoặc số lượng không hợp lệ.');
             }
         }
         if ($ids === []) throw new RuntimeException('Không có môn hợp lệ.');
@@ -43,7 +52,7 @@ final class KhoKeHoach
         $this->db->beginTransaction();
         try {
             $ph = implode(',', array_fill(0, count($ids), '?'));
-            $st = $this->db->prepare("SELECT id, ma_mon, ten_mon, so_tin_chi FROM mon_hoc WHERE id IN ($ph)");
+            $st = $this->db->prepare("SELECT id, ma_mon, ten_mon, so_tin_chi FROM mon_hoc WHERE id IN ($ph) ORDER BY id");
             $st->execute(array_values($ids));
             $dsMon = $st->fetchAll();
 
@@ -70,7 +79,7 @@ final class KhoKeHoach
                 
                 // 4. Kiểm tra rowCount() - Nếu không trừ được (do hết chỗ) thì rollback
                 if ($stUpdate->rowCount() !== 1) {
-                    throw new RuntimeException("Môn {$m['ma_mon']} đã hết chỗ đăng ký.");
+                    throw new MonKhongDuChoException("Môn {$m['ma_mon']} không còn đủ chỗ đăng ký.");
                 }
 
                 // 5. Lưu chi tiết (snapshot)

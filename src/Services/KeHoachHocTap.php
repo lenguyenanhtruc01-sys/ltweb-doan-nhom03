@@ -68,7 +68,7 @@ class KeHoachHocTap
 
         $monHoc = $this->khoMonHoc->timTheoId($id);
 
-        if ($monHoc === null) {
+        if ($monHoc === null || $soLuong > $monHoc->soCho) {
             return false;
         }
 
@@ -101,7 +101,7 @@ class KeHoachHocTap
 
         $monHoc = $this->khoMonHoc->timTheoId($id);
 
-        if ($monHoc === null) {
+        if ($monHoc === null || $soLuong > $monHoc->soCho) {
             return false;
         }
 

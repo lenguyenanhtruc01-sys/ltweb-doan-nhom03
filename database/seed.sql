@@ -63,6 +63,11 @@ INSERT INTO mon_hoc (id, danh_muc_id, ma_mon, ten_mon, so_tin_chi, mo_ta) VALUES
 (29, 4, 'START01', 'Khởi nghiệp công nghệ', 2, 'Ý tưởng, mô hình kinh doanh, gọi vốn'),
 (30, 4, 'LOG401', 'Tư duy logic và giải quyết vấn đề', 2, 'Phương pháp luận, tư duy phản biện');
 
+-- Mẫu kiểm thử: SEC401 hết chỗ; LOG401 còn 1 chỗ (POST sl=2 phải trả 422).
+-- Các số này là số chỗ còn lại; kế hoạch mẫu bên dưới đã được tính từ trước.
+UPDATE mon_hoc SET so_cho = 0 WHERE ma_mon = 'SEC401';
+UPDATE mon_hoc SET so_cho = 1 WHERE ma_mon = 'LOG401';
+
 -- ============================================
 -- 3a. ẢNH MÔN HỌC (tên file trong thư mục images/)
 -- ENG101 không có ảnh riêng nên để anh = NULL.

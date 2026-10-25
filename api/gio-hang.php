@@ -44,8 +44,12 @@ try {
     if (!is_string($token) || !is_string($expected) || $expected === '' || !hash_equals($expected, $token)) {
         traJson(['loi' => 'Phiên giỏ hàng không hợp lệ. Tải lại trang để thử lại.'], 401);
     }
-    if ((new KhoMonHoc(db()))->timTheoId($id) === null) {
+    $mon = (new KhoMonHoc(db()))->timTheoId($id);
+    if ($mon === null) {
         traJson(['loi' => 'Không tìm thấy môn học.'], 404);
+    }
+    if ($quantity > $mon->soCho) {
+        traJson(['loi' => 'Môn học không còn đủ chỗ đăng ký.'], 422);
     }
     // Khôi phục trạng thái cũ nếu đọc CSDL/serialize phản hồi gặp lỗi sau khi thêm.
     $oldCart = $_SESSION['ke_hoach_dang_ky'] ?? [];

@@ -230,4 +230,6 @@ Kiểm thử API bằng [api.http](api.http), đổi `@goc` theo cách chạy. �
 
 Seed hiện có 30 môn trong 4 danh mục có dữ liệu và 1 danh mục trống, 3 tài khoản thử, 2 kế hoạch mẫu với 4 chi tiết. Đã có luồng gửi/xem kế hoạch bằng transaction. Liên hệ vẫn lưu JSONL; ERD và phần dữ liệu cá nhân của cả nhóm còn cần hoàn thiện.
 
-Chưa có giới hạn số chỗ đăng ký tương đương tồn kho. Ca API vượt chỗ và rollback do không đủ chỗ chưa được xác nhận đạt; giới hạn số lượng giỏ 1–5 không thay thế nghiệp vụ này. Kịch bản chờ triển khai và kết quả đã đo được ghi trong [biên bản chức năng 6](kiemtra/hop-chuc-nang-6.md).
+Môn học có `so_cho` là số chỗ còn lại. Với CSDL cũ: sao lưu rồi chạy `php database/nang-cap-so-cho.php`; migration khởi tạo 50 chỗ cho môn cũ, không thay tài khoản, giỏ hoặc kế hoạch và không trừ lại kế hoạch cũ. Chạy lại giữ số chỗ hiện có. Không import lại schema/seed vào CSDL đang dùng.
+
+API/form thêm và cập nhật giỏ kiểm tra đủ chỗ, nhưng chưa giữ chỗ. Khi gửi kế hoạch, transaction trừ chỗ bằng `UPDATE ... WHERE so_cho >= ?`, kiểm tra `rowCount()`; thiếu ở bất kỳ môn nào rollback cả kế hoạch, chi tiết và số chỗ, giữ giỏ. Seed mới có SEC401 hết chỗ và LOG401 còn 1 chỗ để thử API `sl=2` trả 422. Đổi trạng thái chỉ cập nhật trạng thái, không tự hoàn chỗ. Kết quả kiểm thử xem [biên bản chức năng 6](kiemtra/hop-chuc-nang-6.md).

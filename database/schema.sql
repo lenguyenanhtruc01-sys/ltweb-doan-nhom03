@@ -60,7 +60,7 @@ CREATE TABLE mon_hoc (
     ma_mon VARCHAR(20) NOT NULL UNIQUE,
     ten_mon VARCHAR(200) NOT NULL,
     so_tin_chi INT UNSIGNED NOT NULL CHECK (so_tin_chi > 0),
-    so_cho INT UNSIGNED NOT NULL DEFAULT 50, -- CỘT MỚI THÊM
+    so_cho INT UNSIGNED NOT NULL DEFAULT 50,
     mo_ta TEXT NULL,
     anh VARCHAR(255) NULL,
     ngay_tao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -194,23 +194,6 @@ CREATE TABLE IF NOT EXISTS gio_hang_nguoi_dung (
     FOREIGN KEY (nguoi_dung_id) REFERENCES nguoi_dung(id) ON DELETE CASCADE,
     FOREIGN KEY (mon_hoc_id) REFERENCES mon_hoc(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-CREATE TABLE IF NOT EXISTS mon_yeu_thich (
-    nguoi_dung_id INT UNSIGNED NOT NULL,
-    mon_hoc_id INT UNSIGNED NOT NULL,
-    PRIMARY KEY (nguoi_dung_id, mon_hoc_id),
-    FOREIGN KEY (nguoi_dung_id) REFERENCES nguoi_dung(id) ON DELETE CASCADE,
-    FOREIGN KEY (mon_hoc_id) REFERENCES mon_hoc(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-CREATE TABLE IF NOT EXISTS gio_hang_nguoi_dung (
-    nguoi_dung_id INT UNSIGNED NOT NULL,
-    mon_hoc_id INT UNSIGNED NOT NULL,
-    so_luong SMALLINT UNSIGNED NOT NULL CHECK (so_luong BETWEEN 1 AND 5),
-    PRIMARY KEY (nguoi_dung_id, mon_hoc_id),
-    FOREIGN KEY (nguoi_dung_id) REFERENCES nguoi_dung(id) ON DELETE CASCADE,
-    FOREIGN KEY (mon_hoc_id) REFERENCES mon_hoc(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 CREATE TABLE IF NOT EXISTS mon_yeu_thich (
     nguoi_dung_id INT UNSIGNED NOT NULL,
     mon_hoc_id INT UNSIGNED NOT NULL,

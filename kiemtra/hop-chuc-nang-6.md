@@ -40,20 +40,28 @@ Các kết quả dưới đây là lịch sử kiểm thử trên môi trường
 
 Ca mất kết nối CSDL đã thử bằng tiến trình PHP riêng tại cổng 8098 với `DB_PORT=1`, không dừng hay chỉnh cấu hình MySQL thật. Kết quả tìm Web có 1 môn ở biên bản cũ thuộc bộ dữ liệu 8 môn, đã được thay bằng kết quả hiện tại ở bảng trên.
 
-## Ca vượt chỗ đăng ký — CHỜ TRIỂN KHAI, chưa đạt để chốt báo cáo
+## Ca vượt chỗ đăng ký — đã kiểm thử ngày 25/10/2026
 
-Tiền điều kiện: nhóm bổ sung số chỗ còn lại/trạng thái mở đăng ký và kiểm tra giới hạn đó trong API, dùng chung quy tắc với giao dịch gửi kế hoạch. Hiện schema chưa có dữ liệu số chỗ; giới hạn `sl = 1–5` chỉ là giới hạn số lượng của giỏ.
+Đã nối kiểm tra `mon_hoc.so_cho` vào API và form thêm/cập nhật giỏ. Thêm giỏ không giữ chỗ; transaction gửi kế hoạch kiểm tra lại bằng UPDATE có điều kiện và rowCount. CSDL thử được tạo từ schema/seed hiện tại sau khi đồng bộ commit `842b1f3`, tách khỏi CSDL local thật và xóa sau khi thử.
 
-| Bước | Thao tác / kết quả cần kiểm tra |
+| Ca thực tế | Kết quả |
 | --- | --- |
-| Chuẩn bị | Dùng môn có thật còn 1 chỗ; dùng phiên kiểm thử và CSRF token hợp lệ |
-| Ghi nhận ban đầu | GET giỏ, lưu danh sách môn và số lượng hiện có |
-| Gửi yêu cầu | POST JSON `{"id":<id_môn_thử>,"sl":2}` tới `api/gio-hang.php`; số lượng 2 vẫn trong khoảng 1–5 |
-| Kết quả mong đợi | HTTP 422; Content-Type JSON; nội dung báo không đủ chỗ, không có HTML/Warning |
-| Kiểm tra sau lỗi | GET lại cùng giỏ: danh sách và số lượng giữ nguyên; không tạo kế hoạch hoặc trừ chỗ |
-| Ghi minh chứng | Chụp Network có Payload, HTTP 422 và JSON; điền kết quả thực tế sau khi chạy |
+| LOG401 còn 1 chỗ; POST JSON `{"id":30,"sl":2}` có CSRF hợp lệ, cả khách và tài khoản | 422; Content-Type JSON; `{"loi":"Môn học không còn đủ chỗ đăng ký."}` |
+| SEC401 còn 0 chỗ; POST id=25, sl=1 | 422, cùng thông báo thiếu chỗ |
+| GET giỏ trước/sau lỗi; so sánh dữ liệu MySQL | Giỏ, số chỗ, kế hoạch và chi tiết giữ nguyên |
+| Giỏ đã có LOG401 số lượng 1; gửi lại số lượng 2 | 422, vẫn giữ số lượng 1 |
+| Form POST thêm môn hết chỗ hoặc cập nhật số lượng vượt chỗ, không dùng fetch | Chuyển hướng về trang, không thay giỏ |
+| Hai môn; môn thứ hai hết chỗ sau khi đã thêm giỏ | Gửi kế hoạch trả 303 về giỏ, thông báo thiếu chỗ; rollback cả kế hoạch, chi tiết, số chỗ môn đầu; giữ giỏ |
+| Hai môn còn đủ chỗ | Gửi thành công, trừ đúng chỗ, xóa các dòng giỏ đã gửi; snapshot tên/tín chỉ giữ nguyên khi môn thay đổi |
+| Hai tiến trình cùng gửi môn chỉ còn 1 chỗ | Chỉ một thành công, một thiếu chỗ; chỉ thêm một kế hoạch; số chỗ bằng 0 |
+| F5 trang chi tiết sau khi gửi thành công | Không sinh thêm kế hoạch; PRG 303 |
+| POST `_csrf[]` tới gửi kế hoạch và quản trị trạng thái | Chuyển hướng 303, không TypeError; trang đơn hàng chạy được |
+| Log PHP trong lượt HTTP bình thường | Rỗng, không Warning/Notice/Fatal |
+| Migration trên cấu trúc cũ và chạy lại | Thêm cột với mặc định 50, giữ mọi dữ liệu cũ; lần sau giữ số chỗ hiện tại |
 
-Trạng thái hiện tại: **chưa thể thực hiện đúng tiền điều kiện, chưa xác nhận đạt**. Ca `sl=6` không thay thế ca vượt chỗ. Ca rollback khi môn thứ hai không đủ chỗ thuộc giao dịch chức năng 5 và cần phối hợp kiểm thử riêng.
+Chạy lại kiểm thử CSDL độc lập: `php kiemtra/kiem-thu-so-cho.php` (cần quyền tạo/xóa CSDL). File này tự tạo database ngẫu nhiên và dọn trong finally. Ca 12 không dùng `sl=6` để thay cho vượt chỗ.
+
+MySQL local thật đã sao lưu và bổ sung cột bằng migration, giữ nguyên tất cả dữ liệu cũ. Các môn local khởi tạo 50 chỗ; mẫu 0/1 chỗ chỉ áp dụng khi nạp seed vào CSDL thử/cài mới. Đổi trạng thái không tự hoàn chỗ. Chưa chụp thêm ảnh Network 422 trong lần kiểm thử này.
 
 ## Minh chứng đang có
 
@@ -63,6 +71,6 @@ Trạng thái hiện tại: **chưa thể thực hiện đúng tiền điều ki
 - [Thêm giỏ khi tắt JavaScript](hop-bai6-them-gio-khi-tat-javascript.jpg).
 - [W3C không lỗi](hop-bai6-w3c-khong-loi.jpg).
 
-Ảnh W3C chỉ chứng minh trang/HTML đã được đưa vào kiểm tra tại thời điểm chụp; không suy ra toàn bộ website hiện tại đạt W3C. Ảnh debounce đã có trong kho, chưa đo lại số request cho tất cả chuỗi gõ trên bản hiện tại. Chưa đo lại Lighthouse. Cần chụp thêm kết quả vượt chỗ sau khi có nghiệp vụ tương ứng.
+Ảnh W3C chỉ chứng minh trang/HTML đã được đưa vào kiểm tra tại thời điểm chụp; không suy ra toàn bộ website hiện tại đạt W3C. Ảnh debounce đã có trong kho, chưa đo lại số request cho tất cả chuỗi gõ trên bản hiện tại. Chưa đo lại Lighthouse. Cần bổ sung ảnh Network 422 cho ca vượt chỗ đã kiểm thử ở trên.
 
 Các lần kiểm thử ghi dữ liệu dùng tài khoản/kế hoạch tạm đã được dọn; kiểm tra schema/migration dùng CSDL thử riêng đã xóa. Không dùng bản ghi cá nhân hiện có để thử thao tác xóa/sửa.

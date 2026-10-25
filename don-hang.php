@@ -39,13 +39,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     if (!$laQuanTri) {
         yeuCauQuyen('quan_tri');
     }
-<<<<<<< Updated upstream
     $token = $_POST['_csrf'] ?? null;
     if (!is_string($token) || !csrfKiemTra($token)) {
-=======
-    // Kiểm tra CSRF
-    if (!csrfKiemTra($_POST['_csrf'] ?? null)) {
->>>>>>> Stashed changes
         $_SESSION['flash_error'] = 'Phiên làm việc đã hết hạn.';
         header('Location: don-hang.php', true, 303);
         exit;

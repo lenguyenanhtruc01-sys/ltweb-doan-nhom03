@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/inc/config.php';
 
+xoaGhiNhoHienTai();
+
 $_SESSION = [];
 
 if (ini_get('session.use_cookies')) {

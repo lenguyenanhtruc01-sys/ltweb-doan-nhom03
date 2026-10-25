@@ -20,6 +20,31 @@ CREATE TABLE nguoi_dung (
     ngay_tao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Phiên đăng nhập lâu dài: cookie chỉ chứa selector + token ngẫu nhiên.
+-- CSDL chỉ lưu hash của token để tránh dùng lại nếu dữ liệu bị lộ.
+CREATE TABLE phien_ghi_nho (
+    selector CHAR(18) PRIMARY KEY,
+    nguoi_dung_id INT UNSIGNED NOT NULL,
+    token_hash CHAR(64) NOT NULL,
+    het_han DATETIME NOT NULL,
+    ngay_tao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (nguoi_dung_id) REFERENCES nguoi_dung(id) ON DELETE CASCADE,
+    INDEX idx_phien_ghi_nho_het_han (het_han)
+);
+
+-- Mã một lần để đặt lại mật khẩu. Mã hết hạn sau 30 phút ở tầng PHP.
+CREATE TABLE yeu_cau_dat_lai_mat_khau (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nguoi_dung_id INT UNSIGNED NOT NULL,
+    token_hash CHAR(64) NOT NULL UNIQUE,
+    het_han DATETIME NOT NULL,
+    da_dung_luc DATETIME NULL,
+    ngay_tao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (nguoi_dung_id) REFERENCES nguoi_dung(id) ON DELETE CASCADE,
+    INDEX idx_dat_lai_nguoi_dung (nguoi_dung_id),
+    INDEX idx_dat_lai_het_han (het_han)
+);
+
 -- ============================================
 -- 2. BẢNG DANH MỤC (Phục vụ Chức năng 2)
 -- ============================================

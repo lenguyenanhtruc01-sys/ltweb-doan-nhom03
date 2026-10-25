@@ -28,14 +28,20 @@ $tieuDe = 'Đăng nhập';
 $trang = 'dang-nhap';
 $goc = '';
 
+if (($_GET['dat_lai'] ?? '') === '1') {
+    $thongBaoThanhCong = 'Đã đổi mật khẩu. Hãy đăng nhập với mật khẩu mới.';
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $thongBaoLoi = 'Email hoặc mật khẩu không chính xác.';
 
     $emailRaw = $_POST['email'] ?? '';
     $passwordRaw = $_POST['password'] ?? '';
+    $ghiNhoRaw = $_POST['ghi_nho'] ?? '';
 
     $email = is_string($emailRaw) ? trim($emailRaw) : '';
     $password = is_string($passwordRaw) ? $passwordRaw : '';
+    $ghiNho = $ghiNhoRaw === '1';
 
     if (filter_var($email, FILTER_VALIDATE_EMAIL) && $password !== '') {
         $st = db()->prepare(
@@ -61,11 +67,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             session_regenerate_id(true);
             $_SESSION['uid'] = (int) $nd['id'];
 
-            $trangDich = $nd['vai_tro'] === 'quan_tri'
-    ? 'quan-tri.php'
-    : 'index.php';
+            if ($ghiNho) {
+                taoPhienGhiNho((int) $nd['id']);
+            } else {
+                xoaGhiNhoHienTai();
+            }
 
-header('Location: ' . $trangDich);
+            $trangDich = $nd['vai_tro'] === 'quan_tri'
+                ? 'quan-tri.php'
+                : 'index.php';
+
+            header('Location: ' . $trangDich);
             exit;
         }
     }
@@ -101,6 +113,14 @@ require __DIR__ . '/inc/header.php';
 
             <button type="submit" class="nut nut--chinh" style="width: 100%; padding: 0.75rem; cursor: pointer;">Đăng nhập</button>
             <p>Chưa có tài khoản? <a href="dang-ky.php">Đăng ký ngay</a></p>
+            <div style="margin-top: 1rem;">
+                <label>
+                    <input type="checkbox" name="ghi_nho" value="1">
+                    Ghi nhớ đăng nhập trong 30 ngày
+                </label>
+            </div>
+
+            <p><a href="quen-mat-khau.php">Quên mật khẩu?</a></p>
         </form>
     </div>
 </main>

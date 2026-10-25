@@ -60,6 +60,7 @@ CREATE TABLE mon_hoc (
     ma_mon VARCHAR(20) NOT NULL UNIQUE,
     ten_mon VARCHAR(200) NOT NULL,
     so_tin_chi INT UNSIGNED NOT NULL CHECK (so_tin_chi > 0),
+    so_cho INT UNSIGNED NOT NULL DEFAULT 50, -- CỘT MỚI THÊM
     mo_ta TEXT NULL,
     anh VARCHAR(255) NULL,
     ngay_tao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -181,6 +182,7 @@ CREATE TABLE IF NOT EXISTS tv_lich_su_ott (
     ket_qua VARCHAR(10) NOT NULL,
     thoi_gian DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
+<<<<<<< Updated upstream
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS gio_hang_nguoi_dung (
@@ -198,3 +200,6 @@ CREATE TABLE IF NOT EXISTS mon_yeu_thich (
     FOREIGN KEY (nguoi_dung_id) REFERENCES nguoi_dung(id) ON DELETE CASCADE,
     FOREIGN KEY (mon_hoc_id) REFERENCES mon_hoc(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+=======
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+>>>>>>> Stashed changes

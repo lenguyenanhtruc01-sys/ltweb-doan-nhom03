@@ -1,9 +1,4 @@
 <?php
-/**
- * Tệp: src/Data/KhoKeHoach.php
- * DAO cho kế hoạch học tập — nhận PDO qua constructor.
- * Tạo kế hoạch + chi tiết trong MỘT transaction, snapshot thuộc tính môn.
- */
 declare(strict_types=1);
 
 namespace App\Data;
@@ -32,34 +27,23 @@ final class KhoKeHoach
 
     public function taoKeHoach(int $nguoiDungId, array $gioSession, string $ghiChu = ''): int
     {
-        if ($nguoiDungId <= 0) {
-            throw new RuntimeException('Chưa đăng nhập.');
-        }
-        if ($gioSession === []) {
-            throw new RuntimeException('Kế hoạch trống.');
+        if ($nguoiDungId <= 0 || $gioSession === []) {
+            throw new RuntimeException('Dữ liệu không hợp lệ.');
         }
 
-        $ids        = [];
-        $soLuongMap = [];
+        $ids = []; $soLuongMap = [];
         foreach ($gioSession as $id => $sl) {
-            $id = (int) $id;
-            $sl = (int) $sl;
-            if ($id > 0 && $sl >= 1 && $sl <= 5) {
-                $ids[$id]        = $id;
-                $soLuongMap[$id] = $sl;
+            if ((int)$id > 0 && (int)$sl >= 1 && (int)$sl <= 5) {
+                $ids[(int)$id] = (int)$id;
+                $soLuongMap[(int)$id] = (int)$sl;
             }
         }
-        if ($ids === []) {
-            throw new RuntimeException('Không có môn hợp lệ trong kế hoạch.');
-        }
+        if ($ids === []) throw new RuntimeException('Không có môn hợp lệ.');
 
         $this->db->beginTransaction();
         try {
             $ph = implode(',', array_fill(0, count($ids), '?'));
-            $st = $this->db->prepare(
-                "SELECT id, ma_mon, ten_mon, so_tin_chi
-                 FROM mon_hoc WHERE id IN ($ph)"
-            );
+            $st = $this->db->prepare("SELECT id, ma_mon, ten_mon, so_tin_chi FROM mon_hoc WHERE id IN ($ph)");
             $st->execute(array_values($ids));
             $dsMon = $st->fetchAll();
 
@@ -67,26 +51,33 @@ final class KhoKeHoach
                 throw new MonKhongTonTaiException('Có môn không tồn tại.');
             }
 
-            $st = $this->db->prepare(
-                "INSERT INTO ke_hoach_hoc_tap (nguoi_dung_id, trang_thai, ghi_chu)
-                 VALUES (?, 'cho_duyet', ?)"
-            );
+            // 1. Insert bản ghi cha (Kế hoạch)
+            $st = $this->db->prepare("INSERT INTO ke_hoach_hoc_tap (nguoi_dung_id, trang_thai, ghi_chu) VALUES (?, 'cho_duyet', ?)");
             $st->execute([$nguoiDungId, $ghiChu]);
             $keHoachId = (int) $this->db->lastInsertId();
 
-            $st = $this->db->prepare(
-                "INSERT INTO chi_tiet_ke_hoach
-                 (ke_hoach_id, mon_hoc_id, ma_mon, ten_mon, so_tin_chi, so_luong)
-                 VALUES (?, ?, ?, ?, ?, ?)"
-            );
+            $stInsert = $this->db->prepare("INSERT INTO chi_tiet_ke_hoach (ke_hoach_id, mon_hoc_id, ma_mon, ten_mon, so_tin_chi, so_luong) VALUES (?, ?, ?, ?, ?, ?)");
+            
+            // 2. Chuẩn bị sẵn câu lệnh UPDATE có điều kiện để trừ số chỗ
+            $stUpdate = $this->db->prepare("UPDATE mon_hoc SET so_cho = so_cho - ? WHERE id = ? AND so_cho >= ?");
+
             foreach ($dsMon as $m) {
-                $st->execute([
-                    $keHoachId,
-                    (int) $m['id'],
-                    (string) $m['ma_mon'],
-                    (string) $m['ten_mon'],
-                    (int) $m['so_tin_chi'],
-                    $soLuongMap[(int) $m['id']],
+                $monId = (int)$m['id'];
+                $sl = $soLuongMap[$monId];
+
+                // 3. Thực hiện trừ số chỗ
+                $stUpdate->execute([$sl, $monId, $sl]);
+                
+                // 4. Kiểm tra rowCount() - Nếu không trừ được (do hết chỗ) thì rollback
+                if ($stUpdate->rowCount() !== 1) {
+                    throw new RuntimeException("Môn {$m['ma_mon']} đã hết chỗ đăng ký.");
+                }
+
+                // 5. Lưu chi tiết (snapshot)
+                $stInsert->execute([
+                    $keHoachId, $monId,
+                    (string)$m['ma_mon'], (string)$m['ten_mon'],
+                    (int)$m['so_tin_chi'], $sl
                 ]);
             }
 
@@ -105,78 +96,41 @@ final class KhoKeHoach
             $this->db->commit();
             return $keHoachId;
         } catch (Throwable $e) {
-            if ($this->db->inTransaction()) {
-                $this->db->rollBack();
-            }
+            if ($this->db->inTransaction()) $this->db->rollBack();
             throw $e;
         }
     }
 
-    public function dsCuaToi(int $nguoiDungId): array
-    {
-        $st = $this->db->prepare(
-            'SELECT k.id, k.trang_thai, k.ngay_tao,
-                    COUNT(ct.mon_hoc_id) AS so_mon,
-                    COALESCE(SUM(ct.so_tin_chi * ct.so_luong), 0) AS tong_tin_chi
-             FROM ke_hoach_hoc_tap k
-             LEFT JOIN chi_tiet_ke_hoach ct ON ct.ke_hoach_id = k.id
-             WHERE k.nguoi_dung_id = ?
-             GROUP BY k.id, k.trang_thai, k.ngay_tao
-             ORDER BY k.ngay_tao DESC, k.id DESC'
-        );
+    public function dsCuaToi(int $nguoiDungId): array {
+        $st = $this->db->prepare('SELECT k.id, k.trang_thai, k.ngay_tao, COUNT(ct.mon_hoc_id) AS so_mon, COALESCE(SUM(ct.so_tin_chi * ct.so_luong), 0) AS tong_tin_chi FROM ke_hoach_hoc_tap k LEFT JOIN chi_tiet_ke_hoach ct ON ct.ke_hoach_id = k.id WHERE k.nguoi_dung_id = ? GROUP BY k.id, k.trang_thai, k.ngay_tao ORDER BY k.ngay_tao DESC, k.id DESC');
         $st->execute([$nguoiDungId]);
         return $st->fetchAll();
     }
 
-    public function dsTatCa(): array
-    {
-        $st = $this->db->query(
-            'SELECT k.id, k.trang_thai, k.ngay_tao,
-                    nd.ho_ten, nd.email,
-                    COUNT(ct.mon_hoc_id) AS so_mon,
-                    COALESCE(SUM(ct.so_tin_chi * ct.so_luong), 0) AS tong_tin_chi
-             FROM ke_hoach_hoc_tap k
-             JOIN nguoi_dung nd ON nd.id = k.nguoi_dung_id
-             LEFT JOIN chi_tiet_ke_hoach ct ON ct.ke_hoach_id = k.id
-             GROUP BY k.id, k.trang_thai, k.ngay_tao, nd.ho_ten, nd.email
-             ORDER BY k.ngay_tao DESC, k.id DESC'
-        );
+    public function dsTatCa(): array {
+        $st = $this->db->query('SELECT k.id, k.trang_thai, k.ngay_tao, nd.ho_ten, nd.email, COUNT(ct.mon_hoc_id) AS so_mon, COALESCE(SUM(ct.so_tin_chi * ct.so_luong), 0) AS tong_tin_chi FROM ke_hoach_hoc_tap k JOIN nguoi_dung nd ON nd.id = k.nguoi_dung_id LEFT JOIN chi_tiet_ke_hoach ct ON ct.ke_hoach_id = k.id GROUP BY k.id, k.trang_thai, k.ngay_tao, nd.ho_ten, nd.email ORDER BY k.ngay_tao DESC, k.id DESC');
         return $st->fetchAll();
     }
 
-    public function chiTiet(int $keHoachId, int $nguoiDungId, bool $laQuanTri): ?array
-    {
-        $sql = 'SELECT id, nguoi_dung_id, trang_thai, ghi_chu, ngay_tao
-                FROM ke_hoach_hoc_tap WHERE id = ?';
+    public function chiTiet(int $keHoachId, int $nguoiDungId, bool $laQuanTri): ?array {
+        $sql = 'SELECT id, nguoi_dung_id, trang_thai, ghi_chu, ngay_tao FROM ke_hoach_hoc_tap WHERE id = ?';
         $ts = [$keHoachId];
-        if (!$laQuanTri) {
-            $sql .= ' AND nguoi_dung_id = ?';
-            $ts[] = $nguoiDungId;
-        }
-        $st = $this->db->prepare($sql);
-        $st->execute($ts);
+        if (!$laQuanTri) { $sql .= ' AND nguoi_dung_id = ?'; $ts[] = $nguoiDungId; }
+        $st = $this->db->prepare($sql); $st->execute($ts);
         $keHoach = $st->fetch();
-        if ($keHoach === false) {
-            return null;
-        }
+        if ($keHoach === false) return null;
 
-        $st = $this->db->prepare(
-            'SELECT mon_hoc_id, ma_mon, ten_mon, so_tin_chi, so_luong
-             FROM chi_tiet_ke_hoach WHERE ke_hoach_id = ? ORDER BY ma_mon'
-        );
+        $st = $this->db->prepare('SELECT mon_hoc_id, ma_mon, ten_mon, so_tin_chi, so_luong FROM chi_tiet_ke_hoach WHERE ke_hoach_id = ? ORDER BY ma_mon');
         $st->execute([$keHoachId]);
         $keHoach['chi_tiet'] = $st->fetchAll();
         return $keHoach;
     }
 
-    public function doiTrangThai(int $keHoachId, string $trangThai): bool
-    {
+    public function doiTrangThai(int $keHoachId, string $trangThai): bool {
         if (!in_array($trangThai, self::TRANG_THAI_HOP_LE, true)) {
             throw new RuntimeException('Trạng thái không hợp lệ.');
         }
-        $st = $this->db->prepare(
-            'UPDATE ke_hoach_hoc_tap SET trang_thai = ? WHERE id = ?'
-        );
+        $st = $this->db->prepare('UPDATE ke_hoach_hoc_tap SET trang_thai = ? WHERE id = ?');
         $st->execute([$trangThai, $keHoachId]);
         return $st->rowCount() === 1;
     }

@@ -15,6 +15,7 @@ require_once __DIR__ . '/nang-cap-ke-hoach.php';
 require_once __DIR__ . '/nang-cap-khoa-ngoai-mon-hoc.php';
 require_once __DIR__ . '/nang-cap-so-cho.php';
 require_once __DIR__ . '/nang-cap-ca-nhan-hai.php';
+require_once __DIR__ . '/nang-cap-ca-nhan-uyen.php';
 
 function caiDatDocSql(string $tep, string $tenCsdl): string
 {
@@ -104,6 +105,7 @@ function caiDatNhom(PDO $pdo, string $tenCsdl = 'ltweb_nhom03', ?string $tepAvat
             $pdo->exec($schemaAnToan);
             $pdo->beginTransaction();
             $pdo->exec($seed);
+            nangCapCaNhanUyen($pdo);
             $pdo->commit();
         } else {
             $saoLuu = caiDatSaoLuu($pdo, $tenCsdl);
@@ -127,6 +129,7 @@ function caiDatNhom(PDO $pdo, string $tenCsdl = 'ltweb_nhom03', ?string $tepAvat
             $pdo->exec("INSERT INTO thanh_vien (mssv,ho_ten) VALUES
                 ('3120224034','Dương Bảo Duy'),('3120224042','Lê Dương Hoàng Hải'),('3120224064','Phan Văn Hợp')
                 ON DUPLICATE KEY UPDATE mssv=VALUES(mssv)");
+            nangCapCaNhanUyen($pdo);
         }
         $hai = nangCapCaNhanHai($pdo, null, $tepAvatarCu);
         return ['cai_moi'=>$caiMoi, 'sao_luu'=>$saoLuu, 'hai'=>$hai,

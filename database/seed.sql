@@ -156,15 +156,16 @@ WHERE u.vai_tro = 'khach_hang'
 ORDER BY u.id LIMIT 1;
 
 INSERT INTO thanh_vien (mssv, ho_ten)
-SELECT '3120224174', 'Huỳnh Phương Uyên'
-WHERE NOT EXISTS (SELECT 1 FROM thanh_vien WHERE mssv = '3120224174');
+VALUES ('3120224174', 'Huỳnh Phương Uyên')
+ON DUPLICATE KEY UPDATE ho_ten = VALUES(ho_ten);
 
 INSERT INTO tv_uyen_ky_nang (mssv, ten, nhom) VALUES
 ('3120224174', 'HTML5', 'web'),
 ('3120224174', 'Thiết kế giao diện website', 'web'),
 ('3120224174', 'Làm việc nhóm', 'lam-viec'),
 ('3120224174', 'Quản lý mã nguồn với GitHub', 'lam-viec'),
-('3120224174', 'Thiết kế và quản lý cơ sở dữ liệu', 'du-lieu');
+('3120224174', 'Thiết kế và quản lý cơ sở dữ liệu', 'du-lieu')
+ON DUPLICATE KEY UPDATE id = id;
 
 INSERT INTO tv_uyen_thoi_khoa_bieu
     (mssv, ma_mon, ten_mon, ma_lop, thu, tiet_bat_dau, tiet_ket_thuc, phong)
@@ -174,4 +175,5 @@ VALUES
 ('3120224174', '31241283', 'Hệ quản trị cơ sở dữ liệu', '24-0301', 4, 7, 10, 'B1-104'),
 ('3120224174', '31231016', 'Công nghệ phần mềm', '24-0103', 5, 10, 12, 'B3-304'),
 ('3120224174', '21221904', 'Lịch sử Đảng Cộng sản Việt Nam', '24-0318', 2, 11, 12, 'A6-502'),
-('3120224174', '31221010', 'An toàn thông tin', '24-0103', 7, 11, 12, 'B3-506');
+('3120224174', '31221010', 'An toàn thông tin', '24-0103', 7, 11, 12, 'B3-506')
+ON DUPLICATE KEY UPDATE id = id;

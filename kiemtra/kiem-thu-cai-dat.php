@@ -36,11 +36,14 @@ $cacBanSao = [];
 try {
     $moi = caiDatNhom($pdo, $ten);
     kiemThuCaiDat($moi['cai_moi'] && $moi['so_mon'] === 30, 'Không cài mới đủ môn.');
-    kiemThuCaiDat(count($pdo->query('SHOW TABLES')->fetchAll()) === 18, 'Thiếu bảng.');
+    kiemThuCaiDat(count($pdo->query('SHOW TABLES')->fetchAll()) === 20, 'Thiếu bảng.');
+    kiemThuCaiDat((int) $pdo->query("SELECT COUNT(*) FROM thanh_vien WHERE mssv='3120224174'")->fetchColumn() === 1, 'Thiếu MSSV Uyên.');
+    kiemThuCaiDat((int) $pdo->query("SELECT COUNT(*) FROM tv_uyen_ky_nang WHERE mssv='3120224174'")->fetchColumn() === 5, 'Thiếu dữ liệu kỹ năng Uyên.');
+    kiemThuCaiDat((int) $pdo->query("SELECT COUNT(*) FROM tv_uyen_thoi_khoa_bieu WHERE mssv='3120224174'")->fetchColumn() === 6, 'Thiếu thời khóa biểu Uyên.');
     $hai = $pdo->query("SELECT id,mat_khau FROM nguoi_dung WHERE ten_dang_nhap='hai'")->fetch();
     kiemThuCaiDat($hai !== false && password_verify('matkhau123', $hai['mat_khau']), 'Thiếu tài khoản mẫu Hải.');
     kiemThuCaiDat((int) $pdo->query("SELECT nguoi_dung_id FROM thanh_vien WHERE mssv='3120224042'")->fetchColumn() === (int) $hai['id'], 'Thiếu liên kết chủ trang.');
-    echo "PASS cài mới: 18 bảng, 30 môn, tài khoản Hải và chủ trang đúng.\n";
+    echo "PASS cài mới: 20 bảng, 30 môn, dữ liệu Uyên, tài khoản Hải và chủ trang đúng.\n";
 
     $st = $pdo->prepare('UPDATE nguoi_dung SET mat_khau=? WHERE id=?');
     $st->execute([password_hash('MatKhauRieng987!', PASSWORD_DEFAULT), $hai['id']]);
@@ -63,7 +66,8 @@ try {
     $pdo->exec('DELETE FROM mon_hoc WHERE id>8');
     $pdo->exec("UPDATE thanh_vien SET nguoi_dung_id=NULL WHERE mssv='3120224042'");
     $pdo->exec('DELETE FROM nguoi_dung WHERE id=4');
-    foreach (['tv_anh_dai_dien','gio_hang_nguoi_dung','mon_yeu_thich','phien_ghi_nho','yeu_cau_dat_lai_mat_khau'] as $bang) $pdo->exec('DROP TABLE `' . $bang . '`');
+    foreach (['tv_anh_dai_dien','tv_uyen_thoi_khoa_bieu','tv_uyen_ky_nang','gio_hang_nguoi_dung','mon_yeu_thich','phien_ghi_nho','yeu_cau_dat_lai_mat_khau'] as $bang) $pdo->exec('DROP TABLE `' . $bang . '`');
+    $pdo->exec("DELETE FROM thanh_vien WHERE mssv='3120224174'");
     $pdo->exec('ALTER TABLE nguoi_dung DROP COLUMN email');
     $pdo->exec('ALTER TABLE mon_hoc DROP COLUMN so_cho');
     $pdo->exec('ALTER TABLE ke_hoach_hoc_tap DROP COLUMN trang_thai, DROP COLUMN ghi_chu');
@@ -73,13 +77,16 @@ try {
     $kq = caiDatNhom($pdo, $tenCu);
     $cacBanSao[] = $kq['sao_luu'];
     kiemThuCaiDat($kq['so_mon'] === 30 && $kq['hai']['tao_tai_khoan'], 'Nâng cấp thiếu môn hoặc tài khoản Hải.');
+    kiemThuCaiDat((int) $pdo->query("SELECT COUNT(*) FROM thanh_vien WHERE mssv='3120224174'")->fetchColumn() === 1, 'Nâng cấp thiếu MSSV Uyên.');
+    kiemThuCaiDat((int) $pdo->query("SELECT COUNT(*) FROM tv_uyen_ky_nang WHERE mssv='3120224174'")->fetchColumn() === 5, 'Nâng cấp thiếu dữ liệu kỹ năng Uyên.');
+    kiemThuCaiDat((int) $pdo->query("SELECT COUNT(*) FROM tv_uyen_thoi_khoa_bieu WHERE mssv='3120224174'")->fetchColumn() === 6, 'Nâng cấp thiếu thời khóa biểu Uyên.');
     foreach ($usersCu as $u) {
         $st = $pdo->prepare('SELECT mat_khau FROM nguoi_dung WHERE id=?'); $st->execute([$u['id']]);
         kiemThuCaiDat($st->fetchColumn() === $u['mat_khau'], 'Đã thay mật khẩu cũ.');
     }
     kiemThuCaiDat($chiTietCu === $pdo->query('SELECT ke_hoach_id,mon_hoc_id,so_luong FROM chi_tiet_ke_hoach ORDER BY 1,2')->fetchAll(), 'Mất chi tiết kế hoạch.');
     kiemThuCaiDat((int) $pdo->query('SELECT COUNT(*) FROM chi_tiet_ke_hoach WHERE ma_mon IS NULL OR ten_mon IS NULL')->fetchColumn() === 0, 'Chưa điền snapshot.');
-    echo "PASS bản cũ: 8 lên 30 môn, thêm bảng/cột thiếu và chủ trang Hải; giữ tài khoản và kế hoạch.\n";
+    echo "PASS bản cũ: 8 lên 30 môn, khôi phục MSSV/dữ liệu Uyên, thêm bảng/cột thiếu và chủ trang Hải; giữ tài khoản và kế hoạch.\n";
     $truoc = anhDuLieuCaiDat($pdo);
     $kq = caiDatNhom($pdo, $tenCu); $cacBanSao[] = $kq['sao_luu'];
     kiemThuCaiDat($truoc === anhDuLieuCaiDat($pdo), 'Nâng cấp lại làm đổi dữ liệu.');

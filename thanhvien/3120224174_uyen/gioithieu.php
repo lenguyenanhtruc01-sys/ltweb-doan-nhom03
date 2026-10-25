@@ -6,6 +6,8 @@ declare(strict_types=1);
  * PHP: tính điểm A1/A2/A3 bằng POST, kiểm tra máy chủ và PRG.
  * Thử: lọc kỹ năng, tìm môn theo tên/phòng; nhập điểm; tắt JavaScript.
  */
+use App\Data\KhoTrangCaNhanUyen;
+
 require __DIR__ . '/../../inc/config.php';
 
 const MSSV_UYEN = '3120224174';
@@ -21,16 +23,8 @@ $nhomDangChon = layChuoiDauVao($_GET['nhom'] ?? 'tat-ca', 'tat-ca');
 if (!array_key_exists($nhomDangChon, $nhomKyNang)) {
     $nhomDangChon = 'tat-ca';
 }
-$sqlKyNang = 'SELECT ten FROM tv_uyen_ky_nang WHERE mssv = ?';
-$thamSoKyNang = [MSSV_UYEN];
-if ($nhomDangChon !== 'tat-ca') {
-    $sqlKyNang .= ' AND nhom = ?';
-    $thamSoKyNang[] = $nhomDangChon;
-}
-$sqlKyNang .= ' ORDER BY id';
-$truyVanKyNang = db()->prepare($sqlKyNang);
-$truyVanKyNang->execute($thamSoKyNang);
-$kyNangLoc = $truyVanKyNang->fetchAll();
+$khoDuLieu = new KhoTrangCaNhanUyen(db());
+$kyNangLoc = $khoDuLieu->layKyNang(MSSV_UYEN, $nhomDangChon);
 
 // Chức năng 2: tìm môn trong thời khóa biểu trực tiếp từ CSDL.
 $tuKhoaMon = layChuoiDauVao($_GET['q'] ?? '');
@@ -39,19 +33,7 @@ $dsMonHoc = [];
 if (mb_strlen($tuKhoaMon) > 100) {
     $loiTimMon = 'Từ khóa tìm môn học không được vượt quá 100 ký tự.';
 } else {
-    $sqlMonHoc = 'SELECT ma_mon, ten_mon, ma_lop, thu, tiet_bat_dau, tiet_ket_thuc, phong
-                  FROM tv_uyen_thoi_khoa_bieu
-                  WHERE mssv = ?';
-    $thamSoMonHoc = [MSSV_UYEN];
-    if ($tuKhoaMon !== '') {
-        $tuKhoaAnToan = '%' . addcslashes($tuKhoaMon, '%_\\') . '%';
-        $sqlMonHoc .= ' AND (ma_mon LIKE ? OR ten_mon LIKE ? OR ma_lop LIKE ? OR phong LIKE ?)';
-        array_push($thamSoMonHoc, $tuKhoaAnToan, $tuKhoaAnToan, $tuKhoaAnToan, $tuKhoaAnToan);
-    }
-    $sqlMonHoc .= ' ORDER BY thu, tiet_bat_dau, ten_mon';
-    $truyVanMonHoc = db()->prepare($sqlMonHoc);
-    $truyVanMonHoc->execute($thamSoMonHoc);
-    $dsMonHoc = $truyVanMonHoc->fetchAll();
+    $dsMonHoc = $khoDuLieu->timThoiKhoaBieu(MSSV_UYEN, $tuKhoaMon);
 }
 
 $lichTheoThu = [];

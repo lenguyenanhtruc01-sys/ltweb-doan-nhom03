@@ -2,7 +2,7 @@
 
 [Ảnh PNG](erd.png) · [Bản vector SVG](erd.svg) · [Nguồn Graphviz DOT](erd.dot)
 
-Sơ đồ được dựng từ `schema.sql`: **18 bảng, 19 khóa ngoại**. Bao gồm bảng chính, bảng tài khoản/phiên đăng nhập, các bảng giỏ/yêu thích và toàn bộ bảng `tv_` đang được khai báo. Việc một bảng xuất hiện trong ERD không khẳng định mọi trang đã tích hợp sử dụng bảng đó.
+Sơ đồ được dựng từ `schema.sql`: **20 bảng, 21 khóa ngoại**. Bao gồm bảng chính, bảng tài khoản/phiên đăng nhập, giỏ/yêu thích và toàn bộ bảng `tv_` đang được khai báo, gồm kỹ năng và thời khóa biểu của Huỳnh Phương Uyên. Việc một bảng xuất hiện trong ERD không khẳng định mọi trang đã tích hợp sử dụng bảng đó.
 
 - `PK`: khóa chính; nhiều cột PK trong cùng bảng tạo khóa ghép.
 - `FK`: khóa ngoại; `UQ`: ràng buộc duy nhất. UNIQUE nhiều cột ghi ở cuối thẻ bảng.

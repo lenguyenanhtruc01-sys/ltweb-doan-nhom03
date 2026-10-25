@@ -27,7 +27,7 @@ Website PHP hỗ trợ sinh viên tra cứu môn học, lập kế hoạch học
    C:\xampp\php\php.exe database\cai-dat.php
    ```
 
-   Máy mới: bộ cài tạo `ltweb_nhom03`, nạp `schema.sql` và `seed.sql`, có đủ tài khoản mẫu. Máy đã có dữ liệu: tự sao lưu các bảng vào tệp SQL ngoài webroot (đường dẫn được in ra), bổ sung bảng/cột và môn còn thiếu, giữ mật khẩu/giỏ/kế hoạch cũ. Bộ cài không chạy `DROP DATABASE`.
+   Máy mới: bộ cài tạo `ltweb_nhom03`, nạp `schema.sql` và `seed.sql`, có đủ tài khoản mẫu. Máy đã có dữ liệu: tự sao lưu các bảng vào tệp SQL ngoài webroot (đường dẫn được in ra), bổ sung bảng/cột và môn còn thiếu, giữ mật khẩu/giỏ/kế hoạch cũ, đồng thời thêm dữ liệu trang cá nhân Uyên còn thiếu. Bộ cài không chạy `DROP DATABASE`.
 
 5. Mở http://localhost/ltweb-doan-nhom03/
 
@@ -41,7 +41,7 @@ Với database cũ chưa có email, sao lưu rồi chạy `php database/migrate-
 
 Không mở trực tiếp tệp PHP bằng đường dẫn ổ đĩa.
 
-Database đang dùng: import `database/luu-gio-va-yeu-thich.sql` để thêm hai bảng lưu giỏ và yêu thích theo tài khoản; không import lại schema có `DROP DATABASE`. Bản cài mới đã có hai bảng này trong schema.
+Với CSDL đang dùng, `php database/cai-dat.php` sao lưu rồi tự tạo các bảng giỏ/yêu thích còn thiếu. Nếu cần chạy riêng thay cho bộ cài, có thể import `database/luu-gio-va-yeu-thich.sql`; không import lại schema có `DROP DATABASE`.
 
 Nếu CSDL cũ thiếu cột trạng thái/ghi chú và thông tin môn trong chi tiết kế hoạch: sao lưu rồi chạy `php database/nang-cap-ke-hoach.php`. Script chỉ thêm cột thiếu, điền thông tin môn hiện tại cho chi tiết cũ và giữ nguyên snapshot đã có; chạy lại không tạo trùng dữ liệu. Bản cài mới từ schema không cần bước này.
 
@@ -244,8 +244,8 @@ Danh sách tìm kiếm có debounce 350ms; thêm giỏ bằng fetch cập nhật
 
 Kiểm thử API bằng [api.http](api.http), đổi `@goc` theo cách chạy. Ảnh và kết quả kiểm thử của các thành viên lưu tại `kiemtra/`; số liệu Bảng 2–5 và ERD được tổng hợp trong báo cáo chung.
 
-Hiện việc chuyển MySQL chưa hoàn tất toàn bộ: liên hệ vẫn lưu JSONL, chức năng giao dịch đăng ký/đơn hàng và ERD còn cần ghép; seed mới có 8 môn. Chỉ ghi tính năng đã có và kết quả đã đo khi chốt bài.
+Liên hệ hiện vẫn đọc/ghi JSONL; chưa chuyển luồng liên hệ sang MySQL. ERD mô tả 20 bảng và 21 khóa ngoại trong schema. Chỉ ghi tính năng đã có và kết quả đã đo khi chốt bài.
 
 ### Trang cá nhân Huỳnh Phương Uyên
 
-`thanhvien/3120224174_uyen/gioithieu.php` đọc kỹ năng từ `tv_uyen_ky_nang` và tìm kiếm thời khóa biểu trong `tv_uyen_thoi_khoa_bieu`. Hai bảng cùng khóa ngoại tới `thanh_vien`; cấu trúc và dữ liệu mẫu nằm trong `database/schema.sql` và `database/seed.sql`. Trên CSDL mới, chạy schema rồi seed, sau đó mở trang để thử lọc kỹ năng, tìm môn theo tên/mã/lớp/phòng và thử lại khi tắt JavaScript. `schema.sql` tạo lại CSDL nên không chạy trên nơi đang lưu dữ liệu cần giữ.
+`thanhvien/3120224174_uyen/gioithieu.php` dùng `KhoTrangCaNhanUyen` để đọc kỹ năng từ `tv_uyen_ky_nang` và tìm kiếm thời khóa biểu trong `tv_uyen_thoi_khoa_bieu`. Hai bảng có khóa ngoại tới `thanh_vien`; cấu trúc nằm trong `database/schema.sql`, dữ liệu mẫu nằm trong `database/seed.sql` và bộ cài bổ sung idempotent khi nâng cấp CSDL cũ. Sau mỗi lần cập nhật, chạy `php database/cai-dat.php`, sau đó thử lọc kỹ năng, tìm môn theo tên/mã/lớp/phòng và thử lại khi tắt JavaScript. Không import schema thủ công vào CSDL đang có dữ liệu vì tệp này có lệnh `DROP DATABASE`.

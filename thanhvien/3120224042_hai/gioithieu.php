@@ -242,5 +242,5 @@ require_once __DIR__ . '/../../inc/header.php';
 
 <?php 
 // 3. Nạp Footer dùng chung
-require_once ___DIR___ . '/../../inc/footer.php'; 
+require_once __DIR__ . '/../../inc/footer.php';
 ?>

@@ -217,3 +217,7 @@ Danh sách tìm kiếm có debounce 350ms; thêm giỏ bằng fetch cập nhật
 Kiểm thử API bằng [api.http](api.http), đổi `@goc` theo cách chạy. Ảnh và kết quả kiểm thử của các thành viên lưu tại `kiemtra/`; số liệu Bảng 2–5 và ERD được tổng hợp trong báo cáo chung.
 
 Hiện việc chuyển MySQL chưa hoàn tất toàn bộ: liên hệ vẫn lưu JSONL, chức năng giao dịch đăng ký/đơn hàng và ERD còn cần ghép; seed mới có 8 môn. Chỉ ghi tính năng đã có và kết quả đã đo khi chốt bài.
+
+### Trang cá nhân Huỳnh Phương Uyên
+
+`thanhvien/3120224174_uyen/gioithieu.php` đọc kỹ năng từ `tv_uyen_ky_nang` và tìm kiếm thời khóa biểu trong `tv_uyen_thoi_khoa_bieu`. Hai bảng cùng khóa ngoại tới `thanh_vien`; cấu trúc và dữ liệu mẫu nằm trong `database/schema.sql` và `database/seed.sql`. Trên CSDL mới, chạy schema rồi seed, sau đó mở trang để thử lọc kỹ năng, tìm môn theo tên/mã/lớp/phòng và thử lại khi tắt JavaScript. `schema.sql` tạo lại CSDL nên không chạy trên nơi đang lưu dữ liệu cần giữ.

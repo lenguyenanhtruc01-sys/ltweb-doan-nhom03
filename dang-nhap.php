@@ -29,7 +29,7 @@ $trang = 'dang-nhap';
 $goc = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $thongBaoLoi = 'Email hoặc mật khẩu không chính xác.';
+    $thongBaoLoi = 'Tên đăng nhập/email hoặc mật khẩu không chính xác.';
 
     $emailRaw = $_POST['email'] ?? '';
     $passwordRaw = $_POST['password'] ?? '';
@@ -37,14 +37,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = is_string($emailRaw) ? trim($emailRaw) : '';
     $password = is_string($passwordRaw) ? $passwordRaw : '';
 
-    if (filter_var($email, FILTER_VALIDATE_EMAIL) && $password !== '') {
+    if ($email !== '' && mb_strlen($email) <= 254 && $password !== '') {
         $st = db()->prepare(
             'SELECT id, mat_khau, vai_tro
             FROM nguoi_dung
-             WHERE email = ?'
+             WHERE email = ? OR ten_dang_nhap = ?
+             LIMIT 2'
         );
-        $st->execute([$email]);
-        $nd = $st->fetch();
+        $st->execute([$email, $email]);
+        $ketQua = $st->fetchAll();
+        // Không chọn tùy ý nếu tên của một tài khoản trùng email tài khoản khác.
+        $nd = count($ketQua) === 1 ? $ketQua[0] : null;
 
         if ($nd && password_verify($password, $nd['mat_khau'])) {
             if (password_needs_rehash($nd['mat_khau'], PASSWORD_DEFAULT)) {
@@ -90,8 +93,8 @@ require __DIR__ . '/inc/header.php';
 
         <form method="POST" action="dang-nhap.php" class="form-lien-he" style="background: #f8f9fa; padding: 2rem; border-radius: 8px;">
             <div style="margin-bottom: 1rem;">
-                <label for="email" style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Email:</label>
-                <input type="email" id="email" name="email" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" placeholder="Nhập email...">
+                <label for="email" style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Tên đăng nhập hoặc email:</label>
+                <input type="text" id="email" name="email" autocomplete="username" maxlength="254" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" placeholder="Nhập tên đăng nhập hoặc email...">
             </div>
 
             <div style="margin-bottom: 1.5rem;">

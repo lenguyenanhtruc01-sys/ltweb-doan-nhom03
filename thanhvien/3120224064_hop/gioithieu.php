@@ -347,7 +347,7 @@ include __DIR__ . '/../../inc/header.php';
                         </td>
                         <td></td><td></td>
                     </tr>
-                    <tr><th scope="row" class="tiet">3</th><td></td><td></td></tr>
+                    <tr><th scope="row" class="tiet">3</th><td></td><td></td><td></td></tr>
                     <tr>
                         <th scope="row" class="tiet">4</th><td></td><td></td>
                         <td rowspan="3" class="mon-hoc">
@@ -378,9 +378,9 @@ include __DIR__ . '/../../inc/header.php';
                         </td>
                         <td></td><td></td><td></td><td></td>
                     </tr>
-                    <tr><th scope="row" class="tiet">10</th><td></td><td></td><td></td><td></td><td></td></tr>
-                    <tr><th scope="row" class="tiet">11</th><td></td><td></td><td></td><td></td><td></td></tr>
-                    <tr><th scope="row" class="tiet">12</th><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><th scope="row" class="tiet">10</th><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><th scope="row" class="tiet">11</th><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><th scope="row" class="tiet">12</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
                 </tbody>
             </table>
         </div>

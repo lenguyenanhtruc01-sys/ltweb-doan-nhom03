@@ -129,6 +129,14 @@ CREATE TABLE tv_luu_but (
     FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
 );
 
+-- Ảnh đại diện cá nhân: chỉ chủ trang được thay, tên tệp do server sinh.
+CREATE TABLE tv_anh_dai_dien (
+    mssv CHAR(10) PRIMARY KEY,
+    ten_tep VARCHAR(255) NULL,
+    cap_nhat_luc DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
+);
+
 CREATE TABLE tv_luot_xem (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     mssv CHAR(10) NOT NULL,

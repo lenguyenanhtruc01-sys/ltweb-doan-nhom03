@@ -1,5 +1,5 @@
 -- database/seed.sql
--- Mật khẩu của cả 3 tài khoản: matkhau123
+-- Mật khẩu của cả 4 tài khoản: matkhau123
 SET NAMES utf8mb4;
 USE ltweb_nhom03;
 
@@ -9,7 +9,8 @@ USE ltweb_nhom03;
 INSERT INTO nguoi_dung (id, email, ten_dang_nhap, mat_khau, ho_ten, vai_tro) VALUES
 (1, 'admin@example.com', 'admin', '$2y$12$qHb8qF.xgsQsDEN5nvxo6OsTDLDQmDQmTnjDdlNCp7MqAzd4fkWBG', 'Quản trị viên', 'quan_tri'),
 (2, 'an@example.com', 'an', '$2y$12$u.0T5HsnlVJWcPLCbRUsIO9EXccEweLCYOD7R46J.TJ9bH4ju5eGC', 'Trần Văn An', 'khach_hang'),
-(3, 'binh@example.com', 'binh', '$2y$12$3ZoP8Zw46/1SUlmMu/unR.ZIvgTjCuo2NGWs2F9ttQBE.FmFo83bO', 'Nguyễn Thị Bình', 'khach_hang');
+(3, 'binh@example.com', 'binh', '$2y$12$3ZoP8Zw46/1SUlmMu/unR.ZIvgTjCuo2NGWs2F9ttQBE.FmFo83bO', 'Nguyễn Thị Bình', 'khach_hang'),
+(4, 'hai@example.com', 'hai', '$2y$12$qHb8qF.xgsQsDEN5nvxo6OsTDLDQmDQmTnjDdlNCp7MqAzd4fkWBG', 'Lê Dương Hoàng Hải', 'khach_hang');
 
 -- ============================================
 -- 2. DANH MỤC (5 danh mục, mục 5 rỗng theo yêu cầu đề)
@@ -111,14 +112,16 @@ END;
 -- ============================================
 INSERT INTO ke_hoach_hoc_tap (id, nguoi_dung_id, trang_thai, ghi_chu) VALUES
 (1, 2, 'cho_duyet', 'Kế hoạch học kỳ 1 năm 3'),
-(2, 3, 'da_duyet',  'Kế hoạch học kỳ 2 năm 2');
+(2, 3, 'da_duyet',  'Kế hoạch học kỳ 2 năm 2'),
+(3, 4, 'cho_duyet', 'Kế hoạch mẫu của Hải');
 
 INSERT INTO chi_tiet_ke_hoach
     (ke_hoach_id, mon_hoc_id, ma_mon, ten_mon, so_tin_chi, so_luong) VALUES
 (1, 1, 'MAT101', 'Giải tích 1', 4, 1),
 (1, 3, 'INT101', 'Lập trình cơ bản', 3, 1),
 (2, 5, 'WEB301', 'Thiết kế và lập trình Web', 3, 1),
-(2, 6, 'DB301', 'Cơ sở dữ liệu', 3, 1);
+(2, 6, 'DB301', 'Cơ sở dữ liệu', 3, 1),
+(3, 17, 'INT303', 'Mạng máy tính', 3, 1);
 
 -- ============================================
 -- 4. THÀNH VIÊN & DỮ LIỆU PHẦN B
@@ -130,6 +133,17 @@ WHERE NOT EXISTS (SELECT 1 FROM thanh_vien WHERE mssv = '3120224064');
 INSERT INTO thanh_vien (mssv, ho_ten)
 SELECT '3120224042', 'Lê Dương Hoàng Hải'
 WHERE NOT EXISTS (SELECT 1 FROM thanh_vien WHERE mssv = '3120224042');
+
+UPDATE thanh_vien SET nguoi_dung_id=4 WHERE mssv='3120224042';
+INSERT INTO tv_anh_dai_dien (mssv,ten_tep) VALUES ('3120224042',NULL);
+INSERT INTO tv_luot_xem (mssv,ngay,so_luot) VALUES
+('3120224042',CURRENT_DATE,3),
+('3120224042',CURRENT_DATE - INTERVAL 1 DAY,2),
+('3120224042',CURRENT_DATE - INTERVAL 2 DAY,4),
+('3120224042',CURRENT_DATE - INTERVAL 3 DAY,1),
+('3120224042',CURRENT_DATE - INTERVAL 4 DAY,5),
+('3120224042',CURRENT_DATE - INTERVAL 5 DAY,2),
+('3120224042',CURRENT_DATE - INTERVAL 6 DAY,1);
 
 INSERT INTO tv_tra_cuu_mang (mssv, muc_tieu, dia_chi_ip, loai_ip)
 SELECT '3120224064', '127.0.0.1', '127.0.0.1', 'IPv4'

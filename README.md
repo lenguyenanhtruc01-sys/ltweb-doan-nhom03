@@ -33,6 +33,8 @@ Nếu CSDL cũ thiếu cột trạng thái/ghi chú và thông tin môn trong ch
 
 Để chặn xóa môn đã có trong kế hoạch theo ca 5 của Bảng 3: sao lưu rồi chạy `php database/nang-cap-khoa-ngoai-mon-hoc.php`. Migration đổi FK môn học sang RESTRICT, giữ nguyên dữ liệu và chạy lại được. Schema cài mới đã dùng RESTRICT; xóa kế hoạch vẫn tự xóa các chi tiết của chính kế hoạch đó.
 
+Avatar Hải dùng MySQL: sao lưu rồi chạy `php database/nang-cap-ca-nhan-hai.php`. Script giữ ảnh cũ, nhập tên ảnh từ JSON vào `tv_anh_dai_dien` và liên kết tài khoản chủ trang qua `thanh_vien.nguoi_dung_id`. Nếu chưa có chủ, dùng/tạo tài khoản mẫu `hai` bên dưới; có thể chỉ định ID tài khoản đã có bằng tham số CLI. Không tự thay chủ trang, đổi mật khẩu hoặc ghi đè avatar mới khi chạy lại. Tệp JSON cũ chỉ còn dùng cho migration, trang cá nhân không đọc/ghi tệp này.
+
 ### Chạy không cần Apache
 
 ```bash
@@ -44,13 +46,14 @@ Mở http://localhost:8000/index.php; MySQL vẫn cần chạy. PHP cần quyề
 
 ## 3. Tài khoản thử
 
-Đăng nhập bằng **tên đăng nhập hoặc email**. Sau khi cài mới bằng `database/schema.sql` và `database/seed.sql`, cả 3 tài khoản mẫu đều dùng mật khẩu `matkhau123`:
+Đăng nhập bằng **tên đăng nhập hoặc email**. Sau khi cài mới bằng `database/schema.sql` và `database/seed.sql`, cả 4 tài khoản mẫu đều dùng mật khẩu `matkhau123`:
 
 | Tên đăng nhập | Email | Vai trò |
 | --- | --- | --- |
 | `admin` | `admin@example.com` | Quản trị |
 | `an` | `an@example.com` | Khách hàng |
 | `binh` | `binh@example.com` | Khách hàng |
+| `hai` | `hai@example.com` | Khách hàng, chủ trang cá nhân Hải |
 
 Đăng nhập tại [dang-nhap.php](dang-nhap.php); quản trị viên được chuyển đến [quan-tri.php](quan-tri.php), khách về trang chủ. Database nâng cấp có thể giữ tài khoản/mật khẩu cũ khác seed.
 
@@ -199,7 +202,7 @@ git diff --check
 
 ## 12. Upload và log runtime
 
-Ảnh liên hệ và avatar Hải dùng chung kiểm tra tối đa 2 MB, MIME và nội dung ảnh. Tên ngẫu nhiên lưu trong `uploads/`, tự tạo thư mục khi cần. Thông tin avatar lưu trong `storage/3120224042_avatar.json`. Đăng nhập sai ghi tại `logs/php-error.log`, không dùng `data/login-error.log`.
+Ảnh liên hệ, môn học và avatar Hải dùng chung kiểm tra tối đa 2 MB, MIME và nội dung ảnh. Tên ngẫu nhiên lưu trong `uploads/`, tự tạo thư mục khi cần. Thông tin avatar lưu trong MySQL `tv_anh_dai_dien`; chỉ tài khoản chủ trang được đổi, có CSRF và PRG. Đăng nhập sai ghi tại `logs/php-error.log`, không dùng `data/login-error.log`.
 
 | Chức năng | URL | Tệp PHP |
 | --- | --- | --- |
@@ -228,8 +231,10 @@ Danh sách tìm kiếm có debounce 350ms; thêm giỏ bằng fetch cập nhật
 
 Kiểm thử API bằng [api.http](api.http), đổi `@goc` theo cách chạy. Ảnh và kết quả kiểm thử của các thành viên lưu tại `kiemtra/`; số liệu Bảng 2–5 và ERD được tổng hợp trong báo cáo chung.
 
-Seed hiện có 30 môn trong 4 danh mục có dữ liệu và 1 danh mục trống, 3 tài khoản thử, 2 kế hoạch mẫu với 4 chi tiết. Đã có luồng gửi/xem kế hoạch bằng transaction. Liên hệ vẫn lưu JSONL; ERD và phần dữ liệu cá nhân của cả nhóm còn cần hoàn thiện.
+Seed hiện có 30 môn trong 4 danh mục có dữ liệu và 1 danh mục trống, 4 tài khoản thử, 3 kế hoạch mẫu với 5 chi tiết. Đã có luồng gửi/xem kế hoạch bằng transaction. Liên hệ vẫn lưu JSONL; ERD và phần dữ liệu cá nhân của cả nhóm còn cần hoàn thiện.
 
 Môn học có `so_cho` là số chỗ còn lại. Với CSDL cũ: sao lưu rồi chạy `php database/nang-cap-so-cho.php`; migration khởi tạo 50 chỗ cho môn cũ, không thay tài khoản, giỏ hoặc kế hoạch và không trừ lại kế hoạch cũ. Chạy lại giữ số chỗ hiện có. Không import lại schema/seed vào CSDL đang dùng.
 
 API/form thêm và cập nhật giỏ kiểm tra đủ chỗ, nhưng chưa giữ chỗ. Khi gửi kế hoạch, transaction trừ chỗ bằng `UPDATE ... WHERE so_cho >= ?`, kiểm tra `rowCount()`; thiếu ở bất kỳ môn nào rollback cả kế hoạch, chi tiết và số chỗ, giữ giỏ. Seed mới có SEC401 hết chỗ và LOG401 còn 1 chỗ để thử API `sl=2` trả 422. Đổi trạng thái chỉ cập nhật trạng thái, không tự hoàn chỗ. Kết quả kiểm thử xem [biên bản chức năng 6](kiemtra/hop-chuc-nang-6.md).
+
+Quản trị môn học: đăng nhập `admin`, chọn **Quản lý môn học** tại `quan-tri.php` hoặc mở `quan-tri-mon-hoc.php`. Có phân trang, thêm/sửa dùng chung kiểm tra dữ liệu, ảnh và bước xác nhận xóa; POST + CSRF, bắt mã trùng 1062 và khóa ngoại 1451. Chủ trang Hải đăng nhập `hai`, mở `thanhvien/3120224042_hai/gioithieu.php` để đổi avatar. Seed có 7 ngày lượt xem; thống kê lọc riêng MSSV. Kết quả và cách thử xem [kiểm thử chức năng 3 và trang Hải](kiemtra/hai-chuc-nang-3-va-ca-nhan.md).

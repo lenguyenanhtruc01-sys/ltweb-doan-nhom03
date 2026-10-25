@@ -125,3 +125,19 @@
         white-space: nowrap;
     }
 }
+/* CRUD môn học: bảng cuộn trong khung, form vừa màn hình 360px. */
+.quan-tri-mon { padding-top: 24px; padding-bottom: 32px; min-width: 0; }
+.quan-tri-mon section { margin-block: 28px; min-width: 0; }
+.quan-tri-mon__form { display: grid; gap: 10px; max-width: 720px; }
+.quan-tri-mon__form input, .quan-tri-mon__form select, .quan-tri-mon__form textarea {
+    box-sizing: border-box; width: 100%; min-width: 0; padding: 10px; font: inherit;
+}
+.quan-tri-mon__form img { max-width: 100%; object-fit: cover; }
+.quan-tri-mon__bang { overflow-x: auto; max-width: 100%; }
+.quan-tri-mon table { width: 100%; border-collapse: collapse; }
+.quan-tri-mon th, .quan-tri-mon td { padding: 10px; border: 1px solid #cbd5e1; text-align: left; }
+.quan-tri-mon th { background: #e8eef8; }
+.quan-tri-mon__loi { padding: 16px 28px; color: #721c24; background: #f8d7da; }
+.quan-tri-mon__thanh-cong { padding: 16px; color: #155724; background: #d4edda; }
+.quan-tri-mon__xac-nhan { padding: 16px; border: 2px solid #b45309; }
+.quan-tri-mon nav a { display: inline-block; padding: 10px; }

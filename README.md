@@ -27,6 +27,8 @@ Với database cũ chưa có email, sao lưu rồi chạy `php database/migrate-
 
 Không mở trực tiếp tệp PHP bằng đường dẫn ổ đĩa.
 
+Database đang dùng: import `database/luu-gio-va-yeu-thich.sql` để thêm hai bảng lưu giỏ và yêu thích theo tài khoản; không import lại schema có `DROP DATABASE`. Bản cài mới đã có hai bảng này trong schema.
+
 ### Chạy không cần Apache
 
 ```bash
@@ -91,7 +93,8 @@ ltweb-doan-nhom03/
 ## 6. Dữ liệu và trạng thái
 
 - Môn học, danh mục và người dùng: MySQL `ltweb_nhom03` qua PDO. Dữ liệu JSON của Bài 5 còn trong kho để đối chiếu.
-- Kế hoạch học tập: session PHP, độc lập với tài khoản quản trị và vẫn được giữ khi đăng xuất.
+- Kế hoạch học tập: khách dùng session; tài khoản lưu vào `gio_hang_nguoi_dung`. Đăng nhập gộp giỏ khách, đăng xuất về giỏ khách trống, đăng nhập lại khôi phục giỏ đã lưu.
+- Yêu thích: khách dùng localStorage; tài khoản dùng bảng `mon_yeu_thich`, tách riêng theo người dùng. Danh sách localStorage cũ được chuyển vào tài khoản khi đăng nhập.
 - Liên hệ: `storage/lien-he.jsonl`; trang quản trị hiển thị bản ghi mới nhất trước.
 - Ảnh liên hệ: `uploads/`.
 - Log PHP: `logs/php-error.log`.
@@ -108,7 +111,7 @@ Các thư mục `storage/`, `uploads/` và `logs/` cần có quyền ghi cho ti�
 3. Hệ thống ở lại trang hiện tại, hiển thị toast thành công ở góc phải và số lượng giỏ hàng tăng.
 4. Nút của môn đã thêm đổi thành **Đã thêm vào kế hoạch học tập** và bị vô hiệu hóa trên cả danh sách lẫn trang chi tiết.
 5. Mở `gio-hang.php`, thử cập nhật số lượng, xóa một môn và xóa toàn bộ.
-6. Đăng nhập rồi đăng xuất; kế hoạch học tập vẫn không phụ thuộc tài khoản quản trị.
+6. Đăng nhập tài khoản A, thêm giỏ/yêu thích rồi đăng xuất. Tài khoản B có dữ liệu riêng; đăng nhập lại A thấy dữ liệu đã lưu. Thử lại trong trình duyệt mới.
 
 ### Liên hệ và quản trị
 
@@ -212,7 +215,7 @@ git diff --check
 
 Phản hồi có `Content-Type: application/json; charset=utf-8`. Các mã: 200 thành công; 400 JSON/ID sai; 401 token giỏ thiếu/sai; 404 môn không có; 405 sai phương thức kèm Allow; 422 dữ liệu/số lượng sai; 500 lỗi máy chủ.
 
-Danh sách tìm kiếm có debounce 350ms; thêm giỏ bằng fetch cập nhật số món và nút ngay. Giữ form GET/POST dự phòng khi tắt JavaScript. Kế hoạch giới hạn số lượng 1–5, không thêm trùng môn; giỏ vẫn được giữ khi đăng xuất.
+Danh sách tìm kiếm có debounce 350ms; thêm giỏ bằng fetch cập nhật số món và nút ngay. Giữ form GET/POST dự phòng khi tắt JavaScript. Kế hoạch giới hạn số lượng 1–5, không thêm trùng môn; giỏ tài khoản được lưu MySQL để khôi phục khi đăng nhập lại. API `api/yeu-thich.php` hỗ trợ GET/POST, yêu cầu đăng nhập và token CSRF cho POST.
 
 Kiểm thử API bằng [api.http](api.http), đổi `@goc` theo cách chạy. Ảnh và kết quả kiểm thử của các thành viên lưu tại `kiemtra/`; số liệu Bảng 2–5 và ERD được tổng hợp trong báo cáo chung.
 

@@ -2,16 +2,24 @@
 declare(strict_types=1);
 
 /**
- * Đăng xuất và đổi mã phiên, giữ riêng kế hoạch học tập.
- * Thử: thêm môn, đăng nhập rồi đăng xuất; môn vẫn còn nhưng uid bị xóa.
+ * Lưu giỏ vào tài khoản trước khi đăng xuất và đổi mã phiên.
+ * Thử: đăng nhập lại thấy giỏ cũ, tài khoản khác có giỏ riêng.
  */
 
 require_once __DIR__ . '/inc/config.php';
 
+$nd = nguoiDung();
+if ($nd !== null) {
+    $gio = new \App\Services\KeHoachHocTap();
+    $gio->layDanhSachChiTiet();
+    (new \App\Data\KhoTrangThaiNguoiDung(db()))->luuGioHang(
+        (int) $nd['id'], $_SESSION['ke_hoach_dang_ky'] ?? []
+    );
+}
 xoaGhiNhoHienTai();
 
 $_SESSION = [];
 session_regenerate_id(true);
-$_SESSION['ke_hoach_dang_ky'] = is_array($gioHang) ? $gioHang : [];
+$_SESSION['ke_hoach_dang_ky'] = [];
 header('Location: index.php', true, 303);
 exit;

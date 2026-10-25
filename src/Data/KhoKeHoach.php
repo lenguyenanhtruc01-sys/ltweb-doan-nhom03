@@ -90,6 +90,9 @@ final class KhoKeHoach
                 ]);
             }
 
+            // Giỏ tài khoản được xóa cùng giao dịch gửi kế hoạch thành công.
+            $xoaGio = $this->db->prepare('DELETE FROM gio_hang_nguoi_dung WHERE nguoi_dung_id = ?');
+            $xoaGio->execute([$nguoiDungId]);
             $this->db->commit();
             return $keHoachId;
         } catch (Throwable $e) {

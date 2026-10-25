@@ -1,7 +1,7 @@
 <?php
 /**
  * Tệp: src/Services/KeHoachHocTap.php
- * Chức năng: Quản lý kế hoạch học tập bằng session.
+ * Chức năng: Khách dùng session; giỏ tài khoản được lưu MySQL.
  * Kiểm tra ID môn học và số lượng ở phía máy chủ.
  * Thử: thêm môn, cập nhật 1-5, nhập 0/-3/1000 và xóa môn.
  */
@@ -9,6 +9,7 @@
 namespace App\Services;
 
 use App\Data\KhoMonHoc;
+use App\Data\KhoTrangThaiNguoiDung;
 
 class KeHoachHocTap
 {
@@ -22,7 +23,7 @@ class KeHoachHocTap
             session_start();
         }
 
-        // Giỏ hàng độc lập với tài khoản quản trị và thuộc về phiên duyệt web.
+        // Khách dùng session; tài khoản có giỏ riêng được lưu trong MySQL.
         if (!isset($_SESSION[self::SESSION_KEY])
             || !is_array($_SESSION[self::SESSION_KEY])
         ) {
@@ -30,6 +31,26 @@ class KeHoachHocTap
         }
 
         $this->khoMonHoc = new KhoMonHoc(db());
+        $uid = $_SESSION['uid'] ?? null;
+        if (is_int($uid) && $uid > 0 && ($_SESSION['chu_gio_hang'] ?? null) !== $uid) {
+            $kho = new KhoTrangThaiNguoiDung(db());
+            $gioDaLuu = $kho->gioHang($uid);
+            $gioKhach = isset($_SESSION['chu_gio_hang']) ? [] : $_SESSION[self::SESSION_KEY];
+            // Môn trùng giữ số lượng đã lưu, không cộng dồn mỗi lần đăng nhập.
+            $gioMoi = $gioDaLuu + $gioKhach;
+            if ($gioMoi !== $gioDaLuu) $kho->luuGioHang($uid, $gioMoi);
+            $_SESSION[self::SESSION_KEY] = $gioMoi;
+            $_SESSION['chu_gio_hang'] = $uid;
+        }
+    }
+
+    private function luu(array $gio): void
+    {
+        $uid = $_SESSION['uid'] ?? null;
+        if (is_int($uid) && $uid > 0) {
+            (new KhoTrangThaiNguoiDung(db()))->luuGioHang($uid, $gio);
+        }
+        $_SESSION[self::SESSION_KEY] = $gio;
     }
 
     /**
@@ -52,7 +73,9 @@ class KeHoachHocTap
             return true;
         }
 
-        $_SESSION[self::SESSION_KEY][$id] = $soLuong;
+        $gio = $_SESSION[self::SESSION_KEY];
+        $gio[$id] = $soLuong;
+        $this->luu($gio);
 
         return true;
     }
@@ -77,7 +100,9 @@ class KeHoachHocTap
             return false;
         }
 
-        $_SESSION[self::SESSION_KEY][$id] = $soLuong;
+        $gio = $_SESSION[self::SESSION_KEY];
+        $gio[$id] = $soLuong;
+        $this->luu($gio);
 
         return true;
     }
@@ -95,7 +120,9 @@ class KeHoachHocTap
             return false;
         }
 
-        unset($_SESSION[self::SESSION_KEY][$id]);
+        $gio = $_SESSION[self::SESSION_KEY];
+        unset($gio[$id]);
+        $this->luu($gio);
 
         return true;
     }
@@ -105,7 +132,7 @@ class KeHoachHocTap
      */
     public function xoaTatCa(): void
     {
-        $_SESSION[self::SESSION_KEY] = [];
+        $this->luu([]);
     }
 
     /**

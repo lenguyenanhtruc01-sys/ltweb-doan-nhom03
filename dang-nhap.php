@@ -1,91 +1,54 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Dang nhap bang ten hoac email, chi mot luong POST va tao lai ma phien.
+ * Khoi phuc gio MySQL, gop gio khach, khong xoa du lieu khi dang nhap.
+ * Thu: dang xuat/dang nhap lai, doi tai khoan va dau vao dang mang.
+ */
 require_once __DIR__ . '/inc/config.php';
 
 $thongBao = '';
 $emailNhap = '';
 $flashDangKy = $_SESSION['flash_dang_ky'] ?? '';
 unset($_SESSION['flash_dang_ky']);
-
-if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-    $emailRaw = $_POST['email'] ?? '';
-    $matKhauRaw = $_POST['mat_khau'] ?? '';
-    $emailNhap = is_string($emailRaw) ? trim($emailRaw) : '';
-    $matKhau = is_string($matKhauRaw) ? $matKhauRaw : '';
-
-    try {
-        $truyVan = db()->prepare('SELECT id, mat_khau FROM nguoi_dung WHERE email = :email LIMIT 1');
-        $truyVan->execute(['email' => $emailNhap]);
-        $nguoiDung = $truyVan->fetch();
-
-        if (is_array($nguoiDung) && password_verify($matKhau, $nguoiDung['mat_khau'])) {
-            session_regenerate_id(true);
-            $_SESSION = ['uid' => (int) $nguoiDung['id']];
-            header('Location: index.php', true, 303);
-            exit;
-        }
-    } catch (PDOException $loi) {
-        error_log((string) $loi);
-    }
-
-    $thongBao = 'Email hoặc mật khẩu không đúng';
-}
+if (($_GET['dang_ky'] ?? '') === '1') $flashDangKy = 'Đăng ký thành công. Hãy đăng nhập.';
+if (($_GET['dat_lai'] ?? '') === '1') $flashDangKy = 'Đã đổi mật khẩu. Hãy đăng nhập với mật khẩu mới.';
 
 $tieuDe = 'Đăng nhập';
 $trang = 'dang-nhap';
 $goc = '';
 
-if (($_GET['dat_lai'] ?? '') === '1') {
-    $thongBaoThanhCong = 'Đã đổi mật khẩu. Hãy đăng nhập với mật khẩu mới.';
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $thongBaoLoi = 'Email hoặc mật khẩu không chính xác.';
-
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     $emailRaw = $_POST['email'] ?? '';
-    $passwordRaw = $_POST['password'] ?? '';
-    $ghiNhoRaw = $_POST['ghi_nho'] ?? '';
-
-    $email = is_string($emailRaw) ? trim($emailRaw) : '';
-    $password = is_string($passwordRaw) ? $passwordRaw : '';
-    $ghiNho = $ghiNhoRaw === '1';
-
-    if (filter_var($email, FILTER_VALIDATE_EMAIL) && $password !== '') {
-        $st = db()->prepare(
-            'SELECT id, mat_khau, vai_tro
-            FROM nguoi_dung
-             WHERE email = ?'
-        );
-        $st->execute([$email]);
-        $nd = $st->fetch();
-
-        if ($nd && password_verify($password, $nd['mat_khau'])) {
+    $matKhauRaw = $_POST['mat_khau'] ?? $_POST['password'] ?? '';
+    $emailNhap = is_string($emailRaw) ? trim($emailRaw) : '';
+    $matKhau = is_string($matKhauRaw) ? $matKhauRaw : '';
+    $ghiNho = ($_POST['ghi_nho'] ?? '') === '1';
+    $thongBao = 'Tên đăng nhập/email hoặc mật khẩu không chính xác.';
+    if ($emailNhap !== '' && mb_strlen($emailNhap) <= 254 && $matKhau !== '') {
+        $st = db()->prepare('SELECT id, mat_khau, vai_tro FROM nguoi_dung WHERE email = ? OR ten_dang_nhap = ? LIMIT 2');
+        $st->execute([$emailNhap, $emailNhap]);
+        $ketQua = $st->fetchAll();
+        $nd = count($ketQua) === 1 ? $ketQua[0] : null;
+        if ($nd !== null && password_verify($matKhau, $nd['mat_khau'])) {
             if (password_needs_rehash($nd['mat_khau'], PASSWORD_DEFAULT)) {
-                $hashMoi = password_hash($password, PASSWORD_DEFAULT);
-
-                $capNhat = db()->prepare(
-                    'UPDATE nguoi_dung
-                     SET mat_khau = ?
-                     WHERE id = ?'
-                );
-                $capNhat->execute([$hashMoi, (int) $nd['id']]);
+                $capNhat = db()->prepare('UPDATE nguoi_dung SET mat_khau = ? WHERE id = ?');
+                $capNhat->execute([password_hash($matKhau, PASSWORD_DEFAULT), (int) $nd['id']]);
             }
-
-            session_regenerate_id(true);
+            $uidCu = $_SESSION['uid'] ?? null;
+            if (is_int($uidCu) && $uidCu !== (int) $nd['id']) {
+                (new \App\Data\KhoTrangThaiNguoiDung(db()))->luuGioHang($uidCu, $_SESSION['ke_hoach_dang_ky'] ?? []);
+                $_SESSION['ke_hoach_dang_ky'] = [];
+                unset($_SESSION['chu_gio_hang']);
+            }
             $_SESSION['uid'] = (int) $nd['id'];
-
-            if ($ghiNho) {
-                taoPhienGhiNho((int) $nd['id']);
-            } else {
-                xoaGhiNhoHienTai();
-            }
-
-            $trangDich = $nd['vai_tro'] === 'quan_tri'
-                ? 'quan-tri.php'
-                : 'index.php';
-
-            header('Location: ' . $trangDich);
+            new \App\Services\KeHoachHocTap();
+            session_regenerate_id(true);
+            unset($_SESSION['csrf_gio_hang'], $_SESSION['_csrf_token']);
+            xoaGhiNhoHienTai();
+            if ($ghiNho) taoPhienGhiNho((int) $nd['id']);
+            header('Location: ' . ($nd['vai_tro'] === 'quan_tri' ? 'quan-tri.php' : 'index.php'), true, 303);
             exit;
         }
     }
@@ -104,8 +67,8 @@ require __DIR__ . '/inc/header.php';
         <?php endif; ?>
         <form method="post" action="dang-nhap.php" class="form-lien-he">
             <div>
-                <label for="email">Email</label>
-                <input id="email" name="email" type="email" maxlength="100" autocomplete="email" required value="<?= e($emailNhap) ?>">
+                <label for="email">Tên đăng nhập hoặc email</label>
+                <input id="email" name="email" type="text" maxlength="254" autocomplete="username" required value="<?= e($emailNhap) ?>">
             </div>
             <div>
                 <label for="mat-khau">Mật khẩu</label>

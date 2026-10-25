@@ -1,12 +1,12 @@
 <?php
 /**
  * Tệp: thanhvien/3120224034_Duy/gioithieu.php (Duy — Phần B)
- * Trang cá nhân Dương Bảo Duy — kết hợp giao diện cũ và logic Database mới.
- * Chức năng 1: Máy chọn món ăn hôm nay (Lưu DB tv_mon_an).
- * Chức năng 2: Oẳn tù tì (Lưu DB tv_lich_su_ott, thống kê GROUP BY).
+ * Đã gộp toàn bộ Giao diện + Logic + JavaScript Đồng hồ.
  */
 declare(strict_types=1);
 require __DIR__ . '/../../inc/config.php';
+
+use App\Data\KhoCaNhan;
 
 const MSSV_DUY = '3120224034';
 
@@ -16,262 +16,84 @@ $trang    = '';
 $cssTrang = 'css/canhan.css';
 $lopBody  = 'trang-ca-nhan';
 
-$hanhDong = layChuoiDauVao($_POST['hanh_dong'] ?? '');
-
-// Phát hiện AJAX (nếu có JS gửi lên)
-$laAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-    && strtolower((string) $_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
-
-/** Trả JSON rồi dừng. */
-function traJson(array $data): void
-{
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($data['ok'] ?? false) === true) {
-        $ma = bin2hex(random_bytes(16));
-        $_SESSION['duy_phan_hoi'][$ma] = $data;
-        $_SESSION['duy_phan_hoi'] = array_slice($_SESSION['duy_phan_hoi'], -10, null, true);
-        header('Location: gioithieu.php?phan_hoi=' . $ma, true, 303);
-        exit;
-    }
-    header('Content-Type: application/json; charset=utf-8');
-    header('Cache-Control: no-store');
-    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
-    exit;
-}
-
-// GET phản hồi AJAX
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['phan_hoi'])) {
-    $ma = layChuoiDauVao($_GET['phan_hoi']);
-    if (preg_match('/^[a-f0-9]{32}$/D', $ma) !== 1 || !isset($_SESSION['duy_phan_hoi'][$ma])) {
-        http_response_code(404);
-        traJson(['ok' => false, 'loi' => ['phan_hoi' => 'Phản hồi đã hết hạn.']]);
-    }
-    $phanHoi = $_SESSION['duy_phan_hoi'][$ma];
-    unset($_SESSION['duy_phan_hoi'][$ma]);
-    traJson($phanHoi);
-}
-
-$monMacDinh = [
-    'Phở bò','Phở gà','Bún bò Huế','Bún chả','Bún riêu','Bánh mì thịt','Bánh mì trứng',
-    'Cơm tấm','Cơm gà','Cơm rang','Cơm chiên','Xôi gà','Xôi đậu','Cháo lòng','Cháo cá',
-    'Mì Quảng','Cao lầu','Bánh canh','Bánh cuốn','Bánh xèo','Gỏi cuốn','Nem nướng',
-    'Bún thịt nướng','Bún đậu mắm tôm','Hủ tiếu','Mì xào','Miến gà','Lẩu Thái',
-    'Cơm niêu','Cơm hến'
-];
-$buaChoPhep = [
-    'bat_ky' => 'Bất kỳ', 'sang' => 'Sáng', 'trua' => 'Trưa',
-    'toi'    => 'Tối',    'dem'  => 'Đêm',
-];
-
-$loiMon = [];
-
-$labelChon   = ['keo' => '✊ Kéo', 'bua' => '✋ Búa', 'bao' => '✌️ Bao'];
-$labelKetQua = ['thang' => '🎉 Thắng', 'thua' => '😢 Thua', 'hoa' => '🤝 Hoà'];
+$khoCaNhan = new KhoCaNhan(db());
+$hanhDong  = layChuoiDauVao($_POST['hanh_dong'] ?? '');
 
 // ============================================================
-// XỬ LÝ POST VỚI DATABASE
+// XỬ LÝ POST
 // ============================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    // ---------- Nạp món mặc định ----------
-    if ($hanhDong === 'dung_mac_dinh') {
-        db()->prepare('DELETE FROM tv_mon_an WHERE mssv = ?')->execute([MSSV_DUY]);
-        $st = db()->prepare('INSERT INTO tv_mon_an (mssv, ten_mon, bua) VALUES (?, ?, ?)');
-        foreach ($monMacDinh as $m) {
-            $st->execute([MSSV_DUY, $m, 'bat_ky']);
-        }
-        $_SESSION['flash_duy'] = 'Đã nạp 30 món Việt mặc định vào CSDL!';
-        header('Location: gioithieu.php#chon-mon'); exit;
-    }
-
-    // ---------- Xoá lịch sử món ----------
-    if ($hanhDong === 'xoa_lich_su_mon') {
-        db()->prepare('DELETE FROM tv_mon_an WHERE mssv = ?')->execute([MSSV_DUY]);
-        unset($_SESSION['duy_mon_an_lich_su']);
-        $_SESSION['flash_duy'] = 'Đã xoá toàn bộ danh sách món ăn.';
-        header('Location: gioithieu.php#chon-mon'); exit;
-    }
-
-    // ---------- Chọn món ----------
+    // 1. Chọn món
     if ($hanhDong === 'chon_mon') {
         $dsMonText = layChuoiDauVao($_POST['dsMon'] ?? '');
         $bua       = layChuoiDauVao($_POST['bua'] ?? 'bat_ky');
+        $mangMon   = array_values(array_filter(array_map('trim', explode("\n", $dsMonText))));
 
-        $mangMon = array_values(array_filter(
-            array_map('trim', explode("\n", $dsMonText)),
-            static fn(string $m): bool => $m !== ''
-        ));
-
-        if (count($mangMon) < 2) {
-            $loiMon['dsMon'] = 'Cần ít nhất 2 món (mỗi dòng 1 món).';
-        } elseif (count($mangMon) > 50) {
-            $loiMon['dsMon'] = 'Tối đa 50 món.';
+        if (count($mangMon) >= 2) {
+            $khoCaNhan->luuDanhSachMon(MSSV_DUY, $mangMon, $bua);
+            $monChon = $khoCaNhan->chonMonNgauNhien(MSSV_DUY);
+            $_SESSION['duy_mon_an_ket_qua'] = ['mon' => $monChon, 'bua' => $bua, 'thoiGian' => date('H:i:s d/m/Y')];
+            $_SESSION['flash_duy'] = "Máy đã chọn: " . $monChon;
+        } else {
+            $_SESSION['flash_duy'] = "Vui lòng nhập ít nhất 2 món!";
         }
-
-        if (!isset($buaChoPhep[$bua])) {
-            $loiMon['bua'] = 'Bữa không hợp lệ.';
-        }
-
-        if ($laAjax && $loiMon) {
-            traJson(['ok' => false, 'loi' => $loiMon]);
-        }
-
-        if (!$loiMon) {
-            // Lưu vào DB
-            db()->prepare('DELETE FROM tv_mon_an WHERE mssv = ?')->execute([MSSV_DUY]);
-            $st = db()->prepare('INSERT INTO tv_mon_an (mssv, ten_mon, bua) VALUES (?, ?, ?)');
-            foreach ($mangMon as $m) {
-                $st->execute([MSSV_DUY, $m, $bua]);
-            }
-            
-            // Random từ DB
-            $st = db()->prepare('SELECT ten_mon FROM tv_mon_an WHERE mssv = ? ORDER BY RAND() LIMIT 1');
-            $st->execute([MSSV_DUY]);
-            $monChon = $st->fetchColumn();
-            $thoiGian = date('H:i:s d/m/Y');
-
-            $_SESSION['duy_mon_an_ket_qua'] = [
-                'mon' => $monChon, 'bua' => $bua, 'thoiGian' => $thoiGian,
-            ];
-
-            $ls = $_SESSION['duy_mon_an_lich_su'] ?? [];
-            array_unshift($ls, ['mon' => $monChon, 'bua' => $bua, 'thoiGian' => $thoiGian]);
-            $_SESSION['duy_mon_an_lich_su'] = array_slice($ls, 0, 5);
-
-            if ($laAjax) {
-                traJson([
-                    'ok'       => true,
-                    'mon'      => $monChon,
-                    'buaLabel' => $buaChoPhep[$bua] ?? $bua,
-                    'thoiGian' => $thoiGian,
-                    'lichSu'   => array_map(
-                        static fn(array $m): array => [
-                            'mon'      => $m['mon'],
-                            'buaLabel' => $buaChoPhep[$m['bua']] ?? $m['bua'],
-                            'thoiGian' => $m['thoiGian'],
-                        ],
-                        $_SESSION['duy_mon_an_lich_su']
-                    ),
-                ]);
-            }
-            header('Location: gioithieu.php#chon-mon'); exit;
-        }
-        $dsMonNhap = $mangMon;
+        header('Location: gioithieu.php#chon-mon'); exit;
     }
 
-    // ---------- Chơi oẳn tù tì ----------
+    // 2. Oẳn tù tì
     if ($hanhDong === 'choi_oan_tu_ti') {
         $nguoiChon = layChuoiDauVao($_POST['chon'] ?? '');
         $hopLe = ['keo', 'bua', 'bao'];
-
-        if (!in_array($nguoiChon, $hopLe, true)) {
-            if ($laAjax) traJson(['ok' => false, 'loi' => ['chon' => 'Lựa chọn không hợp lệ.']]);
-            $_SESSION['flash_duy'] = 'Lựa chọn không hợp lệ, chơi lại nhé!';
-            header('Location: gioithieu.php#oan-tu-ti'); exit;
-        }
-
-        $mayChon   = $hopLe[array_rand($hopLe)];
-        $luatThang = ['keo' => 'bao', 'bua' => 'keo', 'bao' => 'bua'];
-
-        if ($nguoiChon === $mayChon) {
-            $ketQua = 'hoa';
-        } elseif ($luatThang[$nguoiChon] === $mayChon) {
-            $ketQua = 'thang';
-        } else {
-            $ketQua = 'thua';
-        }
-
-        // Lưu vào DB
-        $st = db()->prepare('INSERT INTO tv_lich_su_ott (mssv, nguoi_chon, may_chon, ket_qua) VALUES (?, ?, ?, ?)');
-        $st->execute([MSSV_DUY, $nguoiChon, $mayChon, $ketQua]);
-
-        if ($laAjax) {
-            $st = db()->prepare('SELECT ket_qua, COUNT(*) AS so_van FROM tv_lich_su_ott WHERE mssv = ? GROUP BY ket_qua');
-            $st->execute([MSSV_DUY]);
-            $tk = $st->fetchAll(PDO::FETCH_KEY_PAIR);
-            $tong = array_sum($tk);
-            $tiLe = $tong > 0 ? round(($tk['thang'] ?? 0) * 100 / $tong, 1) : 0.0;
-
-            $st = db()->prepare('SELECT * FROM tv_lich_su_ott WHERE mssv = ? ORDER BY id DESC LIMIT 10');
-            $st->execute([MSSV_DUY]);
-            $lsMoi = $st->fetchAll();
-
-            traJson([
-                'ok' => true,
-                'vua' => [
-                    'nguoiLabel'  => $labelChon[$nguoiChon] ?? $nguoiChon,
-                    'mayLabel'    => $labelChon[$mayChon] ?? $mayChon,
-                    'ketQua'      => $ketQua,
-                    'ketQuaLabel' => $labelKetQua[$ketQua] ?? $ketQua,
-                ],
-                'thongKe' => [
-                    'thang' => $tk['thang'] ?? 0,
-                    'thua'  => $tk['thua'] ?? 0,
-                    'hoa'   => $tk['hoa'] ?? 0,
-                    'tong'  => $tong,
-                    'tiLe'  => $tiLe,
-                ],
-                'lichSu' => array_map(
-                    static fn(array $v): array => [
-                        'thoiGian'    => $v['thoi_gian'],
-                        'nguoiLabel'  => $labelChon[$v['nguoi_chon']] ?? $v['nguoi_chon'],
-                        'mayLabel'    => $labelChon[$v['may_chon']] ?? $v['may_chon'],
-                        'ketQua'      => $v['ket_qua'],
-                        'ketQuaLabel' => $labelKetQua[$v['ket_qua']] ?? $v['ket_qua'],
-                    ],
-                    $lsMoi
-                ),
-            ]);
+        if (in_array($nguoiChon, $hopLe, true)) {
+            $mayChon   = $hopLe[array_rand($hopLe)];
+            $luatThang = ['keo' => 'bao', 'bua' => 'keo', 'bao' => 'bua'];
+            $ketQua    = ($nguoiChon === $mayChon) ? 'hoa' : (($luatThang[$nguoiChon] === $mayChon) ? 'thang' : 'thua');
+            $khoCaNhan->ghiLichSuOtt(MSSV_DUY, $nguoiChon, $mayChon, $ketQua);
+            $_SESSION['flash_duy'] = "Kết quả: Bạn chọn $nguoiChon, Máy chọn $mayChon => Bạn $ketQua!";
         }
         header('Location: gioithieu.php#oan-tu-ti'); exit;
     }
 
-    // ---------- Reset oẳn tù tì ----------
-    if ($hanhDong === 'reset_oan_tu_ti') {
-        db()->prepare('DELETE FROM tv_lich_su_ott WHERE mssv = ?')->execute([MSSV_DUY]);
-        $_SESSION['flash_duy'] = 'Đã reset thống kê oẳn tù tì.';
-        header('Location: gioithieu.php#oan-tu-ti'); exit;
+    // 3. Check-in thời tiết
+    if ($hanhDong === 'check_in_thoi_tiet') {
+        $trangThai = layChuoiDauVao($_POST['trang_thai'] ?? '');
+        $hopLe = ['nang', 'mua', 'may', 'giong_bao'];
+        if (in_array($trangThai, $hopLe, true)) {
+            $khoCaNhan->themCheckIn($trangThai);
+            $_SESSION['flash_duy'] = "Đã ghi nhận thời tiết! Cảm ơn bạn.";
+        }
+        header('Location: gioithieu.php#thoi-tiet'); exit;
     }
 }
 
 // ============================================================
-// ĐỌC DỮ LIỆU TỪ DATABASE ĐỂ HIỂN THỊ
+// LẤY DỮ LIỆU
 // ============================================================
 $tb = $_SESSION['flash_duy'] ?? '';
 unset($_SESSION['flash_duy']);
 
-// Danh sách món ăn từ DB
-$st = db()->prepare('SELECT ten_mon FROM tv_mon_an WHERE mssv = ?');
-$st->execute([MSSV_DUY]);
-$dsMonDb = $st->fetchAll(PDO::FETCH_COLUMN);
-$dsMonNhap = $dsMonDb ?? $dsMonNhap ?? [];
-
+$dsMonNhap = $khoCaNhan->layDanhSachMon(MSSV_DUY);
 $ketQuaMon = $_SESSION['duy_mon_an_ket_qua'] ?? null;
-$lichSuMon = $_SESSION['duy_mon_an_lich_su'] ?? [];
 
-// Thống kê Oẳn tù tì từ DB
-$st = db()->prepare('SELECT ket_qua, COUNT(*) AS so_van FROM tv_lich_su_ott WHERE mssv = ? GROUP BY ket_qua');
-$st->execute([MSSV_DUY]);
-$thongKeRaw = $st->fetchAll(PDO::FETCH_KEY_PAIR);
-$stOtt = [
-    'thang' => $thongKeRaw['thang'] ?? 0,
-    'thua'  => $thongKeRaw['thua'] ?? 0,
-    'hoa'   => $thongKeRaw['hoa'] ?? 0,
-];
-$tongVan   = array_sum($stOtt);
+$stOtt = $khoCaNhan->thongKeOtt(MSSV_DUY);
+$tongVan = array_sum($stOtt);
 $tiLeThang = $tongVan > 0 ? round($stOtt['thang'] * 100 / $tongVan, 1) : 0.0;
+$lichSuOtt = $khoCaNhan->layLichSuOtt(MSSV_DUY);
 
-// Lịch sử Oẳn tù tì
-$st = db()->prepare('SELECT * FROM tv_lich_su_ott WHERE mssv = ? ORDER BY id DESC LIMIT 10');
-$st->execute([MSSV_DUY]);
-$lichSuOtt = $st->fetchAll();
+$dsThoiTiet = $khoCaNhan->thongKeThoiTiet();
+$tongCheckIn = array_sum(array_column($dsThoiTiet, 'so_luot'));
+
+$buaChoPhep  = ['bat_ky' => 'Bất kỳ', 'sang' => 'Sáng', 'trua' => 'Trưa', 'toi' => 'Tối', 'dem' => 'Đêm'];
+$labelChon   = ['keo' => '✊ Kéo', 'bua' => '✋ Búa', 'bao' => '✌️ Bao'];
+$labelKetQua = ['thang' => '🎉 Thắng', 'thua' => '😢 Thua', 'hoa' => '🤝 Hoà'];
+$labelThoiTiet = ['nang' => '☀️ Nắng', 'mua' => '🌧️ Mưa', 'may' => '☁️ Nhiều mây', 'giong_bao' => '⛈️ Giông bão'];
 
 require __DIR__ . '/../../inc/header.php';
 ?>
 
 <!-- Thanh chuyển ngôn ngữ VI/EN -->
 <div class="thanh-ngon-ngu">
-    <button type="button" id="nut-doi-ngon-ngu" class="nut-ngon-ngu"
-            aria-label="Chuyển đổi ngôn ngữ giữa tiếng Việt và tiếng Anh">
+    <button type="button" id="nut-doi-ngon-ngu" class="nut-ngon-ngu" aria-label="Chuyển đổi ngôn ngữ">
         <span aria-hidden="true">🌐</span>
         <span id="nhan-ngon-ngu">EN</span>
     </button>
@@ -279,116 +101,55 @@ require __DIR__ . '/../../inc/header.php';
 
 <!-- Toast flash -->
 <?php if ($tb !== ''): ?>
-    <div class="thong-bao-thanh-cong" role="status" aria-live="polite">
+    <div class="thong-bao-thanh-cong" role="status" aria-live="polite" style="background:#d4edda; color:#155724; padding:15px; margin: 20px auto; max-width: 800px; border-radius:5px;">
         <span class="thong-bao-thanh-cong__icon" aria-hidden="true">✔</span>
         <span class="thong-bao-thanh-cong__noi-dung"><?= e($tb) ?></span>
-        <button type="button" class="thong-bao-thanh-cong__dong"
-                aria-label="Đóng thông báo">×</button>
     </div>
 <?php endif; ?>
 
 <main class="noi-dung-chinh bao">
+    <h1 class="noi-dung-chinh__tieu-de" data-vi="Giới thiệu bản thân" data-en="About me">Giới thiệu bản thân</h1>
 
-    <h1 class="noi-dung-chinh__tieu-de" data-vi="Giới thiệu bản thân" data-en="About me">
-        Giới thiệu bản thân
-    </h1>
-
-    <!-- ============ ĐỒNG HỒ ĐẾM NGƯỢC TẾT ============ -->
+    <!-- ĐỒNG HỒ ĐẾM NGƯỢC TẾT -->
     <section class="the-noi-dung dong-ho-tet" aria-labelledby="tieu-de-dong-ho">
-        <h2 id="tieu-de-dong-ho" class="the-noi-dung__tieu-de"
-            data-vi="🎊 Đếm ngược đến Tết Nguyên Đán"
-            data-en="🎊 Countdown to Lunar New Year">
-            🎊 Đếm ngược đến Tết Nguyên Đán
-        </h2>
-        <p class="dong-ho-tet__mo-ta"
-           data-vi="Tết Đinh Mùi 2027 — Mùng 1 Tết: 06/02/2027"
-           data-en="Year of the Goat 2027 — Lunar New Year: Feb 6, 2027">
-            Tết Đinh Mùi 2027 — Mùng 1 Tết: 06/02/2027
-        </p>
-        <div id="dong-ho" class="dong-ho-tet__khung"
-             role="timer" aria-live="polite" aria-atomic="true">
-            <p class="dong-ho-tet__cho"
-               data-vi="Đang tải đồng hồ..."
-               data-en="Loading countdown...">
-                Đang tải đồng hồ...
-            </p>
+        <h2 id="tieu-de-dong-ho" class="the-noi-dung__tieu-de" data-vi="🎊 Đếm ngược đến Tết Nguyên Đán" data-en="🎊 Countdown to Lunar New Year">🎊 Đếm ngược đến Tết Nguyên Đán</h2>
+        <p class="dong-ho-tet__mo-ta" data-vi="Tết Đinh Mùi 2027 — Mùng 1 Tết: 06/02/2027" data-en="Year of the Goat 2027 — Lunar New Year: Feb 6, 2027">Tết Đinh Mùi 2027 — Mùng 1 Tết: 06/02/2027</p>
+        <div id="dong-ho" class="dong-ho-tet__khung" role="timer" aria-live="polite" aria-atomic="true">
+            <p class="dong-ho-tet__cho" data-vi="Đang tải đồng hồ..." data-en="Loading countdown...">Đang tải đồng hồ...</p>
         </div>
     </section>
 
-    <!-- ============ THÔNG TIN CÁ NHÂN ============ -->
+    <!-- THÔNG TIN CÁ NHÂN -->
     <section class="the-noi-dung thong-tin" aria-labelledby="tieu-de-thong-tin">
-        <h2 id="tieu-de-thong-tin" class="the-noi-dung__tieu-de"
-            data-vi="Thông tin cá nhân"
-            data-en="Personal Information">
-            Thông tin cá nhân
-        </h2>
-        <p data-vi="Xin chào! Mình là Dương Bảo Duy, thành viên của Nhóm 3 thực hiện dự án EduGPA."
-           data-en="Hi! I'm Duong Bao Duy, a member of Group 3 working on the EduGPA project.">
-            Xin chào! Mình là Dương Bảo Duy, thành viên của Nhóm 3 thực hiện dự án EduGPA.
-        </p>
-        <p data-vi="Mình hiện đang học tại lớp 24CNTT1, khoa Toán - Tin, trường Đại học Sư Phạm, Đại học Đà Nẵng. Mình là một người trẻ đang theo đuổi lĩnh vực Công nghệ Thông tin với niềm yêu thích đặc biệt dành cho lập trình, phát triển Web, IoT và các hệ thống công nghệ thực tế."
-           data-en="I'm currently studying in class 24CNTT1, Faculty of Mathematics and Informatics, University of Science and Education, The University of Da Nang. I'm a young person pursuing Information Technology with a special passion for programming, Web development, IoT and real-world technology systems.">
-            Mình hiện đang học tại lớp 24CNTT1, khoa Toán - Tin, trường Đại học Sư Phạm, Đại học Đà Nẵng. Mình là một người trẻ đang theo đuổi lĩnh vực Công nghệ Thông tin với niềm yêu thích đặc biệt dành cho lập trình, phát triển Web, IoT và các hệ thống công nghệ thực tế.
-        </p>
+        <h2 id="tieu-de-thong-tin" class="the-noi-dung__tieu-de" data-vi="Thông tin cá nhân" data-en="Personal Information">Thông tin cá nhân</h2>
+        <p data-vi="Xin chào! Mình là Dương Bảo Duy, thành viên của Nhóm 3 thực hiện dự án EduGPA." data-en="Hi! I'm Duong Bao Duy...">Xin chào! Mình là Dương Bảo Duy, thành viên của Nhóm 3 thực hiện dự án EduGPA.</p>
+        <p data-vi="Mình hiện đang học tại lớp 24CNTT1..." data-en="I'm currently studying in class 24CNTT1...">Mình hiện đang học tại lớp 24CNTT1, khoa Toán - Tin, trường Đại học Sư Phạm, Đại học Đà Nẵng. Mình là một người trẻ đang theo đuổi lĩnh vực Công nghệ Thông tin với niềm yêu thích đặc biệt dành cho lập trình, phát triển Web, IoT và các hệ thống công nghệ thực tế.</p>
         <figure class="thong-tin__anh">
-            <img src="images/anh-ca-nhan.jpg"
-                 alt="Ảnh chân dung của Dương Bảo Duy"
-                 width="300" height="400"
-                 class="thong-tin__anh-chan-dung"
-                 loading="lazy">
-            <figcaption class="thong-tin__chu-thich"
-                        data-vi="Dương Bảo Duy — MSSV 3120224034"
-                        data-en="Duong Bao Duy — ID 3120224034">
-                Dương Bảo Duy — MSSV 3120224034
-            </figcaption>
+            <img src="images/anh-ca-nhan.jpg" alt="Ảnh chân dung của Dương Bảo Duy" width="300" height="400" class="thong-tin__anh-chan-dung" loading="lazy">
+            <figcaption class="thong-tin__chu-thich" data-vi="Dương Bảo Duy — MSSV 3120224034" data-en="Duong Bao Duy — ID 3120224034">Dương Bảo Duy — MSSV 3120224034</figcaption>
         </figure>
     </section>
 
-    <!-- ==================================================
-         CHỨC NĂNG 1 — MÁY CHỌN MÓN ĂN
-         ================================================== -->
+    <!-- CHỨC NĂNG 1: MÁY CHỌN MÓN ĂN -->
     <section id="chon-mon" class="the-noi-dung chon-mon" aria-labelledby="tieu-de-chon-mon">
-        <h2 id="tieu-de-chon-mon" class="the-noi-dung__tieu-de"
-            data-vi="🍜 Máy chọn món ăn hôm nay"
-            data-en="🍜 Today's food picker">
-            🍜 Máy chọn món ăn hôm nay
-        </h2>
-        <p data-vi="Không biết ăn gì? Paste danh sách món vào ô bên dưới, chọn bữa, rồi để máy quyết định!"
-           data-en="Don't know what to eat? Paste your dish list below, choose a meal, let the machine decide!">
-            Không biết ăn gì? Paste danh sách món vào ô bên dưới, chọn bữa, rồi để máy quyết định!
-        </p>
+        <h2 id="tieu-de-chon-mon" class="the-noi-dung__tieu-de" data-vi="🍜 Máy chọn món ăn hôm nay" data-en="🍜 Today's food picker">🍜 Máy chọn món ăn hôm nay</h2>
+        <p data-vi="Không biết ăn gì? Paste danh sách món vào ô bên dưới, chọn bữa, rồi để máy quyết định!" data-en="Don't know what to eat?...">Không biết ăn gì? Paste danh sách món vào ô bên dưới, chọn bữa, rồi để máy quyết định!</p>
 
         <form method="post" action="gioithieu.php" id="form-chon-mon" novalidate>
             <input type="hidden" name="hanh_dong" value="chon_mon">
             <p>
                 <label for="dsMon">Danh sách món (mỗi dòng 1 món, 2–50 món):</label>
-                <textarea id="dsMon" name="dsMon" rows="6" maxlength="3000"
-                          placeholder="Phở bò&#10;Cơm tấm&#10;Bún chả..."><?= e(implode("\n", $dsMonNhap)) ?></textarea>
-                <?php if (!empty($loiMon['dsMon'])): ?>
-                    <small class="loi-bieu-mau"><?= e($loiMon['dsMon']) ?></small>
-                <?php endif; ?>
+                <textarea id="dsMon" name="dsMon" rows="6" maxlength="3000"><?= e(implode("\n", $dsMonNhap)) ?></textarea>
             </p>
             <p>
                 <label for="bua">Bữa:</label>
                 <select id="bua" name="bua">
                     <?php foreach ($buaChoPhep as $key => $label): ?>
-                        <option value="<?= e($key) ?>" <?= (($_POST['bua'] ?? 'bat_ky') === $key) ? 'selected' : '' ?>>
-                            <?= e($label) ?>
-                        </option>
+                        <option value="<?= e($key) ?>"><?= e($label) ?></option>
                     <?php endforeach; ?>
                 </select>
-                <?php if (!empty($loiMon['bua'])): ?>
-                    <small class="loi-bieu-mau"><?= e($loiMon['bua']) ?></small>
-                <?php endif; ?>
             </p>
-            <p class="chon-mon__nut">
-                <button type="submit">🎲 Chọn món cho tôi!</button>
-            </p>
-        </form>
-
-        <form method="post" action="gioithieu.php" class="chon-mon__phu">
-            <input type="hidden" name="hanh_dong" value="dung_mac_dinh">
-            <button type="submit" class="nut-phu">📋 Nạp 30 món Việt mặc định</button>
+            <p class="chon-mon__nut"><button type="submit">🎲 Chọn món cho tôi!</button></p>
         </form>
 
         <div id="chon-mon-ket-qua">
@@ -396,49 +157,16 @@ require __DIR__ . '/../../inc/header.php';
                 <div class="chon-mon__ket-qua" role="status" aria-live="polite">
                     <p class="chon-mon__nhan">Hôm nay ăn gì?</p>
                     <p class="chon-mon__mon"><?= e((string) $ketQuaMon['mon']) ?></p>
-                    <p class="chon-mon__meta">
-                        Bữa: <strong><?= e($buaChoPhep[$ketQuaMon['bua']] ?? $ketQuaMon['bua']) ?></strong>
-                        — lúc <?= e((string) $ketQuaMon['thoiGian']) ?>
-                    </p>
+                    <p class="chon-mon__meta">Bữa: <strong><?= e($buaChoPhep[$ketQuaMon['bua']] ?? $ketQuaMon['bua']) ?></strong> — lúc <?= e((string) $ketQuaMon['thoiGian']) ?></p>
                 </div>
-            <?php endif; ?>
-        </div>
-
-        <div id="chon-mon-lich-su">
-            <?php if ($lichSuMon): ?>
-                <h3>5 lần chọn gần nhất</h3>
-                <ul class="chon-mon__lich-su">
-                    <?php foreach ($lichSuMon as $m): ?>
-                        <li>
-                            <strong><?= e((string) $m['mon']) ?></strong>
-                            — bữa <?= e($buaChoPhep[$m['bua']] ?? $m['bua']) ?>
-                            <em>(<?= e((string) $m['thoiGian']) ?>)</em>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-                <form method="post" action="gioithieu.php" style="margin-top:.75rem;">
-                    <input type="hidden" name="hanh_dong" value="xoa_lich_su_mon">
-                    <button type="submit" class="nut-phu" onclick="return confirm('Xoá toàn bộ danh sách món?');">
-                        🗑 Xoá danh sách
-                    </button>
-                </form>
             <?php endif; ?>
         </div>
     </section>
 
-    <!-- ==================================================
-         CHỨC NĂNG 2 — OẲN TÙ TÌ
-         ================================================== -->
+    <!-- CHỨC NĂNG 2: OẲN TÙ TÌ -->
     <section id="oan-tu-ti" class="the-noi-dung oan-tu-ti" aria-labelledby="tieu-de-ott">
-        <h2 id="tieu-de-ott" class="the-noi-dung__tieu-de"
-            data-vi="✊✋✌️ Oẳn tù tì vs Máy"
-            data-en="✊✋✌️ Rock Paper Scissors vs Machine">
-            ✊✋✌️ Oẳn tù tì vs Máy
-        </h2>
-        <p data-vi="Bạn chọn Kéo / Búa / Bao, máy random. Ai thắng nhiều hơn?"
-           data-en="Choose Rock / Paper / Scissors, machine is random. Who wins more?">
-            Bạn chọn Kéo / Búa / Bao, máy random. Ai thắng nhiều hơn?
-        </p>
+        <h2 id="tieu-de-ott" class="the-noi-dung__tieu-de" data-vi="✊✋✌️ Oẳn tù tì vs Máy" data-en="✊✋✌️ Rock Paper Scissors">✊✋✌️ Oẳn tù tì vs Máy</h2>
+        <p data-vi="Bạn chọn Kéo / Búa / Bao, máy random. Ai thắng nhiều hơn?" data-en="Choose Rock / Paper / Scissors...">Bạn chọn Kéo / Búa / Bao, máy random. Ai thắng nhiều hơn?</p>
 
         <form method="post" action="gioithieu.php" class="oan-tu-ti__nut" id="form-oan-tu-ti">
             <input type="hidden" name="hanh_dong" value="choi_oan_tu_ti">
@@ -450,14 +178,8 @@ require __DIR__ . '/../../inc/header.php';
         <div id="oan-tu-ti-vua">
             <?php if (!empty($lichSuOtt)): $vua = $lichSuOtt[0]; ?>
                 <div class="oan-tu-ti__ket-qua oan-tu-ti__ket-qua--<?= e($vua['ket_qua']) ?>" role="status" aria-live="polite">
-                    <p>
-                        Bạn: <strong><?= e($labelChon[$vua['nguoi_chon']] ?? $vua['nguoi_chon']) ?></strong>
-                        &nbsp;vs&nbsp;
-                        Máy: <strong><?= e($labelChon[$vua['may_chon']] ?? $vua['may_chon']) ?></strong>
-                    </p>
-                    <p class="oan-tu-ti__vua">
-                        <?= e($labelKetQua[$vua['ket_qua']] ?? $vua['ket_qua']) ?>
-                    </p>
+                    <p>Bạn: <strong><?= e($labelChon[$vua['nguoi_chon']] ?? $vua['nguoi_chon']) ?></strong> &nbsp;vs&nbsp; Máy: <strong><?= e($labelChon[$vua['may_chon']] ?? $vua['may_chon']) ?></strong></p>
+                    <p class="oan-tu-ti__vua"><?= e($labelKetQua[$vua['ket_qua']] ?? $vua['ket_qua']) ?></p>
                 </div>
             <?php endif; ?>
         </div>
@@ -466,17 +188,11 @@ require __DIR__ . '/../../inc/header.php';
             <div class="oan-tu-ti__thong-ke">
                 <h3>Thống kê (Lưu DB)</h3>
                 <ul>
-                    <li>🎉 Thắng: <strong><?= (int) $stOtt['thang'] ?></strong></li>
-                    <li>😢 Thua: <strong><?= (int) $stOtt['thua'] ?></strong></li>
-                    <li>🤝 Hoà: <strong><?= (int) $stOtt['hoa'] ?></strong></li>
-                    <li>Tổng: <strong><?= (int) $tongVan ?></strong> ván —
-                        Tỉ lệ thắng: <strong><?= e((string) $tiLeThang) ?>%</strong></li>
+                    <li>🎉 Thắng: <strong><?= (int)$stOtt['thang'] ?></strong></li>
+                    <li>😢 Thua: <strong><?= (int)$stOtt['thua'] ?></strong></li>
+                    <li>🤝 Hoà: <strong><?= (int)$stOtt['hoa'] ?></strong></li>
+                    <li>Tổng: <strong><?= (int)$tongVan ?></strong> ván — Tỉ lệ thắng: <strong><?= $tiLeThang ?>%</strong></li>
                 </ul>
-                <?php if ($tongVan > 0): ?>
-                    <div class="oan-tu-ti__bar" aria-hidden="true">
-                        <div class="oan-tu-ti__bar-thang" style="width: <?= e((string) $tiLeThang) ?>%;"></div>
-                    </div>
-                <?php endif; ?>
             </div>
         </div>
 
@@ -484,9 +200,7 @@ require __DIR__ . '/../../inc/header.php';
             <?php if ($lichSuOtt): ?>
                 <h3>10 ván gần nhất</h3>
                 <table class="oan-tu-ti__bang">
-                    <thead>
-                        <tr><th>Thời gian</th><th>Bạn</th><th>Máy</th><th>Kết quả</th></tr>
-                    </thead>
+                    <thead><tr><th>Thời gian</th><th>Bạn</th><th>Máy</th><th>Kết quả</th></tr></thead>
                     <tbody>
                         <?php foreach ($lichSuOtt as $v): ?>
                             <tr>
@@ -498,33 +212,56 @@ require __DIR__ . '/../../inc/header.php';
                         <?php endforeach; ?>
                     </tbody>
                 </table>
-                <form method="post" action="gioithieu.php" style="margin-top:.75rem;">
-                    <input type="hidden" name="hanh_dong" value="reset_oan_tu_ti">
-                    <button type="submit" class="nut-phu" onclick="return confirm('Reset toàn bộ thống kê?');">
-                        🔄 Reset thống kê
-                    </button>
-                </form>
             <?php endif; ?>
         </div>
     </section>
 
-    <!-- ============ DỰ ÁN VÀ SỞ THÍCH ============ -->
+    <!-- CHỨC NĂNG 3: CHECK-IN THỜI TIẾT -->
+    <section id="thoi-tiet" class="the-noi-dung" style="margin-top: 30px; background: #f0f8ff; padding: 20px; border-radius: 8px; border: 1px solid #b6d4fe;">
+        <h2 class="the-noi-dung__tieu-de">🌤️ Check-in Thời tiết hôm nay</h2>
+        <p>Hôm nay chỗ bạn thời tiết thế nào? Bấm chọn để cùng mọi người cập nhật nhé!</p>
+
+        <form method="post" action="gioithieu.php#thoi-tiet" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
+            <input type="hidden" name="hanh_dong" value="check_in_thoi_tiet">
+            <button type="submit" name="trang_thai" value="nang" style="padding: 15px 20px; background: #fff; border: 2px solid #f59e0b; border-radius: 8px; cursor: pointer;">☀️ Nắng</button>
+            <button type="submit" name="trang_thai" value="mua" style="padding: 15px 20px; background: #fff; border: 2px solid #3b82f6; border-radius: 8px; cursor: pointer;">🌧️ Mưa</button>
+            <button type="submit" name="trang_thai" value="may" style="padding: 15px 20px; background: #fff; border: 2px solid #9ca3af; border-radius: 8px; cursor: pointer;">☁️ Nhiều mây</button>
+            <button type="submit" name="trang_thai" value="giong_bao" style="padding: 15px 20px; background: #fff; border: 2px solid #4b5563; border-radius: 8px; cursor: pointer;">⛈️ Giông bão</button>
+        </form>
+
+        <div style="background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
+            <h3 style="margin-top: 0;">Thống kê thời tiết từ CSDL</h3>
+            <?php if ($tongCheckIn === 0): ?>
+                <p>Chưa có ai check-in. Hãy là người đầu tiên!</p>
+            <?php else: ?>
+                <p>Tổng cộng: <strong><?= $tongCheckIn ?></strong> lượt check-in</p>
+                <ul style="list-style: none; padding: 0;">
+                    <?php foreach ($dsThoiTiet as $tt): 
+                        $phanTram = round(($tt['so_luot'] / $tongCheckIn) * 100, 1);
+                    ?>
+                        <li style="margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span><?= e($labelThoiTiet[$tt['trang_thai']] ?? $tt['trang_thai']) ?> (<?= $tt['so_luot'] ?>)</span>
+                                <strong><?= $phanTram ?>%</strong>
+                            </div>
+                            <div style="width: 100%; background: #e2e8f0; border-radius: 4px; height: 10px;">
+                                <div style="width: <?= $phanTram ?>%; background: #0d6efd; height: 100%; border-radius: 4px;"></div>
+                            </div>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+        </div>
+    </section>
+
+    <!-- DỰ ÁN VÀ SỞ THÍCH -->
     <section class="the-noi-dung khoi-du-an" aria-labelledby="tieu-de-du-an">
         <h2 id="tieu-de-du-an" class="the-noi-dung__tieu-de" data-vi="Dự án và sở thích" data-en="Projects & Hobbies">Dự án và sở thích</h2>
-        <p data-vi="Mình không chỉ thích học kiến thức từ sách vở mà còn thích tự tay biến những gì mình học được thành các sản phẩm có thể chạy, có thể tương tác và giải quyết một vấn đề cụ thể. Trong quá trình học tập, mình đã tìm hiểu và thực hành nhiều lĩnh vực khác nhau như lập trình C/C++, Java, Python, phát triển Web, Cơ sở dữ liệu, Mạng máy tính, Hệ điều hành và Internet of Things." data-en="I don't just like learning from books, but also love turning what I learn into working, interactive products that solve specific problems. During my studies, I have explored and practiced many areas such as C/C++, Java, Python, Web development, Databases, Computer Networks, Operating Systems, and the Internet of Things.">
-            Mình không chỉ thích học kiến thức từ sách vở mà còn thích tự tay biến những gì mình học được thành các sản phẩm có thể chạy, có thể tương tác và giải quyết một vấn đề cụ thể. Trong quá trình học tập, mình đã tìm hiểu và thực hành nhiều lĩnh vực khác nhau như lập trình C/C++, Java, Python, phát triển Web, Cơ sở dữ liệu, Mạng máy tính, Hệ điều hành và Internet of Things.
-        </p>
-        <p data-vi="Một trong những điều mình thích nhất là bắt đầu từ một ý tưởng đơn giản rồi từng bước biến nó thành một hệ thống hoàn chỉnh — từ những chương trình nhỏ, website, chatbot cho đến các dự án robot sử dụng ESP32, cảm biến, MQTT và điều khiển từ xa." data-en="One of the things I enjoy most is starting from a simple idea and gradually turning it into a complete system — from small programs, websites, chatbots to robot projects using ESP32, sensors, MQTT and remote control.">
-            Một trong những điều mình thích nhất là bắt đầu từ một ý tưởng đơn giản rồi từng bước biến nó thành một hệ thống hoàn chỉnh — từ những chương trình nhỏ, website, chatbot cho đến các dự án robot sử dụng ESP32, cảm biến, MQTT và điều khiển từ xa.
-        </p>
+        <p data-vi="Mình không chỉ thích học kiến thức từ sách vở..." data-en="I don't just like learning from books...">Mình không chỉ thích học kiến thức từ sách vở mà còn thích tự tay biến những gì mình học được thành các sản phẩm có thể chạy, có thể tương tác và giải quyết một vấn đề cụ thể. Trong quá trình học tập, mình đã tìm hiểu và thực hành nhiều lĩnh vực khác nhau như lập trình C/C++, Java, Python, phát triển Web, Cơ sở dữ liệu, Mạng máy tính, Hệ điều hành và Internet of Things.</p>
         <blockquote class="gioi-thieu__trich-dan">
-            <p data-vi='"Không cần phải biết tất cả ngay từ đầu. Quan trọng là dám bắt đầu và tiếp tục tìm cách giải quyết vấn đề."' data-en='"You don&apos;t need to know everything at once. What matters is daring to start and keep finding ways to solve the problem."'>
-                "Không cần phải biết tất cả ngay từ đầu. Quan trọng là dám bắt đầu và tiếp tục tìm cách giải quyết vấn đề."
-            </p>
+            <p data-vi='"Không cần phải biết tất cả ngay từ đầu..."' data-en='"You don&apos;t need to know everything at once..."'>"Không cần phải biết tất cả ngay từ đầu. Quan trọng là dám bắt đầu và tiếp tục tìm cách giải quyết vấn đề."</p>
         </blockquote>
-        <p data-vi="Ngoài việc học tập, mình thích chơi thể thao, đọc truyện và tham gia các hoạt động, sự kiện do đoàn trường tổ chức." data-en="Besides studying, I enjoy playing sports, reading comics and joining activities and events organized by the school union.">
-            Ngoài việc học tập, mình thích chơi thể thao, đọc truyện và tham gia các hoạt động, sự kiện do đoàn trường tổ chức.
-        </p>
+        <p data-vi="Ngoài việc học tập, mình thích chơi thể thao..." data-en="Besides studying...">Ngoài việc học tập, mình thích chơi thể thao, đọc truyện và tham gia các hoạt động, sự kiện do đoàn trường tổ chức.</p>
         <div class="gioi-thieu__du-an-anh">
             <figure class="gioi-thieu__anh-doc">
                 <img src="images/du-an-1.jpg" alt="Dự án IoT sử dụng Arduino và Module Bluetooth" width="400" height="600" loading="lazy">
@@ -537,13 +274,13 @@ require __DIR__ . '/../../inc/header.php';
         </div>
     </section>
 
-    <!-- ============ KỸ NĂNG ============ -->
+    <!-- KỸ NĂNG -->
     <section class="the-noi-dung ky-nang" aria-labelledby="tieu-de-ky-nang">
         <h2 id="tieu-de-ky-nang" class="the-noi-dung__tieu-de" data-vi="Kỹ năng" data-en="Skills">Kỹ năng</h2>
         <ul class="ky-nang__danh-sach">
             <li data-vi="Lập trình C/C++, Java, Python" data-en="C/C++, Java, Python programming">Lập trình C/C++, Java, Python</li>
-            <li data-vi="Phát triển Web (HTML5, CSS3, JavaScript)" data-en="Web Development (HTML5, CSS3, JavaScript)">Phát triển Web (HTML5, CSS3, JavaScript)</li>
-            <li data-vi="IoT và hệ thống nhúng (ESP32, MQTT)" data-en="IoT & Embedded Systems (ESP32, MQTT)">IoT và hệ thống nhúng (ESP32, MQTT)</li>
+            <li data-vi="Phát triển Web (HTML5, CSS3, JavaScript)" data-en="Web Development">Phát triển Web (HTML5, CSS3, JavaScript)</li>
+            <li data-vi="IoT và hệ thống nhúng (ESP32, MQTT)" data-en="IoT & Embedded Systems">IoT và hệ thống nhúng (ESP32, MQTT)</li>
             <li data-vi="Cơ sở dữ liệu" data-en="Databases">Cơ sở dữ liệu</li>
             <li data-vi="Mạng máy tính và Hệ điều hành" data-en="Computer Networks & Operating Systems">Mạng máy tính và Hệ điều hành</li>
             <li data-vi="Quản lý mã nguồn với GitHub" data-en="Source control with GitHub">Quản lý mã nguồn với GitHub</li>
@@ -551,7 +288,7 @@ require __DIR__ . '/../../inc/header.php';
         </ul>
     </section>
 
-    <!-- ============ LIÊN HỆ ============ -->
+    <!-- LIÊN HỆ -->
     <section class="the-noi-dung lien-he" aria-labelledby="tieu-de-lien-he">
         <h2 id="tieu-de-lien-he" class="the-noi-dung__tieu-de" data-vi="Liên hệ" data-en="Contact">Liên hệ</h2>
         <ul class="lien-he__danh-sach">
@@ -561,10 +298,10 @@ require __DIR__ . '/../../inc/header.php';
         </ul>
     </section>
 
-    <!-- ============ THỜI KHÓA BIỂU ============ -->
+    <!-- THỜI KHÓA BIỂU -->
     <section class="the-noi-dung lich-hoc" aria-labelledby="tieu-de-tkb">
         <h2 id="tieu-de-tkb" class="the-noi-dung__tieu-de" data-vi="Thời khóa biểu trong tuần" data-en="Weekly Schedule">Thời khóa biểu trong tuần</h2>
-        <p class="lich-hoc__huong-dan" data-vi="Kéo ngang hoặc dùng phím mũi tên để xem đủ 7 ngày" data-en="Scroll horizontally or use arrow keys to see all 7 days">Kéo ngang hoặc dùng phím mũi tên để xem đủ 7 ngày</p>
+        <p class="lich-hoc__huong-dan" data-vi="Kéo ngang hoặc dùng phím mũi tên để xem đủ 7 ngày" data-en="Scroll horizontally or use arrow keys">Kéo ngang hoặc dùng phím mũi tên để xem đủ 7 ngày</p>
         
         <div class="tkb-container" tabindex="0" role="region" aria-label="Bảng thời khóa biểu có thể cuộn ngang">
             <table class="thoi-khoa-bieu">
@@ -626,9 +363,127 @@ require __DIR__ . '/../../inc/header.php';
             </table>
         </div>
     </section>
-
 </main>
 
-<script type="module" src="canhan.js"></script>
+<!-- Giao diện đồng hồ đếm ngược Tết (CSS + JS) -->
+<style>
+    .dh-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 0;
+    }
+    .dh-item {
+        background: #ffffff;
+        border: 2px solid #fcd34d;
+        border-radius: 12px;
+        padding: 15px 20px;
+        min-width: 80px;
+        text-align: center;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s;
+    }
+    .dh-item:hover {
+        transform: translateY(-3px);
+    }
+    .dh-so {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #dc2626;
+        line-height: 1;
+        font-family: 'Arial', sans-serif;
+    }
+    .dh-nhan {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #b45309;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 8px;
+    }
+    .dh-colon {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #fcd34d;
+        animation: chopNhay 1s infinite;
+    }
+    @keyframes chopNhay {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    @media (max-width: 480px) {
+        .dh-item { padding: 10px 12px; min-width: 60px; }
+        .dh-so { font-size: 1.5rem; }
+        .dh-colon { font-size: 1.3rem; }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ngayTet = new Date('2027-02-06T00:00:00').getTime();
+    const khungDongHo = document.getElementById('dong-ho');
+    
+    if (khungDongHo) {
+        const capNhatDongHo = setInterval(function() {
+            const bayGio = new Date().getTime();
+            const khoangCach = ngayTet - bayGio;
+
+            if (khoangCach < 0) {
+                clearInterval(capNhatDongHo);
+                khungDongHo.innerHTML = "<p style='text-align:center; font-weight:bold; color:#dc2626; font-size:1.5rem;'>🎉 Chúc Mừng Năm Mới! 🎉</p>";
+                return;
+            }
+
+            const ngay = Math.floor(khoangCach / (1000 * 60 * 60 * 24));
+            const gio = Math.floor((khoangCach % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const phut = Math.floor((khoangCach % (1000 * 60 * 60)) / (1000 * 60));
+            const giay = Math.floor((khoangCach % (1000 * 60)) / 1000);
+
+            const format = (num) => String(num).padStart(2, '0');
+
+            khungDongHo.innerHTML = `
+                <div class="dh-wrapper">
+                    <div class="dh-item">
+                        <div class="dh-so">${format(ngay)}</div>
+                        <div class="dh-nhan">Ngày</div>
+                    </div>
+                    <div class="dh-colon">:</div>
+                    <div class="dh-item">
+                        <div class="dh-so">${format(gio)}</div>
+                        <div class="dh-nhan">Giờ</div>
+                    </div>
+                    <div class="dh-colon">:</div>
+                    <div class="dh-item">
+                        <div class="dh-so">${format(phut)}</div>
+                        <div class="dh-nhan">Phút</div>
+                    </div>
+                    <div class="dh-colon">:</div>
+                    <div class="dh-item">
+                        <div class="dh-so">${format(giay)}</div>
+                        <div class="dh-nhan">Giây</div>
+                    </div>
+                </div>
+            `;
+        }, 1000);
+    }
+
+    // Chuyển ngôn ngữ VI/EN
+    const nutDoiNgonNgu = document.getElementById('nut-doi-ngon-ngu');
+    let laTiengAnh = false;
+    if (nutDoiNgonNgu) {
+        nutDoiNgonNgu.addEventListener('click', function() {
+            laTiengAnh = !laTiengAnh;
+            document.getElementById('nhan-ngon-ngu').textContent = laTiengAnh ? 'VI' : 'EN';
+            
+            const cacTheCoData = document.querySelectorAll('[data-vi][data-en]');
+            cacTheCoData.forEach(el => {
+                const noiDungMoi = laTiengAnh ? el.getAttribute('data-en') : el.getAttribute('data-vi');
+                if (noiDungMoi) el.textContent = noiDungMoi;
+            });
+        });
+    }
+});
+</script>
 
 <?php require __DIR__ . '/../../inc/footer.php'; ?>

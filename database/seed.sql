@@ -135,3 +135,18 @@ SELECT '3120224064', u.id, 'huu_ich' FROM nguoi_dung u
 WHERE u.vai_tro = 'khach_hang'
   AND NOT EXISTS (SELECT 1 FROM tv_binh_chon b WHERE b.mssv = '3120224064' AND b.nguoi_dung_id = u.id)
 ORDER BY u.id LIMIT 1;
+-- ============================================
+-- Phần B: Dữ liệu mẫu cho Duy (MSSV 3120224034)
+-- ============================================
+-- Nạp sẵn vài món ăn
+INSERT INTO tv_mon_an (mssv, ten_mon, bua) VALUES
+('3120224034', 'Phở bò', 'sang'),
+('3120224034', 'Cơm tấm', 'trua'),
+('3120224034', 'Bún chả', 'trua'),
+('3120224034', 'Lẩu Thái', 'toi');
+
+-- Nạp sẵn vài ván Oẳn tù tì
+INSERT INTO tv_lich_su_ott (mssv, nguoi_chon, may_chon, ket_qua) VALUES
+('3120224034', 'keo', 'bao', 'thang'),
+('3120224034', 'bua', 'bao', 'thua'),
+('3120224034', 'bao', 'bao', 'hoa');

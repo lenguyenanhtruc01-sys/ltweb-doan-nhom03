@@ -181,7 +181,6 @@ VALUES
 ('3120224174', '21221904', 'Lịch sử Đảng Cộng sản Việt Nam', '24-0318', 2, 11, 12, 'A6-502'),
 ('3120224174', '31221010', 'An toàn thông tin', '24-0103', 7, 11, 12, 'B3-506')
 ON DUPLICATE KEY UPDATE id = id;
-('3120224174', '31221010', 'An toàn thông tin', '24-0103', 7, 11, 12, 'B3-506');
 
 -- Mẫu riêng của Duy; không cần truy cập trang để nạp dữ liệu lần đầu.
 INSERT INTO tv_mon_an (mssv,ten_mon,bua) VALUES

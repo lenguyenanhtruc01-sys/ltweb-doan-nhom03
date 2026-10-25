@@ -105,7 +105,9 @@ CREATE TABLE chi_tiet_ke_hoach (
     so_luong SMALLINT UNSIGNED NOT NULL DEFAULT 1,
     PRIMARY KEY (ke_hoach_id, mon_hoc_id),
     FOREIGN KEY (ke_hoach_id) REFERENCES ke_hoach_hoc_tap(id) ON DELETE CASCADE,
-    FOREIGN KEY (mon_hoc_id) REFERENCES mon_hoc(id) ON DELETE CASCADE
+    -- Giữ chi tiết kế hoạch: môn đã được đăng ký không được xóa (lỗi 1451).
+    CONSTRAINT fk_chi_tiet_ke_hoach_mon_hoc
+        FOREIGN KEY (mon_hoc_id) REFERENCES mon_hoc(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================

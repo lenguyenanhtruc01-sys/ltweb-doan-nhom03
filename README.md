@@ -31,6 +31,8 @@ Database đang dùng: import `database/luu-gio-va-yeu-thich.sql` để thêm hai
 
 Nếu CSDL cũ thiếu cột trạng thái/ghi chú và thông tin môn trong chi tiết kế hoạch: sao lưu rồi chạy `php database/nang-cap-ke-hoach.php`. Script chỉ thêm cột thiếu, điền thông tin môn hiện tại cho chi tiết cũ và giữ nguyên snapshot đã có; chạy lại không tạo trùng dữ liệu. Bản cài mới từ schema không cần bước này.
 
+Để chặn xóa môn đã có trong kế hoạch theo ca 5 của Bảng 3: sao lưu rồi chạy `php database/nang-cap-khoa-ngoai-mon-hoc.php`. Migration đổi FK môn học sang RESTRICT, giữ nguyên dữ liệu và chạy lại được. Schema cài mới đã dùng RESTRICT; xóa kế hoạch vẫn tự xóa các chi tiết của chính kế hoạch đó.
+
 ### Chạy không cần Apache
 
 ```bash
@@ -60,6 +62,8 @@ Mở http://localhost:8000/index.php; MySQL vẫn cần chạy. PHP cần quyề
 | [danh-sach.php](danh-sach.php) | Tìm kiếm, lọc, sắp xếp và xem danh sách môn học. |
 | [chi-tiet.php?id=1](chi-tiet.php?id=1) | Xem chi tiết một môn học theo `?id=`. |
 | [gio-hang.php](gio-hang.php) | Quản lý kế hoạch học tập: thêm, cập nhật số lượng, xóa và xóa toàn bộ. |
+| [dat-hang.php](dat-hang.php) | Nhận POST gửi kế hoạch của tài khoản đã đăng nhập, lưu bằng transaction. |
+| [don-hang.php](don-hang.php) | Xem kế hoạch của mình; quản trị xem tất cả và đổi trạng thái. |
 | [lien-he.php](lien-he.php) | Gửi liên hệ, có kiểm tra dữ liệu và tải ảnh minh họa. |
 | [dang-ky.php](dang-ky.php) | Đăng ký tài khoản khách hàng. |
 | [dang-nhap.php](dang-nhap.php) | Đăng nhập bằng tên hoặc email. |
@@ -159,6 +163,7 @@ Bài 5 đã có xử lý tệp JSON lỗi; phiên bản MySQL hiện dùng ngo�
 ## 9. Xử lý lỗi
 
 - `404.php`: trang hoặc môn học không tồn tại.
+- `403.php`: trang từ chối truy cập khi tài khoản thiếu quyền; trả HTTP 403 và không truy vấn CSDL.
 - `500.php`: lỗi máy chủ/dữ liệu không đọc được.
 - `inc/config.php`: cấu hình log và exception handler chung.
 - Trong môi trường phát triển, lỗi được ghi tại `logs/php-error.log`.
@@ -214,6 +219,8 @@ git diff --check
 | `api/san-pham.php?id=1` | GET | Chi tiết một môn, chỉ trả trường công khai |
 | `api/gio-hang.php` | GET | Giỏ của session và token `csrf` |
 | `api/gio-hang.php` | POST | JSON `{"id":1,"sl":2}`, cùng cookie và header `X-CSRF-Token` |
+| `api/yeu-thich.php` | GET | Yêu thích của tài khoản đang đăng nhập |
+| `api/yeu-thich.php` | POST | Thêm/bỏ yêu thích, yêu cầu đăng nhập và token CSRF |
 
 Phản hồi có `Content-Type: application/json; charset=utf-8`. Các mã: 200 thành công; 400 JSON/ID sai; 401 token giỏ thiếu/sai; 404 môn không có; 405 sai phương thức kèm Allow; 422 dữ liệu/số lượng sai; 500 lỗi máy chủ.
 
@@ -221,4 +228,6 @@ Danh sách tìm kiếm có debounce 350ms; thêm giỏ bằng fetch cập nhật
 
 Kiểm thử API bằng [api.http](api.http), đổi `@goc` theo cách chạy. Ảnh và kết quả kiểm thử của các thành viên lưu tại `kiemtra/`; số liệu Bảng 2–5 và ERD được tổng hợp trong báo cáo chung.
 
-Hiện việc chuyển MySQL chưa hoàn tất toàn bộ: liên hệ vẫn lưu JSONL, chức năng giao dịch đăng ký/đơn hàng và ERD còn cần ghép; seed mới có 8 môn. Chỉ ghi tính năng đã có và kết quả đã đo khi chốt bài.
+Seed hiện có 30 môn trong 4 danh mục có dữ liệu và 1 danh mục trống, 3 tài khoản thử, 2 kế hoạch mẫu với 4 chi tiết. Đã có luồng gửi/xem kế hoạch bằng transaction. Liên hệ vẫn lưu JSONL; ERD và phần dữ liệu cá nhân của cả nhóm còn cần hoàn thiện.
+
+Chưa có giới hạn số chỗ đăng ký tương đương tồn kho. Ca API vượt chỗ và rollback do không đủ chỗ chưa được xác nhận đạt; giới hạn số lượng giỏ 1–5 không thay thế nghiệp vụ này. Kịch bản chờ triển khai và kết quả đã đo được ghi trong [biên bản chức năng 6](kiemtra/hop-chuc-nang-6.md).

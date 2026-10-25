@@ -177,8 +177,8 @@ function yeuCauQuyen(string $vaiTro): array
     // Nếu vai trò không khớp -> Báo lỗi 403 (Slide 42)
     if ($nd['vai_tro'] !== $vaiTro) {
         http_response_code(403);
-        // Bạn có thể require trang 403.php nếu nhóm bạn có sẵn
-        exit('<h1>403 Forbidden</h1><p>Bạn không có quyền truy cập trang này.</p>');
+        require __DIR__ . '/../403.php';
+        exit;
     }
 
     return $nd;

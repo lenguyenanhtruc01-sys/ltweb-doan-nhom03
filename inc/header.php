@@ -38,7 +38,7 @@ if (!is_string($nguoiDung) || $nguoiDung === '') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="EduGPA hỗ trợ sinh viên tra cứu môn học, theo dõi trạng thái học tập và lưu môn yêu thích.">
     <title><?= e($tieuDe) ?> | EduGPA</title>
-    <link rel="stylesheet" href="<?= e($goc) ?>css/style.css?v=<?= (int) $phienBanCss ?>">
+    <link rel="stylesheet" href="<?= e($goc) ?>css/style.css?v=<?= e((int) $phienBanCss) ?>">
     <?php if (!empty($cssTrang)): ?>
     <link rel="stylesheet" href="<?= e($cssTrang) ?>">
     <?php endif; ?>

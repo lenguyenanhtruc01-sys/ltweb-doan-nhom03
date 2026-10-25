@@ -164,7 +164,7 @@ require __DIR__ . '/inc/header.php';
 
             <li>
                 <strong>Số tín chỉ:</strong>
-                <?= (int) $mh->soTinChi ?>
+                <?= e((int) $mh->soTinChi) ?>
             </li>
 
             <?php if (trim((string) $mh->trangThai) !== ''): ?>
@@ -207,7 +207,7 @@ require __DIR__ . '/inc/header.php';
                 <input
                     type="hidden"
                     name="quay_lai"
-                    value="chi-tiet.php?id=<?= (int) $mh->id ?>">
+                    value="chi-tiet.php?id=<?= e((int) $mh->id) ?>">
 
                 <input
                     type="hidden"
@@ -217,7 +217,7 @@ require __DIR__ . '/inc/header.php';
                 <input
                     type="hidden"
                     name="id"
-                    value="<?= (int) $mh->id ?>">
+                    value="<?= e((int) $mh->id) ?>">
 
                 <input
                     type="hidden"

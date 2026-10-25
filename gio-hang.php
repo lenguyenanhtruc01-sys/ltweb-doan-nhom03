@@ -139,7 +139,7 @@ require __DIR__ . '/inc/header.php';
     <?php else: ?>
 
         <div style="background: #e2e8f0; padding: 15px; border-radius: 5px; margin-bottom: 20px; font-weight: bold; color: #1a365d;">
-            Tổng số môn: <?= (int) $soMon ?> — Tổng tín chỉ: <?= (int) $tongTinChi ?>
+            Tổng số môn: <?= e((int) $soMon) ?> — Tổng tín chỉ: <?= e((int) $tongTinChi) ?>
         </div>
 
         <!-- DANH SÁCH MÔN -->
@@ -150,15 +150,15 @@ require __DIR__ . '/inc/header.php';
                     <div style="flex: 1; font-size: 1.05rem;">
                         <strong style="color: #0d6efd;"><?= e((string) ($item['maMon'] ?? '')) ?></strong> - 
                         <span style="color: #333;"><?= e((string) ($item['tenMon'] ?? '')) ?></span> 
-                        <span style="color: #666; font-size: 0.9rem;">(<?= (int) ($item['soTinChi'] ?? 0) ?> tín chỉ)</span>
+                        <span style="color: #666; font-size: 0.9rem;">(<?= e((int) ($item['soTinChi'] ?? 0)) ?> tín chỉ)</span>
                     </div>
 
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <!-- Form cập nhật -->
                         <form action="gio-hang.php" method="post" style="margin: 0; display: flex; gap: 5px;">
                             <input type="hidden" name="hanh_dong" value="cap_nhat">
-                            <input type="hidden" name="id" value="<?= (int) ($item['id'] ?? 0) ?>">
-                            <input type="number" name="so_luong" value="<?= (int) ($item['soLuong'] ?? 1) ?>" min="1" max="5" style="width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+                            <input type="hidden" name="id" value="<?= e((int) ($item['id'] ?? 0)) ?>">
+                            <input type="number" name="so_luong" value="<?= e((int) ($item['soLuong'] ?? 1)) ?>" min="1" max="5" style="width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
                             <!-- Đã sửa lại màu chữ nút Cập nhật -->
                             <button type="submit" style="padding: 6px 12px; background: #e2e8f0; color: #000; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;">Cập nhật</button>
                         </form>
@@ -166,7 +166,7 @@ require __DIR__ . '/inc/header.php';
                         <!-- Form xóa -->
                         <form action="gio-hang.php" method="post" style="margin: 0;">
                             <input type="hidden" name="hanh_dong" value="xoa">
-                            <input type="hidden" name="id" value="<?= (int) ($item['id'] ?? 0) ?>">
+                            <input type="hidden" name="id" value="<?= e((int) ($item['id'] ?? 0)) ?>">
                             <button type="submit" style="padding: 6px 12px; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">Xóa</button>
                         </form>
                     </div>

@@ -133,3 +133,27 @@ CREATE TABLE tv_tra_cuu_mang (
     INDEX idx_mssv_id (mssv, id),
     FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- Thêm Duy vào bảng thành viên
+INSERT INTO thanh_vien (mssv, ho_ten) 
+VALUES ('3120224034', 'Dương Bảo Duy')
+ON DUPLICATE KEY UPDATE ho_ten = 'Dương Bảo Duy';
+
+-- Bảng lưu danh sách món ăn
+CREATE TABLE IF NOT EXISTS tv_mon_an (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    mssv CHAR(10) NOT NULL,
+    ten_mon VARCHAR(100) NOT NULL,
+    bua VARCHAR(20) NOT NULL DEFAULT 'bat_ky',
+    FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Bảng lưu lịch sử oẳn tù tì
+CREATE TABLE IF NOT EXISTS tv_lich_su_ott (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    mssv CHAR(10) NOT NULL,
+    nguoi_chon VARCHAR(10) NOT NULL,
+    may_chon VARCHAR(10) NOT NULL,
+    ket_qua VARCHAR(10) NOT NULL,
+    thoi_gian DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

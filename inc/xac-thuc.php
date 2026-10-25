@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Xác thực tài khoản, phân quyền máy chủ và quản lý cookie ghi nhớ đăng nhập.
+ * Thông tin người dùng lấy từ MySQL bằng uid trong session; cung cấp hàm bảo vệ trang.
+ * Thử đăng nhập/đăng xuất, khách vào quản trị và tài khoản thường truy cập trang admin.
+ */
 const TEN_COOKIE_GHI_NHO = 'edugpa_ghi_nho';
 const THOI_HAN_GHI_NHO = 2592000; // 30 ngày
 

@@ -4,6 +4,7 @@
  * Trang cá nhân Dương Bảo Duy — kết hợp giao diện cũ và logic Database mới.
  * Chức năng 1: Máy chọn món ăn hôm nay (Lưu DB tv_mon_an).
  * Chức năng 2: Oẳn tù tì (Lưu DB tv_lich_su_ott, thống kê GROUP BY).
+ * Thử: nạp/chọn món, chơi oẳn tù tì, xem thống kê và gửi dữ liệu sai trên CSDL thử.
  */
 declare(strict_types=1);
 require __DIR__ . '/../../inc/config.php';

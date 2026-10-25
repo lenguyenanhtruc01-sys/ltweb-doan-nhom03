@@ -4,6 +4,7 @@
  * Hiển thị thông tin chi tiết môn học theo tham số ?id=.
  * ID không hợp lệ hoặc không tồn tại sẽ trả về trang 404.
  * Lưu tối đa 4 môn đã xem gần đây bằng cookie da_xem.
+ * Thử: mở ?id=1, ID không tồn tại và ID dạng mảng; kiểm tra cookie đã xem.
  */
 declare(strict_types=1);
 

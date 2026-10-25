@@ -1,6 +1,12 @@
 <?php
 declare(strict_types=1);
 
+
+/**
+ * Kiểm tra mã đặt lại mật khẩu và lưu mật khẩu mới dưới dạng băm.
+ * Mã chỉ dùng một lần, có hạn dùng; lỗi đầu vào được hiển thị tại biểu mẫu.
+ * Thử mã đúng, mã sai/hết hạn và gửi lại mã đã sử dụng trên CSDL kiểm thử.
+ */
 require_once __DIR__ . '/inc/config.php';
 
 $tieuDe = 'Đặt lại mật khẩu';

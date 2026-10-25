@@ -4,6 +4,7 @@
  * Chức năng 5: Danh sách + Chi tiết kế hoạch học tập.
  * - Khách hàng chỉ xem được đơn của mình (WHERE nguoi_dung_id = ?).
  * - Admin xem được tất cả và đổi trạng thái (POST + CSRF + rowCount).
+ * Thử: khách xem đơn của mình, đổi ID của người khác và admin cập nhật trạng thái.
  */
 declare(strict_types=1);
 require_once __DIR__ . '/inc/config.php';

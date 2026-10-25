@@ -1,6 +1,12 @@
 <?php
 declare(strict_types=1);
 
+
+/**
+ * Nhận email và tạo yêu cầu đặt lại mật khẩu bằng mã ngẫu nhiên có thời hạn.
+ * Phản hồi chung tránh tiết lộ tài khoản; chỉ hiển thị liên kết thử khi môi trường cho phép.
+ * Thử email có/không có tài khoản và email dạng mảng trên CSDL kiểm thử.
+ */
 require_once __DIR__ . '/inc/config.php';
 
 $tieuDe = 'Quên mật khẩu';

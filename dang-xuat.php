@@ -4,6 +4,7 @@ declare(strict_types=1);
 /**
  * Đăng xuất và đổi mã phiên; giỏ đã được lưu theo từng thao tác.
  * Thử: đăng nhập lại thấy giỏ cũ, tài khoản khác có giỏ riêng.
+ * Chỉ nhận POST kèm CSRF; thoát phiên đăng nhập và giữ giỏ tài khoản trong MySQL.
  */
 
 require_once __DIR__ . '/inc/config.php';

@@ -2,6 +2,7 @@
 /**
  * inc/header.php
  * Khung đầu trang dùng chung cho website EduGPA.
+ * Thử qua trang chủ: tên tài khoản, liên kết quản trị và số món đúng với phiên.
  */
 $tieuDe ??= 'Trang chủ';
 $trang ??= '';

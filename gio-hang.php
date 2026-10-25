@@ -2,6 +2,7 @@
 /**
  * Tệp: gio-hang.php
  * Chức năng: Quản lý kế hoạch học tập + Gửi kế hoạch (Chức năng 5).
+ * Thử: thêm/sửa/xóa môn và gửi kế hoạch; dữ liệu sai phải báo lỗi, giữ giỏ.
  */
 
 declare(strict_types=1);

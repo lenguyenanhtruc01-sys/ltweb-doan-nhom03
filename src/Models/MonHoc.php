@@ -2,6 +2,7 @@
 /**
  * Tệp: src/Models/MonHoc.php
  * Chức năng: Lớp thực thể đại diện cho một môn học.
+ * Thử GET api/san-pham.php?id=1: JSON chỉ có các trường được jsonSerialize cho phép.
  */
 
 namespace App\Models;

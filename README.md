@@ -78,7 +78,6 @@ Mở http://localhost:8000/index.php; MySQL vẫn cần chạy. PHP cần quyề
 ```text
 ltweb-doan-nhom03/
 ├── css/                 CSS dùng chung và CSS từng trang
-├── data/                Dữ liệu tệp cũ của Bài 5
 ├── database/            Schema, seed và migration MySQL
 ├── api/                 API JSON môn học và giỏ học tập
 ├── kiemtra/             Ảnh và kết quả kiểm thử
@@ -100,7 +99,7 @@ ltweb-doan-nhom03/
 
 ## 6. Dữ liệu và trạng thái
 
-- Môn học, danh mục và người dùng: MySQL `ltweb_nhom03` qua PDO. Dữ liệu JSON của Bài 5 còn trong kho để đối chiếu.
+- Môn học, danh mục và người dùng: MySQL `ltweb_nhom03` qua PDO. JSON môn học và hai tệp xác thực cũ đã bỏ khỏi bản hiện tại; bản Bài 5 được giữ ở tag `btn5`.
 - Kế hoạch học tập: khách dùng session; tài khoản lưu vào `gio_hang_nguoi_dung`. Đăng nhập gộp giỏ khách, đăng xuất về giỏ khách trống, đăng nhập lại khôi phục giỏ đã lưu.
 - Giỏ tài khoản cập nhật từng môn trong MySQL và đọc lại khi tải trang/API; phiên cũ đăng xuất không ghi đè giỏ của phiên khác. Thao tác xóa hết vẫn chủ động xóa toàn bộ giỏ của tài khoản.
 - Yêu thích: khách dùng localStorage; tài khoản dùng bảng `mon_yeu_thich`, tách riêng theo người dùng. Danh sách localStorage cũ được chuyển vào tài khoản khi đăng nhập.

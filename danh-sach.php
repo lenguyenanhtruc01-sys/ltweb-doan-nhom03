@@ -3,6 +3,7 @@
  * Tệp: danh-sach.php
  * Chức năng: Hiển thị danh sách môn học từ MySQL.
  * Hỗ trợ tìm kiếm, lọc theo danh mục, sắp xếp và phân trang.
+ * Thử: tìm Web, lọc danh mục, đổi trang và truyền tham số dạng mảng.
  */
 
 declare(strict_types=1);

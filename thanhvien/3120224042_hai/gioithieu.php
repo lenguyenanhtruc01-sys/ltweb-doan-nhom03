@@ -6,9 +6,9 @@ declare(strict_types=1);
  * Thử khách/tài khoản khác POST trả 403; chủ trang tải ảnh, F5 không gửi lại.
  * HTML và bố cục được kiểm tra ở màn hình 360px.
  */
-require_once _DIR_ . '/../../inc/config.php';
+require_once __DIR__ . '/../../inc/config.php';
 $mssvTrangCaNhan = '3120224042';
-$thuMucAnh = _DIR_ . '/../../uploads';
+$thuMucAnh = __DIR__ . '/../../uploads';
 $khoAnh = new \App\Data\KhoAnhDaiDien(db());
 $ndTrang = nguoiDung();
 $uidTrang = (int) ($ndTrang['id'] ?? 0);
@@ -18,7 +18,7 @@ if (!in_array($method, ['GET', 'POST'], true)) {
     header('Allow: GET, POST'); http_response_code(405); exit('Phương thức không hợp lệ.');
 }
 if ($method === 'POST') {
-    if (!$laChuTrang) { require _DIR_ . '/../../403.php'; exit; }
+    if (!$laChuTrang) { require __DIR__ . '/../../403.php'; exit; }
     $token = $_POST['_csrf'] ?? null;
     if (!is_string($token) || !csrfKiemTra($token)) {
         $_SESSION['loi_avatar'] = 'Phiên làm việc đã hết hạn, vui lòng thử lại.';
@@ -79,9 +79,9 @@ $thoiGianConLai = $ngayHienTai->diff($ngayBaoVe);
 $tieuDe = 'Lê Dương Hoàng Hải | Giới thiệu cá nhân';
 $trang  = 'gioi-thieu';
 $goc    = '../../';
-$cssTrang = 'style.css?v=' . filemtime(_DIR_ . '/style.css');
+$cssTrang = 'style.css?v=' . filemtime(__DIR__ . '/style.css');
 $scriptsTrang = ['thanhvien/3120224042_hai/js/canhan.js'];
-require_once _DIR_ . '/../../inc/header.php';
+require_once __DIR__ . '/../../inc/header.php';
 ?>
 
 <main class="container">
@@ -242,5 +242,5 @@ require_once _DIR_ . '/../../inc/header.php';
 
 <?php 
 // 3. Nạp Footer dùng chung
-require_once _DIR_ . '/../../inc/footer.php'; 
+require_once ___DIR___ . '/../../inc/footer.php'; 
 ?>

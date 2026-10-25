@@ -13,7 +13,8 @@ USE ltweb_nhom03;
 CREATE TABLE nguoi_dung (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     ten_dang_nhap VARCHAR(50) NOT NULL UNIQUE,
-    mat_khau VARCHAR(255) NOT NULL, -- chứa chuỗi băm password_hash
+    email VARCHAR(254) NOT NULL UNIQUE,
+    mat_khau VARCHAR(255) NOT NULL,
     ho_ten VARCHAR(100) NOT NULL,
     vai_tro ENUM('quan_tri', 'khach_hang') NOT NULL DEFAULT 'khach_hang',
     ngay_tao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -100,6 +101,15 @@ CREATE TABLE tv_luu_but (
     thoi_gian DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
 );
+
+CREATE TABLE tv_luot_xem (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    mssv CHAR(10) NOT NULL,
+    ngay DATE NOT NULL,
+    so_luot INT UNSIGNED NOT NULL DEFAULT 1,
+    UNIQUE KEY uq_tv_luot_xem_mssv_ngay (mssv, ngay),
+    FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
 -- CHỈ MỤC (Index) cho các cột hay lọc, sắp xếp

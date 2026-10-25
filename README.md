@@ -18,7 +18,8 @@ Các phần đặt hàng/REST API của Hợp chưa có trong checkout hiện t�
 ### Chạy thử phần cá nhân sau khi ghép MySQL
 
 - Bật Apache và MySQL trong XAMPP; mở `dang-nhap.php`.
-- Tài khoản mẫu: `admin` / `123456`; `an` và `binh` / `matkhau123`. Khách đăng nhập được chuyển tới trang Hợp; quản trị tới trang quản trị.
+- Đăng nhập dùng email theo bản GitHub mới. Dữ liệu local đã được giữ lại: `admin@edugpa.local` / `123456`, `an@edugpa.local` và `binh@edugpa.local` / `matkhau123`. Khách đăng nhập về trang chủ; quản trị tới trang quản trị. Nếu dựng mới từ seed, dùng các email và mật khẩu ghi trong `database/seed.sql`.
+- Máy có CSDL từ phiên bản cũ: sao lưu trước, chạy `php database/migrate-email.php` để bổ sung email và lượt xem mà không xóa dữ liệu. Không import lại schema có DROP DATABASE.
 - Mở `thanhvien/3120224064_hop/gioithieu.php#binh-chon`. Dữ liệu mẫu đã có một phiếu của `an`; lượt kiểm thử local tạo thêm phiếu `sang_tao` của `binh`, nên hai tài khoản này sẽ báo đã bình chọn nếu gửi tiếp.
 - Ngày 24/10/2026 đã tạo CSDL local khi xác nhận chưa tồn tại, nạp schema/seed mà không chạy DROP. Kiểm thử HTTP đã đạt: vote thành công, chống trùng, flash một lần, lưu lịch sử, F5 không ghi thêm, khách nhận 403 ở quản trị, đăng xuất và đầu vào dạng mảng. Kết quả local không có nghĩa hosting khác đã được import CSDL.
 - Mở bằng `php -S localhost:8000` cũng được; máy chủ thử nghiệm tạm cổng 8097 đã được dừng sau kiểm tra.

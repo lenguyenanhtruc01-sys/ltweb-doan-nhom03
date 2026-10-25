@@ -9,6 +9,29 @@ require_once __DIR__ . '/../../inc/config.php';
 // Cài đặt múi giờ Việt Nam
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
+$mssvTrangCaNhan = '3120224042';
+$ghiNhanLuotXem = db()->prepare('INSERT INTO tv_luot_xem (mssv, ngay, so_luot) VALUES (:mssv, :ngay, 1) ON DUPLICATE KEY UPDATE so_luot = so_luot + 1');
+$ghiNhanLuotXem->execute([
+    'mssv' => $mssvTrangCaNhan,
+    'ngay' => date('Y-m-d'),
+]);
+$truyVanLuotXem = db()->prepare('SELECT ngay, SUM(so_luot) AS tong_luot FROM tv_luot_xem WHERE ngay >= :tu_ngay AND ngay <= :den_ngay GROUP BY ngay ORDER BY ngay DESC');
+$ngayHomNay = new DateTimeImmutable('today');
+$truyVanLuotXem->execute([
+    'tu_ngay' => $ngayHomNay->modify('-6 days')->format('Y-m-d'),
+    'den_ngay' => $ngayHomNay->format('Y-m-d'),
+]);
+$luotXemTheoNgay = $truyVanLuotXem->fetchAll();
+$luotXemMap = [];
+foreach ($luotXemTheoNgay as $dongLuotXem) {
+    $luotXemMap[$dongLuotXem['ngay']] = (int) $dongLuotXem['tong_luot'];
+}
+$thongKeLuotXem = [];
+for ($i = 0; $i < 7; $i++) {
+    $ngay = $ngayHomNay->modify('-' . $i . ' days')->format('Y-m-d');
+    $thongKeLuotXem[] = ['ngay' => $ngay, 'so_luot' => $luotXemMap[$ngay] ?? 0];
+}
+
 // ==========================================
 // CHỨC NĂNG 1: XỬ LÝ UPLOAD ẢNH ĐẠI DIỆN (POST / PRG)
 // ==========================================
@@ -81,7 +104,7 @@ require_once __DIR__ . '/../../inc/header.php';
         <form action="gioithieu.php" method="post" enctype="multipart/form-data" style="margin: 10px 0; padding: 10px; background: #f4f4f4; border-radius: 5px;">
             <label for="avatar" style="font-size: 0.9em; font-weight: bold;">Đổi ảnh đại diện (≤ 2MB):</label><br>
             <input type="file" name="avatar" id="avatar" accept="image/jpeg, image/png, image/webp" required style="font-size: 0.85em; margin: 5px 0;">
-            <button type="submit" class="btn-primary" style="padding: 3px 10px; font-size: 0.85em;">Tải lên</button>
+            <button type="submit" class="btn-primary" style="padding: 8px 14px; font-size: 0.85em; background-color: #123b6d; color: #ffffff;">Tải lên</button>
             
             <?php if ($thongBaoAnh !== ''): ?>
                 <p style="color: green; font-size: 0.85em; margin-top: 5px;"><?= e($thongBaoAnh) ?></p>
@@ -109,7 +132,7 @@ require_once __DIR__ . '/../../inc/header.php';
         <p>Xin chào! Mình là sinh viên ngành Công nghệ Thông tin tại Khoa Toán - Tin, Trường Đại học Sư phạm - Đại học Đà Nẵng. Mình đam mê phát triển phần mềm và ứng dụng thị giác máy tính.</p>
         
         <div class="like-section">
-            <button id="btn-like" class="btn-primary" type="button">
+            <button id="btn-like" class="btn-primary" type="button" style="background-color: #123b6d; color: #ffffff;">
                 Ủng hộ Hải: ❤️ <span id="like-count">0</span>
             </button>
         </div>
@@ -206,6 +229,21 @@ require_once __DIR__ . '/../../inc/header.php';
         </div>
     </div>
 </main>
+
+<section class="container" aria-labelledby="tieu-de-luot-xem">
+    <h2 id="tieu-de-luot-xem">Lượt xem trang cá nhân trong 7 ngày gần nhất</h2>
+    <table>
+        <thead><tr><th scope="col">Ngày</th><th scope="col">Tổng lượt xem</th></tr></thead>
+        <tbody>
+            <?php foreach ($thongKeLuotXem as $dongLuotXem): ?>
+                <tr>
+                    <td><?= e(date('d/m/Y', strtotime($dongLuotXem['ngay']))) ?></td>
+                    <td><?= e($dongLuotXem['so_luot']) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</section>
 
 <?php 
 // 3. Nạp Footer dùng chung

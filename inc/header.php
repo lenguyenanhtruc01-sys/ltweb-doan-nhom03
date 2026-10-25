@@ -24,8 +24,8 @@ try {
 }
 
 // Lấy tên người dùng đã đăng nhập từ session.
-$taiKhoanHeader = nguoiDung();
-$nguoiDung = $taiKhoanHeader['ho_ten'] ?? null;
+$thongTinNguoiDung = nguoiDung();
+$nguoiDung = $thongTinNguoiDung['ho_ten'] ?? null;
 
 if (!is_string($nguoiDung) || $nguoiDung === '') {
     $nguoiDung = null;
@@ -168,38 +168,43 @@ if (!is_string($nguoiDung) || $nguoiDung === '') {
             </li>
 
             <!-- Đăng nhập hoặc người dùng -->
-            <?php if ($nguoiDung !== null): ?>
+            <?php if ($thongTinNguoiDung !== null): ?>
 
-                <li class="dieu-huong__muc">
-                    <a
-                        class="dieu-huong__lien-ket <?= $trang === 'quan-tri' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>"
-                        href="<?= e($goc . (($taiKhoanHeader['vai_tro'] ?? '') === 'quan_tri'
-                            ? 'quan-tri.php' : 'thanhvien/3120224064_hop/gioithieu.php#binh-chon')) ?>"
-                        <?= $trang === 'quan-tri' ? 'aria-current="page"' : '' ?>>
-                        <?= e($nguoiDung) ?>
-                    </a>
-                </li>
+    <li class="dieu-huong__muc">
+        <span class="dieu-huong__lien-ket">
+            <?= e($nguoiDung) ?>
+        </span>
+    </li>
 
-                <li class="dieu-huong__muc">
-                    <a
-                        class="dieu-huong__lien-ket"
-                        href="<?= e($goc) ?>dang-xuat.php">
-                        Đăng xuất
-                    </a>
-                </li>
+    <?php if ($thongTinNguoiDung['vai_tro'] === 'quan_tri'): ?>
+        <li class="dieu-huong__muc">
+            <a
+                class="dieu-huong__lien-ket <?= $trang === 'quan-tri' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>"
+                href="<?= e($goc) ?>quan-tri.php"
+                <?= $trang === 'quan-tri' ? 'aria-current="page"' : '' ?>>
+                Quản trị
+            </a>
+        </li>
+    <?php endif; ?>
 
-            <?php else: ?>
+    <li class="dieu-huong__muc">
+        <a class="dieu-huong__lien-ket" href="<?= e($goc) ?>dang-xuat.php">
+            Đăng xuất
+        </a>
+    </li>
 
-                <li class="dieu-huong__muc">
-                    <a
-                        class="dieu-huong__lien-ket <?= $trang === 'dang-nhap' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>"
-                        href="<?= e($goc) ?>dang-nhap.php"
-                        <?= $trang === 'dang-nhap' ? 'aria-current="page"' : '' ?>>
-                        Đăng nhập
-                    </a>
-                </li>
+<?php else: ?>
 
-            <?php endif; ?>
+    <li class="dieu-huong__muc">
+        <a
+            class="dieu-huong__lien-ket <?= $trang === 'dang-nhap' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>"
+            href="<?= e($goc) ?>dang-nhap.php"
+            <?= $trang === 'dang-nhap' ? 'aria-current="page"' : '' ?>>
+            Đăng nhập
+        </a>
+    </li>
+
+<?php endif; ?>
 
         </ul>
     </nav>

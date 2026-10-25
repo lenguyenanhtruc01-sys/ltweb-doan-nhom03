@@ -6,8 +6,9 @@ declare(strict_types=1);
  * Chức năng: Trang quản trị, hiển thị danh sách liên hệ đã nhận.
  */
 
-require_once __DIR__ . '/inc/bao-ve.php';
 require_once __DIR__ . '/inc/config.php';
+
+$nguoiDungHienTai = yeuCauQuyen('quan_tri');
 
 use App\Data\KhoLienHe;
 
@@ -43,17 +44,12 @@ require __DIR__ . '/inc/header.php';
             <p class="quan-tri__loi-chao">
                 Xin chào,
                 <strong>
-                    <?= e($compteAdmin['ho_ten']) ?>
+                    <?= e($nguoiDungHienTai['ho_ten']) ?>
                 </strong>
             </p>
         </div>
 
-        <a
-            href="dang-xuat.php"
-            class="nut nut--nguy-hiem"
-        >
-            Đăng xuất
-        </a>
+
     </div>
 
     <section class="quan-tri__noi-dung">

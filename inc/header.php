@@ -12,6 +12,9 @@ $tieuDe ??= 'Trang chủ';
 $trang ??= '';
 $goc ??= '';
 $phienBanCss = filemtime(__DIR__ . '/../css/style.css') ?: 1;
+if (!is_string($_SESSION['csrf_gio_hang'] ?? null) || $_SESSION['csrf_gio_hang'] === '') {
+    $_SESSION['csrf_gio_hang'] = bin2hex(random_bytes(32));
+}
 
 // Lấy tổng số môn từ dịch vụ Kế hoạch học tập OOP
 $soMonTrongGio = 0;
@@ -36,6 +39,7 @@ if (!is_string($nguoiDung) || $nguoiDung === '') {
 
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-gio-hang" content="<?= e($_SESSION['csrf_gio_hang']) ?>">
 
     <meta
         name="viewport"
@@ -163,7 +167,7 @@ if (!is_string($nguoiDung) || $nguoiDung === '') {
                     class="dieu-huong__lien-ket <?= $trang === 'gio-hang' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>"
                     href="<?= e($goc) ?>gio-hang.php"
                     <?= $trang === 'gio-hang' ? 'aria-current="page"' : '' ?>>
-                    Giỏ hàng (<?= (int) $soMonTrongGio ?>)
+                    Giỏ hàng (<span id="cart-count"><?= e((int) $soMonTrongGio) ?></span>)
                 </a>
             </li>
 

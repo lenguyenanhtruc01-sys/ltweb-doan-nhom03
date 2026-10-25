@@ -6,8 +6,16 @@
 
 namespace App\Models;
 
-class MonHoc
+class MonHoc implements \JsonSerializable
 {
+    /** Chỉ trả các trường công khai; không lộ mô tả/cột nội bộ từ SELECT *. */
+    public function jsonSerialize(): array
+    {
+        return ['id' => (int) $this->id, 'maMon' => $this->maMon,
+            'tenMon' => $this->tenMon, 'soTinChi' => $this->soTinChi,
+            'anh' => $this->anh, 'trangThai' => $this->trangThai];
+    }
+
     public $id;
     public $maMon;
     public $tenMon;

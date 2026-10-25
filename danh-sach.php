@@ -19,6 +19,7 @@ $tieuDe = 'Danh sách môn học';
 $trang = 'danh-sach';
 $goc = '';
 $cssTrang = 'css/danh-sach.css';
+$scriptsTrang = ['js/gio-hang.js', 'js/tim-kiem.js'];
 
 // ==========================================
 // 2. LẤY VÀ KIỂM TRA THAM SỐ GET
@@ -111,7 +112,7 @@ require __DIR__ . '/inc/header.php';
         <h2>Tra cứu và lọc môn học</h2>
         <p>Dưới đây là danh sách các môn học trong học kỳ 1, năm học 2026–2027.</p>
 
-        <form class="form-tim-kiem" action="danh-sach.php" method="get">
+        <form class="form-tim-kiem" action="danh-sach.php" method="get" data-tim-kiem-api="api/san-pham.php">
             <div class="form-group">
                 <label for="tim-kiem">Tìm kiếm môn học</label>
                 <input type="search" id="tim-kiem" name="q" class="form-control" 
@@ -159,11 +160,12 @@ require __DIR__ . '/inc/header.php';
     </section>
 
     <section>
-        <h2 class="tieu-de-phan">
+        <p id="tim-kiem-status" role="status" aria-live="polite"></p>
+        <h2 class="tieu-de-phan" id="ket-qua-tim-kiem">
             Kết quả tìm kiếm (<?= $tongSoMon ?> môn)
         </h2>
 
-        <div class="luoi-san-pham">
+        <div class="luoi-san-pham" id="danh-sach-ket-qua">
             <?php if (empty($danhSach)): ?>
                 <p class="thong-bao-khong-co">Rất tiếc, không tìm thấy môn học nào khớp với tiêu chí của bạn.</p>
             <?php else: ?>
@@ -206,7 +208,7 @@ require __DIR__ . '/inc/header.php';
         <span class="visually-hidden" data-nhan-yeu-thich>Thêm vào yêu thích</span>
     </button>
 </div>
-                                <form action="gio-hang.php" method="post" class="form-them-ke-hoach">
+                                <form action="gio-hang.php" method="post" class="form-them-ke-hoach" data-gio-hang-api="api/gio-hang.php">
                                     <input type="hidden" name="quay_lai" value="danh-sach.php">
                                     <input type="hidden" name="hanh_dong" value="them">
                                     <input type="hidden" name="id" value="<?= e((string) $mon->id) ?>">
@@ -222,13 +224,14 @@ require __DIR__ . '/inc/header.php';
             <?php endif; ?>
         </div>
 
+        <div id="phan-trang-api">
         <!-- THÊM THANH PHÂN TRANG -->
         <?php if ($soTrang > 1): ?>
             <nav aria-label="Phân trang" style="margin-top: 30px; text-align: center;">
                 <ul class="pagination" style="display: inline-flex; gap: 8px; list-style: none; padding: 0;">
                     <?php for ($i = 1; $i <= $soTrang; $i++): ?>
                         <li>
-                            <a href="<?= lienKetTrang($i) ?>" 
+                            <a href="<?= e(lienKetTrang($i)) ?>"
                                style="padding: 8px 14px; border: 1px solid #ddd; text-decoration: none; border-radius: 4px; 
                                       <?= $i === $trangHienTai ? 'background-color: #0d6efd; color: white; border-color: #0d6efd;' : 'background-color: #fff; color: #333;' ?>">
                                 <?= $i ?>
@@ -238,6 +241,7 @@ require __DIR__ . '/inc/header.php';
                 </ul>
             </nav>
         <?php endif; ?>
+        </div>
     </section>
 
 </main>

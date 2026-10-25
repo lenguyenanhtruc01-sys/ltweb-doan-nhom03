@@ -1,5 +1,22 @@
 # EduGPA — Đồ án nhóm 03
 
+## Chức năng 6 — REST API và fetch của Hợp
+
+| Endpoint | Phương thức | Chức năng |
+| --- | --- | --- |
+| `api/san-pham.php?q=Web&dm=&tc_toi_da=&sx=moi&trang=1` | GET | Tìm môn, lọc và phân trang 6 môn/trang |
+| `api/san-pham.php?id=1` | GET | Một môn học, JSON qua `MonHoc::jsonSerialize()` |
+| `api/gio-hang.php` | GET | Giỏ của session hiện tại và token `csrf` |
+| `api/gio-hang.php` | POST | JSON `{"id":1,"sl":2}`, header `X-CSRF-Token` lấy từ GET giỏ hoặc meta trên trang |
+
+API công khai môn học; giỏ thuộc cookie phiên và không phụ thuộc tài khoản quản trị. POST cần token của cùng phiên; sai/thiếu token nhận 401. Mã khác: 400 JSON/ID sai, 404 môn không tồn tại, 405 kèm Allow, 422 tham số/số lượng sai, 500 chỉ `{"loi":"Lỗi máy chủ"}`. Mọi phản hồi có `Content-Type: application/json; charset=utf-8`. `so_mon` là tổng số lượng giống header PHP; thêm lại môn có sẵn không tăng số lượng (giữ quy tắc kế hoạch của nhóm).
+
+Đề tài dùng môn học: không có cột tồn kho, số lượng giữ giới hạn 1–5 hiện có; `sl=6` nhận 422. Kiểm thử tồn kho/giao dịch chỉ áp dụng sau khi nhóm bổ sung nghiệp vụ đăng ký có hạn mức, không khẳng định đã làm chức năng đặt hàng.
+
+`js/tim-kiem.js` debounce 350ms, hủy request cũ và kiểm tra thứ tự phản hồi; giữ bộ lọc, sắp xếp, phân trang. `js/gio-hang.js` nâng cấp form ở danh sách/chi tiết, đổi nút đã thêm, toast xanh bên phải và cập nhật `#cart-count` bằng textContent. Tắt JavaScript vẫn dùng form GET/POST với action cũ. Giỏ được đọc bằng một truy vấn IN thay cho truy vấn trong vòng lặp. Không trả cột nội bộ như ngày tạo, mô tả, điểm hoặc kết quả học tập qua JSON.
+
+Kiểm thử API bằng `api.http` (VS Code REST Client). Chi tiết lượt kiểm tra thực tế: `kiemtra/hop-chuc-nang-6.md`. Các thay đổi file của thành viên khác chỉ là điểm tích hợp đã thống nhất: danh sách/chi tiết/header, model và lớp đọc giỏ.
+
 ## Bài 6 — phần cá nhân Phan Văn Hợp
 
 Trang: `thanhvien/3120224064_hop/gioithieu.php`.

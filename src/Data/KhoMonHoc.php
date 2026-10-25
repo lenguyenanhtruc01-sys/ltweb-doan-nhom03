@@ -40,6 +40,22 @@ class KhoMonHoc
         return $row ? new MonHoc($row) : null;
     }
 
+    /** Lấy cả giỏ bằng một truy vấn; vòng lặp chỉ chuyển đổi model. */
+    public function theoNhieuId(array $ids): array
+    {
+        if ($ids === []) {
+            return [];
+        }
+        $marks = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $this->db->prepare('SELECT * FROM mon_hoc WHERE id IN (' . $marks . ')');
+        $stmt->execute(array_values($ids));
+        $result = [];
+        foreach ($stmt->fetchAll() as $row) {
+            $result[(int) $row['id']] = new MonHoc($row);
+        }
+        return $result;
+    }
+
     // ==========================================
     // CÁC HÀM DÙNG CHO CHỨC NĂNG 2 (TÌM KIẾM, LỌC, PHÂN TRANG)
     // ==========================================

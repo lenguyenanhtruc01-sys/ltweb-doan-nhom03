@@ -94,6 +94,7 @@ $tieuDe   = (string) $mh->tenMon;
 $trang    = 'danh-sach';
 $lopBody  = 'trang-chi-tiet';
 $cssTrang = 'css/chi-tiet.css';
+$scriptsTrang = ['js/gio-hang.js'];
 
 $keHoachHocTap = new KeHoachHocTap();
 $idMonDaThem = array_column(
@@ -193,7 +194,7 @@ require __DIR__ . '/inc/header.php';
         </ul>
 
         <div class="form-them-gio-hang">
-            <form action="gio-hang.php" method="post">
+            <form action="gio-hang.php" method="post" data-gio-hang-api="api/gio-hang.php">
                 <input
                     type="hidden"
                     name="quay_lai"

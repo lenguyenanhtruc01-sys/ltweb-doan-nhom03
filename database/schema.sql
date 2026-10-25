@@ -60,6 +60,7 @@ CREATE TABLE mon_hoc (
     ma_mon VARCHAR(20) NOT NULL UNIQUE,
     ten_mon VARCHAR(200) NOT NULL,
     so_tin_chi INT UNSIGNED NOT NULL CHECK (so_tin_chi > 0),
+    so_cho INT UNSIGNED NOT NULL DEFAULT 50,
     mo_ta TEXT NULL,
     anh VARCHAR(255) NULL,
     ngay_tao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -104,7 +105,9 @@ CREATE TABLE chi_tiet_ke_hoach (
     so_luong SMALLINT UNSIGNED NOT NULL DEFAULT 1,
     PRIMARY KEY (ke_hoach_id, mon_hoc_id),
     FOREIGN KEY (ke_hoach_id) REFERENCES ke_hoach_hoc_tap(id) ON DELETE CASCADE,
-    FOREIGN KEY (mon_hoc_id) REFERENCES mon_hoc(id) ON DELETE CASCADE
+    -- Giữ chi tiết kế hoạch: môn đã được đăng ký không được xóa (lỗi 1451).
+    CONSTRAINT fk_chi_tiet_ke_hoach_mon_hoc
+        FOREIGN KEY (mon_hoc_id) REFERENCES mon_hoc(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
@@ -123,6 +126,14 @@ CREATE TABLE tv_luu_but (
     ten_khach VARCHAR(50) NOT NULL,
     loi_nhan VARCHAR(500) NOT NULL,
     thoi_gian DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
+);
+
+-- Ảnh đại diện cá nhân: chỉ chủ trang được thay, tên tệp do server sinh.
+CREATE TABLE tv_anh_dai_dien (
+    mssv CHAR(10) PRIMARY KEY,
+    ten_tep VARCHAR(255) NULL,
+    cap_nhat_luc DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
 );
 

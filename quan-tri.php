@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 /**
  * Tệp: quan-tri.php
- * Chức năng: Trang quản trị, hiển thị danh sách liên hệ đã nhận.
+ * Chức năng: Trang quản trị, liên kết CRUD môn học và danh sách liên hệ đã nhận.
+ * Thử tài khoản admin mở Quản lý môn học; khách bị chặn tại máy chủ.
  */
 
 require_once __DIR__ . '/inc/config.php';
@@ -40,6 +41,7 @@ require __DIR__ . '/inc/header.php';
     <div class="quan-tri__dau-trang">
         <div>
             <h1>Trang quản trị hệ thống EduGPA</h1>
+            <p><a class="nut nut--chinh" href="quan-tri-mon-hoc.php">Quản lý môn học</a></p>
 
             <p class="quan-tri__loi-chao">
                 Xin chào,

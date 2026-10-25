@@ -1,13 +1,9 @@
 <?php
 /**
- * Tệp: gioithieu.php (Trang cá nhân của Phan Văn Hợp - 3120224064)
- * Chức năng: 
- *   - Giới thiệu bản thân, lịch học, roadmap DevOps.
- *   - Sử dụng header và footer chung của nhóm thông qua biến gốc $goc = '../../'.
- *   - Tích hợp 2 chức năng xử lý tại máy chủ: Tra cứu thông tin mạng & Kiểm tra mật khẩu (Entropy).
- *   - Giữ lại giá trị ô input và chống cuộn trang khi submit.
- * Cách thử:
- *   - Mở qua URL: http://localhost:8000/thanhvien/3120224064_hop/gioithieu.php
+ * Trang cá nhân Hợp: giới thiệu, lịch học, công cụ mạng và kiểm tra mật khẩu.
+ * Bình chọn và lịch sử tra cứu mạng dùng MySQL; dùng header/footer chung của nhóm.
+ * Kiểm tra đầu vào, hiển thị qua e() và giữ kết quả qua session/PRG.
+ * Thử tra cứu IP, dữ liệu target[]/password[], bình chọn mới/trùng rồi F5.
  */
 
 // Định nghĩa đường dẫn gốc để header/footer gọi đúng file css/js chung của nhóm

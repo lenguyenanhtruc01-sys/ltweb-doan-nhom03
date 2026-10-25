@@ -4,6 +4,7 @@ declare(strict_types=1);
 /**
  * Tệp: lien-he.php
  * Chức năng: kiểm tra, lưu liên hệ và xử lý tệp đính kèm ảnh an toàn.
+ * Thử: gửi form đúng/sai, ảnh giả và F5 sau thành công; thông báo chỉ hiện một lần.
  */
 
 require_once __DIR__ . '/inc/config.php';

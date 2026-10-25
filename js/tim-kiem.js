@@ -23,7 +23,9 @@ function card(mon, selected) {
     const article = element('article', undefined, 'the-san-pham');
     // Chỉ cho ảnh cùng nguồn; không nhận URL javascript/data từ API.
     if (mon.anh) {
-        const url = new URL(mon.anh, location.href);
+        const path = mon.anh.startsWith('images/') || /^(https?:|\/)/i.test(mon.anh)
+            ? mon.anh : `images/${mon.anh}`;
+        const url = new URL(path, location.href);
         if (url.origin === location.origin && ['http:', 'https:'].includes(url.protocol)) {
             const img = element('img');
             img.src = url.href; img.alt = mon.tenMon; img.width = 400; img.height = 250; img.loading = 'lazy';

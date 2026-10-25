@@ -2,8 +2,9 @@
 declare(strict_types=1);
 
 /**
- * Đăng xuất và đổi mã phiên, giữ riêng kế hoạch học tập.
- * Thử: thêm môn, đăng nhập rồi đăng xuất; môn vẫn còn nhưng uid bị xóa.
+ * Đăng xuất và đổi mã phiên; giỏ đã được lưu theo từng thao tác.
+ * Thử: đăng nhập lại thấy giỏ cũ, tài khoản khác có giỏ riêng.
+ * Chỉ nhận POST kèm CSRF; thoát phiên đăng nhập và giữ giỏ tài khoản trong MySQL.
  */
 
 require_once __DIR__ . '/inc/config.php';
@@ -13,18 +14,17 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     http_response_code(405);
     exit('Phương thức không được hỗ trợ.');
 }
-
 $token = $_POST['_csrf'] ?? null;
 if (!is_string($token) || !csrfKiemTra($token)) {
     http_response_code(403);
     exit('Yêu cầu không hợp lệ.');
 }
 
+// Không ghi giỏ session cũ đè lên dữ liệu do phiên khác vừa cập nhật.
 xoaGhiNhoHienTai();
 
-$keHoachDangKy = $_SESSION['ke_hoach_dang_ky'] ?? [];
 $_SESSION = [];
 session_regenerate_id(true);
-$_SESSION['ke_hoach_dang_ky'] = is_array($keHoachDangKy) ? $keHoachDangKy : [];
+$_SESSION['ke_hoach_dang_ky'] = [];
 header('Location: index.php', true, 303);
 exit;

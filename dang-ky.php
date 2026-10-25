@@ -1,7 +1,14 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Đăng ký tài khoản: kiểm tra đầu vào và băm mật khẩu trước khi gọi lớp dữ liệu PDO.
+ * Báo lỗi trùng email/tên từ mã 1062; thành công PRG 303 với thông báo session.
+ * Thử form hợp lệ, mật khẩu dưới 8 ký tự, dữ liệu mảng và vai trò giả mạo.
+ */
 require_once __DIR__ . '/inc/config.php';
+
+use App\Data\KhoNguoiDung;
 
 $tieuDe = 'Đăng ký';
 $trang = 'dang-ky';
@@ -45,21 +52,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $loi['xac_nhan_mat_khau'] = 'Mật khẩu xác nhận không khớp.';
     }
 
-    // 2. Nếu không có lỗi nào thì INSERT vào CSDL
+    // 2. Giao thao tác ghi CSDL cho lớp dữ liệu khi đầu vào đã hợp lệ.
     if (empty($loi)) {
         try {
-            $st = db()->prepare(
-                "INSERT INTO nguoi_dung
-                    (ten_dang_nhap, email, mat_khau, ho_ten, vai_tro)
-                 VALUES (?, ?, ?, ?, 'khach_hang')"
-            );
-
-            $st->execute([
+            (new KhoNguoiDung(db()))->dangKy(
                 $tenDangNhap,
                 $email,
                 password_hash($matKhau, PASSWORD_DEFAULT),
                 $hoTen,
-            ]);
+            );
 
             $_SESSION['flash_dang_ky'] = 'Đăng ký thành công. Hãy đăng nhập bằng tài khoản vừa tạo.';
             header('Location: dang-nhap.php', true, 303);

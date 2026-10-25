@@ -1,7 +1,7 @@
 /**
  * main.js quản lý menu điện thoại và danh sách môn học yêu thích.
  * Menu hỗ trợ chuột, bàn phím, phím Escape và aria-expanded.
- * Môn yêu thích được lưu bằng JSON trong localStorage.
+ * Khách lưu localStorage; tài khoản lưu yêu thích qua API MySQL riêng.
  * Số lượng yêu thích được cập nhật trên header của năm trang chính.
  * Các nút yêu thích được xử lý bằng event delegation.
  */
@@ -84,8 +84,74 @@ if (nutMenu !== null && danhSachMenu !== null) {
 
 const KHOA_YEU_THICH =
     "edugpa-mon-hoc-yeu-thich";
+const uidYeuThich = document.querySelector('meta[name="edugpa-uid"]')?.content ?? '';
+const apiYeuThich = document.querySelector('meta[name="yeu-thich-api"]')?.content ?? '';
+const dungTaiKhoan = /^[1-9][0-9]*$/.test(uidYeuThich);
+let yeuThichTaiKhoan = [];
+let daTaiYeuThich = !dungTaiKhoan;
+
+async function goiApiYeuThich(data) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    try {
+        const response = await fetch(apiYeuThich, {
+            signal: controller.signal,
+            method: data ? 'POST' : 'GET', credentials: 'same-origin',
+            headers: {Accept: 'application/json', ...(data ? {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-gio-hang"]')?.content ?? '',
+            } : {})},
+            ...(data ? {body: JSON.stringify(data)} : {}),
+        });
+        const result = await response.json();
+        if (!response.ok || !Array.isArray(result.du_lieu)) {
+            throw Object.assign(new Error(result.loi || 'Không lưu được yêu thích. Vui lòng thử lại.'), {
+                status: response.status,
+            });
+        }
+        yeuThichTaiKhoan = result.du_lieu;
+    } finally {
+        clearTimeout(timeout);
+    }
+}
+
+function baoLoiYeuThich(loi) {
+    let status = document.getElementById('yeu-thich-status');
+    if (!status) {
+        status = document.createElement('p'); status.id = 'yeu-thich-status';
+        status.setAttribute('role', 'alert');
+        document.querySelector('main')?.prepend(status);
+    }
+    status.textContent = loi.message || 'Không lưu được yêu thích.';
+}
+
+let hangDoiYeuThich = dungTaiKhoan ? (async () => {
+    try {
+        await goiApiYeuThich();
+        daTaiYeuThich = true;
+        capNhatGiaoDienYeuThich();
+        // Chuyển danh sách trình duyệt cũ vào tài khoản hiện tại đúng một lần.
+        let legacy = [];
+        try { legacy = JSON.parse(localStorage.getItem(KHOA_YEU_THICH) || '[]'); } catch {}
+        if (Array.isArray(legacy)) {
+            for (const id of new Set(legacy.map(Number).filter(id => Number.isInteger(id) && id > 0))) {
+                try {
+                    await goiApiYeuThich({id, chon: true});
+                } catch (loi) {
+                    // Môn đã xóa không còn là yêu thích hợp lệ; tiếp tục chuyển các môn khác.
+                    // Giữ danh sách cũ để thử lại nếu lỗi phiên/mạng/máy chủ.
+                    if (loi.status !== 404) throw loi;
+                }
+            }
+            try { localStorage.removeItem(KHOA_YEU_THICH); } catch {}
+        }
+        daTaiYeuThich = true;
+        capNhatGiaoDienYeuThich();
+    } catch (loi) { baoLoiYeuThich(loi); }
+})() : Promise.resolve();
 
 function docDanhSachYeuThich() {
+    if (dungTaiKhoan) return yeuThichTaiKhoan;
     try {
         const duLieuDaLuu =
             localStorage.getItem(KHOA_YEU_THICH);
@@ -193,7 +259,16 @@ function capNhatGiaoDienYeuThich() {
         });
 }
 
-function doiTrangThaiYeuThich(id) {
+async function doiTrangThaiYeuThich(id) {
+    if (dungTaiKhoan) {
+        if (!daTaiYeuThich) {
+            await goiApiYeuThich();
+            daTaiYeuThich = true;
+        }
+        await goiApiYeuThich({id, chon: !yeuThichTaiKhoan.includes(id)});
+        capNhatGiaoDienYeuThich();
+        return;
+    }
     const danhSachYeuThich =
         docDanhSachYeuThich();
 
@@ -246,7 +321,7 @@ document.addEventListener(
             return;
         }
 
-        doiTrangThaiYeuThich(id);
+        hangDoiYeuThich = hangDoiYeuThich.then(() => doiTrangThaiYeuThich(id)).catch(baoLoiYeuThich);
     }
 );
 
@@ -297,3 +372,13 @@ window.addEventListener(
 );
 
 capNhatGiaoDienYeuThich();
+
+// Chờ đồng bộ đang chạy; lỗi yêu thích không được chặn quyền đăng xuất.
+document.addEventListener('submit', (event) => {
+    const form = event.target;
+    if (!dungTaiKhoan || !(form instanceof HTMLFormElement)
+        || new URL(form.action).pathname.split('/').pop() !== 'dang-xuat.php') return;
+    event.preventDefault();
+    const guiDangXuat = () => HTMLFormElement.prototype.submit.call(form);
+    hangDoiYeuThich.then(guiDangXuat, guiDangXuat);
+});

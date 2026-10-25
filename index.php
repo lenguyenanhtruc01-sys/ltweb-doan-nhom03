@@ -227,7 +227,7 @@ require __DIR__ . '/inc/header.php';
 
                                 <a
                                     class="the__lien-ket"
-                                    href="chi-tiet.php?id=<?= (int) $mon->id ?>">
+                                    href="chi-tiet.php?id=<?= e((int) $mon->id) ?>">
                                     <?= e((string) $mon->tenMon) ?>
                                 </a>
 
@@ -240,13 +240,13 @@ require __DIR__ . '/inc/header.php';
                                     <?= e((string) $mon->maMon) ?>
                                 </strong>
 
-                                — <?= (int) $mon->soTinChi ?> tín chỉ
+                                — <?= e((int) $mon->soTinChi) ?> tín chỉ
 
                             </p>
 
                             <a
                                 class="the__lien-ket"
-                                href="chi-tiet.php?id=<?= (int) $mon->id ?>">
+                                href="chi-tiet.php?id=<?= e((int) $mon->id) ?>">
                                 Xem lại
                             </a>
 

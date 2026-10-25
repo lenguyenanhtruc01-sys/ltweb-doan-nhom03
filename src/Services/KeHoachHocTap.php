@@ -1,7 +1,7 @@
 <?php
 /**
  * Tệp: src/Services/KeHoachHocTap.php
- * Chức năng: Quản lý kế hoạch học tập bằng session.
+ * Chức năng: Khách dùng session; giỏ tài khoản được lưu MySQL.
  * Kiểm tra ID môn học và số lượng ở phía máy chủ.
  * Thử: thêm môn, cập nhật 1-5, nhập 0/-3/1000 và xóa môn.
  */
@@ -9,6 +9,7 @@
 namespace App\Services;
 
 use App\Data\KhoMonHoc;
+use App\Data\KhoTrangThaiNguoiDung;
 
 class KeHoachHocTap
 {
@@ -22,7 +23,7 @@ class KeHoachHocTap
             session_start();
         }
 
-        // Giỏ hàng độc lập với tài khoản quản trị và thuộc về phiên duyệt web.
+        // Khách dùng session; tài khoản có giỏ riêng được lưu trong MySQL.
         if (!isset($_SESSION[self::SESSION_KEY])
             || !is_array($_SESSION[self::SESSION_KEY])
         ) {
@@ -30,6 +31,30 @@ class KeHoachHocTap
         }
 
         $this->khoMonHoc = new KhoMonHoc(db());
+        $uid = $_SESSION['uid'] ?? null;
+        if (is_int($uid) && $uid > 0) {
+            $kho = new KhoTrangThaiNguoiDung(db());
+            if (!isset($_SESSION['chu_gio_hang'])) {
+                // Chỉ gộp giỏ khách; không ghi lại bản sao cũ của tài khoản.
+                $kho->gopGioKhach($uid, $_SESSION[self::SESSION_KEY]);
+            }
+            $_SESSION[self::SESSION_KEY] = $kho->gioHang($uid);
+            $_SESSION['chu_gio_hang'] = $uid;
+        }
+    }
+
+    private function uid(): ?int
+    {
+        $uid = $_SESSION['uid'] ?? null;
+        return is_int($uid) && $uid > 0 ? $uid : null;
+    }
+
+    private function taiLaiGio(): void
+    {
+        $uid = $this->uid();
+        if ($uid !== null) {
+            $_SESSION[self::SESSION_KEY] = (new KhoTrangThaiNguoiDung(db()))->gioHang($uid);
+        }
     }
 
     /**
@@ -43,8 +68,15 @@ class KeHoachHocTap
 
         $monHoc = $this->khoMonHoc->timTheoId($id);
 
-        if ($monHoc === null) {
+        if ($monHoc === null || $soLuong > $monHoc->soCho) {
             return false;
+        }
+
+        $uid = $this->uid();
+        if ($uid !== null) {
+            (new KhoTrangThaiNguoiDung(db()))->themMon($uid, $id, $soLuong);
+            $this->taiLaiGio();
+            return isset($_SESSION[self::SESSION_KEY][$id]);
         }
 
         // Không cho thêm trùng môn.
@@ -69,8 +101,15 @@ class KeHoachHocTap
 
         $monHoc = $this->khoMonHoc->timTheoId($id);
 
-        if ($monHoc === null) {
+        if ($monHoc === null || $soLuong > $monHoc->soCho) {
             return false;
+        }
+
+        $uid = $this->uid();
+        if ($uid !== null) {
+            (new KhoTrangThaiNguoiDung(db()))->capNhatMon($uid, $id, $soLuong);
+            $this->taiLaiGio();
+            return ($_SESSION[self::SESSION_KEY][$id] ?? null) === $soLuong;
         }
 
         if (!isset($_SESSION[self::SESSION_KEY][$id])) {
@@ -91,6 +130,13 @@ class KeHoachHocTap
             return false;
         }
 
+        $uid = $this->uid();
+        if ($uid !== null) {
+            $daXoa = (new KhoTrangThaiNguoiDung(db()))->xoaMon($uid, $id);
+            $this->taiLaiGio();
+            return $daXoa;
+        }
+
         if (!isset($_SESSION[self::SESSION_KEY][$id])) {
             return false;
         }
@@ -105,6 +151,8 @@ class KeHoachHocTap
      */
     public function xoaTatCa(): void
     {
+        $uid = $this->uid();
+        if ($uid !== null) (new KhoTrangThaiNguoiDung(db()))->xoaGioHang($uid);
         $_SESSION[self::SESSION_KEY] = [];
     }
 
@@ -114,6 +162,7 @@ class KeHoachHocTap
      */
     public function layDanhSachChiTiet(): array
     {
+        $this->taiLaiGio();
         $chiTiet = [];
         $tongSoTinChi = 0;
         $tongSoMon = 0;

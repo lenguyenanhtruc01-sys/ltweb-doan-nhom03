@@ -4,6 +4,7 @@ declare(strict_types=1);
 /**
  * Lưu ảnh an toàn với tên ngẫu nhiên, không tin tên từ trình duyệt.
  * Tự tạo thư mục và báo lỗi có kiểm soát khi tệp hoặc quyền ghi không hợp lệ.
+ * Thử: ảnh thật tên .php phải lưu đúng MIME; ảnh giả hoặc quá 2MB bị từ chối.
  */
 namespace App\Services;
 

@@ -2,11 +2,15 @@
 /**
  * inc/header.php
  * Khung đầu trang dùng chung cho website EduGPA.
+ * Thử qua trang chủ: tên tài khoản, liên kết quản trị và số món đúng với phiên.
  */
 $tieuDe ??= 'Trang chủ';
 $trang ??= '';
 $goc ??= '';
 $phienBanCss = filemtime(__DIR__ . '/../css/style.css') ?: 1;
+if (!is_string($_SESSION['csrf_gio_hang'] ?? null) || $_SESSION['csrf_gio_hang'] === '') {
+    $_SESSION['csrf_gio_hang'] = bin2hex(random_bytes(32));
+}
 
 $soMonTrongGio = 0;
 try {
@@ -28,10 +32,13 @@ if (!is_string($nguoiDung) || $nguoiDung === '') {
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-gio-hang" content="<?= e($_SESSION['csrf_gio_hang']) ?>">
+    <meta name="edugpa-uid" content="<?= e((string) ($ndHeader['id'] ?? '')) ?>">
+    <meta name="yeu-thich-api" content="<?= e($goc) ?>api/yeu-thich.php">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="EduGPA hỗ trợ sinh viên tra cứu môn học, theo dõi trạng thái học tập và lưu môn yêu thích.">
     <title><?= e($tieuDe) ?> | EduGPA</title>
-    <link rel="stylesheet" href="<?= e($goc) ?>css/style.css?v=<?= (int) $phienBanCss ?>">
+    <link rel="stylesheet" href="<?= e($goc) ?>css/style.css?v=<?= e((int) $phienBanCss) ?>">
     <?php if (!empty($cssTrang)): ?>
     <link rel="stylesheet" href="<?= e($cssTrang) ?>">
     <?php endif; ?>
@@ -100,7 +107,7 @@ if (!is_string($nguoiDung) || $nguoiDung === '') {
                 <a class="dieu-huong__lien-ket <?= $trang === 'lien-he' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>" href="<?= e($goc) ?>lien-he.php" <?= $trang === 'lien-he' ? 'aria-current="page"' : '' ?>>Liên hệ</a>
             </li>
             <li class="dieu-huong__muc">
-                <a class="dieu-huong__lien-ket <?= $trang === 'gio-hang' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>" href="<?= e($goc) ?>gio-hang.php" <?= $trang === 'gio-hang' ? 'aria-current="page"' : '' ?>>Giỏ hàng (<?= (int) $soMonTrongGio ?>)</a>
+                <a class="dieu-huong__lien-ket <?= $trang === 'gio-hang' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>" href="<?= e($goc) ?>gio-hang.php" <?= $trang === 'gio-hang' ? 'aria-current="page"' : '' ?>>Giỏ hàng (<span id="cart-count" aria-live="polite" aria-atomic="true"><?= e((string) $soMonTrongGio) ?></span>)</a>
             </li>
         </ul>
     </nav>

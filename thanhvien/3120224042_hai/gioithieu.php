@@ -1,67 +1,60 @@
 <?php
+declare(strict_types=1);
 /**
- * Tệp: gioithieu.php
- * Chức năng: trang cá nhân của Lê Dương Hoàng Hải, có tải ảnh đại diện an toàn.
+ * Trang cá nhân Hải: avatar MySQL chỉ chủ trang được đổi, CSRF và PRG 303.
+ * Lượt xem theo ngày và thống kê 7 ngày riêng MSSV, qua lớp PDO.
+ * Thử khách/tài khoản khác POST trả 403; chủ trang tải ảnh, F5 không gửi lại.
+ * HTML và bố cục được kiểm tra ở màn hình 360px.
  */
-// 1. Nạp cấu hình chung từ thư mục gốc
 require_once __DIR__ . '/../../inc/config.php';
-
-// Cài đặt múi giờ Việt Nam
-date_default_timezone_set('Asia/Ho_Chi_Minh');
-
 $mssvTrangCaNhan = '3120224042';
-$ghiNhanLuotXem = db()->prepare('INSERT INTO tv_luot_xem (mssv, ngay, so_luot) VALUES (:mssv, :ngay, 1) ON DUPLICATE KEY UPDATE so_luot = so_luot + 1');
-$ghiNhanLuotXem->execute([
-    'mssv' => $mssvTrangCaNhan,
-    'ngay' => date('Y-m-d'),
-]);
-$truyVanLuotXem = db()->prepare('SELECT ngay, SUM(so_luot) AS tong_luot FROM tv_luot_xem WHERE ngay >= :tu_ngay AND ngay <= :den_ngay GROUP BY ngay ORDER BY ngay DESC');
-$ngayHomNay = new DateTimeImmutable('today');
-$truyVanLuotXem->execute([
-    'tu_ngay' => $ngayHomNay->modify('-6 days')->format('Y-m-d'),
-    'den_ngay' => $ngayHomNay->format('Y-m-d'),
-]);
-$luotXemTheoNgay = $truyVanLuotXem->fetchAll();
-$luotXemMap = [];
-foreach ($luotXemTheoNgay as $dongLuotXem) {
-    $luotXemMap[$dongLuotXem['ngay']] = (int) $dongLuotXem['tong_luot'];
-}
-$thongKeLuotXem = [];
-for ($i = 0; $i < 7; $i++) {
-    $ngay = $ngayHomNay->modify('-' . $i . ' days')->format('Y-m-d');
-    $thongKeLuotXem[] = ['ngay' => $ngay, 'so_luot' => $luotXemMap[$ngay] ?? 0];
-}
-
-// ==========================================
-// CHỨC NĂNG 1: XỬ LÝ UPLOAD ẢNH ĐẠI DIỆN (POST / PRG)
-// ==========================================
-$thongBaoAnh = $_SESSION['flash_avatar'] ?? '';
-$loiAnh      = $_SESSION['loi_avatar'] ?? '';
-unset($_SESSION['flash_avatar'], $_SESSION['loi_avatar']);
-
 $thuMucAnh = __DIR__ . '/../../uploads';
-$khoAnh = new \App\Data\KhoAnhDaiDien(__DIR__ . '/../../storage/3120224042_avatar.json');
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $tenMoi = null;
-    try {
-        $file = $_FILES['avatar'] ?? null;
-        if (!is_array($file)) throw new \RuntimeException('Vui lòng chọn ảnh đại diện.');
-        $tenMoi = (new \App\Services\TaiAnh($thuMucAnh))->luu($file);
-        if ($tenMoi === null) throw new \RuntimeException('Vui lòng chọn ảnh đại diện.');
-        $tenCu = $khoAnh->lay();
-        $khoAnh->luu($tenMoi);
-        if ($tenCu !== null && $tenCu !== $tenMoi) @unlink($thuMucAnh . '/' . $tenCu);
-        $_SESSION['flash_avatar'] = 'Cập nhật ảnh đại diện thành công!';
-    } catch (\RuntimeException $loiUpload) {
-        if ($tenMoi !== null) @unlink($thuMucAnh . '/' . $tenMoi);
-        $_SESSION['loi_avatar'] = $loiUpload->getMessage();
-    }
-    header('Location: gioithieu.php');
-    exit;
+$khoAnh = new \App\Data\KhoAnhDaiDien(db());
+$ndTrang = nguoiDung();
+$uidTrang = (int) ($ndTrang['id'] ?? 0);
+$laChuTrang = $uidTrang > 0 && $khoAnh->laChuTrang($mssvTrangCaNhan, $uidTrang);
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+if (!in_array($method, ['GET', 'POST'], true)) {
+    header('Allow: GET, POST'); http_response_code(405); exit('Phương thức không hợp lệ.');
 }
-$tenAvatar = $khoAnh->lay();
+if ($method === 'POST') {
+    if (!$laChuTrang) { require __DIR__ . '/../../403.php'; exit; }
+    $token = $_POST['_csrf'] ?? null;
+    if (!is_string($token) || !csrfKiemTra($token)) {
+        $_SESSION['loi_avatar'] = 'Phiên làm việc đã hết hạn, vui lòng thử lại.';
+    } else {
+        $tenMoi = null;
+        try {
+            $file = $_FILES['avatar'] ?? null;
+            if (!is_array($file)) throw new RuntimeException('Vui lòng chọn ảnh đại diện.');
+            $tenMoi = (new \App\Services\TaiAnh($thuMucAnh))->luu($file);
+            if ($tenMoi === null) throw new RuntimeException('Vui lòng chọn ảnh đại diện.');
+            $tenCu = $khoAnh->luu($mssvTrangCaNhan, $uidTrang, $tenMoi);
+            // Tên do server sinh và đã được kiểm tra trong kho dữ liệu.
+            if ($tenCu !== null && $tenCu !== $tenMoi) @unlink($thuMucAnh . '/' . $tenCu);
+            $_SESSION['flash_avatar'] = 'Cập nhật ảnh đại diện thành công!';
+        } catch (Throwable $err) {
+            if ($tenMoi !== null) @unlink($thuMucAnh . '/' . $tenMoi);
+            if ($err instanceof PDOException) {
+                error_log((string) $err);
+                $_SESSION['loi_avatar'] = 'Không lưu được ảnh đại diện, vui lòng thử lại.';
+            } elseif ($err instanceof RuntimeException) {
+                $_SESSION['loi_avatar'] = $err->getMessage();
+            } else throw $err;
+        }
+    }
+    header('Location: gioithieu.php', true, 303); exit;
+}
+$thongBaoAnh = $_SESSION['flash_avatar'] ?? '';
+$loiAnh = $_SESSION['loi_avatar'] ?? '';
+unset($_SESSION['flash_avatar'], $_SESSION['loi_avatar']);
+$tenAvatar = $khoAnh->lay($mssvTrangCaNhan);
 $avatarHienTai = $tenAvatar !== null && is_file($thuMucAnh . '/' . $tenAvatar)
     ? '../../uploads/' . $tenAvatar : 'images/hoanghai.jpg';
+$khoLuotXem = new \App\Data\KhoLuotXem(db());
+$ngayHomNay = new DateTimeImmutable('today');
+$khoLuotXem->ghiNhan($mssvTrangCaNhan, $ngayHomNay->format('Y-m-d'));
+$thongKeLuotXem = $khoLuotXem->bayNgay($mssvTrangCaNhan, $ngayHomNay);
 
 // ==========================================
 // CHỨC NĂNG 2: MÁY TẠO CHÂM NGÔN IT NGẪU NHIÊN
@@ -101,7 +94,9 @@ require_once __DIR__ . '/../../inc/header.php';
         <img src="<?= e($avatarHienTai) ?>" alt="Ảnh chân dung của Lê Dương Hoàng Hải" width="150" height="150" style="object-fit: cover; border-radius: 5px;">
         
         <!-- FORM ĐỔI ẢNH ĐẠI DIỆN (CHỨC NĂNG 1) -->
+        <?php if ($laChuTrang): ?>
         <form action="gioithieu.php" method="post" enctype="multipart/form-data" style="margin: 10px 0; padding: 10px; background: #f4f4f4; border-radius: 5px;">
+            <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
             <label for="avatar" style="font-size: 0.9em; font-weight: bold;">Đổi ảnh đại diện (≤ 2MB):</label><br>
             <input type="file" name="avatar" id="avatar" accept="image/jpeg, image/png, image/webp" required style="font-size: 0.85em; margin: 5px 0;">
             <button type="submit" class="btn-primary" style="padding: 8px 14px; font-size: 0.85em; background-color: #123b6d; color: #ffffff;">Tải lên</button>
@@ -113,12 +108,13 @@ require_once __DIR__ . '/../../inc/header.php';
                 <p style="color: red; font-size: 0.85em; margin-top: 5px;"><?= e($loiAnh) ?></p>
             <?php endif; ?>
         </form>
+        <?php endif; ?>
 
         <!-- KHỐI ĐẾM NGƯỢC BẢO VỆ ĐỒ ÁN (CHỨC NĂNG 3) -->
         <div style="margin: 10px 0; padding: 10px 12px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; font-size: 0.88em; color: #856404;">
             ⏳ <strong>Đếm ngược bảo vệ Đồ án:</strong> 
             <?php if ($ngayHienTai < $ngayBaoVe): ?>
-                Còn <strong><?= $thoiGianConLai->days ?></strong> ngày <strong><?= $thoiGianConLai->h ?></strong> giờ nữa!
+                Còn <strong><?= e($thoiGianConLai->days) ?></strong> ngày <strong><?= e($thoiGianConLai->h) ?></strong> giờ nữa!
             <?php else: ?>
                 Đã đến ngày bảo vệ đồ án!
             <?php endif; ?>
@@ -138,7 +134,7 @@ require_once __DIR__ . '/../../inc/header.php';
         </div>
 
         <div class="skills-box">
-            <h3>Kỹ năng công nghệ:</h3>
+            <h2>Kỹ năng công nghệ:</h2>
             <ul>
                 <li><strong>Ngôn ngữ:</strong> C++, Python, SQL.</li>
                 <li><strong>Mobile:</strong> Jetpack Compose (Kotlin).</li>

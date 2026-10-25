@@ -1,12 +1,8 @@
 <?php
 /**
- * File: thanhvien/3120224159_anhtruc/gioithieu.php
- * Chức năng:
- * - Giới thiệu thành viên.
- * - Tính chi phí học kỳ với mục tiêu GPA.
- * - Mini Quiz kiến thức IT xử lý bằng PHP.
- * Xử lý: PHP server-side, validation và POST/PRG.
- * Kiểm thử: dữ liệu GPA, học phí, tín chỉ và câu trả lời Quiz.
+ * Trang cá nhân Trúc: giới thiệu, tính chi phí học kỳ/GPA và mini quiz IT.
+ * Kiểm tra đầu vào phía máy chủ, giữ kết quả trong session và dùng POST/PRG.
+ * Thử dữ liệu GPA/học phí sai, chọn đáp án quiz rồi F5 sau POST thành công.
  */
 
 require_once __DIR__ . '/../../inc/config.php';

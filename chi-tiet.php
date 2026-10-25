@@ -4,6 +4,7 @@
  * Hiển thị thông tin chi tiết môn học theo tham số ?id=.
  * ID không hợp lệ hoặc không tồn tại sẽ trả về trang 404.
  * Lưu tối đa 4 môn đã xem gần đây bằng cookie da_xem.
+ * Thử: mở ?id=1, ID không tồn tại và ID dạng mảng; kiểm tra cookie đã xem.
  */
 declare(strict_types=1);
 
@@ -163,7 +164,7 @@ require __DIR__ . '/inc/header.php';
 
             <li>
                 <strong>Số tín chỉ:</strong>
-                <?= (int) $mh->soTinChi ?>
+                <?= e((int) $mh->soTinChi) ?>
             </li>
 
             <?php if (trim((string) $mh->trangThai) !== ''): ?>
@@ -206,7 +207,7 @@ require __DIR__ . '/inc/header.php';
                 <input
                     type="hidden"
                     name="quay_lai"
-                    value="chi-tiet.php?id=<?= (int) $mh->id ?>">
+                    value="chi-tiet.php?id=<?= e((int) $mh->id) ?>">
 
                 <input
                     type="hidden"
@@ -216,7 +217,7 @@ require __DIR__ . '/inc/header.php';
                 <input
                     type="hidden"
                     name="id"
-                    value="<?= (int) $mh->id ?>">
+                    value="<?= e((int) $mh->id) ?>">
 
                 <input
                     type="hidden"

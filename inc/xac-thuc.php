@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Xác thực tài khoản, phân quyền máy chủ và quản lý cookie ghi nhớ đăng nhập.
+ * Thông tin người dùng lấy từ MySQL bằng uid trong session; cung cấp hàm bảo vệ trang.
+ * Thử đăng nhập/đăng xuất, khách vào quản trị và tài khoản thường truy cập trang admin.
+ */
 const TEN_COOKIE_GHI_NHO = 'edugpa_ghi_nho';
 const THOI_HAN_GHI_NHO = 2592000; // 30 ngày
 
@@ -177,8 +183,8 @@ function yeuCauQuyen(string $vaiTro): array
     // Nếu vai trò không khớp -> Báo lỗi 403 (Slide 42)
     if ($nd['vai_tro'] !== $vaiTro) {
         http_response_code(403);
-        // Bạn có thể require trang 403.php nếu nhóm bạn có sẵn
-        exit('<h1>403 Forbidden</h1><p>Bạn không có quyền truy cập trang này.</p>');
+        require __DIR__ . '/../403.php';
+        exit;
     }
 
     return $nd;

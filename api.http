@@ -66,5 +66,22 @@ POST {{goc}}/api/san-pham.php
 ### Tham số mảng: 422, không Warning
 GET {{goc}}/api/san-pham.php?q[]=x
 
-# Kiểm thử 500: dừng MySQL tạm thời hoặc đổi DB_PORT sang cổng không có máy chủ,
-# gọi GET sản phẩm rồi khôi phục cấu hình. Phản hồi chỉ {"loi":"Lỗi máy chủ"}.
+# Kiểm thử 500: chạy tiến trình PHP riêng với DB_PORT=1 ở cổng 8098,
+# gọi hai endpoint trên tiến trình đó. Phản hồi chỉ {"loi":"Lỗi máy chủ"}.
+# Không dừng hoặc chỉnh cấu hình MySQL đang dùng.
+
+### Ca 12: LOG401 trong seed mới còn 1 chỗ, sl=2 hợp lệ nhưng vượt số chỗ: 422
+# Dùng CSDL kiểm thử từ schema/seed; local đã nâng cấp có thể có số chỗ khác.
+# GET giỏ trước và sau: danh sách, số lượng không đổi; không trừ chỗ.
+POST {{goc}}/api/gio-hang.php
+Content-Type: application/json
+X-CSRF-Token: {{gio.response.body.$.csrf}}
+
+{"id":30,"sl":2}
+
+### SEC401 hết chỗ trong seed mới: 422
+POST {{goc}}/api/gio-hang.php
+Content-Type: application/json
+X-CSRF-Token: {{gio.response.body.$.csrf}}
+
+{"id":25,"sl":1}

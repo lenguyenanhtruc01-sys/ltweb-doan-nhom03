@@ -60,7 +60,7 @@ CREATE TABLE mon_hoc (
     ma_mon VARCHAR(20) NOT NULL UNIQUE,
     ten_mon VARCHAR(200) NOT NULL,
     so_tin_chi INT UNSIGNED NOT NULL CHECK (so_tin_chi > 0),
-    so_cho INT UNSIGNED NOT NULL DEFAULT 50, -- CỘT MỚI THÊM
+    so_cho INT UNSIGNED NOT NULL DEFAULT 50,
     mo_ta TEXT NULL,
     anh VARCHAR(255) NULL,
     ngay_tao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -105,7 +105,9 @@ CREATE TABLE chi_tiet_ke_hoach (
     so_luong SMALLINT UNSIGNED NOT NULL DEFAULT 1,
     PRIMARY KEY (ke_hoach_id, mon_hoc_id),
     FOREIGN KEY (ke_hoach_id) REFERENCES ke_hoach_hoc_tap(id) ON DELETE CASCADE,
-    FOREIGN KEY (mon_hoc_id) REFERENCES mon_hoc(id) ON DELETE CASCADE
+    -- Giữ chi tiết kế hoạch: môn đã được đăng ký không được xóa (lỗi 1451).
+    CONSTRAINT fk_chi_tiet_ke_hoach_mon_hoc
+        FOREIGN KEY (mon_hoc_id) REFERENCES mon_hoc(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
@@ -124,6 +126,14 @@ CREATE TABLE tv_luu_but (
     ten_khach VARCHAR(50) NOT NULL,
     loi_nhan VARCHAR(500) NOT NULL,
     thoi_gian DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
+);
+
+-- Ảnh đại diện cá nhân: chỉ chủ trang được thay, tên tệp do server sinh.
+CREATE TABLE tv_anh_dai_dien (
+    mssv CHAR(10) PRIMARY KEY,
+    ten_tep VARCHAR(255) NULL,
+    cap_nhat_luc DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
 );
 
@@ -159,11 +169,6 @@ CREATE TABLE tv_tra_cuu_mang (
     INDEX idx_mssv_id (mssv, id),
     FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
--- Thêm Duy vào bảng thành viên
-INSERT INTO thanh_vien (mssv, ho_ten) 
-VALUES ('3120224034', 'Dương Bảo Duy')
-ON DUPLICATE KEY UPDATE ho_ten = 'Dương Bảo Duy';
-
 -- Bảng lưu danh sách món ăn
 CREATE TABLE IF NOT EXISTS tv_mon_an (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -184,23 +189,36 @@ CREATE TABLE IF NOT EXISTS tv_lich_su_ott (
     FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS gio_hang_nguoi_dung (
-    nguoi_dung_id INT UNSIGNED NOT NULL,
-    mon_hoc_id INT UNSIGNED NOT NULL,
-    so_luong SMALLINT UNSIGNED NOT NULL CHECK (so_luong BETWEEN 1 AND 5),
-    PRIMARY KEY (nguoi_dung_id, mon_hoc_id),
-    FOREIGN KEY (nguoi_dung_id) REFERENCES nguoi_dung(id) ON DELETE CASCADE,
-    FOREIGN KEY (mon_hoc_id) REFERENCES mon_hoc(id) ON DELETE CASCADE
+-- Dữ liệu kỹ năng và thời khóa biểu riêng của Huỳnh Phương Uyên.
+CREATE TABLE tv_uyen_ky_nang (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    mssv CHAR(10) NOT NULL,
+    ten VARCHAR(120) NOT NULL,
+    nhom ENUM('web', 'du-lieu', 'lam-viec') NOT NULL,
+    UNIQUE KEY uq_tv_uyen_ky_nang (mssv, ten),
+    FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-CREATE TABLE IF NOT EXISTS mon_yeu_thich (
-    nguoi_dung_id INT UNSIGNED NOT NULL,
-    mon_hoc_id INT UNSIGNED NOT NULL,
-    PRIMARY KEY (nguoi_dung_id, mon_hoc_id),
-    FOREIGN KEY (nguoi_dung_id) REFERENCES nguoi_dung(id) ON DELETE CASCADE,
-    FOREIGN KEY (mon_hoc_id) REFERENCES mon_hoc(id) ON DELETE CASCADE
+
+CREATE TABLE tv_uyen_thoi_khoa_bieu (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    mssv CHAR(10) NOT NULL,
+    ma_mon VARCHAR(20) NOT NULL,
+    ten_mon VARCHAR(150) NOT NULL,
+    ma_lop VARCHAR(20) NOT NULL,
+    thu TINYINT UNSIGNED NOT NULL,
+    tiet_bat_dau TINYINT UNSIGNED NOT NULL,
+    tiet_ket_thuc TINYINT UNSIGNED NOT NULL,
+    phong VARCHAR(30) NOT NULL,
+    CHECK (thu BETWEEN 2 AND 8),
+    CHECK (tiet_bat_dau BETWEEN 1 AND 12),
+    CHECK (tiet_ket_thuc BETWEEN tiet_bat_dau AND 12),
+    UNIQUE KEY uq_tv_uyen_lich_mon (mssv, ma_mon, thu, tiet_bat_dau),
+    INDEX idx_tv_uyen_lich_thu_tiet (mssv, thu, tiet_bat_dau),
+    FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-CREATE TABLE IF NOT EXISTS gio_hang_nguoi_dung (
+
+-- Giỏ hàng và yêu thích được lưu theo tài khoản.
+CREATE TABLE gio_hang_nguoi_dung (
     nguoi_dung_id INT UNSIGNED NOT NULL,
     mon_hoc_id INT UNSIGNED NOT NULL,
     so_luong SMALLINT UNSIGNED NOT NULL CHECK (so_luong BETWEEN 1 AND 5),
@@ -209,7 +227,7 @@ CREATE TABLE IF NOT EXISTS gio_hang_nguoi_dung (
     FOREIGN KEY (mon_hoc_id) REFERENCES mon_hoc(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS mon_yeu_thich (
+CREATE TABLE mon_yeu_thich (
     nguoi_dung_id INT UNSIGNED NOT NULL,
     mon_hoc_id INT UNSIGNED NOT NULL,
     PRIMARY KEY (nguoi_dung_id, mon_hoc_id),

@@ -6,6 +6,7 @@ declare(strict_types=1);
  * Chứa các hàm tiện ích sử dụng chung cho website EduGPA.
  * Hàm e() giúp hiển thị dữ liệu an toàn trong HTML.
  * Hàm dinhDangSo() dùng để định dạng các giá trị số.
+ * Thử: e() với chuỗi chứa thẻ HTML; layChuoiDauVao() với mảng trả giá trị mặc định.
  */
 
 // Chuyển ký tự đặc biệt thành thực thể HTML, giúp chống XSS.

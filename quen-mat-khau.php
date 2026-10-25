@@ -1,15 +1,26 @@
 <?php
 declare(strict_types=1);
 
+
+/**
+ * Nhận email, tạo mã có thời hạn qua KhoNguoiDung; POST thành công dùng PRG 303.
+ * Phản hồi chung; link demo ở dev được chuyển qua session và chỉ hiện một lần.
+ * Thử email có/không có tài khoản và email dạng mảng trên CSDL kiểm thử.
+ */
 require_once __DIR__ . '/inc/config.php';
+
+use App\Data\KhoNguoiDung;
 
 $tieuDe = 'Quên mật khẩu';
 $trang = '';
 $goc = '';
 
-$thongBao = '';
-$email = '';
-$lienKetDatLai = '';
+$flash = $_SESSION['flash_quen_mat_khau'] ?? [];
+unset($_SESSION['flash_quen_mat_khau']);
+if (!is_array($flash)) $flash = [];
+$thongBao = is_string($flash['thong_bao'] ?? null) ? $flash['thong_bao'] : '';
+$email = is_string($flash['email'] ?? null) ? $flash['email'] : '';
+$lienKetDatLai = is_string($flash['lien_ket'] ?? null) ? $flash['lien_ket'] : '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $emailRaw = $_POST['email'] ?? '';
@@ -19,30 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $thongBao = 'Nếu email tồn tại, hệ thống đã tạo hướng dẫn đặt lại mật khẩu.';
 
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $timNguoiDung = db()->prepare('SELECT id FROM nguoi_dung WHERE email = ?');
-        $timNguoiDung->execute([$email]);
-        $nguoiDung = $timNguoiDung->fetch();
-
-        if ($nguoiDung) {
-            $uid = (int) $nguoiDung['id'];
-            $token = bin2hex(random_bytes(32));
-            $tokenHash = hash('sha256', $token);
-
-            // Mỗi user chỉ có một yêu cầu còn hiệu lực.
-            $huyYeuCauCu = db()->prepare(
-                'UPDATE yeu_cau_dat_lai_mat_khau
-                 SET da_dung_luc = NOW()
-                 WHERE nguoi_dung_id = ? AND da_dung_luc IS NULL'
-            );
-            $huyYeuCauCu->execute([$uid]);
-
-            $taoYeuCau = db()->prepare(
-                'INSERT INTO yeu_cau_dat_lai_mat_khau
-                    (nguoi_dung_id, token_hash, het_han)
-                 VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 30 MINUTE))'
-            );
-            $taoYeuCau->execute([$uid, $tokenHash]);
-
+        $token = bin2hex(random_bytes(32));
+        if ((new KhoNguoiDung(db()))->taoYeuCauDatLai($email, hash('sha256', $token))) {
             $duongDan = 'dat-lai-mat-khau.php?token=' . urlencode($token);
             error_log('Yêu cầu đặt lại mật khẩu: ' . $duongDan);
 
@@ -52,6 +41,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
+    $_SESSION['flash_quen_mat_khau'] = [
+        'thong_bao' => $thongBao, 'email' => $email, 'lien_ket' => $lienKetDatLai,
+    ];
+    header('Location: quen-mat-khau.php', true, 303);
+    exit;
 }
 
 require __DIR__ . '/inc/header.php';

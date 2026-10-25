@@ -1,5 +1,5 @@
 -- database/seed.sql
--- Mật khẩu của cả 3 tài khoản: matkhau123
+-- Mật khẩu của cả 4 tài khoản: matkhau123
 SET NAMES utf8mb4;
 USE ltweb_nhom03;
 
@@ -9,7 +9,8 @@ USE ltweb_nhom03;
 INSERT INTO nguoi_dung (id, email, ten_dang_nhap, mat_khau, ho_ten, vai_tro) VALUES
 (1, 'admin@example.com', 'admin', '$2y$12$qHb8qF.xgsQsDEN5nvxo6OsTDLDQmDQmTnjDdlNCp7MqAzd4fkWBG', 'Quản trị viên', 'quan_tri'),
 (2, 'an@example.com', 'an', '$2y$12$u.0T5HsnlVJWcPLCbRUsIO9EXccEweLCYOD7R46J.TJ9bH4ju5eGC', 'Trần Văn An', 'khach_hang'),
-(3, 'binh@example.com', 'binh', '$2y$12$3ZoP8Zw46/1SUlmMu/unR.ZIvgTjCuo2NGWs2F9ttQBE.FmFo83bO', 'Nguyễn Thị Bình', 'khach_hang');
+(3, 'binh@example.com', 'binh', '$2y$12$3ZoP8Zw46/1SUlmMu/unR.ZIvgTjCuo2NGWs2F9ttQBE.FmFo83bO', 'Nguyễn Thị Bình', 'khach_hang'),
+(4, 'hai@example.com', 'hai', '$2y$12$qHb8qF.xgsQsDEN5nvxo6OsTDLDQmDQmTnjDdlNCp7MqAzd4fkWBG', 'Lê Dương Hoàng Hải', 'khach_hang');
 
 -- ============================================
 -- 2. DANH MỤC (5 danh mục, mục 5 rỗng theo yêu cầu đề)
@@ -63,6 +64,11 @@ INSERT INTO mon_hoc (id, danh_muc_id, ma_mon, ten_mon, so_tin_chi, mo_ta) VALUES
 (29, 4, 'START01', 'Khởi nghiệp công nghệ', 2, 'Ý tưởng, mô hình kinh doanh, gọi vốn'),
 (30, 4, 'LOG401', 'Tư duy logic và giải quyết vấn đề', 2, 'Phương pháp luận, tư duy phản biện');
 
+-- Mẫu kiểm thử: SEC401 hết chỗ; LOG401 còn 1 chỗ (POST sl=2 phải trả 422).
+-- Các số này là số chỗ còn lại; kế hoạch mẫu bên dưới đã được tính từ trước.
+UPDATE mon_hoc SET so_cho = 0 WHERE ma_mon = 'SEC401';
+UPDATE mon_hoc SET so_cho = 1 WHERE ma_mon = 'LOG401';
+
 -- ============================================
 -- 3a. ẢNH MÔN HỌC (tên file trong thư mục images/)
 -- ENG101 không có ảnh riêng nên để anh = NULL.
@@ -106,18 +112,24 @@ END;
 -- ============================================
 INSERT INTO ke_hoach_hoc_tap (id, nguoi_dung_id, trang_thai, ghi_chu) VALUES
 (1, 2, 'cho_duyet', 'Kế hoạch học kỳ 1 năm 3'),
-(2, 3, 'da_duyet',  'Kế hoạch học kỳ 2 năm 2');
+(2, 3, 'da_duyet',  'Kế hoạch học kỳ 2 năm 2'),
+(3, 4, 'cho_duyet', 'Kế hoạch mẫu của Hải');
 
 INSERT INTO chi_tiet_ke_hoach
     (ke_hoach_id, mon_hoc_id, ma_mon, ten_mon, so_tin_chi, so_luong) VALUES
 (1, 1, 'MAT101', 'Giải tích 1', 4, 1),
 (1, 3, 'INT101', 'Lập trình cơ bản', 3, 1),
 (2, 5, 'WEB301', 'Thiết kế và lập trình Web', 3, 1),
-(2, 6, 'DB301', 'Cơ sở dữ liệu', 3, 1);
+(2, 6, 'DB301', 'Cơ sở dữ liệu', 3, 1),
+(3, 17, 'INT303', 'Mạng máy tính', 3, 1);
 
 -- ============================================
 -- 4. THÀNH VIÊN & DỮ LIỆU PHẦN B
 -- ============================================
+INSERT INTO thanh_vien (mssv, ho_ten) VALUES
+('3120224034', 'Dương Bảo Duy'),
+('3120224159', 'Lê Nguyễn Anh Trúc');
+
 INSERT INTO thanh_vien (mssv, ho_ten)
 SELECT '3120224064', 'Phan Văn Hợp'
 WHERE NOT EXISTS (SELECT 1 FROM thanh_vien WHERE mssv = '3120224064');
@@ -125,6 +137,17 @@ WHERE NOT EXISTS (SELECT 1 FROM thanh_vien WHERE mssv = '3120224064');
 INSERT INTO thanh_vien (mssv, ho_ten)
 SELECT '3120224042', 'Lê Dương Hoàng Hải'
 WHERE NOT EXISTS (SELECT 1 FROM thanh_vien WHERE mssv = '3120224042');
+
+UPDATE thanh_vien SET nguoi_dung_id=4 WHERE mssv='3120224042';
+INSERT INTO tv_anh_dai_dien (mssv,ten_tep) VALUES ('3120224042',NULL);
+INSERT INTO tv_luot_xem (mssv,ngay,so_luot) VALUES
+('3120224042',CURRENT_DATE,3),
+('3120224042',CURRENT_DATE - INTERVAL 1 DAY,2),
+('3120224042',CURRENT_DATE - INTERVAL 2 DAY,4),
+('3120224042',CURRENT_DATE - INTERVAL 3 DAY,1),
+('3120224042',CURRENT_DATE - INTERVAL 4 DAY,5),
+('3120224042',CURRENT_DATE - INTERVAL 5 DAY,2),
+('3120224042',CURRENT_DATE - INTERVAL 6 DAY,1);
 
 INSERT INTO tv_tra_cuu_mang (mssv, muc_tieu, dia_chi_ip, loai_ip)
 SELECT '3120224064', '127.0.0.1', '127.0.0.1', 'IPv4'
@@ -135,6 +158,7 @@ SELECT '3120224064', u.id, 'huu_ich' FROM nguoi_dung u
 WHERE u.vai_tro = 'khach_hang'
   AND NOT EXISTS (SELECT 1 FROM tv_binh_chon b WHERE b.mssv = '3120224064' AND b.nguoi_dung_id = u.id)
 ORDER BY u.id LIMIT 1;
+
 -- ============================================
 -- Phần B: Dữ liệu mẫu cho Duy (MSSV 3120224034)
 -- ============================================
@@ -150,3 +174,38 @@ INSERT INTO tv_lich_su_ott (mssv, nguoi_chon, may_chon, ket_qua) VALUES
 ('3120224034', 'keo', 'bao', 'thang'),
 ('3120224034', 'bua', 'bao', 'thua'),
 ('3120224034', 'bao', 'bao', 'hoa');
+
+
+INSERT INTO thanh_vien (mssv, ho_ten)
+VALUES ('3120224174', 'Huỳnh Phương Uyên')
+ON DUPLICATE KEY UPDATE ho_ten = VALUES(ho_ten);
+
+INSERT INTO tv_uyen_ky_nang (mssv, ten, nhom) VALUES
+('3120224174', 'HTML5', 'web'),
+('3120224174', 'Thiết kế giao diện website', 'web'),
+('3120224174', 'Làm việc nhóm', 'lam-viec'),
+('3120224174', 'Quản lý mã nguồn với GitHub', 'lam-viec'),
+('3120224174', 'Thiết kế và quản lý cơ sở dữ liệu', 'du-lieu')
+ON DUPLICATE KEY UPDATE id = id;
+
+INSERT INTO tv_uyen_thoi_khoa_bieu
+    (mssv, ma_mon, ten_mon, ma_lop, thu, tiet_bat_dau, tiet_ket_thuc, phong)
+VALUES
+('3120224174', '31231755', 'Thiết kế và lập trình web', '24-0102', 8, 1, 3, 'B3-303'),
+('3120224174', '31231330', 'Khai phá dữ liệu', '24-0102', 5, 4, 6, 'A5-404B'),
+('3120224174', '31241283', 'Hệ quản trị cơ sở dữ liệu', '24-0301', 4, 7, 10, 'B1-104'),
+('3120224174', '31231016', 'Công nghệ phần mềm', '24-0103', 5, 10, 12, 'B3-304'),
+('3120224174', '21221904', 'Lịch sử Đảng Cộng sản Việt Nam', '24-0318', 2, 11, 12, 'A6-502'),
+('3120224174', '31221010', 'An toàn thông tin', '24-0103', 7, 11, 12, 'B3-506')
+ON DUPLICATE KEY UPDATE id = id;
+
+-- Mẫu riêng của Duy; không cần truy cập trang để nạp dữ liệu lần đầu.
+INSERT INTO tv_mon_an (mssv,ten_mon,bua) VALUES
+('3120224034','Phở bò','sang'),
+('3120224034','Cơm gà','trua'),
+('3120224034','Bún bò Huế','toi');
+
+INSERT INTO tv_lich_su_ott (mssv,nguoi_chon,may_chon,ket_qua) VALUES
+('3120224034','bua','keo','thang'),
+('3120224034','bao','keo','thua');
+

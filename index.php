@@ -227,7 +227,7 @@ require __DIR__ . '/inc/header.php';
 
                                 <a
                                     class="the__lien-ket"
-                                    href="chi-tiet.php?id=<?= (int) $mon->id ?>">
+                                    href="chi-tiet.php?id=<?= e((int) $mon->id) ?>">
                                     <?= e((string) $mon->tenMon) ?>
                                 </a>
 
@@ -240,13 +240,13 @@ require __DIR__ . '/inc/header.php';
                                     <?= e((string) $mon->maMon) ?>
                                 </strong>
 
-                                — <?= (int) $mon->soTinChi ?> tín chỉ
+                                — <?= e((int) $mon->soTinChi) ?> tín chỉ
 
                             </p>
 
                             <a
                                 class="the__lien-ket"
-                                href="chi-tiet.php?id=<?= (int) $mon->id ?>">
+                                href="chi-tiet.php?id=<?= e((int) $mon->id) ?>">
                                 Xem lại
                             </a>
 
@@ -332,9 +332,9 @@ require __DIR__ . '/inc/header.php';
                     </h3>
 
                     <p class="the__noi-dung">
-                        Thêm hoặc bỏ môn học khỏi danh sách
-                        yêu thích và lưu trạng thái trên trình duyệt
-                        bằng localStorage.
+                        Thêm hoặc bỏ môn học khỏi danh sách yêu thích.
+                        Khách lưu trên trình duyệt; tài khoản đăng nhập
+                        lưu trên MySQL.
                     </p>
 
                     <a
@@ -415,7 +415,7 @@ require __DIR__ . '/inc/header.php';
 
                         <p>
                             Truy cập trang danh sách để xem
-                            các học phần được tải từ dữ liệu JSON.
+                            các học phần được tải từ cơ sở dữ liệu MySQL.
                         </p>
 
                     </div>
@@ -481,8 +481,8 @@ require __DIR__ . '/inc/header.php';
 
                         <p>
                             Đánh dấu các môn quan tâm.
-                            Danh sách yêu thích được lưu
-                            bằng localStorage trên trình duyệt.
+                            Khách lưu bằng localStorage; tài khoản
+                            đăng nhập lưu danh sách trên MySQL.
                         </p>
 
                     </div>

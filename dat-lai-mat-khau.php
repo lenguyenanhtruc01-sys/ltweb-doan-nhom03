@@ -1,7 +1,15 @@
 <?php
 declare(strict_types=1);
 
+
+/**
+ * Kiểm tra mã đặt lại mật khẩu và lưu mật khẩu mới dưới dạng băm.
+ * Mã chỉ dùng một lần, có hạn dùng; lỗi đầu vào được hiển thị tại biểu mẫu.
+ * Thử mã đúng, mã sai/hết hạn và gửi lại mã đã sử dụng trên CSDL kiểm thử.
+ */
 require_once __DIR__ . '/inc/config.php';
+
+use App\Data\KhoNguoiDung;
 
 $tieuDe = 'Đặt lại mật khẩu';
 $trang = '';
@@ -11,25 +19,8 @@ $thongBaoLoi = '';
 $tokenRaw = $_POST['token'] ?? $_GET['token'] ?? '';
 $token = is_string($tokenRaw) ? $tokenRaw : '';
 
-function timYeuCauDatLai(string $token): ?array
-{
-    if (!preg_match('/\A[a-f0-9]{64}\z/D', $token)) {
-        return null;
-    }
-
-    $st = db()->prepare(
-        'SELECT id, nguoi_dung_id
-         FROM yeu_cau_dat_lai_mat_khau
-         WHERE token_hash = ?
-           AND da_dung_luc IS NULL
-           AND het_han > NOW()'
-    );
-    $st->execute([hash('sha256', $token)]);
-
-    return $st->fetch() ?: null;
-}
-
-$yeuCau = timYeuCauDatLai($token);
+$khoNguoiDung = new KhoNguoiDung(db());
+$yeuCau = $khoNguoiDung->timYeuCauDatLai($token);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $matKhauRaw = $_POST['mat_khau'] ?? '';
@@ -42,42 +33,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (mb_strlen($matKhau) < 6 || $matKhau !== $xacNhan) {
         $thongBaoLoi = 'Mật khẩu phải có ít nhất 6 ký tự và hai lần nhập phải giống nhau.';
     } else {
-        $pdo = db();
-        $pdo->beginTransaction();
-
-        try {
-            $capNhatMatKhau = $pdo->prepare(
-                'UPDATE nguoi_dung SET mat_khau = ? WHERE id = ?'
-            );
-            $capNhatMatKhau->execute([
-                password_hash($matKhau, PASSWORD_DEFAULT),
-                (int) $yeuCau['nguoi_dung_id'],
-            ]);
-
-            $danhDauDaDung = $pdo->prepare(
-                'UPDATE yeu_cau_dat_lai_mat_khau
-                 SET da_dung_luc = NOW()
-                 WHERE id = ? AND da_dung_luc IS NULL'
-            );
-            $danhDauDaDung->execute([(int) $yeuCau['id']]);
-
-            $xoaPhienGhiNho = $pdo->prepare(
-                'DELETE FROM phien_ghi_nho WHERE nguoi_dung_id = ?'
-            );
-            $xoaPhienGhiNho->execute([(int) $yeuCau['nguoi_dung_id']]);
-
-            $pdo->commit();
-        } catch (Throwable $loi) {
-            $pdo->rollBack();
-            throw $loi;
+        if ($khoNguoiDung->datLaiMatKhau($token, password_hash($matKhau, PASSWORD_DEFAULT))) {
+            xoaCookieGhiNho();
+            $_SESSION = [];
+            session_regenerate_id(true);
+            header('Location: dang-nhap.php?dat_lai=1', true, 303);
+            exit;
         }
-
-        xoaCookieGhiNho();
-        $_SESSION = [];
-        session_regenerate_id(true);
-
-        header('Location: dang-nhap.php?dat_lai=1');
-        exit;
+        $yeuCau = null;
+        $thongBaoLoi = 'Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.';
     }
 }
 

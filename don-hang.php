@@ -4,6 +4,7 @@
  * Chức năng 5: Danh sách + Chi tiết kế hoạch học tập.
  * - Khách hàng chỉ xem được đơn của mình (WHERE nguoi_dung_id = ?).
  * - Admin xem được tất cả và đổi trạng thái (POST + CSRF + rowCount).
+ * Thử: khách xem đơn của mình, đổi ID của người khác và admin cập nhật trạng thái.
  */
 declare(strict_types=1);
 require_once __DIR__ . '/inc/config.php';
@@ -39,13 +40,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     if (!$laQuanTri) {
         yeuCauQuyen('quan_tri');
     }
-<<<<<<< Updated upstream
     $token = $_POST['_csrf'] ?? null;
     if (!is_string($token) || !csrfKiemTra($token)) {
-=======
-    // Kiểm tra CSRF
-    if (!csrfKiemTra($_POST['_csrf'] ?? null)) {
->>>>>>> Stashed changes
         $_SESSION['flash_error'] = 'Phiên làm việc đã hết hạn.';
         header('Location: don-hang.php', true, 303);
         exit;
@@ -100,7 +96,7 @@ if ($id !== false && $id > 0) {
     require __DIR__ . '/inc/header.php';
     ?>
     <main class="noi-dung-chinh" style="padding: 20px; max-width: 900px; margin: 0 auto; font-family: Arial, sans-serif;">
-        <h1 style="color: #1a365d; margin-bottom: 20px;">Chi tiết kế hoạch #<?= (int) $keHoach['id'] ?></h1>
+        <h1 style="color: #1a365d; margin-bottom: 20px;">Chi tiết kế hoạch #<?= e((int) $keHoach['id']) ?></h1>
 
         <!-- THÔNG BÁO FLASH -->
         <?php if (isset($_SESSION['flash_success'])): ?>
@@ -143,15 +139,15 @@ if ($id !== false && $id > 0) {
                 <tr>
                     <td style="padding: 12px; border: 1px solid #ddd;"><code><?= e($ct['ma_mon']) ?></code></td>
                     <td style="padding: 12px; border: 1px solid #ddd;"><?= e($ct['ten_mon']) ?></td>
-                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center;"><?= (int)$ct['so_tin_chi'] ?></td>
-                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center;"><?= (int)$ct['so_luong'] ?></td>
-                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold;"><?= (int)$t ?></td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center;"><?= e((int)$ct['so_tin_chi']) ?></td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center;"><?= e((int)$ct['so_luong']) ?></td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold;"><?= e((int)$t) ?></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>
         </table>
         
-        <p style="text-align: right; font-size: 1.2rem;"><strong>Tổng tín chỉ tích lũy:</strong> <span style="color: #0d6efd; font-weight: bold;"><?= (int)$tong ?></span></p>
+        <p style="text-align: right; font-size: 1.2rem;"><strong>Tổng tín chỉ tích lũy:</strong> <span style="color: #0d6efd; font-weight: bold;"><?= e((int)$tong) ?></span></p>
 
         <!-- FORM ĐỔI TRẠNG THÁI (Chỉ hiện với Admin) -->
         <?php if ($laQuanTri): ?>
@@ -159,7 +155,7 @@ if ($id !== false && $id > 0) {
             <h3 style="margin-top: 0; color: #1a365d;">Quản trị viên: Đổi trạng thái</h3>
             <form method="post" style="display: flex; gap: 15px; align-items: center;">
                 <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
-                <input type="hidden" name="id" value="<?= (int)$keHoach['id'] ?>">
+                <input type="hidden" name="id" value="<?= e((int)$keHoach['id']) ?>">
                 
                 <select name="trang_thai" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 1rem;">
                     <?php foreach (KhoKeHoach::TRANG_THAI_HOP_LE as $tt): ?>
@@ -214,7 +210,7 @@ require __DIR__ . '/inc/header.php';
             <tbody>
             <?php foreach ($dsKeHoach as $k): ?>
                 <tr style="border-bottom: 1px solid #eee;">
-                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold;">#<?= (int)$k['id'] ?></td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold;">#<?= e((int)$k['id']) ?></td>
                     <?php if ($laQuanTri): ?>
                         <td style="padding: 12px; border: 1px solid #ddd;">
                             <?= e((string) $k['ho_ten']) ?><br>
@@ -222,13 +218,13 @@ require __DIR__ . '/inc/header.php';
                         </td>
                     <?php endif; ?>
                     <td style="padding: 12px; border: 1px solid #ddd;"><?= e((string) $k['ngay_tao']) ?></td>
-                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center;"><?= (int)$k['so_mon'] ?></td>
-                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center; color: #0d6efd; font-weight: bold;"><?= (int)$k['tong_tin_chi'] ?></td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center;"><?= e((int)$k['so_mon']) ?></td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center; color: #0d6efd; font-weight: bold;"><?= e((int)$k['tong_tin_chi']) ?></td>
                     <td style="padding: 12px; border: 1px solid #ddd;">
                         <?= e(KhoKeHoach::nhanTrangThai((string) $k['trang_thai'])) ?>
                     </td>
                     <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">
-                        <a href="don-hang.php?id=<?= (int)$k['id'] ?>" style="color: #0d6efd; text-decoration: none; font-weight: bold;">Xem chi tiết</a>
+                        <a href="don-hang.php?id=<?= e((int)$k['id']) ?>" style="color: #0d6efd; text-decoration: none; font-weight: bold;">Xem chi tiết</a>
                     </td>
                 </tr>
             <?php endforeach; ?>

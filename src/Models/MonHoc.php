@@ -2,6 +2,7 @@
 /**
  * Tệp: src/Models/MonHoc.php
  * Chức năng: Lớp thực thể đại diện cho một môn học.
+ * Thử GET api/san-pham.php?id=1: JSON chỉ có các trường được jsonSerialize cho phép.
  */
 
 namespace App\Models;
@@ -25,10 +26,12 @@ class MonHoc implements \JsonSerializable
     public $ketQua;
     public $trangThai;
     public $anh;
+    public int $soCho;
 
     public function __construct(array $data = [])
     {
         $this->id = $data['id'] ?? null;
+        $this->soCho = (int) ($data['so_cho'] ?? 0);
         $this->maMon = $data['maMon'] ?? $data['ma_mon'] ?? '';
         $this->tenMon = $data['tenMon'] ?? $data['ten_mon'] ?? $data['ten'] ?? '';
         $this->soTinChi = isset($data['soTinChi'])

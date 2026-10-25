@@ -4,6 +4,7 @@ declare(strict_types=1);
 /**
  * Đọc và ghi liên hệ JSONL, trả bản mới nhất trước.
  * Kiểm tra lỗi đọc/ghi thay vì truyền false vào xử lý mảng.
+ * Thử gửi liên hệ rồi xem quản trị; hiện còn dùng JSONL, chưa chuyển sang PDO.
  */
 namespace App\Data;
 

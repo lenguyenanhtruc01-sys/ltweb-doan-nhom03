@@ -4,6 +4,7 @@ declare(strict_types=1);
 /**
  * Tệp: src/Data/KhoMonHoc.php
  * Chức năng: Lớp truy cập dữ liệu cho môn học (đã chuyển sang MySQL).
+ * Thử qua danh sách/chi tiết: tìm, lọc, phân trang, ID đúng và ID không tồn tại.
  */
 
 namespace App\Data;

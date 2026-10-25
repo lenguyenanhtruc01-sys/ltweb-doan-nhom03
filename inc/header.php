@@ -24,7 +24,8 @@ try {
 }
 
 // Lấy tên người dùng đã đăng nhập từ session.
-$nguoiDung = $_SESSION['user'] ?? $_SESSION['ho_ten'] ?? null;
+$taiKhoanHeader = nguoiDung();
+$nguoiDung = $taiKhoanHeader['ho_ten'] ?? null;
 
 if (!is_string($nguoiDung) || $nguoiDung === '') {
     $nguoiDung = null;
@@ -172,7 +173,8 @@ if (!is_string($nguoiDung) || $nguoiDung === '') {
                 <li class="dieu-huong__muc">
                     <a
                         class="dieu-huong__lien-ket <?= $trang === 'quan-tri' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>"
-                        href="<?= e($goc) ?>quan-tri.php"
+                        href="<?= e($goc . (($taiKhoanHeader['vai_tro'] ?? '') === 'quan_tri'
+                            ? 'quan-tri.php' : 'thanhvien/3120224064_hop/gioithieu.php#binh-chon')) ?>"
                         <?= $trang === 'quan-tri' ? 'aria-current="page"' : '' ?>>
                         <?= e($nguoiDung) ?>
                     </a>

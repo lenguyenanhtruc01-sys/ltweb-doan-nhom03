@@ -43,7 +43,7 @@ require __DIR__ . '/inc/header.php';
             <p class="quan-tri__loi-chao">
                 Xin chào,
                 <strong>
-                    <?= e($_SESSION['ho_ten'] ?? 'Admin') ?>
+                    <?= e($compteAdmin['ho_ten']) ?>
                 </strong>
             </p>
         </div>

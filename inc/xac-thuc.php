@@ -11,12 +11,15 @@ function nguoiDung(): ?array
 
     if ($nd === false) {
         // Nếu chưa có session uid thì trả về null luôn
-        if (empty($_SESSION['uid'])) {
+        $raw = $_SESSION['uid'] ?? null;
+        $uid = (is_string($raw) || is_int($raw))
+            ? filter_var($raw, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) : false;
+        if ($uid === false) {
             return $nd = null;
         }
 
         $st = db()->prepare('SELECT id, ten_dang_nhap, ho_ten, vai_tro FROM nguoi_dung WHERE id = ?');
-        $st->execute([$_SESSION['uid']]);
+        $st->execute([$uid]);
         $user = $st->fetch();
         
         $nd = $user ? $user : null;

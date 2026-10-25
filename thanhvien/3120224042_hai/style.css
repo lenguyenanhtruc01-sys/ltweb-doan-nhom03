@@ -49,14 +49,14 @@ body {
 }
 
 /* Header & Nav */
-header {
+.container header {
     background: var(--primary-color);
     color: var(--white);
     padding: 20px 0;
     text-align: center;
 }
 
-nav {
+.container nav {
     background: var(--white);
     padding: 15px;
     text-align: center;
@@ -65,7 +65,7 @@ nav {
     transition: background-color 0.3s;
 }
 
-nav ul {
+.container nav ul {
     list-style: none;
     display: flex;
     justify-content: center;
@@ -73,7 +73,7 @@ nav ul {
     flex-wrap: wrap;
 }
 
-nav a {
+.container nav a {
     text-decoration: none;
     color: var(--primary-color);
     font-weight: bold;
@@ -82,7 +82,7 @@ nav a {
     transition: background 0.3s;
 }
 
-nav a:hover {
+.container nav a:hover {
     background: #f0f0f0;
 }
 
@@ -204,11 +204,20 @@ ul {
     margin-bottom: 4px;
 }
 
-footer {
-    text-align: center;
-    padding: 20px;
-    margin-top: 40px;
-    color: var(--text-muted);
+/* Thống kê là một hàng nội dung, nằm trước footer của khung trang chung. */
+.container > .thong-ke-luot-xem {
+    grid-column: 1 / -1;
+}
+
+.thong-ke-luot-xem h2 {
+    display: block;
+}
+
+.thong-ke-luot-xem table {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
 }
 
 /* ========================================= */
@@ -220,10 +229,10 @@ body.dark-mode {
 }
 
 /* Đổi màu nền của thanh Nav và các khối nội dung sang xám đen */
-body.dark-mode nav,
-body.dark-mode section,
-body.dark-mode article,
-body.dark-mode .table-container {
+body.dark-mode .container nav,
+body.dark-mode .container section,
+body.dark-mode .container article,
+body.dark-mode .container .table-container {
     background-color: #2d2d2d;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     color: #e0e0e0;
@@ -233,12 +242,12 @@ body.dark-mode .table-container {
 body.dark-mode h2, 
 body.dark-mode h3,
 body.dark-mode .tkb-table strong,
-body.dark-mode nav a {
+body.dark-mode .container nav a {
     color: #ffc72c;
 }
 
 /* Hover trên thanh Nav khi ở chế độ tối */
-body.dark-mode nav a:hover {
+body.dark-mode .container nav a:hover {
     background-color: #444;
 }
 

@@ -79,7 +79,7 @@ $thoiGianConLai = $ngayHienTai->diff($ngayBaoVe);
 $tieuDe = 'Lê Dương Hoàng Hải | Giới thiệu cá nhân';
 $trang  = 'gioi-thieu';
 $goc    = '../../';
-$cssTrang = 'style.css';
+$cssTrang = 'style.css?v=' . filemtime(__DIR__ . '/style.css');
 $scriptsTrang = ['thanhvien/3120224042_hai/js/canhan.js'];
 require_once __DIR__ . '/../../inc/header.php';
 ?>
@@ -224,9 +224,7 @@ require_once __DIR__ . '/../../inc/header.php';
             </div>
         </div>
     </div>
-</main>
-
-<section class="container" aria-labelledby="tieu-de-luot-xem">
+<section class="thong-ke-luot-xem" aria-labelledby="tieu-de-luot-xem">
     <h2 id="tieu-de-luot-xem">Lượt xem trang cá nhân trong 7 ngày gần nhất</h2>
     <table>
         <thead><tr><th scope="col">Ngày</th><th scope="col">Tổng lượt xem</th></tr></thead>
@@ -240,8 +238,9 @@ require_once __DIR__ . '/../../inc/header.php';
         </tbody>
     </table>
 </section>
+</main>
 
 <?php 
 // 3. Nạp Footer dùng chung
-require_once __DIR__ . '/../../inc/footer.php'; 
+require_once ___DIR___ . '/../../inc/footer.php'; 
 ?>

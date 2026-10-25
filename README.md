@@ -27,7 +27,13 @@ Website PHP hỗ trợ sinh viên tra cứu môn học, lập kế hoạch học
    C:\xampp\php\php.exe database\cai-dat.php
    ```
 
+<<<<<<< HEAD
    Máy mới: bộ cài tạo `ltweb_nhom03`, nạp `schema.sql` và `seed.sql`, có đủ tài khoản mẫu. Máy đã có dữ liệu: tự sao lưu các bảng vào tệp SQL ngoài webroot (đường dẫn được in ra), bổ sung bảng/cột và môn còn thiếu, giữ mật khẩu/giỏ/kế hoạch cũ, đồng thời thêm dữ liệu trang cá nhân Uyên còn thiếu. Bộ cài không chạy `DROP DATABASE`.
+=======
+   Bộ cài tạo đủ bảng và bổ sung dữ liệu còn thiếu ở cả máy mới, máy có bản cũ và máy đã tạo bảng nhưng chưa nạp seed. Trước khi nâng cấp máy có dữ liệu, nó sao lưu các bảng vào tệp SQL ngoài webroot (đường dẫn được in ra). Mật khẩu, quyền, giỏ, yêu thích, chủ trang và kế hoạch hiện có được giữ nguyên.
+
+   Dữ liệu mẫu được đối chiếu bằng tên đăng nhập, slug danh mục, mã môn và MSSV; không ép ID mẫu lên dữ liệu thật. Bộ cài dùng một CSDL mẫu tạm để kiểm tra schema/seed và gộp dữ liệu, sau đó xóa CSDL tạm đó; **không xóa CSDL dự án**. Tài khoản MySQL chạy bộ cài cần quyền tạo/xóa CSDL (root mặc định của XAMPP đáp ứng).
+>>>>>>> 83d565aea3a081da5a85ede24ea07c4baa32796d
 
 5. Mở http://localhost/ltweb-doan-nhom03/
 

@@ -169,11 +169,6 @@ CREATE TABLE tv_tra_cuu_mang (
     INDEX idx_mssv_id (mssv, id),
     FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
--- Thêm Duy vào bảng thành viên
-INSERT INTO thanh_vien (mssv, ho_ten) 
-VALUES ('3120224034', 'Dương Bảo Duy')
-ON DUPLICATE KEY UPDATE ho_ten = 'Dương Bảo Duy';
-
 -- Bảng lưu danh sách món ăn
 CREATE TABLE IF NOT EXISTS tv_mon_an (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

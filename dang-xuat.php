@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Lưu giỏ vào tài khoản trước khi đăng xuất và đổi mã phiên.
+ * Đăng xuất và đổi mã phiên; giỏ đã được lưu theo từng thao tác.
  * Thử: đăng nhập lại thấy giỏ cũ, tài khoản khác có giỏ riêng.
  */
 
@@ -19,14 +19,7 @@ if (!is_string($token) || !csrfKiemTra($token)) {
     exit('Yêu cầu không hợp lệ.');
 }
 
-$nd = nguoiDung();
-if ($nd !== null) {
-    $gio = new \App\Services\KeHoachHocTap();
-    $gio->layDanhSachChiTiet();
-    (new \App\Data\KhoTrangThaiNguoiDung(db()))->luuGioHang(
-        (int) $nd['id'], $_SESSION['ke_hoach_dang_ky'] ?? []
-    );
-}
+// Không ghi giỏ session cũ đè lên dữ liệu do phiên khác vừa cập nhật.
 xoaGhiNhoHienTai();
 
 $_SESSION = [];

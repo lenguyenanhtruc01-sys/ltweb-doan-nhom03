@@ -32,25 +32,29 @@ class KeHoachHocTap
 
         $this->khoMonHoc = new KhoMonHoc(db());
         $uid = $_SESSION['uid'] ?? null;
-        if (is_int($uid) && $uid > 0 && ($_SESSION['chu_gio_hang'] ?? null) !== $uid) {
+        if (is_int($uid) && $uid > 0) {
             $kho = new KhoTrangThaiNguoiDung(db());
-            $gioDaLuu = $kho->gioHang($uid);
-            $gioKhach = isset($_SESSION['chu_gio_hang']) ? [] : $_SESSION[self::SESSION_KEY];
-            // Môn trùng giữ số lượng đã lưu, không cộng dồn mỗi lần đăng nhập.
-            $gioMoi = $gioDaLuu + $gioKhach;
-            if ($gioMoi !== $gioDaLuu) $kho->luuGioHang($uid, $gioMoi);
-            $_SESSION[self::SESSION_KEY] = $gioMoi;
+            if (!isset($_SESSION['chu_gio_hang'])) {
+                // Chỉ gộp giỏ khách; không ghi lại bản sao cũ của tài khoản.
+                $kho->gopGioKhach($uid, $_SESSION[self::SESSION_KEY]);
+            }
+            $_SESSION[self::SESSION_KEY] = $kho->gioHang($uid);
             $_SESSION['chu_gio_hang'] = $uid;
         }
     }
 
-    private function luu(array $gio): void
+    private function uid(): ?int
     {
         $uid = $_SESSION['uid'] ?? null;
-        if (is_int($uid) && $uid > 0) {
-            (new KhoTrangThaiNguoiDung(db()))->luuGioHang($uid, $gio);
+        return is_int($uid) && $uid > 0 ? $uid : null;
+    }
+
+    private function taiLaiGio(): void
+    {
+        $uid = $this->uid();
+        if ($uid !== null) {
+            $_SESSION[self::SESSION_KEY] = (new KhoTrangThaiNguoiDung(db()))->gioHang($uid);
         }
-        $_SESSION[self::SESSION_KEY] = $gio;
     }
 
     /**
@@ -68,14 +72,19 @@ class KeHoachHocTap
             return false;
         }
 
+        $uid = $this->uid();
+        if ($uid !== null) {
+            (new KhoTrangThaiNguoiDung(db()))->themMon($uid, $id, $soLuong);
+            $this->taiLaiGio();
+            return isset($_SESSION[self::SESSION_KEY][$id]);
+        }
+
         // Không cho thêm trùng môn.
         if (isset($_SESSION[self::SESSION_KEY][$id])) {
             return true;
         }
 
-        $gio = $_SESSION[self::SESSION_KEY];
-        $gio[$id] = $soLuong;
-        $this->luu($gio);
+        $_SESSION[self::SESSION_KEY][$id] = $soLuong;
 
         return true;
     }
@@ -96,13 +105,18 @@ class KeHoachHocTap
             return false;
         }
 
+        $uid = $this->uid();
+        if ($uid !== null) {
+            (new KhoTrangThaiNguoiDung(db()))->capNhatMon($uid, $id, $soLuong);
+            $this->taiLaiGio();
+            return ($_SESSION[self::SESSION_KEY][$id] ?? null) === $soLuong;
+        }
+
         if (!isset($_SESSION[self::SESSION_KEY][$id])) {
             return false;
         }
 
-        $gio = $_SESSION[self::SESSION_KEY];
-        $gio[$id] = $soLuong;
-        $this->luu($gio);
+        $_SESSION[self::SESSION_KEY][$id] = $soLuong;
 
         return true;
     }
@@ -116,13 +130,18 @@ class KeHoachHocTap
             return false;
         }
 
+        $uid = $this->uid();
+        if ($uid !== null) {
+            $daXoa = (new KhoTrangThaiNguoiDung(db()))->xoaMon($uid, $id);
+            $this->taiLaiGio();
+            return $daXoa;
+        }
+
         if (!isset($_SESSION[self::SESSION_KEY][$id])) {
             return false;
         }
 
-        $gio = $_SESSION[self::SESSION_KEY];
-        unset($gio[$id]);
-        $this->luu($gio);
+        unset($_SESSION[self::SESSION_KEY][$id]);
 
         return true;
     }
@@ -132,7 +151,9 @@ class KeHoachHocTap
      */
     public function xoaTatCa(): void
     {
-        $this->luu([]);
+        $uid = $this->uid();
+        if ($uid !== null) (new KhoTrangThaiNguoiDung(db()))->xoaGioHang($uid);
+        $_SESSION[self::SESSION_KEY] = [];
     }
 
     /**
@@ -141,6 +162,7 @@ class KeHoachHocTap
      */
     public function layDanhSachChiTiet(): array
     {
+        $this->taiLaiGio();
         $chiTiet = [];
         $tongSoTinChi = 0;
         $tongSoMon = 0;

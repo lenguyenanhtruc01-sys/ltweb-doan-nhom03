@@ -3,13 +3,12 @@ declare(strict_types=1);
 
 /**
  * Luu gio dang soan va mon yeu thich theo ID tai khoan da xac thuc.
- * Gio dung transaction va INSERT nhieu dong, khong truy van trong vong lap.
- * Thu: dang nhap hai tai khoan, them mon, dang xuat va dang nhap lai.
+ * Moi thao tac chi sua mon dich; gop gio khach bang mot INSERT nhieu dong.
+ * Thu: cung tai khoan tren hai trinh duyet, them/xoa mon roi dang xuat.
  */
 namespace App\Data;
 
 use PDO;
-use Throwable;
 
 final class KhoTrangThaiNguoiDung
 {
@@ -26,7 +25,7 @@ final class KhoTrangThaiNguoiDung
         return $gio;
     }
 
-    public function luuGioHang(int $uid, array $gio): void
+    public function gopGioKhach(int $uid, array $gio): void
     {
         $hopLe = [];
         foreach ($gio as $id => $sl) {
@@ -39,20 +38,43 @@ final class KhoTrangThaiNguoiDung
         foreach (array_keys($monConTonTai) as $id) {
             array_push($thamSo, $uid, $id, $hopLe[$id]);
         }
-        $this->pdo->beginTransaction();
-        try {
-            $xoa = $this->pdo->prepare('DELETE FROM gio_hang_nguoi_dung WHERE nguoi_dung_id = ?');
-            $xoa->execute([$uid]);
-            if ($thamSo !== []) {
-                $dauHoi = implode(',', array_fill(0, intdiv(count($thamSo), 3), '(?, ?, ?)'));
-                $them = $this->pdo->prepare('INSERT INTO gio_hang_nguoi_dung (nguoi_dung_id, mon_hoc_id, so_luong) VALUES ' . $dauHoi);
-                $them->execute($thamSo);
-            }
-            $this->pdo->commit();
-        } catch (Throwable $loi) {
-            if ($this->pdo->inTransaction()) $this->pdo->rollBack();
-            throw $loi;
+        if ($thamSo !== []) {
+            $dauHoi = implode(',', array_fill(0, intdiv(count($thamSo), 3), '(?, ?, ?)'));
+            $them = $this->pdo->prepare(
+                'INSERT INTO gio_hang_nguoi_dung (nguoi_dung_id, mon_hoc_id, so_luong) VALUES ' . $dauHoi
+                . ' ON DUPLICATE KEY UPDATE so_luong = gio_hang_nguoi_dung.so_luong'
+            );
+            $them->execute($thamSo);
         }
+    }
+
+    public function themMon(int $uid, int $id, int $soLuong): void
+    {
+        $st = $this->pdo->prepare(
+            'INSERT INTO gio_hang_nguoi_dung (nguoi_dung_id, mon_hoc_id, so_luong)
+             SELECT ?, id, ? FROM mon_hoc WHERE id = ?
+             ON DUPLICATE KEY UPDATE so_luong = gio_hang_nguoi_dung.so_luong'
+        );
+        $st->execute([$uid, $soLuong, $id]);
+    }
+
+    public function capNhatMon(int $uid, int $id, int $soLuong): void
+    {
+        $st = $this->pdo->prepare('UPDATE gio_hang_nguoi_dung SET so_luong = ? WHERE nguoi_dung_id = ? AND mon_hoc_id = ?');
+        $st->execute([$soLuong, $uid, $id]);
+    }
+
+    public function xoaMon(int $uid, int $id): bool
+    {
+        $st = $this->pdo->prepare('DELETE FROM gio_hang_nguoi_dung WHERE nguoi_dung_id = ? AND mon_hoc_id = ?');
+        $st->execute([$uid, $id]);
+        return $st->rowCount() === 1;
+    }
+
+    public function xoaGioHang(int $uid): void
+    {
+        $st = $this->pdo->prepare('DELETE FROM gio_hang_nguoi_dung WHERE nguoi_dung_id = ?');
+        $st->execute([$uid]);
     }
 
     public function yeuThich(int $uid): array

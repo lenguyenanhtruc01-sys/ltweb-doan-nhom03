@@ -29,6 +29,8 @@ Không mở trực tiếp tệp PHP bằng đường dẫn ổ đĩa.
 
 Database đang dùng: import `database/luu-gio-va-yeu-thich.sql` để thêm hai bảng lưu giỏ và yêu thích theo tài khoản; không import lại schema có `DROP DATABASE`. Bản cài mới đã có hai bảng này trong schema.
 
+Nếu CSDL cũ thiếu cột trạng thái/ghi chú và thông tin môn trong chi tiết kế hoạch: sao lưu rồi chạy `php database/nang-cap-ke-hoach.php`. Script chỉ thêm cột thiếu, điền thông tin môn hiện tại cho chi tiết cũ và giữ nguyên snapshot đã có; chạy lại không tạo trùng dữ liệu. Bản cài mới từ schema không cần bước này.
+
 ### Chạy không cần Apache
 
 ```bash
@@ -40,14 +42,13 @@ Mở http://localhost:8000/index.php; MySQL vẫn cần chạy. PHP cần quyề
 
 ## 3. Tài khoản thử
 
-Đăng nhập bằng **tên đăng nhập hoặc email**. Các tài khoản trong seed hiện tại đều dùng mật khẩu `123456`:
+Đăng nhập bằng **tên đăng nhập hoặc email**. Sau khi cài mới bằng `database/schema.sql` và `database/seed.sql`, cả 3 tài khoản mẫu đều dùng mật khẩu `matkhau123`:
 
 | Tên đăng nhập | Email | Vai trò |
 | --- | --- | --- |
-| `admin` | `admin@edugpa.local` | Quản trị |
-| `truc` | `truc@edugpa.local` | Khách hàng |
-| `duy` | `duy@edugpa.local` | Khách hàng |
-| `uyen` | `uyen@edugpa.local` | Khách hàng |
+| `admin` | `admin@example.com` | Quản trị |
+| `an` | `an@example.com` | Khách hàng |
+| `binh` | `binh@example.com` | Khách hàng |
 
 Đăng nhập tại [dang-nhap.php](dang-nhap.php); quản trị viên được chuyển đến [quan-tri.php](quan-tri.php), khách về trang chủ. Database nâng cấp có thể giữ tài khoản/mật khẩu cũ khác seed.
 
@@ -94,6 +95,7 @@ ltweb-doan-nhom03/
 
 - Môn học, danh mục và người dùng: MySQL `ltweb_nhom03` qua PDO. Dữ liệu JSON của Bài 5 còn trong kho để đối chiếu.
 - Kế hoạch học tập: khách dùng session; tài khoản lưu vào `gio_hang_nguoi_dung`. Đăng nhập gộp giỏ khách, đăng xuất về giỏ khách trống, đăng nhập lại khôi phục giỏ đã lưu.
+- Giỏ tài khoản cập nhật từng môn trong MySQL và đọc lại khi tải trang/API; phiên cũ đăng xuất không ghi đè giỏ của phiên khác. Thao tác xóa hết vẫn chủ động xóa toàn bộ giỏ của tài khoản.
 - Yêu thích: khách dùng localStorage; tài khoản dùng bảng `mon_yeu_thich`, tách riêng theo người dùng. Danh sách localStorage cũ được chuyển vào tài khoản khi đăng nhập.
 - Liên hệ: `storage/lien-he.jsonl`; trang quản trị hiển thị bản ghi mới nhất trước.
 - Ảnh liên hệ: `uploads/`.

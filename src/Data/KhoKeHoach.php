@@ -90,9 +90,18 @@ final class KhoKeHoach
                 ]);
             }
 
-            // Giỏ tài khoản được xóa cùng giao dịch gửi kế hoạch thành công.
-            $xoaGio = $this->db->prepare('DELETE FROM gio_hang_nguoi_dung WHERE nguoi_dung_id = ?');
-            $xoaGio->execute([$nguoiDungId]);
+            // Chỉ xóa các môn/số lượng đã gửi; giữ môn phiên khác vừa thêm/sửa.
+            $dieuKienXoa = [];
+            $thamSoXoa = [$nguoiDungId];
+            foreach ($dsMon as $m) {
+                $dieuKienXoa[] = '(mon_hoc_id = ? AND so_luong = ?)';
+                array_push($thamSoXoa, (int) $m['id'], $soLuongMap[(int) $m['id']]);
+            }
+            $xoaGio = $this->db->prepare(
+                'DELETE FROM gio_hang_nguoi_dung WHERE nguoi_dung_id = ? AND ('
+                . implode(' OR ', $dieuKienXoa) . ')'
+            );
+            $xoaGio->execute($thamSoXoa);
             $this->db->commit();
             return $keHoachId;
         } catch (Throwable $e) {

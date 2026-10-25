@@ -38,7 +38,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             }
             $uidCu = $_SESSION['uid'] ?? null;
             if (is_int($uidCu) && $uidCu !== (int) $nd['id']) {
-                (new \App\Data\KhoTrangThaiNguoiDung(db()))->luuGioHang($uidCu, $_SESSION['ke_hoach_dang_ky'] ?? []);
                 $_SESSION['ke_hoach_dang_ky'] = [];
                 unset($_SESSION['chu_gio_hang']);
             }

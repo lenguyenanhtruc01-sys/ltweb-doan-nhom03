@@ -21,12 +21,16 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     exit;
 }
 
-if (!csrfKiemTra($_POST['_csrf'] ?? null)) {
+$token = $_POST['_csrf'] ?? null;
+if (!is_string($token) || !csrfKiemTra($token)) {
     $_SESSION['flash_error'] = 'Phiên làm việc đã hết hạn, vui lòng thử lại.';
     header('Location: gio-hang.php', true, 303);
     exit;
 }
 
+// Lấy giỏ mới nhất của tài khoản, không gửi bản sao cũ từ trình duyệt khác.
+$gioHienTai = new \App\Services\KeHoachHocTap();
+$gioHienTai->layDanhSachChiTiet();
 $gioSession = $_SESSION['ke_hoach_dang_ky'] ?? [];
 if (!is_array($gioSession) || $gioSession === []) {
     $_SESSION['flash_error'] = 'Kế hoạch đang trống, không thể gửi.';

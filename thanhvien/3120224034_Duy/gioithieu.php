@@ -1,13 +1,6 @@
 <?php
 /**
  * Tệp: thanhvien/3120224034_Duy/gioithieu.php (Duy — Phần B)
-
- * Đã gộp toàn bộ Giao diện + Logic + JavaScript Đồng hồ.
- * Trang cá nhân Dương Bảo Duy — kết hợp giao diện cũ và logic Database mới.
- * Chức năng 1: Máy chọn món ăn hôm nay (Lưu DB tv_mon_an).
- * Chức năng 2: Oẳn tù tì (Lưu DB tv_lich_su_ott, thống kê GROUP BY).
- * Thử: nạp/chọn món, chơi oẳn tù tì, xem thống kê và gửi dữ liệu sai trên CSDL thử.
-
  */
 declare(strict_types=1);
 require __DIR__ . '/../../inc/config.php';
@@ -198,11 +191,6 @@ require __DIR__ . '/../../inc/header.php';
                     <li>😢 Thua: <strong><?= (int)$stOtt['thua'] ?></strong></li>
                     <li>🤝 Hoà: <strong><?= (int)$stOtt['hoa'] ?></strong></li>
                     <li>Tổng: <strong><?= (int)$tongVan ?></strong> ván — Tỉ lệ thắng: <strong><?= $tiLeThang ?>%</strong></li>
-                    <li>🎉 Thắng: <strong><?= e((int) $stOtt['thang']) ?></strong></li>
-                    <li>😢 Thua: <strong><?= e((int) $stOtt['thua']) ?></strong></li>
-                    <li>🤝 Hoà: <strong><?= e((int) $stOtt['hoa']) ?></strong></li>
-                    <li>Tổng: <strong><?= e((int) $tongVan) ?></strong> ván —
-                        Tỉ lệ thắng: <strong><?= e((string) $tiLeThang) ?>%</strong></li>
                 </ul>
             </div>
         </div>
@@ -375,60 +363,6 @@ require __DIR__ . '/../../inc/header.php';
         </div>
     </section>
 </main>
-
-<!-- Giao diện đồng hồ đếm ngược Tết (CSS + JS) -->
-<style>
-    .dh-wrapper {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-        padding: 15px 0;
-    }
-    .dh-item {
-        background: #ffffff;
-        border: 2px solid #fcd34d;
-        border-radius: 12px;
-        padding: 15px 20px;
-        min-width: 80px;
-        text-align: center;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        transition: transform 0.2s;
-    }
-    .dh-item:hover {
-        transform: translateY(-3px);
-    }
-    .dh-so {
-        font-size: 2.2rem;
-        font-weight: 800;
-        color: #dc2626;
-        line-height: 1;
-        font-family: 'Arial', sans-serif;
-    }
-    .dh-nhan {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: #b45309;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-top: 8px;
-    }
-    .dh-colon {
-        font-size: 2rem;
-        font-weight: bold;
-        color: #fcd34d;
-        animation: chopNhay 1s infinite;
-    }
-    @keyframes chopNhay {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.5; }
-    }
-    @media (max-width: 480px) {
-        .dh-item { padding: 10px 12px; min-width: 60px; }
-        .dh-so { font-size: 1.5rem; }
-        .dh-colon { font-size: 1.3rem; }
-    }
-</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

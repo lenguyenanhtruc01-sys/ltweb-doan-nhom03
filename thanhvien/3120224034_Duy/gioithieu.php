@@ -1,14 +1,13 @@
 <?php
 /**
  * Tệp: thanhvien/3120224034_Duy/gioithieu.php (Duy — Phần B)
-<<<<<<< HEAD
+
  * Đã gộp toàn bộ Giao diện + Logic + JavaScript Đồng hồ.
-=======
  * Trang cá nhân Dương Bảo Duy — kết hợp giao diện cũ và logic Database mới.
  * Chức năng 1: Máy chọn món ăn hôm nay (Lưu DB tv_mon_an).
  * Chức năng 2: Oẳn tù tì (Lưu DB tv_lich_su_ott, thống kê GROUP BY).
  * Thử: nạp/chọn món, chơi oẳn tù tì, xem thống kê và gửi dữ liệu sai trên CSDL thử.
->>>>>>> aa15f5075dbdd27de0cab2d739f2cfc6ec41c9d0
+
  */
 declare(strict_types=1);
 require __DIR__ . '/../../inc/config.php';
@@ -195,18 +194,15 @@ require __DIR__ . '/../../inc/header.php';
             <div class="oan-tu-ti__thong-ke">
                 <h3>Thống kê (Lưu DB)</h3>
                 <ul>
-<<<<<<< HEAD
                     <li>🎉 Thắng: <strong><?= (int)$stOtt['thang'] ?></strong></li>
                     <li>😢 Thua: <strong><?= (int)$stOtt['thua'] ?></strong></li>
                     <li>🤝 Hoà: <strong><?= (int)$stOtt['hoa'] ?></strong></li>
                     <li>Tổng: <strong><?= (int)$tongVan ?></strong> ván — Tỉ lệ thắng: <strong><?= $tiLeThang ?>%</strong></li>
-=======
                     <li>🎉 Thắng: <strong><?= e((int) $stOtt['thang']) ?></strong></li>
                     <li>😢 Thua: <strong><?= e((int) $stOtt['thua']) ?></strong></li>
                     <li>🤝 Hoà: <strong><?= e((int) $stOtt['hoa']) ?></strong></li>
                     <li>Tổng: <strong><?= e((int) $tongVan) ?></strong> ván —
                         Tỉ lệ thắng: <strong><?= e((string) $tiLeThang) ?>%</strong></li>
->>>>>>> aa15f5075dbdd27de0cab2d739f2cfc6ec41c9d0
                 </ul>
             </div>
         </div>

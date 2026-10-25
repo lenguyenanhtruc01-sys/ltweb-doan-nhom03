@@ -118,11 +118,22 @@ class KeHoachHocTap
         $tongSoTinChi = 0;
         $tongSoMon = 0;
 
+        $ids = [];
+        foreach ($_SESSION[self::SESSION_KEY] as $id => $soLuong) {
+            if ((is_int($id) || is_string($id)) && ctype_digit((string) $id)
+                && (int) $id > 0 && is_int($soLuong) && $soLuong >= 1 && $soLuong <= 5) {
+                $ids[] = (int) $id;
+            } else {
+                unset($_SESSION[self::SESSION_KEY][$id]);
+            }
+        }
+        $cacMon = $this->khoMonHoc->theoNhieuId($ids);
+
         foreach ($_SESSION[self::SESSION_KEY] as $id => $soLuong) {
             $id = (int) $id;
             $soLuong = (int) $soLuong;
 
-            $mon = $this->khoMonHoc->timTheoId($id);
+            $mon = $cacMon[$id] ?? null;
 
             // Nếu dữ liệu session chứa ID không còn tồn tại,
             // tự loại bỏ khỏi kế hoạch.

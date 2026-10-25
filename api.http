@@ -1,0 +1,70 @@
+# Chức năng 6 — Hợp. VS Code REST Client, dùng cùng cookie giữa các request.
+@goc = http://localhost:8000
+
+### Tìm môn: 200, JSON chỉ có trường công khai
+GET {{goc}}/api/san-pham.php?q=Web
+
+### Chi tiết: 200
+GET {{goc}}/api/san-pham.php?id=1
+
+### Không tồn tại: 404
+GET {{goc}}/api/san-pham.php?id=999999
+
+### ID sai: 400
+GET {{goc}}/api/san-pham.php?id=abc
+
+### Lấy giỏ và token trước khi thêm (cookie được REST Client giữ)
+# @name gio
+GET {{goc}}/api/gio-hang.php
+
+### Thêm: 200, số lượng môn trong kế hoạch giới hạn 1–5
+POST {{goc}}/api/gio-hang.php
+Content-Type: application/json
+X-CSRF-Token: {{gio.response.body.$.csrf}}
+
+{"id":1,"sl":2}
+
+### JSON lỗi: 400
+POST {{goc}}/api/gio-hang.php
+Content-Type: application/json
+
+{id:1}
+
+### Số lượng âm: 422
+POST {{goc}}/api/gio-hang.php
+Content-Type: application/json
+X-CSRF-Token: {{gio.response.body.$.csrf}}
+
+{"id":1,"sl":-3}
+
+### Số lượng vượt giới hạn kế hoạch: 422
+POST {{goc}}/api/gio-hang.php
+Content-Type: application/json
+X-CSRF-Token: {{gio.response.body.$.csrf}}
+
+{"id":1,"sl":6}
+
+### Môn không tồn tại: 404, giỏ không đổi
+POST {{goc}}/api/gio-hang.php
+Content-Type: application/json
+X-CSRF-Token: {{gio.response.body.$.csrf}}
+
+{"id":999999,"sl":1}
+
+### Thiếu token phiên: 401
+POST {{goc}}/api/gio-hang.php
+Content-Type: application/json
+
+{"id":1,"sl":1}
+
+### Phương thức sai: 405 + Allow: GET, POST
+DELETE {{goc}}/api/gio-hang.php
+
+### Phương thức sai: 405 + Allow: GET
+POST {{goc}}/api/san-pham.php
+
+### Tham số mảng: 422, không Warning
+GET {{goc}}/api/san-pham.php?q[]=x
+
+# Kiểm thử 500: dừng MySQL tạm thời hoặc đổi DB_PORT sang cổng không có máy chủ,
+# gọi GET sản phẩm rồi khôi phục cấu hình. Phản hồi chỉ {"loi":"Lỗi máy chủ"}.

@@ -20,6 +20,9 @@ $hopVoteReady = false;
 $hopVoteUserRaw = $_SESSION['uid'] ?? null;
 $hopVoteUser = (is_int($hopVoteUserRaw) || is_string($hopVoteUserRaw))
     ? filter_var($hopVoteUserRaw, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) : false;
+if ($hopVoteUser !== false && nguoiDung() === null) {
+    $hopVoteUser = false;
+}
 if (!is_string($_SESSION['hop_vote_csrf'] ?? null) || $_SESSION['hop_vote_csrf'] === '') {
     $_SESSION['hop_vote_csrf'] = bin2hex(random_bytes(32));
 }

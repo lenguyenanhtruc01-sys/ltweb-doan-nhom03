@@ -104,7 +104,7 @@ require_once __DIR__ . '/../../inc/header.php';
         <form action="gioithieu.php" method="post" enctype="multipart/form-data" style="margin: 10px 0; padding: 10px; background: #f4f4f4; border-radius: 5px;">
             <label for="avatar" style="font-size: 0.9em; font-weight: bold;">Đổi ảnh đại diện (≤ 2MB):</label><br>
             <input type="file" name="avatar" id="avatar" accept="image/jpeg, image/png, image/webp" required style="font-size: 0.85em; margin: 5px 0;">
-            <button type="submit" class="btn-primary" style="padding: 3px 10px; font-size: 0.85em;">Tải lên</button>
+            <button type="submit" class="btn-primary" style="padding: 8px 14px; font-size: 0.85em; background-color: #123b6d; color: #ffffff;">Tải lên</button>
             
             <?php if ($thongBaoAnh !== ''): ?>
                 <p style="color: green; font-size: 0.85em; margin-top: 5px;"><?= e($thongBaoAnh) ?></p>
@@ -132,7 +132,7 @@ require_once __DIR__ . '/../../inc/header.php';
         <p>Xin chào! Mình là sinh viên ngành Công nghệ Thông tin tại Khoa Toán - Tin, Trường Đại học Sư phạm - Đại học Đà Nẵng. Mình đam mê phát triển phần mềm và ứng dụng thị giác máy tính.</p>
         
         <div class="like-section">
-            <button id="btn-like" class="btn-primary" type="button">
+            <button id="btn-like" class="btn-primary" type="button" style="background-color: #123b6d; color: #ffffff;">
                 Ủng hộ Hải: ❤️ <span id="like-count">0</span>
             </button>
         </div>

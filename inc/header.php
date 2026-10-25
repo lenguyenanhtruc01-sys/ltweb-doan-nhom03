@@ -2,18 +2,12 @@
 /**
  * inc/header.php
  * Khung đầu trang dùng chung cho website EduGPA.
- * Hiển thị menu, giỏ hàng và trạng thái đăng nhập.
- * Đánh dấu trang đang xem bằng aria-current.
- * Được nạp sau inc/config.php.
  */
-
-// Các biến dùng chung cho mọi trang.
 $tieuDe ??= 'Trang chủ';
 $trang ??= '';
 $goc ??= '';
 $phienBanCss = filemtime(__DIR__ . '/../css/style.css') ?: 1;
 
-// Lấy tổng số môn từ dịch vụ Kế hoạch học tập OOP
 $soMonTrongGio = 0;
 try {
     $keHoachHeader = new \App\Services\KeHoachHocTap();
@@ -23,9 +17,8 @@ try {
     $soMonTrongGio = 0;
 }
 
-// Lấy tên người dùng đã đăng nhập từ session.
-$thongTinNguoiDung = nguoiDung();
-$nguoiDung = $thongTinNguoiDung['ho_ten'] ?? null;
+$ndHeader  = nguoiDung();
+$nguoiDung = $ndHeader['ho_ten'] ?? $ndHeader['ten_dang_nhap'] ?? null;
 
 if (!is_string($nguoiDung) || $nguoiDung === '') {
     $nguoiDung = null;
@@ -33,178 +26,75 @@ if (!is_string($nguoiDung) || $nguoiDung === '') {
 ?>
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <meta
-        name="description"
-        content="EduGPA hỗ trợ sinh viên tra cứu môn học, theo dõi trạng thái học tập và lưu môn yêu thích.">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EduGPA hỗ trợ sinh viên tra cứu môn học, theo dõi trạng thái học tập và lưu môn yêu thích.">
     <title><?= e($tieuDe) ?> | EduGPA</title>
-
-    <link
-        rel="stylesheet"
-        href="<?= e($goc) ?>css/style.css?v=<?= (int) $phienBanCss ?>">
+    <link rel="stylesheet" href="<?= e($goc) ?>css/style.css?v=<?= (int) $phienBanCss ?>">
     <?php if (!empty($cssTrang)): ?>
     <link rel="stylesheet" href="<?= e($cssTrang) ?>">
     <?php endif; ?>
 </head>
 
-
 <body class="trang<?= !empty($lopBody) ? ' ' . e($lopBody) : '' ?>">
 
-    <!-- HEADER DÙNG CHUNG -->
+    <!-- HEADER TRÊN CÙNG: Chứa Logo và Thông tin User (góc phải) -->
     <header class="dau-trang">
-        <div class="bao dau-trang__noi-dung">
-
-            <div class="dau-trang__cum-thuong-hieu">
-
-                <a
-                    class="thuong-hieu"
-                    href="<?= e($goc) ?>index.php">
-                    EduGPA
-                </a>
-
-                <!-- Giữ chức năng yêu thích của Bài 4 -->
-                <a
-                    class="dau-trang__yeu-thich"
-                    href="<?= e($goc) ?>danh-sach.php">
-
-                    <span aria-hidden="true">♥</span>
-
-                    <span>Yêu thích:</span>
-
-                    <span
-                        data-so-luong-yeu-thich
-                        aria-live="polite"
-                        aria-atomic="true">0</span>
-
-                </a>
-
+        <div class="bao dau-trang__noi-dung" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            
+            <!-- Bên trái: Logo & Yêu thích -->
+            <div class="dau-trang__trai">
+                <div class="dau-trang__cum-thuong-hieu">
+                    <a class="thuong-hieu" href="<?= e($goc) ?>index.php">EduGPA</a>
+                    <a class="dau-trang__yeu-thich" href="<?= e($goc) ?>danh-sach.php">
+                        <span aria-hidden="true">♥</span>
+                        <span>Yêu thích:</span>
+                        <span data-so-luong-yeu-thich aria-live="polite" aria-atomic="true">0</span>
+                    </a>
+                </div>
+                <p class="dau-trang__mo-ta" style="margin-top: 5px;">
+                    Hệ thống hỗ trợ tra cứu và theo dõi thông tin học tập cho sinh viên
+                </p>
             </div>
 
-            <p class="dau-trang__mo-ta">
-                Hệ thống hỗ trợ tra cứu và theo dõi
-                thông tin học tập cho sinh viên
-            </p>
-
+            <!-- Bên phải: Tài khoản / Đăng nhập -->
+            <div class="dau-trang__phai" style="display: flex; align-items: center; gap: 10px;">
+                <?php if ($nguoiDung !== null): ?>
+                    <span style="color: #fff; font-weight: bold; font-size: 1.1em; margin-right: 10px;">
+                        Xin chào, <?= e($nguoiDung) ?>
+                    </span>
+                    <a href="<?= e($goc) ?>don-hang.php" style="background: #0d6efd; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.9em;">Kế hoạch của tôi</a>
+                    <a href="<?= e($goc) ?>dang-xuat.php" style="background: #dc3545; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.9em;">Đăng xuất</a>
+                <?php else: ?>
+                    <a href="<?= e($goc) ?>dang-nhap.php" style="background: #198754; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: bold;">Đăng nhập</a>
+                <?php endif; ?>
+            </div>
         </div>
     </header>
 
-    <!-- MENU CHÍNH -->
-    <nav
-        class="dieu-huong"
-        aria-label="Điều hướng chính">
-
-        <button
-            class="nut-menu"
-            type="button"
-            aria-controls="menu-chinh"
-            aria-expanded="false"
-            aria-label="Mở menu chính">
-
+    <!-- THANH ĐIỀU HƯỚNG: Chỉ chứa các trang chung -->
+    <nav class="dieu-huong" aria-label="Điều hướng chính">
+        <button class="nut-menu" type="button" aria-controls="menu-chinh" aria-expanded="false" aria-label="Mở menu chính">
             <span aria-hidden="true">☰</span>
             <span>Menu</span>
-
         </button>
 
-        <ul
-            id="menu-chinh"
-            class="dieu-huong__danh-sach menu-chinh">
-
-            <!-- Trang chủ -->
+        <ul id="menu-chinh" class="dieu-huong__danh-sach menu-chinh">
             <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket <?= $trang === 'index' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>"
-                    href="<?= e($goc) ?>index.php"
-                    <?= $trang === 'index' ? 'aria-current="page"' : '' ?>>
-                    Trang chủ
-                </a>
+                <a class="dieu-huong__lien-ket <?= $trang === 'index' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>" href="<?= e($goc) ?>index.php" <?= $trang === 'index' ? 'aria-current="page"' : '' ?>>Trang chủ</a>
             </li>
-
-            <!-- Danh sách -->
             <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket <?= $trang === 'danh-sach' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>"
-                    href="<?= e($goc) ?>danh-sach.php"
-                    <?= $trang === 'danh-sach' ? 'aria-current="page"' : '' ?>>
-                    Danh sách
-                </a>
+                <a class="dieu-huong__lien-ket <?= $trang === 'danh-sach' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>" href="<?= e($goc) ?>danh-sach.php" <?= $trang === 'danh-sach' ? 'aria-current="page"' : '' ?>>Danh sách</a>
             </li>
-
-            <!-- Giới thiệu -->
             <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket <?= $trang === 'gioi-thieu' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>"
-                    href="<?= e($goc) ?>gioi-thieu.php"
-                    <?= $trang === 'gioi-thieu' ? 'aria-current="page"' : '' ?>>
-                    Giới thiệu
-                </a>
+                <a class="dieu-huong__lien-ket <?= $trang === 'gioi-thieu' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>" href="<?= e($goc) ?>gioi-thieu.php" <?= $trang === 'gioi-thieu' ? 'aria-current="page"' : '' ?>>Giới thiệu</a>
             </li>
-
-            <!-- Liên hệ -->
             <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket <?= $trang === 'lien-he' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>"
-                    href="<?= e($goc) ?>lien-he.php"
-                    <?= $trang === 'lien-he' ? 'aria-current="page"' : '' ?>>
-                    Liên hệ
-                </a>
+                <a class="dieu-huong__lien-ket <?= $trang === 'lien-he' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>" href="<?= e($goc) ?>lien-he.php" <?= $trang === 'lien-he' ? 'aria-current="page"' : '' ?>>Liên hệ</a>
             </li>
-
-            <!-- Giỏ hàng / Kế hoạch học tập -->
             <li class="dieu-huong__muc">
-                <a
-                    class="dieu-huong__lien-ket <?= $trang === 'gio-hang' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>"
-                    href="<?= e($goc) ?>gio-hang.php"
-                    <?= $trang === 'gio-hang' ? 'aria-current="page"' : '' ?>>
-                    Giỏ hàng (<?= (int) $soMonTrongGio ?>)
-                </a>
+                <a class="dieu-huong__lien-ket <?= $trang === 'gio-hang' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>" href="<?= e($goc) ?>gio-hang.php" <?= $trang === 'gio-hang' ? 'aria-current="page"' : '' ?>>Giỏ hàng (<?= (int) $soMonTrongGio ?>)</a>
             </li>
-
-            <!-- Đăng nhập hoặc người dùng -->
-            <?php if ($thongTinNguoiDung !== null): ?>
-
-    <li class="dieu-huong__muc">
-        <span class="dieu-huong__lien-ket">
-            <?= e($nguoiDung) ?>
-        </span>
-    </li>
-
-    <?php if ($thongTinNguoiDung['vai_tro'] === 'quan_tri'): ?>
-        <li class="dieu-huong__muc">
-            <a
-                class="dieu-huong__lien-ket <?= $trang === 'quan-tri' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>"
-                href="<?= e($goc) ?>quan-tri.php"
-                <?= $trang === 'quan-tri' ? 'aria-current="page"' : '' ?>>
-                Quản trị
-            </a>
-        </li>
-    <?php endif; ?>
-
-    <li class="dieu-huong__muc">
-        <a class="dieu-huong__lien-ket" href="<?= e($goc) ?>dang-xuat.php">
-            Đăng xuất
-        </a>
-    </li>
-
-<?php else: ?>
-
-    <li class="dieu-huong__muc">
-        <a
-            class="dieu-huong__lien-ket <?= $trang === 'dang-nhap' ? 'dieu-huong__lien-ket--hien-tai' : '' ?>"
-            href="<?= e($goc) ?>dang-nhap.php"
-            <?= $trang === 'dang-nhap' ? 'aria-current="page"' : '' ?>>
-            Đăng nhập
-        </a>
-    </li>
-
-<?php endif; ?>
-
         </ul>
     </nav>

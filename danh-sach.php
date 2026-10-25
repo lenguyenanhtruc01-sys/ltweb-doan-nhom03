@@ -1,7 +1,7 @@
 <?php
 /**
  * Tệp: danh-sach.php
- * Chức năng: Hiển thị danh sách môn học từ MySQL (Đã nâng cấp).
+ * Chức năng: Hiển thị danh sách môn học từ MySQL.
  * Hỗ trợ tìm kiếm, lọc theo danh mục, sắp xếp và phân trang.
  */
 
@@ -71,7 +71,7 @@ $danhSach = $kho->trang($loc, $sapXep, $moiTrang, ($trangHienTai - 1) * $moiTran
 // Lấy danh sách Danh mục để làm ô lọc
 $dsDanhMuc = db()->query('SELECT id, ten FROM danh_muc ORDER BY ten')->fetchAll();
 
-// Lấy kế hoạch học tập (Giữ nguyên logic cũ của nhóm bạn)
+// Lấy kế hoạch học tập (Giữ nguyên logic cũ)
 $keHoachHocTap = new KeHoachHocTap();
 $idMonDaThem = [];
 foreach ($keHoachHocTap->layDanhSachChiTiet()['danh_sach'] as $monDaThem) {
@@ -118,7 +118,6 @@ require __DIR__ . '/inc/header.php';
                        value="<?= e($tuKhoa) ?>" placeholder="Nhập tên hoặc mã môn...">
             </div>
 
-            <!-- Đổi Lọc trạng thái thành Lọc danh mục -->
             <div class="form-group">
                 <label for="loc-danh-muc">Danh mục</label>
                 <select id="loc-danh-muc" name="dm" class="form-control">
@@ -135,11 +134,11 @@ require __DIR__ . '/inc/header.php';
                 <label for="tc-toi-da">Tín chỉ tối đa</label>
                 <input
                     type="number"
-                     id="tc-toi-da"
+                    id="tc-toi-da"
                     name="tc_toi_da"
                     class="form-control"
-                     min="1"
-                     max="20"
+                    min="1"
+                    max="20"
                     value="<?= e((string) ($tinChiToiDa ?? '')) ?>"
                     placeholder="Ví dụ: 3">
             </div>
@@ -169,21 +168,27 @@ require __DIR__ . '/inc/header.php';
             <?php else: ?>
                 <?php foreach ($danhSach as $mon): ?>
                     <?php
-                    // Logic class trạng thái cũ của nhóm bạn (giữ nguyên)
+                    // Kiểm tra an toàn: nếu model không có thuộc tính trangThai thì không bị Warning
                     $classTrangThai = 'trang-thai--mac-dinh';
-                    if ($mon->trangThai === 'Đang học') $classTrangThai = 'trang-thai--dang-hoc';
-                    elseif ($mon->trangThai === 'Đã hoàn thành') $classTrangThai = 'trang-thai--hoan-thanh';
-                    elseif ($mon->trangThai === 'Đăng ký mới') $classTrangThai = 'trang-thai--dang-ky';
+                    $coTrangThai = isset($mon->trangThai) && !empty($mon->trangThai);
+                    
+                    if ($coTrangThai) {
+                        if ($mon->trangThai === 'Đang học') $classTrangThai = 'trang-thai--dang-hoc';
+                        elseif ($mon->trangThai === 'Đã hoàn thành') $classTrangThai = 'trang-thai--hoan-thanh';
+                        elseif ($mon->trangThai === 'Đăng ký mới') $classTrangThai = 'trang-thai--dang-ky';
+                    }
                     ?>
 
                     <article class="the-san-pham">
-                        <img src="<?= e($mon->anh) ?>" alt="<?= e($mon->tenMon) ?>" width="400" height="250" loading="lazy">
+                        <!-- Đã sửa đường dẫn ảnh: Thêm thư mục images/ và xử lý ảnh mặc định -->
+                        <img src="images/<?= e($mon->anh ?? 'no-image.jpg') ?>" alt="<?= e($mon->tenMon) ?>" width="400" height="250" style="object-fit: cover;" loading="lazy">
+                        
                         <div class="the-san-pham__than">
                             <h3><?= e($mon->tenMon) ?></h3>
                             <p><strong>Mã môn:</strong> <?= e($mon->maMon) ?></p>
                             <p><strong>Số tín chỉ:</strong> <?= e((string) $mon->soTinChi) ?></p>
                             
-                            <?php if (!empty($mon->trangThai)): ?>
+                            <?php if ($coTrangThai): ?>
                                 <p><strong>Trạng thái:</strong>
                                     <span class="trang-thai <?= e($classTrangThai) ?>"><?= e($mon->trangThai) ?></span>
                                 </p>
@@ -191,21 +196,22 @@ require __DIR__ . '/inc/header.php';
 
                             <div class="the-san-pham__hanh-dong">
                                 <div class="the-san-pham__o-xanh">
-    <a class="the-san-pham__lien-ket" href="chi-tiet.php?id=<?= e((string) $mon->id) ?>">
-        Xem chi tiết &rarr;
-    </a>
+                                    <a class="the-san-pham__lien-ket" href="chi-tiet.php?id=<?= e((string) $mon->id) ?>">
+                                        Xem chi tiết &rarr;
+                                    </a>
 
-    <button
-        type="button"
-        class="nut-yeu-thich"
-        data-yeu-thich-id="<?= e((string) $mon->id) ?>"
-        aria-pressed="false"
-        aria-label="Thêm vào yêu thích"
-    >
-        <span class="nut-yeu-thich__icon" aria-hidden="true">♡</span>
-        <span class="visually-hidden" data-nhan-yeu-thich>Thêm vào yêu thích</span>
-    </button>
-</div>
+                                    <button
+                                        type="button"
+                                        class="nut-yeu-thich"
+                                        data-yeu-thich-id="<?= e((string) $mon->id) ?>"
+                                        aria-pressed="false"
+                                        aria-label="Thêm vào yêu thích"
+                                    >
+                                        <span class="nut-yeu-thich__icon" aria-hidden="true">♡</span>
+                                        <span class="visually-hidden" data-nhan-yeu-thich>Thêm vào yêu thích</span>
+                                    </button>
+                                </div>
+                                
                                 <form action="gio-hang.php" method="post" class="form-them-ke-hoach">
                                     <input type="hidden" name="quay_lai" value="danh-sach.php">
                                     <input type="hidden" name="hanh_dong" value="them">
@@ -222,7 +228,7 @@ require __DIR__ . '/inc/header.php';
             <?php endif; ?>
         </div>
 
-        <!-- THÊM THANH PHÂN TRANG -->
+        <!-- THANH PHÂN TRANG -->
         <?php if ($soTrang > 1): ?>
             <nav aria-label="Phân trang" style="margin-top: 30px; text-align: center;">
                 <ul class="pagination" style="display: inline-flex; gap: 8px; list-style: none; padding: 0;">

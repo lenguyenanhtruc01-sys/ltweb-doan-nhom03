@@ -9,7 +9,12 @@ use App\Data\KhoBinhChon;
 <section class="the-noi-dung" id="binh-chon" aria-labelledby="tieu-de-binh-chon">
     <h2 class="the-noi-dung__tieu-de" id="tieu-de-binh-chon">Bình chọn trang cá nhân</h2>
     <p>Bạn đánh giá thế nào về trang cá nhân của Phan Văn Hợp?</p>
-    <?php if ($hopVoteMessage !== ''): ?><p role="status"><?= e($hopVoteMessage) ?></p><?php endif; ?>
+    <?php if ($hopVoteMessage !== ''): ?>
+        <p class="thong-bao-ke-hoach <?= in_array($hopVoteMessage, ['Bình chọn thành công.', 'Bạn đã bình chọn rồi'], true)
+            ? 'thong-bao-ke-hoach--thanh-cong' : 'thong-bao-ke-hoach--loi' ?>" role="status" aria-live="polite">
+            <?= e($hopVoteMessage) ?>
+        </p>
+    <?php endif; ?>
     <?php if ($hopVoteError !== ''): ?>
         <p role="status"><?= e($hopVoteError) ?></p>
     <?php else: ?>

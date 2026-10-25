@@ -263,9 +263,15 @@ body.dark-mode .tkb-table td {
     border-radius: 5px;
     border: 2px solid #ffc72c;
     background-color: #fff;
+    color: #123b6d;
     font-weight: bold;
     font-size: 16px;
     transition: 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #123b6d;
+    color: #fff;
 }
 
 /* Hiệu ứng khi nhấn giữ nút Thả tim */

@@ -1,14 +1,14 @@
 <?php
 /**
  * Tệp: thanhvien/3120224034_Duy/gioithieu.php (Duy — Phần B)
- * Trang cá nhân Dương Bảo Duy — dùng chung header/footer của nhóm.
- * Chức năng 1: Máy chọn món ăn hôm nay (POST + PRG, session). Có AJAX.
- * Chức năng 2: Oẳn tù tì vs Máy (POST + PRG, session, thống kê). Có AJAX.
- * Fallback: tắt JS vẫn chạy bình thường qua POST thường.
- * Thử: /thanhvien/3120224034_Duy/gioithieu.php
+ * Trang cá nhân Dương Bảo Duy — kết hợp giao diện cũ và logic Database mới.
+ * Chức năng 1: Máy chọn món ăn hôm nay (Lưu DB tv_mon_an).
+ * Chức năng 2: Oẳn tù tì (Lưu DB tv_lich_su_ott, thống kê GROUP BY).
  */
 declare(strict_types=1);
 require __DIR__ . '/../../inc/config.php';
+
+const MSSV_DUY = '3120224034';
 
 $goc      = '../../';
 $tieuDe   = 'Giới thiệu — Dương Bảo Duy';
@@ -18,14 +18,13 @@ $lopBody  = 'trang-ca-nhan';
 
 $hanhDong = layChuoiDauVao($_POST['hanh_dong'] ?? '');
 
-// Phát hiện AJAX (JS gửi kèm header X-Requested-With)
+// Phát hiện AJAX (nếu có JS gửi lên)
 $laAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH'])
     && strtolower((string) $_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
 
 /** Trả JSON rồi dừng. */
 function traJson(array $data): void
 {
-    // Fetch tự theo redirect sang GET, vẫn giữ giao diện không tải lại trang.
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($data['ok'] ?? false) === true) {
         $ma = bin2hex(random_bytes(16));
         $_SESSION['duy_phan_hoi'][$ma] = $data;
@@ -39,7 +38,7 @@ function traJson(array $data): void
     exit;
 }
 
-// GET phản hồi AJAX chỉ đọc một lần sau PRG; không thực hiện lại thao tác.
+// GET phản hồi AJAX
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['phan_hoi'])) {
     $ma = layChuoiDauVao($_GET['phan_hoi']);
     if (preg_match('/^[a-f0-9]{32}$/D', $ma) !== 1 || !isset($_SESSION['duy_phan_hoi'][$ma])) {
@@ -51,9 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['phan_hoi'])) {
     traJson($phanHoi);
 }
 
-// ============================================================
-// CHỨC NĂNG 1 — MÁY CHỌN MÓN ĂN
-// ============================================================
 $monMacDinh = [
     'Phở bò','Phở gà','Bún bò Huế','Bún chả','Bún riêu','Bánh mì thịt','Bánh mì trứng',
     'Cơm tấm','Cơm gà','Cơm rang','Cơm chiên','Xôi gà','Xôi đậu','Cháo lòng','Cháo cá',
@@ -66,39 +62,36 @@ $buaChoPhep = [
     'toi'    => 'Tối',    'dem'  => 'Đêm',
 ];
 
-$loiMon    = [];
-$dsMonNhap = $_SESSION['duy_mon_an_list'] ?? [];
-$ketQuaMon = $_SESSION['duy_mon_an_ket_qua'] ?? null;
-$lichSuMon = $_SESSION['duy_mon_an_lich_su'] ?? [];
+$loiMon = [];
 
-// ============================================================
-// CHỨC NĂNG 2 — OẲN TÙ TÌ
-// ============================================================
 $labelChon   = ['keo' => '✊ Kéo', 'bua' => '✋ Búa', 'bao' => '✌️ Bao'];
 $labelKetQua = ['thang' => '🎉 Thắng', 'thua' => '😢 Thua', 'hoa' => '🤝 Hoà'];
 
 // ============================================================
-// XỬ LÝ POST
+// XỬ LÝ POST VỚI DATABASE
 // ============================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // ---------- Chức năng 1: nạp món mặc định ----------
+    // ---------- Nạp món mặc định ----------
     if ($hanhDong === 'dung_mac_dinh') {
-        $_SESSION['duy_mon_an_list'] = $monMacDinh;
-        $_SESSION['flash_duy'] = 'Đã nạp 30 món Việt mặc định!';
-        header('Location: gioithieu.php#chon-mon');
-        exit;
+        db()->prepare('DELETE FROM tv_mon_an WHERE mssv = ?')->execute([MSSV_DUY]);
+        $st = db()->prepare('INSERT INTO tv_mon_an (mssv, ten_mon, bua) VALUES (?, ?, ?)');
+        foreach ($monMacDinh as $m) {
+            $st->execute([MSSV_DUY, $m, 'bat_ky']);
+        }
+        $_SESSION['flash_duy'] = 'Đã nạp 30 món Việt mặc định vào CSDL!';
+        header('Location: gioithieu.php#chon-mon'); exit;
     }
 
-    // ---------- Chức năng 1: xoá lịch sử ----------
+    // ---------- Xoá lịch sử món ----------
     if ($hanhDong === 'xoa_lich_su_mon') {
+        db()->prepare('DELETE FROM tv_mon_an WHERE mssv = ?')->execute([MSSV_DUY]);
         unset($_SESSION['duy_mon_an_lich_su']);
-        $_SESSION['flash_duy'] = 'Đã xoá lịch sử chọn món.';
-        header('Location: gioithieu.php#chon-mon');
-        exit;
+        $_SESSION['flash_duy'] = 'Đã xoá toàn bộ danh sách món ăn.';
+        header('Location: gioithieu.php#chon-mon'); exit;
     }
 
-    // ---------- Chức năng 1: chọn món ----------
+    // ---------- Chọn món ----------
     if ($hanhDong === 'chon_mon') {
         $dsMonText = layChuoiDauVao($_POST['dsMon'] ?? '');
         $bua       = layChuoiDauVao($_POST['bua'] ?? 'bat_ky');
@@ -112,13 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $loiMon['dsMon'] = 'Cần ít nhất 2 món (mỗi dòng 1 món).';
         } elseif (count($mangMon) > 50) {
             $loiMon['dsMon'] = 'Tối đa 50 món.';
-        } else {
-            foreach ($mangMon as $m) {
-                if (mb_strlen($m) > 50) {
-                    $loiMon['dsMon'] = 'Mỗi tên món tối đa 50 ký tự.';
-                    break;
-                }
-            }
         }
 
         if (!isset($buaChoPhep[$bua])) {
@@ -130,18 +116,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (!$loiMon) {
-            $monChon  = $mangMon[array_rand($mangMon)];
+            // Lưu vào DB
+            db()->prepare('DELETE FROM tv_mon_an WHERE mssv = ?')->execute([MSSV_DUY]);
+            $st = db()->prepare('INSERT INTO tv_mon_an (mssv, ten_mon, bua) VALUES (?, ?, ?)');
+            foreach ($mangMon as $m) {
+                $st->execute([MSSV_DUY, $m, $bua]);
+            }
+            
+            // Random từ DB
+            $st = db()->prepare('SELECT ten_mon FROM tv_mon_an WHERE mssv = ? ORDER BY RAND() LIMIT 1');
+            $st->execute([MSSV_DUY]);
+            $monChon = $st->fetchColumn();
             $thoiGian = date('H:i:s d/m/Y');
 
-            $_SESSION['duy_mon_an_list']    = $mangMon;
             $_SESSION['duy_mon_an_ket_qua'] = [
                 'mon' => $monChon, 'bua' => $bua, 'thoiGian' => $thoiGian,
             ];
 
             $ls = $_SESSION['duy_mon_an_lich_su'] ?? [];
             array_unshift($ls, ['mon' => $monChon, 'bua' => $bua, 'thoiGian' => $thoiGian]);
-            $ls = array_slice($ls, 0, 5);
-            $_SESSION['duy_mon_an_lich_su'] = $ls;
+            $_SESSION['duy_mon_an_lich_su'] = array_slice($ls, 0, 5);
 
             if ($laAjax) {
                 traJson([
@@ -155,30 +149,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             'buaLabel' => $buaChoPhep[$m['bua']] ?? $m['bua'],
                             'thoiGian' => $m['thoiGian'],
                         ],
-                        $ls
+                        $_SESSION['duy_mon_an_lich_su']
                     ),
                 ]);
             }
-
-            header('Location: gioithieu.php#chon-mon');
-            exit;
+            header('Location: gioithieu.php#chon-mon'); exit;
         }
-
         $dsMonNhap = $mangMon;
     }
 
-    // ---------- Chức năng 2: chơi oẳn tù tì ----------
+    // ---------- Chơi oẳn tù tì ----------
     if ($hanhDong === 'choi_oan_tu_ti') {
         $nguoiChon = layChuoiDauVao($_POST['chon'] ?? '');
         $hopLe = ['keo', 'bua', 'bao'];
 
         if (!in_array($nguoiChon, $hopLe, true)) {
-            if ($laAjax) {
-                traJson(['ok' => false, 'loi' => ['chon' => 'Lựa chọn không hợp lệ.']]);
-            }
+            if ($laAjax) traJson(['ok' => false, 'loi' => ['chon' => 'Lựa chọn không hợp lệ.']]);
             $_SESSION['flash_duy'] = 'Lựa chọn không hợp lệ, chơi lại nhé!';
-            header('Location: gioithieu.php#oan-tu-ti');
-            exit;
+            header('Location: gioithieu.php#oan-tu-ti'); exit;
         }
 
         $mayChon   = $hopLe[array_rand($hopLe)];
@@ -192,25 +180,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ketQua = 'thua';
         }
 
-        if (!isset($_SESSION['duy_oan_tu_ti']) || !is_array($_SESSION['duy_oan_tu_ti'])) {
-            $_SESSION['duy_oan_tu_ti'] = [
-                'thang' => 0, 'thua' => 0, 'hoa' => 0, 'lich_su' => [],
-            ];
-        }
-
-        $st = &$_SESSION['duy_oan_tu_ti'];
-        $st[$ketQua]++;
-        array_unshift($st['lich_su'], [
-            'nguoi'    => $nguoiChon,
-            'may'      => $mayChon,
-            'ketQua'   => $ketQua,
-            'thoiGian' => date('H:i:s d/m/Y'),
-        ]);
-        $st['lich_su'] = array_slice($st['lich_su'], 0, 10);
+        // Lưu vào DB
+        $st = db()->prepare('INSERT INTO tv_lich_su_ott (mssv, nguoi_chon, may_chon, ket_qua) VALUES (?, ?, ?, ?)');
+        $st->execute([MSSV_DUY, $nguoiChon, $mayChon, $ketQua]);
 
         if ($laAjax) {
-            $tongVan = $st['thang'] + $st['thua'] + $st['hoa'];
-            $tiLe    = $tongVan > 0 ? round($st['thang'] * 100 / $tongVan, 1) : 0.0;
+            $st = db()->prepare('SELECT ket_qua, COUNT(*) AS so_van FROM tv_lich_su_ott WHERE mssv = ? GROUP BY ket_qua');
+            $st->execute([MSSV_DUY]);
+            $tk = $st->fetchAll(PDO::FETCH_KEY_PAIR);
+            $tong = array_sum($tk);
+            $tiLe = $tong > 0 ? round(($tk['thang'] ?? 0) * 100 / $tong, 1) : 0.0;
+
+            $st = db()->prepare('SELECT * FROM tv_lich_su_ott WHERE mssv = ? ORDER BY id DESC LIMIT 10');
+            $st->execute([MSSV_DUY]);
+            $lsMoi = $st->fetchAll();
 
             traJson([
                 'ok' => true,
@@ -221,53 +204,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'ketQuaLabel' => $labelKetQua[$ketQua] ?? $ketQua,
                 ],
                 'thongKe' => [
-                    'thang' => $st['thang'],
-                    'thua'  => $st['thua'],
-                    'hoa'   => $st['hoa'],
-                    'tong'  => $tongVan,
+                    'thang' => $tk['thang'] ?? 0,
+                    'thua'  => $tk['thua'] ?? 0,
+                    'hoa'   => $tk['hoa'] ?? 0,
+                    'tong'  => $tong,
                     'tiLe'  => $tiLe,
                 ],
                 'lichSu' => array_map(
                     static fn(array $v): array => [
-                        'thoiGian'    => $v['thoiGian'],
-                        'nguoiLabel'  => $labelChon[$v['nguoi']] ?? $v['nguoi'],
-                        'mayLabel'    => $labelChon[$v['may']] ?? $v['may'],
-                        'ketQua'      => $v['ketQua'],
-                        'ketQuaLabel' => $labelKetQua[$v['ketQua']] ?? $v['ketQua'],
+                        'thoiGian'    => $v['thoi_gian'],
+                        'nguoiLabel'  => $labelChon[$v['nguoi_chon']] ?? $v['nguoi_chon'],
+                        'mayLabel'    => $labelChon[$v['may_chon']] ?? $v['may_chon'],
+                        'ketQua'      => $v['ket_qua'],
+                        'ketQuaLabel' => $labelKetQua[$v['ket_qua']] ?? $v['ket_qua'],
                     ],
-                    $st['lich_su']
+                    $lsMoi
                 ),
             ]);
         }
-
-        header('Location: gioithieu.php#oan-tu-ti');
-        exit;
+        header('Location: gioithieu.php#oan-tu-ti'); exit;
     }
 
-    // ---------- Chức năng 2: reset thống kê ----------
+    // ---------- Reset oẳn tù tì ----------
     if ($hanhDong === 'reset_oan_tu_ti') {
-        unset($_SESSION['duy_oan_tu_ti']);
+        db()->prepare('DELETE FROM tv_lich_su_ott WHERE mssv = ?')->execute([MSSV_DUY]);
         $_SESSION['flash_duy'] = 'Đã reset thống kê oẳn tù tì.';
-        header('Location: gioithieu.php#oan-tu-ti');
-        exit;
+        header('Location: gioithieu.php#oan-tu-ti'); exit;
     }
 }
 
 // ============================================================
-// ĐỌC LẠI DỮ LIỆU HIỂN THỊ
+// ĐỌC DỮ LIỆU TỪ DATABASE ĐỂ HIỂN THỊ
 // ============================================================
 $tb = $_SESSION['flash_duy'] ?? '';
 unset($_SESSION['flash_duy']);
 
-$dsMonNhap = $_SESSION['duy_mon_an_list'] ?? $dsMonNhap;
+// Danh sách món ăn từ DB
+$st = db()->prepare('SELECT ten_mon FROM tv_mon_an WHERE mssv = ?');
+$st->execute([MSSV_DUY]);
+$dsMonDb = $st->fetchAll(PDO::FETCH_COLUMN);
+$dsMonNhap = $dsMonDb ?? $dsMonNhap ?? [];
+
 $ketQuaMon = $_SESSION['duy_mon_an_ket_qua'] ?? null;
 $lichSuMon = $_SESSION['duy_mon_an_lich_su'] ?? [];
 
-$stOtt     = $_SESSION['duy_oan_tu_ti'] ?? [
-    'thang' => 0, 'thua' => 0, 'hoa' => 0, 'lich_su' => [],
+// Thống kê Oẳn tù tì từ DB
+$st = db()->prepare('SELECT ket_qua, COUNT(*) AS so_van FROM tv_lich_su_ott WHERE mssv = ? GROUP BY ket_qua');
+$st->execute([MSSV_DUY]);
+$thongKeRaw = $st->fetchAll(PDO::FETCH_KEY_PAIR);
+$stOtt = [
+    'thang' => $thongKeRaw['thang'] ?? 0,
+    'thua'  => $thongKeRaw['thua'] ?? 0,
+    'hoa'   => $thongKeRaw['hoa'] ?? 0,
 ];
-$tongVan   = $stOtt['thang'] + $stOtt['thua'] + $stOtt['hoa'];
+$tongVan   = array_sum($stOtt);
 $tiLeThang = $tongVan > 0 ? round($stOtt['thang'] * 100 / $tongVan, 1) : 0.0;
+
+// Lịch sử Oẳn tù tì
+$st = db()->prepare('SELECT * FROM tv_lich_su_ott WHERE mssv = ? ORDER BY id DESC LIMIT 10');
+$st->execute([MSSV_DUY]);
+$lichSuOtt = $st->fetchAll();
 
 require __DIR__ . '/../../inc/header.php';
 ?>
@@ -293,9 +289,7 @@ require __DIR__ . '/../../inc/header.php';
 
 <main class="noi-dung-chinh bao">
 
-    <h1 class="noi-dung-chinh__tieu-de"
-        data-vi="Giới thiệu bản thân"
-        data-en="About me">
+    <h1 class="noi-dung-chinh__tieu-de" data-vi="Giới thiệu bản thân" data-en="About me">
         Giới thiệu bản thân
     </h1>
 
@@ -306,13 +300,11 @@ require __DIR__ . '/../../inc/header.php';
             data-en="🎊 Countdown to Lunar New Year">
             🎊 Đếm ngược đến Tết Nguyên Đán
         </h2>
-
         <p class="dong-ho-tet__mo-ta"
            data-vi="Tết Đinh Mùi 2027 — Mùng 1 Tết: 06/02/2027"
            data-en="Year of the Goat 2027 — Lunar New Year: Feb 6, 2027">
             Tết Đinh Mùi 2027 — Mùng 1 Tết: 06/02/2027
         </p>
-
         <div id="dong-ho" class="dong-ho-tet__khung"
              role="timer" aria-live="polite" aria-atomic="true">
             <p class="dong-ho-tet__cho"
@@ -330,17 +322,14 @@ require __DIR__ . '/../../inc/header.php';
             data-en="Personal Information">
             Thông tin cá nhân
         </h2>
-
         <p data-vi="Xin chào! Mình là Dương Bảo Duy, thành viên của Nhóm 3 thực hiện dự án EduGPA."
            data-en="Hi! I'm Duong Bao Duy, a member of Group 3 working on the EduGPA project.">
             Xin chào! Mình là Dương Bảo Duy, thành viên của Nhóm 3 thực hiện dự án EduGPA.
         </p>
-
         <p data-vi="Mình hiện đang học tại lớp 24CNTT1, khoa Toán - Tin, trường Đại học Sư Phạm, Đại học Đà Nẵng. Mình là một người trẻ đang theo đuổi lĩnh vực Công nghệ Thông tin với niềm yêu thích đặc biệt dành cho lập trình, phát triển Web, IoT và các hệ thống công nghệ thực tế."
            data-en="I'm currently studying in class 24CNTT1, Faculty of Mathematics and Informatics, University of Science and Education, The University of Da Nang. I'm a young person pursuing Information Technology with a special passion for programming, Web development, IoT and real-world technology systems.">
             Mình hiện đang học tại lớp 24CNTT1, khoa Toán - Tin, trường Đại học Sư Phạm, Đại học Đà Nẵng. Mình là một người trẻ đang theo đuổi lĩnh vực Công nghệ Thông tin với niềm yêu thích đặc biệt dành cho lập trình, phát triển Web, IoT và các hệ thống công nghệ thực tế.
         </p>
-
         <figure class="thong-tin__anh">
             <img src="images/anh-ca-nhan.jpg"
                  alt="Ảnh chân dung của Dương Bảo Duy"
@@ -364,7 +353,6 @@ require __DIR__ . '/../../inc/header.php';
             data-en="🍜 Today's food picker">
             🍜 Máy chọn món ăn hôm nay
         </h2>
-
         <p data-vi="Không biết ăn gì? Paste danh sách món vào ô bên dưới, chọn bữa, rồi để máy quyết định!"
            data-en="Don't know what to eat? Paste your dish list below, choose a meal, let the machine decide!">
             Không biết ăn gì? Paste danh sách món vào ô bên dưới, chọn bữa, rồi để máy quyết định!
@@ -372,7 +360,6 @@ require __DIR__ . '/../../inc/header.php';
 
         <form method="post" action="gioithieu.php" id="form-chon-mon" novalidate>
             <input type="hidden" name="hanh_dong" value="chon_mon">
-
             <p>
                 <label for="dsMon">Danh sách món (mỗi dòng 1 món, 2–50 món):</label>
                 <textarea id="dsMon" name="dsMon" rows="6" maxlength="3000"
@@ -381,13 +368,11 @@ require __DIR__ . '/../../inc/header.php';
                     <small class="loi-bieu-mau"><?= e($loiMon['dsMon']) ?></small>
                 <?php endif; ?>
             </p>
-
             <p>
                 <label for="bua">Bữa:</label>
                 <select id="bua" name="bua">
                     <?php foreach ($buaChoPhep as $key => $label): ?>
-                        <option value="<?= e($key) ?>"
-                            <?= (($_POST['bua'] ?? 'bat_ky') === $key) ? 'selected' : '' ?>>
+                        <option value="<?= e($key) ?>" <?= (($_POST['bua'] ?? 'bat_ky') === $key) ? 'selected' : '' ?>>
                             <?= e($label) ?>
                         </option>
                     <?php endforeach; ?>
@@ -396,7 +381,6 @@ require __DIR__ . '/../../inc/header.php';
                     <small class="loi-bieu-mau"><?= e($loiMon['bua']) ?></small>
                 <?php endif; ?>
             </p>
-
             <p class="chon-mon__nut">
                 <button type="submit">🎲 Chọn món cho tôi!</button>
             </p>
@@ -432,12 +416,10 @@ require __DIR__ . '/../../inc/header.php';
                         </li>
                     <?php endforeach; ?>
                 </ul>
-
                 <form method="post" action="gioithieu.php" style="margin-top:.75rem;">
                     <input type="hidden" name="hanh_dong" value="xoa_lich_su_mon">
-                    <button type="submit" class="nut-phu"
-                            onclick="return confirm('Xoá toàn bộ lịch sử chọn món?');">
-                        🗑 Xoá lịch sử
+                    <button type="submit" class="nut-phu" onclick="return confirm('Xoá toàn bộ danh sách món?');">
+                        🗑 Xoá danh sách
                     </button>
                 </form>
             <?php endif; ?>
@@ -453,7 +435,6 @@ require __DIR__ . '/../../inc/header.php';
             data-en="✊✋✌️ Rock Paper Scissors vs Machine">
             ✊✋✌️ Oẳn tù tì vs Máy
         </h2>
-
         <p data-vi="Bạn chọn Kéo / Búa / Bao, máy random. Ai thắng nhiều hơn?"
            data-en="Choose Rock / Paper / Scissors, machine is random. Who wins more?">
             Bạn chọn Kéo / Búa / Bao, máy random. Ai thắng nhiều hơn?
@@ -461,28 +442,21 @@ require __DIR__ . '/../../inc/header.php';
 
         <form method="post" action="gioithieu.php" class="oan-tu-ti__nut" id="form-oan-tu-ti">
             <input type="hidden" name="hanh_dong" value="choi_oan_tu_ti">
-            <button type="submit" name="chon" value="keo" class="nut-ott nut-ott--keo">
-                ✊<br>Kéo
-            </button>
-            <button type="submit" name="chon" value="bua" class="nut-ott nut-ott--bua">
-                ✋<br>Búa
-            </button>
-            <button type="submit" name="chon" value="bao" class="nut-ott nut-ott--bao">
-                ✌️<br>Bao
-            </button>
+            <button type="submit" name="chon" value="keo" class="nut-ott nut-ott--keo">✊<br>Kéo</button>
+            <button type="submit" name="chon" value="bua" class="nut-ott nut-ott--bua">✋<br>Búa</button>
+            <button type="submit" name="chon" value="bao" class="nut-ott nut-ott--bao">✌️<br>Bao</button>
         </form>
 
         <div id="oan-tu-ti-vua">
-            <?php if ($stOtt['lich_su']): $vua = $stOtt['lich_su'][0]; ?>
-                <div class="oan-tu-ti__ket-qua oan-tu-ti__ket-qua--<?= e($vua['ketQua']) ?>"
-                     role="status" aria-live="polite">
+            <?php if (!empty($lichSuOtt)): $vua = $lichSuOtt[0]; ?>
+                <div class="oan-tu-ti__ket-qua oan-tu-ti__ket-qua--<?= e($vua['ket_qua']) ?>" role="status" aria-live="polite">
                     <p>
-                        Bạn: <strong><?= e($labelChon[$vua['nguoi']] ?? $vua['nguoi']) ?></strong>
+                        Bạn: <strong><?= e($labelChon[$vua['nguoi_chon']] ?? $vua['nguoi_chon']) ?></strong>
                         &nbsp;vs&nbsp;
-                        Máy: <strong><?= e($labelChon[$vua['may']] ?? $vua['may']) ?></strong>
+                        Máy: <strong><?= e($labelChon[$vua['may_chon']] ?? $vua['may_chon']) ?></strong>
                     </p>
                     <p class="oan-tu-ti__vua">
-                        <?= e($labelKetQua[$vua['ketQua']] ?? $vua['ketQua']) ?>
+                        <?= e($labelKetQua[$vua['ket_qua']] ?? $vua['ket_qua']) ?>
                     </p>
                 </div>
             <?php endif; ?>
@@ -490,7 +464,7 @@ require __DIR__ . '/../../inc/header.php';
 
         <div id="oan-tu-ti-thong-ke">
             <div class="oan-tu-ti__thong-ke">
-                <h3>Thống kê</h3>
+                <h3>Thống kê (Lưu DB)</h3>
                 <ul>
                     <li>🎉 Thắng: <strong><?= (int) $stOtt['thang'] ?></strong></li>
                     <li>😢 Thua: <strong><?= (int) $stOtt['thua'] ?></strong></li>
@@ -498,44 +472,35 @@ require __DIR__ . '/../../inc/header.php';
                     <li>Tổng: <strong><?= (int) $tongVan ?></strong> ván —
                         Tỉ lệ thắng: <strong><?= e((string) $tiLeThang) ?>%</strong></li>
                 </ul>
-
                 <?php if ($tongVan > 0): ?>
                     <div class="oan-tu-ti__bar" aria-hidden="true">
-                        <div class="oan-tu-ti__bar-thang"
-                             style="width: <?= e((string) $tiLeThang) ?>%;"></div>
+                        <div class="oan-tu-ti__bar-thang" style="width: <?= e((string) $tiLeThang) ?>%;"></div>
                     </div>
                 <?php endif; ?>
             </div>
         </div>
 
         <div id="oan-tu-ti-lich-su">
-            <?php if ($stOtt['lich_su']): ?>
+            <?php if ($lichSuOtt): ?>
                 <h3>10 ván gần nhất</h3>
                 <table class="oan-tu-ti__bang">
                     <thead>
-                        <tr>
-                            <th>Thời gian</th>
-                            <th>Bạn</th>
-                            <th>Máy</th>
-                            <th>Kết quả</th>
-                        </tr>
+                        <tr><th>Thời gian</th><th>Bạn</th><th>Máy</th><th>Kết quả</th></tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($stOtt['lich_su'] as $v): ?>
+                        <?php foreach ($lichSuOtt as $v): ?>
                             <tr>
-                                <td><?= e((string) $v['thoiGian']) ?></td>
-                                <td><?= e($labelChon[$v['nguoi']] ?? $v['nguoi']) ?></td>
-                                <td><?= e($labelChon[$v['may']] ?? $v['may']) ?></td>
-                                <td><?= e($labelKetQua[$v['ketQua']] ?? $v['ketQua']) ?></td>
+                                <td><?= e((string) $v['thoi_gian']) ?></td>
+                                <td><?= e($labelChon[$v['nguoi_chon']] ?? $v['nguoi_chon']) ?></td>
+                                <td><?= e($labelChon[$v['may_chon']] ?? $v['may_chon']) ?></td>
+                                <td><?= e($labelKetQua[$v['ket_qua']] ?? $v['ket_qua']) ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
-
                 <form method="post" action="gioithieu.php" style="margin-top:.75rem;">
                     <input type="hidden" name="hanh_dong" value="reset_oan_tu_ti">
-                    <button type="submit" class="nut-phu"
-                            onclick="return confirm('Reset toàn bộ thống kê oẳn tù tì?');">
+                    <button type="submit" class="nut-phu" onclick="return confirm('Reset toàn bộ thống kê?');">
                         🔄 Reset thống kê
                     </button>
                 </form>
@@ -545,51 +510,28 @@ require __DIR__ . '/../../inc/header.php';
 
     <!-- ============ DỰ ÁN VÀ SỞ THÍCH ============ -->
     <section class="the-noi-dung khoi-du-an" aria-labelledby="tieu-de-du-an">
-        <h2 id="tieu-de-du-an" class="the-noi-dung__tieu-de"
-            data-vi="Dự án và sở thích"
-            data-en="Projects & Hobbies">
-            Dự án và sở thích
-        </h2>
-
-        <p data-vi="Mình không chỉ thích học kiến thức từ sách vở mà còn thích tự tay biến những gì mình học được thành các sản phẩm có thể chạy, có thể tương tác và giải quyết một vấn đề cụ thể. Trong quá trình học tập, mình đã tìm hiểu và thực hành nhiều lĩnh vực khác nhau như lập trình C/C++, Java, Python, phát triển Web, Cơ sở dữ liệu, Mạng máy tính, Hệ điều hành và Internet of Things."
-           data-en="I don't just like learning from books, but also love turning what I learn into working, interactive products that solve specific problems. During my studies, I have explored and practiced many areas such as C/C++, Java, Python, Web development, Databases, Computer Networks, Operating Systems, and the Internet of Things.">
+        <h2 id="tieu-de-du-an" class="the-noi-dung__tieu-de" data-vi="Dự án và sở thích" data-en="Projects & Hobbies">Dự án và sở thích</h2>
+        <p data-vi="Mình không chỉ thích học kiến thức từ sách vở mà còn thích tự tay biến những gì mình học được thành các sản phẩm có thể chạy, có thể tương tác và giải quyết một vấn đề cụ thể. Trong quá trình học tập, mình đã tìm hiểu và thực hành nhiều lĩnh vực khác nhau như lập trình C/C++, Java, Python, phát triển Web, Cơ sở dữ liệu, Mạng máy tính, Hệ điều hành và Internet of Things." data-en="I don't just like learning from books, but also love turning what I learn into working, interactive products that solve specific problems. During my studies, I have explored and practiced many areas such as C/C++, Java, Python, Web development, Databases, Computer Networks, Operating Systems, and the Internet of Things.">
             Mình không chỉ thích học kiến thức từ sách vở mà còn thích tự tay biến những gì mình học được thành các sản phẩm có thể chạy, có thể tương tác và giải quyết một vấn đề cụ thể. Trong quá trình học tập, mình đã tìm hiểu và thực hành nhiều lĩnh vực khác nhau như lập trình C/C++, Java, Python, phát triển Web, Cơ sở dữ liệu, Mạng máy tính, Hệ điều hành và Internet of Things.
         </p>
-
-        <p data-vi="Một trong những điều mình thích nhất là bắt đầu từ một ý tưởng đơn giản rồi từng bước biến nó thành một hệ thống hoàn chỉnh — từ những chương trình nhỏ, website, chatbot cho đến các dự án robot sử dụng ESP32, cảm biến, MQTT và điều khiển từ xa."
-           data-en="One of the things I enjoy most is starting from a simple idea and gradually turning it into a complete system — from small programs, websites, chatbots to robot projects using ESP32, sensors, MQTT and remote control.">
+        <p data-vi="Một trong những điều mình thích nhất là bắt đầu từ một ý tưởng đơn giản rồi từng bước biến nó thành một hệ thống hoàn chỉnh — từ những chương trình nhỏ, website, chatbot cho đến các dự án robot sử dụng ESP32, cảm biến, MQTT và điều khiển từ xa." data-en="One of the things I enjoy most is starting from a simple idea and gradually turning it into a complete system — from small programs, websites, chatbots to robot projects using ESP32, sensors, MQTT and remote control.">
             Một trong những điều mình thích nhất là bắt đầu từ một ý tưởng đơn giản rồi từng bước biến nó thành một hệ thống hoàn chỉnh — từ những chương trình nhỏ, website, chatbot cho đến các dự án robot sử dụng ESP32, cảm biến, MQTT và điều khiển từ xa.
         </p>
-
         <blockquote class="gioi-thieu__trich-dan">
-            <p data-vi='"Không cần phải biết tất cả ngay từ đầu. Quan trọng là dám bắt đầu và tiếp tục tìm cách giải quyết vấn đề."'
-               data-en='"You don&apos;t need to know everything at once. What matters is daring to start and keep finding ways to solve the problem."'>
+            <p data-vi='"Không cần phải biết tất cả ngay từ đầu. Quan trọng là dám bắt đầu và tiếp tục tìm cách giải quyết vấn đề."' data-en='"You don&apos;t need to know everything at once. What matters is daring to start and keep finding ways to solve the problem."'>
                 "Không cần phải biết tất cả ngay từ đầu. Quan trọng là dám bắt đầu và tiếp tục tìm cách giải quyết vấn đề."
             </p>
         </blockquote>
-
-        <p data-vi="Ngoài việc học tập, mình thích chơi thể thao, đọc truyện và tham gia các hoạt động, sự kiện do đoàn trường tổ chức."
-           data-en="Besides studying, I enjoy playing sports, reading comics and joining activities and events organized by the school union.">
+        <p data-vi="Ngoài việc học tập, mình thích chơi thể thao, đọc truyện và tham gia các hoạt động, sự kiện do đoàn trường tổ chức." data-en="Besides studying, I enjoy playing sports, reading comics and joining activities and events organized by the school union.">
             Ngoài việc học tập, mình thích chơi thể thao, đọc truyện và tham gia các hoạt động, sự kiện do đoàn trường tổ chức.
         </p>
-
         <div class="gioi-thieu__du-an-anh">
             <figure class="gioi-thieu__anh-doc">
-                <img src="images/du-an-1.jpg"
-                     alt="Dự án IoT sử dụng Arduino và Module Bluetooth"
-                     width="400" height="600"
-                     loading="lazy">
-                <figcaption data-vi="Dự án IoT với Arduino & Module Bluetooth"
-                            data-en="IoT project with Arduino & Bluetooth Module">
-                    Dự án IoT với Arduino &amp; Module Bluetooth
-                </figcaption>
+                <img src="images/du-an-1.jpg" alt="Dự án IoT sử dụng Arduino và Module Bluetooth" width="400" height="600" loading="lazy">
+                <figcaption data-vi="Dự án IoT với Arduino & Module Bluetooth" data-en="IoT project with Arduino & Bluetooth Module">Dự án IoT với Arduino &amp; Module Bluetooth</figcaption>
             </figure>
-
             <figure class="gioi-thieu__anh-doc">
-                <img src="images/thethao.jpg"
-                     alt="Thể thao"
-                     width="400" height="600"
-                     loading="lazy">
+                <img src="images/thethao.jpg" alt="Thể thao" width="400" height="600" loading="lazy">
                 <figcaption data-vi="Thể thao" data-en="Sports">Thể thao</figcaption>
             </figure>
         </div>
@@ -597,76 +539,36 @@ require __DIR__ . '/../../inc/header.php';
 
     <!-- ============ KỸ NĂNG ============ -->
     <section class="the-noi-dung ky-nang" aria-labelledby="tieu-de-ky-nang">
-        <h2 id="tieu-de-ky-nang" class="the-noi-dung__tieu-de"
-            data-vi="Kỹ năng" data-en="Skills">
-            Kỹ năng
-        </h2>
-
+        <h2 id="tieu-de-ky-nang" class="the-noi-dung__tieu-de" data-vi="Kỹ năng" data-en="Skills">Kỹ năng</h2>
         <ul class="ky-nang__danh-sach">
-            <li data-vi="Lập trình C/C++, Java, Python"
-                data-en="C/C++, Java, Python programming">Lập trình C/C++, Java, Python</li>
-            <li data-vi="Phát triển Web (HTML5, CSS3, JavaScript)"
-                data-en="Web Development (HTML5, CSS3, JavaScript)">Phát triển Web (HTML5, CSS3, JavaScript)</li>
-            <li data-vi="IoT và hệ thống nhúng (ESP32, MQTT)"
-                data-en="IoT & Embedded Systems (ESP32, MQTT)">IoT và hệ thống nhúng (ESP32, MQTT)</li>
+            <li data-vi="Lập trình C/C++, Java, Python" data-en="C/C++, Java, Python programming">Lập trình C/C++, Java, Python</li>
+            <li data-vi="Phát triển Web (HTML5, CSS3, JavaScript)" data-en="Web Development (HTML5, CSS3, JavaScript)">Phát triển Web (HTML5, CSS3, JavaScript)</li>
+            <li data-vi="IoT và hệ thống nhúng (ESP32, MQTT)" data-en="IoT & Embedded Systems (ESP32, MQTT)">IoT và hệ thống nhúng (ESP32, MQTT)</li>
             <li data-vi="Cơ sở dữ liệu" data-en="Databases">Cơ sở dữ liệu</li>
-            <li data-vi="Mạng máy tính và Hệ điều hành"
-                data-en="Computer Networks & Operating Systems">Mạng máy tính và Hệ điều hành</li>
-            <li data-vi="Quản lý mã nguồn với GitHub"
-                data-en="Source control with GitHub">Quản lý mã nguồn với GitHub</li>
+            <li data-vi="Mạng máy tính và Hệ điều hành" data-en="Computer Networks & Operating Systems">Mạng máy tính và Hệ điều hành</li>
+            <li data-vi="Quản lý mã nguồn với GitHub" data-en="Source control with GitHub">Quản lý mã nguồn với GitHub</li>
             <li data-vi="Làm việc nhóm" data-en="Teamwork">Làm việc nhóm</li>
         </ul>
     </section>
 
     <!-- ============ LIÊN HỆ ============ -->
     <section class="the-noi-dung lien-he" aria-labelledby="tieu-de-lien-he">
-        <h2 id="tieu-de-lien-he" class="the-noi-dung__tieu-de"
-            data-vi="Liên hệ" data-en="Contact">
-            Liên hệ
-        </h2>
-
+        <h2 id="tieu-de-lien-he" class="the-noi-dung__tieu-de" data-vi="Liên hệ" data-en="Contact">Liên hệ</h2>
         <ul class="lien-he__danh-sach">
-            <li>
-                <strong data-vi="Email:" data-en="Email:">Email:</strong>
-                <a href="mailto:baoduykslt@gmail.com">baoduykslt@gmail.com</a>
-            </li>
-            <li>
-                <strong data-vi="GitHub:" data-en="GitHub:">GitHub:</strong>
-                <a href="https://github.com/duongbaoduy" target="_blank" rel="noopener noreferrer">
-                    github.com/duongbaoduy
-                </a>
-            </li>
-            <li>
-                <strong data-vi="Facebook:" data-en="Facebook:">Facebook:</strong>
-                <a href="https://facebook.com/duongbaoduy" target="_blank" rel="noopener noreferrer">
-                    facebook.com/duongbaoduy
-                </a>
-            </li>
+            <li><strong data-vi="Email:" data-en="Email:">Email:</strong> <a href="mailto:baoduykslt@gmail.com">baoduykslt@gmail.com</a></li>
+            <li><strong data-vi="GitHub:" data-en="GitHub:">GitHub:</strong> <a href="https://github.com/duongbaoduy" target="_blank" rel="noopener noreferrer">github.com/duongbaoduy</a></li>
+            <li><strong data-vi="Facebook:" data-en="Facebook:">Facebook:</strong> <a href="https://facebook.com/duongbaoduy" target="_blank" rel="noopener noreferrer">facebook.com/duongbaoduy</a></li>
         </ul>
     </section>
 
     <!-- ============ THỜI KHÓA BIỂU ============ -->
     <section class="the-noi-dung lich-hoc" aria-labelledby="tieu-de-tkb">
-        <h2 id="tieu-de-tkb" class="the-noi-dung__tieu-de"
-            data-vi="Thời khóa biểu trong tuần"
-            data-en="Weekly Schedule">
-            Thời khóa biểu trong tuần
-        </h2>
-
-        <p class="lich-hoc__huong-dan"
-           data-vi="Kéo ngang hoặc dùng phím mũi tên để xem đủ 7 ngày"
-           data-en="Scroll horizontally or use arrow keys to see all 7 days">
-            Kéo ngang hoặc dùng phím mũi tên để xem đủ 7 ngày
-        </p>
-
-        <div class="tkb-container" tabindex="0" role="region"
-             aria-label="Bảng thời khóa biểu có thể cuộn ngang">
-
+        <h2 id="tieu-de-tkb" class="the-noi-dung__tieu-de" data-vi="Thời khóa biểu trong tuần" data-en="Weekly Schedule">Thời khóa biểu trong tuần</h2>
+        <p class="lich-hoc__huong-dan" data-vi="Kéo ngang hoặc dùng phím mũi tên để xem đủ 7 ngày" data-en="Scroll horizontally or use arrow keys to see all 7 days">Kéo ngang hoặc dùng phím mũi tên để xem đủ 7 ngày</p>
+        
+        <div class="tkb-container" tabindex="0" role="region" aria-label="Bảng thời khóa biểu có thể cuộn ngang">
             <table class="thoi-khoa-bieu">
-                <caption data-vi="Thời khóa biểu tuần" data-en="Weekly Timetable">
-                    Thời khóa biểu tuần
-                </caption>
-
+                <caption data-vi="Thời khóa biểu tuần" data-en="Weekly Timetable">Thời khóa biểu tuần</caption>
                 <thead>
                     <tr>
                         <th scope="col" data-vi="Tiết" data-en="Period">Tiết</th>
@@ -679,7 +581,6 @@ require __DIR__ . '/../../inc/header.php';
                         <th scope="col" data-vi="Chủ nhật" data-en="Sun">Chủ nhật</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     <tr>
                         <th scope="row" class="tiet">1</th>
@@ -688,34 +589,18 @@ require __DIR__ . '/../../inc/header.php';
                         <td rowspan="3" class="mon-hoc">31231755 - 24-0102<br>Thiết kế và lập trình web<br>Phòng: B3-303</td>
                         <td></td>
                     </tr>
-                    <tr>
-                        <th scope="row" class="tiet">2</th>
-                        <td></td><td></td><td></td><td></td><td></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="tiet">3</th>
-                        <td></td><td></td><td></td><td></td><td></td>
-                    </tr>
+                    <tr><th scope="row" class="tiet">2</th><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><th scope="row" class="tiet">3</th><td></td><td></td><td></td><td></td><td></td></tr>
                     <tr>
                         <th scope="row" class="tiet">4</th>
                         <td></td><td></td><td></td>
                         <td rowspan="3" class="mon-hoc">31231330 - 24-0102<br>Khai phá dữ liệu<br>Phòng: A5-404B</td>
                         <td></td><td></td><td></td>
                     </tr>
-                    <tr>
-                        <th scope="row" class="tiet">5</th>
-                        <td></td><td></td><td></td><td></td><td></td><td></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="tiet">6</th>
-                        <td></td><td></td><td></td><td></td><td></td><td></td>
-                    </tr>
+                    <tr><th scope="row" class="tiet">5</th><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><th scope="row" class="tiet">6</th><td></td><td></td><td></td><td></td><td></td><td></td></tr>
                 </tbody>
-
-                <tbody>
-                    <tr><td class="nghi" colspan="8"></td></tr>
-                </tbody>
-
+                <tbody><tr><td class="nghi" colspan="8"></td></tr></tbody>
                 <tbody>
                     <tr>
                         <th scope="row" class="tiet">7</th>
@@ -725,14 +610,8 @@ require __DIR__ . '/../../inc/header.php';
                         <td rowspan="3" class="mon-hoc">21221904 - 24-0318<br>Lịch sử Đảng Cộng sản Việt Nam<br>Phòng: A6-502</td>
                         <td></td>
                     </tr>
-                    <tr>
-                        <th scope="row" class="tiet">8</th>
-                        <td></td><td></td><td></td><td></td><td></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="tiet">9</th>
-                        <td></td><td></td><td></td><td></td><td></td>
-                    </tr>
+                    <tr><th scope="row" class="tiet">8</th><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><th scope="row" class="tiet">9</th><td></td><td></td><td></td><td></td><td></td></tr>
                     <tr>
                         <th scope="row" class="tiet">10</th>
                         <td></td><td></td>
@@ -741,14 +620,8 @@ require __DIR__ . '/../../inc/header.php';
                         <td rowspan="3" class="mon-hoc">31221010 - 24-0103<br>An toàn thông tin<br>Phòng: B3-506</td>
                         <td></td>
                     </tr>
-                    <tr>
-                        <th scope="row" class="tiet">11</th>
-                        <td></td><td></td><td></td><td></td><td></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="tiet">12</th>
-                        <td></td><td></td><td></td><td></td><td></td>
-                    </tr>
+                    <tr><th scope="row" class="tiet">11</th><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><th scope="row" class="tiet">12</th><td></td><td></td><td></td><td></td><td></td></tr>
                 </tbody>
             </table>
         </div>

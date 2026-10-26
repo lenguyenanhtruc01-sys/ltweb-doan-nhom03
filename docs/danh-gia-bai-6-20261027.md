@@ -14,7 +14,7 @@ Ngày đánh giá: 27/10/2026, giờ Việt Nam. Mã nguồn được kiểm tra
 - Xuất bản sao từ `git archive HEAD`, dùng autoload của thư mục vendor hiện có, đổi tên CSDL trong bản sao; tạo CSDL ngẫu nhiên chỉ từ schema.sql và seed.sql. Không chạy bộ cài để bù bảng cho bản thử HTTP.
 - Thử HTTP bằng các cookie jar riêng cho khách, khách hàng và quản trị; chạy thêm bộ kiểm thử CSRF giỏ bằng Python. Các CSDL thử và tiến trình PHP do lượt này tạo đã được dọn.
 - Chưa chạy lại `composer install` trong bản sao, chưa đo bằng trình duyệt/Lighthouse/W3C, chưa kiểm tra hiển thị thật với JavaScript bật/tắt, chưa xác minh GitHub từ xa. HTTP POST form thành công chỉ chứng minh đường xử lý dự phòng phía máy chủ.
-- Kết quả HTTP chi tiết được giữ tại thư mục tạm `C:\Users\dinho\AppData\Local\Temp\edugpa-review-b2qf5vs2` trong các tệp results.json, results2.json và results3.json. results.json có ghi lỗi mã hóa stdout của công cụ thử; lượt tiếp theo đã tiếp tục các ca HTTP. Một truy vấn phụ kiểm tra hash/tài khoản ở results3.json bị lỗi cú pháp trong script thử, không dùng kết quả đó để chứng nhận hash của tài khoản vừa đăng ký.
+- Các bản sao và log HTTP tạm đã được dọn theo yêu cầu người dùng; kết quả tổng hợp giữ trong tài liệu này và biên bản bản chốt. Một truy vấn phụ kiểm tra hash/tài khoản mới bị lỗi cú pháp trong script thử, không dùng kết quả đó để chứng nhận hash của tài khoản vừa đăng ký.
 
 ## 2 Phần A theo đúng phân công
 

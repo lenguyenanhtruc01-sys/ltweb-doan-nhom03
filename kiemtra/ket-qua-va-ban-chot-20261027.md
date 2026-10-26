@@ -81,9 +81,9 @@ Số commit là thống kê local của lượt đánh giá trước trên cùng
 
 ## Minh chứng và chú thích hình
 
-Tất cả nằm trong [ban-chot-20261027](ban-chot-20261027/). JSON là số liệu gốc; HTML Lighthouse là báo cáo tương tác; PNG là minh họa để đưa vào PDF cùng chú thích:
+Tất cả nằm trong [ban-chot-20261027](ban-chot-20261027/). JSON là số liệu gốc; PNG là minh họa để đưa vào PDF cùng chú thích. Ba báo cáo HTML Lighthouse tự sinh đã được dọn vì trùng nội dung với JSON/PNG:
 
-- Hình 1–3: `lighthouse-index.png`, `lighthouse-danh-sach.png`, `lighthouse-dang-ky.png` — Accessibility 100, Mobile. Đối chiếu JSON/HTML tương ứng để xem cấu hình và phiên bản.
+- Hình 1–3: `lighthouse-index.png`, `lighthouse-danh-sach.png`, `lighthouse-dang-ky.png` — Accessibility 100, Mobile. Đối chiếu JSON tương ứng để xem cấu hình và phiên bản.
 - Hình 4: `tim-kiem-upload.png` — ảnh seed và ảnh uploads trong kết quả fetch.
 - Hình 5: `phan-trang-upload.png` — ảnh trang 2 vẫn đúng đường dẫn.
 - Hình 6–7: `upload-that-html.png`, `upload-that-fetch.png` — PNG tải qua form quản trị, hiển thị ở HTML và fetch.

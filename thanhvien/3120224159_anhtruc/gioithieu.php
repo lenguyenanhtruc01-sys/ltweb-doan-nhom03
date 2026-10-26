@@ -17,7 +17,31 @@ $scriptsTrang = ['thanhvien/3120224159_anhtruc/js/canhan.js'];
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
+/* =========================================================
+   DỮ LIỆU DỰ ÁN CÁ NHÂN CỦA TRÚC
+   ========================================================= */
 
+const MSSV_TRUC = '3120224159';
+
+$khoTruc = new KhoTrangCaNhanTruc(db());
+
+$tuKhoaDuAn = '';
+
+if (isset($_GET['q']) && is_string($_GET['q'])) {
+    $tuKhoaDuAn = trim($_GET['q']);
+}
+
+$sapXepDuAn = 'moi';
+
+if (isset($_GET['sx']) && is_string($_GET['sx'])) {
+    $sapXepDuAn = $_GET['sx'];
+}
+
+$danhSachDuAn = $khoTruc->layDuAn(
+    MSSV_TRUC,
+    $tuKhoaDuAn,
+    $sapXepDuAn
+);
 
 /* =========================================================
    DỮ LIỆU MINI QUIZ

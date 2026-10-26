@@ -2,7 +2,6 @@
 /**
  * Tệp: src/Models/MonHoc.php
  * Chức năng: Lớp thực thể đại diện cho một môn học.
- * Thử GET api/san-pham.php?id=1: JSON chỉ có các trường được jsonSerialize cho phép.
  */
 
 namespace App\Models;
@@ -26,16 +25,12 @@ class MonHoc implements \JsonSerializable
     public $ketQua;
     public $trangThai;
     public $anh;
-    public int $soCho;
-    public int $danhMucId;
-    public string $tenDanhMuc;
+    public $danhMucId;
+    public $tenDanhMuc;
 
     public function __construct(array $data = [])
     {
         $this->id = $data['id'] ?? null;
-        $this->danhMucId = (int) ($data['danh_muc_id'] ?? 0);
-        $this->tenDanhMuc = (string) ($data['ten_danh_muc'] ?? '');
-        $this->soCho = (int) ($data['so_cho'] ?? 0);
         $this->maMon = $data['maMon'] ?? $data['ma_mon'] ?? '';
         $this->tenMon = $data['tenMon'] ?? $data['ten_mon'] ?? $data['ten'] ?? '';
         $this->soTinChi = isset($data['soTinChi'])
@@ -50,5 +45,9 @@ class MonHoc implements \JsonSerializable
 
         $this->trangThai = $data['trangThai'] ?? $data['trang_thai'] ?? '';
         $this->anh = $data['anh'] ?? $data['hinh_anh'] ?? '';
+        $this->danhMucId = isset($data['danhMucId'])
+            ? (int) $data['danhMucId']
+            : (int) ($data['danh_muc_id'] ?? 0);
+        $this->tenDanhMuc = $data['tenDanhMuc'] ?? $data['ten_danh_muc'] ?? '';
     }
 }

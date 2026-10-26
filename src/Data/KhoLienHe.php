@@ -7,8 +7,8 @@ namespace App\Data;
 use PDO;
 
 /**
- * Lớp lưu và đọc thông tin liên hệ bằng MySQL.
- * Nhận kết nối PDO từ hàm db() trong inc/db.php.
+ * Lớp truy cập dữ liệu liên hệ bằng MySQL.
+ * Nhận kết nối PDO từ hàm db().
  */
 final class KhoLienHe
 {
@@ -18,7 +18,7 @@ final class KhoLienHe
     }
 
     /**
-     * Lưu một liên hệ vào bảng lien_he.
+     * Lưu liên hệ vào bảng lien_he.
      *
      * @param array<string, mixed> $lh
      */
@@ -51,7 +51,7 @@ final class KhoLienHe
     }
 
     /**
-     * Lấy tất cả liên hệ, mới nhất đứng đầu.
+     * Lấy danh sách liên hệ, mới nhất trước.
      *
      * @return list<array<string, mixed>>
      */
@@ -74,8 +74,6 @@ final class KhoLienHe
 
         $stmt = $this->db->query($sql);
 
-        $danhSach = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
         return array_map(
             static fn(array $row): array => [
                 'id' => (int) $row['id'],
@@ -88,7 +86,7 @@ final class KhoLienHe
                 'anh' => $row['anh'],
                 'thoiGian' => $row['ngay_tao'],
             ],
-            $danhSach
+            $stmt->fetchAll(PDO::FETCH_ASSOC)
         );
     }
 }

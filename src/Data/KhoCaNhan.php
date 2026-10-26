@@ -10,9 +10,33 @@ class KhoCaNhan
     public function __construct(private PDO $db) {}
 
     // ============ CHỨC NĂNG 1: MÓN ĂN ============
+    public static function kiemTraDanhSachMon(array $mangMon, string $bua): array
+    {
+        if (!in_array($bua, ['bat_ky', 'sang', 'trua', 'toi', 'dem'], true)) {
+            throw new \DomainException('Vui lòng chọn bữa ăn hợp lệ.');
+        }
+        $ds = [];
+        foreach ($mangMon as $mon) {
+            if (!is_string($mon)) throw new \DomainException('Danh sách món không hợp lệ.');
+            $mon = trim($mon);
+            if ($mon === '') continue;
+            if (mb_strlen($mon) > 100 || preg_match('/[\x00-\x1f\x7f]/', $mon)) {
+                throw new \DomainException('Mỗi tên món tối đa 100 ký tự và không chứa ký tự điều khiển.');
+            }
+            if (!in_array($mon, $ds, true)) $ds[] = $mon;
+        }
+        if (count($ds) < 2 || count($ds) > 50) {
+            throw new \DomainException('Vui lòng nhập từ 2 đến 50 món khác nhau.');
+        }
+        if (mb_strlen(implode("\n", $ds)) > 3000) {
+            throw new \DomainException('Danh sách món tối đa 3000 ký tự.');
+        }
+        return $ds;
+    }
+
     public function luuDanhSachMon(string $mssv, array $mangMon, string $bua): void
     {
-        if (empty($mangMon)) return;
+        $mangMon = self::kiemTraDanhSachMon($mangMon, $bua);
 
         $st = $this->db->prepare('SELECT ten_mon FROM tv_mon_an WHERE mssv = ?');
         $st->execute([$mssv]);
@@ -33,7 +57,6 @@ class KhoCaNhan
         $this->db->prepare($sql)->execute($params);
     }
 
-    // HÀM ĐANG BỊ THIẾU GÂY RA LỖI
     public function layDanhSachMon(string $mssv): array
     {
         $st = $this->db->prepare('SELECT ten_mon FROM tv_mon_an WHERE mssv = ?');
@@ -41,11 +64,10 @@ class KhoCaNhan
         return $st->fetchAll(PDO::FETCH_COLUMN);
     }
 
-    public function chonMonNgauNhien(string $mssv): string|false
+    public function chonMonNgauNhien(array $mangMon, string $bua): string
     {
-        $st = $this->db->prepare('SELECT ten_mon FROM tv_mon_an WHERE mssv = ? ORDER BY RAND() LIMIT 1');
-        $st->execute([$mssv]);
-        return $st->fetchColumn();
+        $ds = self::kiemTraDanhSachMon($mangMon, $bua);
+        return $ds[random_int(0, count($ds) - 1)];
     }
 
     // ============ CHỨC NĂNG 2: OẲN TÙ TÌ (DB) ============

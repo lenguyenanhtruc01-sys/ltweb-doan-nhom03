@@ -178,6 +178,14 @@ CREATE TABLE IF NOT EXISTS tv_mon_an (
     FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Check-in thời tiết trên trang cá nhân Duy; không nạp lượt mẫu.
+CREATE TABLE IF NOT EXISTS tv_thoi_tiet_duy (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    trang_thai ENUM('nang', 'mua', 'may', 'giong_bao') NOT NULL,
+    thoi_gian DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_thoi_tiet_trang_thai (trang_thai)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Bảng lưu lịch sử oẳn tù tì
 CREATE TABLE IF NOT EXISTS tv_lich_su_ott (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

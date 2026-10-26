@@ -167,7 +167,9 @@ INSERT INTO tv_mon_an (mssv, ten_mon, bua) VALUES
 ('3120224034', 'Phở bò', 'sang'),
 ('3120224034', 'Cơm tấm', 'trua'),
 ('3120224034', 'Bún chả', 'trua'),
-('3120224034', 'Lẩu Thái', 'toi');
+('3120224034', 'Lẩu Thái', 'toi'),
+('3120224034', 'Cơm gà', 'trua'),
+('3120224034', 'Bún bò Huế', 'toi');
 
 -- Nạp sẵn vài ván Oẳn tù tì
 INSERT INTO tv_lich_su_ott (mssv, nguoi_chon, may_chon, ket_qua) VALUES
@@ -198,12 +200,6 @@ VALUES
 ('3120224174', '21221904', 'Lịch sử Đảng Cộng sản Việt Nam', '24-0318', 2, 11, 12, 'A6-502'),
 ('3120224174', '31221010', 'An toàn thông tin', '24-0103', 7, 11, 12, 'B3-506')
 ON DUPLICATE KEY UPDATE id = id;
-
--- Mẫu riêng của Duy; không cần truy cập trang để nạp dữ liệu lần đầu.
-INSERT INTO tv_mon_an (mssv,ten_mon,bua) VALUES
-('3120224034','Phở bò','sang'),
-('3120224034','Cơm gà','trua'),
-('3120224034','Bún bò Huế','toi');
 
 INSERT INTO tv_lich_su_ott (mssv,nguoi_chon,may_chon,ket_qua) VALUES
 ('3120224034','bua','keo','thang'),

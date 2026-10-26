@@ -161,7 +161,7 @@ function caiDatNhom(PDO $pdo, string $tenCsdl = 'ltweb_nhom03', ?string $tepAvat
     $schema = caiDatDocSql('schema.sql', $tenCsdl);
     preg_match_all('/CREATE TABLE(?: IF NOT EXISTS)?\s+(\w+)\s*\([\s\S]*?\n\)[^;]*;/m', $schema, $dinhNghia, PREG_SET_ORDER);
     $batBuoc = array_column($dinhNghia, 1);
-    foreach (['nguoi_dung','mon_hoc','gio_hang_nguoi_dung','mon_yeu_thich','tv_uyen_ky_nang','tv_uyen_thoi_khoa_bieu'] as $bang) {
+    foreach (['nguoi_dung','mon_hoc','gio_hang_nguoi_dung','mon_yeu_thich','tv_uyen_ky_nang','tv_uyen_thoi_khoa_bieu','tv_thoi_tiet_duy'] as $bang) {
         if (!in_array($bang, $batBuoc, true)) throw new RuntimeException('Schema thiếu bảng bắt buộc ' . $bang . '; chưa thay đổi CSDL.');
     }
     $tenKhoa = 'edugpa_setup_' . substr(hash('sha256', $tenCsdl), 0, 40);

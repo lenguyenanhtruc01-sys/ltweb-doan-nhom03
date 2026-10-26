@@ -37,7 +37,7 @@ function nangCapCaNhanHai(PDO $pdo, ?int $chuTrangId = null, ?string $tepCu = nu
         if ($chuTrangId !== null && $chuCu !== null && (int) $chuCu !== $chuTrangId) {
             throw new RuntimeException('Trang đã có chủ; không tự thay tài khoản hiện có.');
         }
-        $uid = $chuCu === null ? $chuTrangId : (int) $chuCu;
+        $uid = $chuTrangId;
         $taoTaiKhoan = false;
         if ($uid === null) {
             $st = $pdo->prepare('SELECT id, email, ten_dang_nhap FROM nguoi_dung WHERE email=? OR ten_dang_nhap=?');
@@ -48,6 +48,11 @@ function nangCapCaNhanHai(PDO $pdo, ?int $chuTrangId = null, ?string $tepCu = nu
             }
             if ($ds !== []) $uid = (int) $ds[0]['id'];
             else {
+                if ($chuCu !== null) {
+                    throw new RuntimeException('Chủ trang Hải hiện có ID ' . (int) $chuCu
+                        . ' nhưng chưa có tài khoản hai / hai@example.com để đối chiếu. '
+                        . 'Giữ nguyên liên kết; cần kiểm tra tài khoản chủ trang trước khi tiếp tục.');
+                }
                 $st = $pdo->prepare('INSERT INTO nguoi_dung (email,ten_dang_nhap,mat_khau,ho_ten,vai_tro)
                     VALUES (?,?,?,?,?)');
                 $st->execute(['hai@example.com', 'hai', password_hash('matkhau123', PASSWORD_DEFAULT), 'Lê Dương Hoàng Hải', 'khach_hang']);
@@ -58,6 +63,15 @@ function nangCapCaNhanHai(PDO $pdo, ?int $chuTrangId = null, ?string $tepCu = nu
         $st = $pdo->prepare('SELECT COUNT(*) FROM nguoi_dung WHERE id=?');
         $st->execute([$uid]);
         if ((int) $st->fetchColumn() !== 1) throw new RuntimeException('Tài khoản chủ trang không tồn tại.');
+        if ($chuCu !== null && (int) $chuCu !== $uid) {
+            $st = $pdo->prepare('SELECT ten_dang_nhap, email FROM nguoi_dung WHERE id=?');
+            $st->execute([(int) $chuCu]);
+            $chu = $st->fetch(PDO::FETCH_ASSOC);
+            $moTaChu = $chu === false ? 'không tồn tại' : $chu['ten_dang_nhap'] . ' / ' . $chu['email'];
+            throw new RuntimeException('Liên kết chủ trang Hải không khớp: hiện là ID ' . (int) $chuCu
+                . ' (' . $moTaChu . '), tài khoản hai / hai@example.com có ID ' . $uid . '. '
+                . 'Giữ nguyên liên kết và ảnh; hãy kiểm tra chủ trang rồi sửa liên kết nếu bị gán nhầm.');
+        }
         if ($chuCu === null) {
             $st = $pdo->prepare('UPDATE thanh_vien SET nguoi_dung_id=? WHERE mssv=? AND nguoi_dung_id IS NULL');
             $st->execute([$uid, $mssv]);

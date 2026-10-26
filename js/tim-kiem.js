@@ -50,7 +50,7 @@ function card(mon, selected) {
     const addForm = element('form', undefined, 'form-them-ke-hoach');
     addForm.method = 'post'; addForm.action = 'gio-hang.php';
     addForm.dataset.gioHangApi = 'api/gio-hang.php';
-    Object.entries({quay_lai: 'danh-sach.php', hanh_dong: 'them', id: mon.id, so_luong: 1}).forEach(([name, value]) => {
+    Object.entries({_csrf: document.querySelector('meta[name="csrf-gio-hang"]')?.content ?? '', quay_lai: 'danh-sach.php', hanh_dong: 'them', id: mon.id, so_luong: 1}).forEach(([name, value]) => {
         const input = element('input'); input.type = 'hidden'; input.name = name; input.value = String(value);
         addForm.append(input);
     });

@@ -204,6 +204,7 @@ require __DIR__ . '/inc/header.php';
 
         <div class="form-them-gio-hang">
             <form action="gio-hang.php" method="post" data-gio-hang-api="api/gio-hang.php">
+                <input type="hidden" name="_csrf" value="<?= e($_SESSION['csrf_gio_hang']) ?>">
                 <input
                     type="hidden"
                     name="quay_lai"

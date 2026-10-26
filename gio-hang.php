@@ -26,8 +26,6 @@ if (!function_exists('csrfKiemTra')) {
 
 use App\Services\KeHoachHocTap;
 
-$keHoachService = new KeHoachHocTap();
-
 /* Xử lý form POST */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hanhDong = layChuoiDauVao($_POST['hanh_dong'] ?? '');
@@ -39,6 +37,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $trangQuayLai = $quayLai;
         }
     }
+
+    // Dùng cùng token giỏ hàng với API; kiểm tra trước khi đồng bộ hoặc đổi giỏ.
+    $token = $_POST['_csrf'] ?? null;
+    $tokenPhien = $_SESSION['csrf_gio_hang'] ?? null;
+    if (!is_string($token) || !is_string($tokenPhien) || $tokenPhien === ''
+        || !hash_equals($tokenPhien, $token)) {
+        $_SESSION['flash_error'] = 'Phiên giỏ hàng không hợp lệ. Tải lại trang để thử lại.';
+        header('Location: ' . $trangQuayLai, true, 303);
+        exit;
+    }
+    $keHoachService = new KeHoachHocTap();
 
     $idDauVao = $_POST['id'] ?? null;
     $id = (is_string($idDauVao) || is_int($idDauVao))
@@ -101,6 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 /* Lấy dữ liệu xuất HTML */
+$keHoachService = new KeHoachHocTap();
 $duLieuGio = $keHoachService->layDanhSachChiTiet();
 $danhSachMon = $duLieuGio['danh_sach'];
 $soMon = $duLieuGio['tong_so_mon'];
@@ -156,6 +166,7 @@ require __DIR__ . '/inc/header.php';
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <!-- Form cập nhật -->
                         <form action="gio-hang.php" method="post" style="margin: 0; display: flex; gap: 5px;">
+                            <input type="hidden" name="_csrf" value="<?= e($_SESSION['csrf_gio_hang']) ?>">
                             <input type="hidden" name="hanh_dong" value="cap_nhat">
                             <input type="hidden" name="id" value="<?= e((int) ($item['id'] ?? 0)) ?>">
                             <input type="number" name="so_luong" value="<?= e((int) ($item['soLuong'] ?? 1)) ?>" min="1" max="5" style="width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
@@ -165,6 +176,7 @@ require __DIR__ . '/inc/header.php';
 
                         <!-- Form xóa -->
                         <form action="gio-hang.php" method="post" style="margin: 0;">
+                            <input type="hidden" name="_csrf" value="<?= e($_SESSION['csrf_gio_hang']) ?>">
                             <input type="hidden" name="hanh_dong" value="xoa">
                             <input type="hidden" name="id" value="<?= e((int) ($item['id'] ?? 0)) ?>">
                             <button type="submit" style="padding: 6px 12px; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">Xóa</button>
@@ -176,6 +188,7 @@ require __DIR__ . '/inc/header.php';
 
         <div style="text-align: right; margin-bottom: 40px;">
             <form action="gio-hang.php" method="post" style="margin: 0;">
+                <input type="hidden" name="_csrf" value="<?= e($_SESSION['csrf_gio_hang']) ?>">
                 <input type="hidden" name="hanh_dong" value="xoa_het">
                 <button type="submit" style="padding: 10px 15px; background: #dc2626; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Xóa hết kế hoạch</button>
             </form>

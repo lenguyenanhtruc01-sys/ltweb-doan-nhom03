@@ -9,10 +9,21 @@ declare(strict_types=1);
  */
 if (PHP_SAPI !== 'cli') { http_response_code(403); exit('Chỉ chạy bằng PHP CLI.'); }
 require_once __DIR__ . '/../database/cai-dat.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 function kiemThuCaiDat(bool $dung, string $loi): void
 {
     if (!$dung) throw new RuntimeException($loi);
+}
+
+function kiemThuMonAnMau(PDO $pdo): void
+{
+    $ds = $pdo->query("SELECT ten_mon,bua FROM tv_mon_an WHERE mssv='3120224034' ORDER BY ten_mon")->fetchAll(PDO::FETCH_KEY_PAIR);
+    $mongDoi = ['Phở bò'=>'sang', 'Cơm tấm'=>'trua', 'Bún chả'=>'trua',
+        'Lẩu Thái'=>'toi', 'Cơm gà'=>'trua', 'Bún bò Huế'=>'toi'];
+    ksort($ds); ksort($mongDoi);
+    kiemThuCaiDat($ds === $mongDoi, 'Sai danh sách hoặc bữa của món ăn mẫu Duy.');
+    kiemThuCaiDat((int) $pdo->query("SELECT COUNT(*) FROM tv_mon_an WHERE mssv='3120224034'")->fetchColumn() === count($mongDoi), 'Món ăn mẫu Duy bị trùng.');
 }
 
 function anhDuLieuCaiDat(PDO $pdo): array
@@ -39,26 +50,33 @@ $cacBanSao = [];
 try {
     $moi = caiDatNhom($pdo, $ten);
     kiemThuCaiDat($moi['cai_moi'] && $moi['so_mon'] === 30, 'Không cài mới đủ môn.');
-    kiemThuCaiDat(count($pdo->query('SHOW TABLES')->fetchAll()) === 20, 'Thiếu bảng.');
+    kiemThuMonAnMau($pdo);
+    kiemThuCaiDat(count($pdo->query('SHOW TABLES')->fetchAll()) === 21, 'Thiếu bảng.');
+    $khoDuy = new App\Data\KhoCaNhan($pdo);
+    kiemThuCaiDat($khoDuy->thongKeThoiTiet() === [], 'Cài mới có lượt thời tiết giả.');
+    $khoDuy->themCheckIn('nang');
+    $thoiTiet = $khoDuy->thongKeThoiTiet();
+    kiemThuCaiDat(count($thoiTiet) === 1 && $thoiTiet[0]['trang_thai'] === 'nang'
+        && (int) $thoiTiet[0]['so_luot'] === 1, 'Không ghi/đọc được check-in thời tiết.');
     kiemThuCaiDat((int) $pdo->query("SELECT COUNT(*) FROM thanh_vien WHERE mssv='3120224174'")->fetchColumn() === 1, 'Thiếu MSSV Uyên.');
     kiemThuCaiDat((int) $pdo->query("SELECT COUNT(*) FROM tv_uyen_ky_nang WHERE mssv='3120224174'")->fetchColumn() === 5, 'Thiếu dữ liệu kỹ năng Uyên.');
     kiemThuCaiDat((int) $pdo->query("SELECT COUNT(*) FROM tv_uyen_thoi_khoa_bieu WHERE mssv='3120224174'")->fetchColumn() === 6, 'Thiếu thời khóa biểu Uyên.');
     $hai = $pdo->query("SELECT id,mat_khau FROM nguoi_dung WHERE ten_dang_nhap='hai'")->fetch();
     kiemThuCaiDat($hai !== false && password_verify('matkhau123', $hai['mat_khau']), 'Thiếu tài khoản mẫu Hải.');
     kiemThuCaiDat((int) $pdo->query("SELECT nguoi_dung_id FROM thanh_vien WHERE mssv='3120224042'")->fetchColumn() === (int) $hai['id'], 'Thiếu liên kết chủ trang.');
-    echo "PASS cài mới: 20 bảng, 30 môn, dữ liệu Uyên, tài khoản Hải và chủ trang đúng.\n";
+    echo "PASS cài mới: 21 bảng, 30 môn, check-in Duy, dữ liệu Uyên và chủ trang Hải đúng.\n";
     $cacBang = $pdo->query('SHOW TABLES')->fetchAll(PDO::FETCH_COLUMN);
     foreach (['gio_hang_nguoi_dung','mon_yeu_thich','tv_uyen_ky_nang','tv_uyen_thoi_khoa_bieu'] as $b) {
         kiemThuCaiDat(in_array($b, $cacBang, true), 'Thiếu bảng bắt buộc ' . $b);
     }
-    kiemThuCaiDat(count($cacBang) === 20, 'Số bảng không đúng schema.');
+    kiemThuCaiDat(count($cacBang) === 21, 'Số bảng không đúng schema.');
     kiemThuCaiDat((int) $pdo->query('SELECT COUNT(*) FROM thanh_vien')->fetchColumn() === 5, 'Thiếu thành viên.');
     kiemThuCaiDat((int) $pdo->query('SELECT COUNT(*) FROM tv_uyen_ky_nang')->fetchColumn() === 5, 'Thiếu kỹ năng Uyên.');
     kiemThuCaiDat((int) $pdo->query('SELECT COUNT(*) FROM tv_uyen_thoi_khoa_bieu')->fetchColumn() === 6, 'Thiếu lịch Uyên.');
     $hai = $pdo->query("SELECT id,mat_khau FROM nguoi_dung WHERE ten_dang_nhap='hai'")->fetch();
     kiemThuCaiDat($hai !== false && password_verify('matkhau123', $hai['mat_khau']), 'Thiếu tài khoản mẫu Hải.');
     kiemThuCaiDat((int) $pdo->query("SELECT nguoi_dung_id FROM thanh_vien WHERE mssv='3120224042'")->fetchColumn() === (int) $hai['id'], 'Thiếu liên kết chủ trang.');
-    echo "PASS cài mới: 20 bảng, 30 môn, 5 thành viên, dữ liệu Uyên, tài khoản Hải và chủ trang đúng.\n";
+    echo "PASS cài mới: 21 bảng, 30 môn, 5 thành viên, dữ liệu Uyên, tài khoản Hải và chủ trang đúng.\n";
 
     $st = $pdo->prepare('UPDATE nguoi_dung SET mat_khau=? WHERE id=?');
     $st->execute([password_hash('MatKhauRieng987!', PASSWORD_DEFAULT), $hai['id']]);
@@ -85,7 +103,7 @@ try {
     $pdo->exec('DELETE FROM mon_hoc WHERE id>8');
     $pdo->exec("UPDATE thanh_vien SET nguoi_dung_id=NULL WHERE mssv='3120224042'");
     $pdo->exec('DELETE FROM nguoi_dung WHERE id=4');
-    foreach (['tv_anh_dai_dien','tv_uyen_thoi_khoa_bieu','tv_uyen_ky_nang','gio_hang_nguoi_dung','mon_yeu_thich','phien_ghi_nho','yeu_cau_dat_lai_mat_khau'] as $bang) $pdo->exec('DROP TABLE `' . $bang . '`');
+    foreach (['tv_thoi_tiet_duy','tv_anh_dai_dien','tv_uyen_thoi_khoa_bieu','tv_uyen_ky_nang','gio_hang_nguoi_dung','mon_yeu_thich','phien_ghi_nho','yeu_cau_dat_lai_mat_khau'] as $bang) $pdo->exec('DROP TABLE `' . $bang . '`');
     $pdo->exec("DELETE FROM thanh_vien WHERE mssv='3120224174'");
     $pdo->exec('ALTER TABLE nguoi_dung DROP COLUMN email');
     $pdo->exec('ALTER TABLE mon_hoc DROP COLUMN so_cho');
@@ -96,6 +114,7 @@ try {
     $kq = caiDatNhom($pdo, $tenCu);
     $cacBanSao[] = $kq['sao_luu'];
     kiemThuCaiDat($kq['so_mon'] === 30 && $kq['hai']['tao_tai_khoan'], 'Nâng cấp thiếu môn hoặc tài khoản Hải.');
+    kiemThuCaiDat((new App\Data\KhoCaNhan($pdo))->thongKeThoiTiet() === [], 'Nâng cấp chưa tạo bảng thời tiết trống.');
     kiemThuCaiDat((int) $pdo->query("SELECT COUNT(*) FROM thanh_vien WHERE mssv='3120224174'")->fetchColumn() === 1, 'Nâng cấp thiếu MSSV Uyên.');
     kiemThuCaiDat((int) $pdo->query("SELECT COUNT(*) FROM tv_uyen_ky_nang WHERE mssv='3120224174'")->fetchColumn() === 5, 'Nâng cấp thiếu dữ liệu kỹ năng Uyên.');
     kiemThuCaiDat((int) $pdo->query("SELECT COUNT(*) FROM tv_uyen_thoi_khoa_bieu WHERE mssv='3120224174'")->fetchColumn() === 6, 'Nâng cấp thiếu thời khóa biểu Uyên.');
@@ -116,7 +135,7 @@ try {
     kiemThuCaiDat(count($kq['tai_khoan_moi']) === 4, 'Cài dở không bổ sung đủ tài khoản.');
     kiemThuCaiDat((int) $pdo->query('SELECT COUNT(*) FROM ke_hoach_hoc_tap')->fetchColumn() === 3, 'Cài dở thiếu kế hoạch.');
     kiemThuCaiDat((int) $pdo->query('SELECT COUNT(*) FROM tv_luot_xem')->fetchColumn() === 7, 'Cài dở thiếu lượt xem mẫu.');
-    kiemThuCaiDat((int) $pdo->query('SELECT COUNT(*) FROM tv_mon_an')->fetchColumn() === 3, 'Cài dở thiếu món ăn mẫu.');
+    kiemThuMonAnMau($pdo);
     $truoc = anhDuLieuCaiDat($pdo);
     $kq = caiDatNhom($pdo, $tenDo); $cacBanSao[] = $kq['sao_luu'];
     kiemThuCaiDat($truoc === anhDuLieuCaiDat($pdo), 'Cài dở chạy lại tạo trùng.');
@@ -127,7 +146,7 @@ try {
     $pdo->exec('DROP TABLE gio_hang_nguoi_dung,mon_yeu_thich');
     $pdo->exec("DELETE FROM thanh_vien WHERE mssv='3120224174'");
     $kq = caiDatNhom($pdo, $tenMerge); $cacBanSao[] = $kq['sao_luu'];
-    kiemThuCaiDat($kq['so_bang'] === 20, 'Không khôi phục được hai bảng chung.');
+    kiemThuCaiDat($kq['so_bang'] === 21, 'Không khôi phục được hai bảng chung.');
     kiemThuCaiDat((int) $pdo->query('SELECT COUNT(*) FROM tv_uyen_ky_nang')->fetchColumn() === 5, 'Nâng cấp thiếu kỹ năng Uyên.');
     kiemThuCaiDat((int) $pdo->query('SELECT COUNT(*) FROM tv_uyen_thoi_khoa_bieu')->fetchColumn() === 6, 'Nâng cấp thiếu lịch Uyên.');
     echo "PASS bản merge lỗi: khôi phục giỏ/yêu thích và dữ liệu Uyên.\n";
@@ -140,11 +159,20 @@ try {
     $pdo->exec("INSERT INTO mon_hoc (id,danh_muc_id,ma_mon,ten_mon,so_tin_chi,so_cho) VALUES (501,101,'RIENG101','Môn riêng',3,9),(502,101,'MAT101','Tên đã sửa trên máy cũ',3,4)");
     $pdo->exec("INSERT INTO thanh_vien (mssv,ho_ten,nguoi_dung_id) VALUES ('3120224042','Tên chủ trang đã sửa',1)");
     $monCu = $pdo->query('SELECT * FROM mon_hoc ORDER BY id')->fetchAll();
-    $kq = caiDatNhom($pdo, $tenId); $cacBanSao[] = $kq['sao_luu'];
-    kiemThuCaiDat($kq['so_mon'] === 31, 'Môn cùng mã bị nhân đôi hoặc môn riêng bị mất.');
+    try {
+        caiDatNhom($pdo, $tenId);
+        throw new LogicException('Bộ cài không cảnh báo chủ trang Hải khác tài khoản mẫu.');
+    } catch (RuntimeException $loi) {
+        kiemThuCaiDat(str_contains($loi->getMessage(), 'Liên kết chủ trang Hải không khớp'), 'Sai cảnh báo chủ trang: ' . $loi->getMessage());
+    }
+    kiemThuCaiDat((int) $pdo->query('SELECT COUNT(*) FROM mon_hoc')->fetchColumn() === 31, 'Môn cùng mã bị nhân đôi hoặc môn riêng bị mất.');
     kiemThuCaiDat($monCu === $pdo->query('SELECT * FROM mon_hoc WHERE id IN (501,502) ORDER BY id')->fetchAll(), 'Ghi đè tên/số chỗ/danh mục môn cũ.');
     kiemThuCaiDat($pdo->query('SELECT mat_khau FROM nguoi_dung WHERE id=1')->fetchColumn() === $bam, 'Ghi đè mật khẩu ID trùng seed.');
     kiemThuCaiDat((int) $pdo->query("SELECT nguoi_dung_id FROM thanh_vien WHERE mssv='3120224042'")->fetchColumn() === 1, 'Ghi đè chủ trang cũ.');
+    // Mô phỏng người vận hành đã kiểm tra và sửa đúng liên kết trong CSDL thử.
+    $pdo->exec("UPDATE thanh_vien tv JOIN nguoi_dung u ON u.ten_dang_nhap='hai'
+        SET tv.nguoi_dung_id=u.id WHERE tv.mssv='3120224042'");
+    $kq = caiDatNhom($pdo, $tenId); $cacBanSao[] = $kq['sao_luu'];
     $nguoiDat = $pdo->query('SELECT u.ten_dang_nhap FROM ke_hoach_hoc_tap k JOIN nguoi_dung u ON u.id=k.nguoi_dung_id ORDER BY u.ten_dang_nhap')->fetchAll(PDO::FETCH_COLUMN);
     kiemThuCaiDat($nguoiDat === ['an','binh','hai'], 'Ánh xạ sai người đặt kế hoạch mẫu.');
     kiemThuCaiDat((int) $pdo->query("SELECT COUNT(*) FROM chi_tiet_ke_hoach WHERE ma_mon='MAT101' AND mon_hoc_id=502")->fetchColumn() === 1, 'Ánh xạ sai ID môn trong chi tiết.');

@@ -24,19 +24,28 @@ $hanhDong  = layChuoiDauVao($_POST['hanh_dong'] ?? '');
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 1. Chọn món
     if ($hanhDong === 'chon_mon') {
-        $dsMonText = layChuoiDauVao($_POST['dsMon'] ?? '');
-        $bua       = layChuoiDauVao($_POST['bua'] ?? 'bat_ky');
-        $mangMon   = array_values(array_filter(array_map('trim', explode("\n", $dsMonText))));
-
-        if (count($mangMon) >= 2) {
+        try {
+            $dsMonText = $_POST['dsMon'] ?? '';
+            $bua = $_POST['bua'] ?? 'bat_ky';
+            if (!is_string($dsMonText) || !is_string($bua)) {
+                throw new DomainException('Danh sách món hoặc bữa ăn không hợp lệ.');
+            }
+            if (mb_strlen($dsMonText) > 3000) {
+                throw new DomainException('Danh sách món tối đa 3000 ký tự.');
+            }
+            $mangMon = KhoCaNhan::kiemTraDanhSachMon(explode("\n", $dsMonText), $bua);
             $khoCaNhan->luuDanhSachMon(MSSV_DUY, $mangMon, $bua);
-            $monChon = $khoCaNhan->chonMonNgauNhien(MSSV_DUY);
+            $monChon = $khoCaNhan->chonMonNgauNhien($mangMon, $bua);
+            $_SESSION['duy_danh_sach_mon'] = $mangMon;
             $_SESSION['duy_mon_an_ket_qua'] = ['mon' => $monChon, 'bua' => $bua, 'thoiGian' => date('H:i:s d/m/Y')];
             $_SESSION['flash_duy'] = "Máy đã chọn: " . $monChon;
-        } else {
-            $_SESSION['flash_duy'] = "Vui lòng nhập ít nhất 2 món!";
+        } catch (DomainException $err) {
+            $_SESSION['flash_duy'] = $err->getMessage();
+        } catch (PDOException $err) {
+            error_log((string) $err);
+            $_SESSION['flash_duy'] = 'Chưa lưu được danh sách món. Vui lòng thử lại sau.';
         }
-        header('Location: gioithieu.php#chon-mon'); exit;
+        header('Location: gioithieu.php#chon-mon', true, 303); exit;
     }
 
     // 2. Oẳn tù tì
@@ -71,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $tb = $_SESSION['flash_duy'] ?? '';
 unset($_SESSION['flash_duy']);
 
-$dsMonNhap = $khoCaNhan->layDanhSachMon(MSSV_DUY);
+$dsMonNhap = $_SESSION['duy_danh_sach_mon'] ?? $khoCaNhan->layDanhSachMon(MSSV_DUY);
 $ketQuaMon = $_SESSION['duy_mon_an_ket_qua'] ?? null;
 
 $stOtt = $khoCaNhan->thongKeOtt(MSSV_DUY);
@@ -137,7 +146,7 @@ require __DIR__ . '/../../inc/header.php';
         <form method="post" action="gioithieu.php" id="form-chon-mon" novalidate>
             <input type="hidden" name="hanh_dong" value="chon_mon">
             <p>
-                <label for="dsMon">Danh sách món (mỗi dòng 1 món, 2–50 món):</label>
+                <label for="dsMon">Danh sách món (2–50 món khác nhau, mỗi dòng 1 món, tối đa 100 ký tự/món):</label>
                 <textarea id="dsMon" name="dsMon" rows="6" maxlength="3000"><?= e(implode("\n", $dsMonNhap)) ?></textarea>
             </p>
             <p>

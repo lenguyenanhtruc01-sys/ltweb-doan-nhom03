@@ -213,6 +213,7 @@ require __DIR__ . '/inc/header.php';
                                 </div>
                                 
                                 <form action="gio-hang.php" method="post" class="form-them-ke-hoach" data-gio-hang-api="api/gio-hang.php">
+                                    <input type="hidden" name="_csrf" value="<?= e($_SESSION['csrf_gio_hang']) ?>">
                                     <input type="hidden" name="quay_lai" value="danh-sach.php">
                                     <input type="hidden" name="hanh_dong" value="them">
                                     <input type="hidden" name="id" value="<?= e((string) $mon->id) ?>">

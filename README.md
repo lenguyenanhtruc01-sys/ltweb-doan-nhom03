@@ -53,7 +53,7 @@ Nếu CSDL cũ thiếu cột trạng thái/ghi chú và thông tin môn trong ch
 
 Để chặn xóa môn đã có trong kế hoạch theo ca 5 của Bảng 3: sao lưu rồi chạy `php database/nang-cap-khoa-ngoai-mon-hoc.php`. Migration đổi FK môn học sang RESTRICT, giữ nguyên dữ liệu và chạy lại được. Schema cài mới đã dùng RESTRICT; xóa kế hoạch vẫn tự xóa các chi tiết của chính kế hoạch đó.
 
-Avatar Hải dùng MySQL: sao lưu rồi chạy `php database/nang-cap-ca-nhan-hai.php`. Script giữ ảnh cũ, nhập tên ảnh từ JSON vào `tv_anh_dai_dien` và liên kết tài khoản chủ trang qua `thanh_vien.nguoi_dung_id`. Nếu chưa có chủ, dùng/tạo tài khoản mẫu `hai` bên dưới; có thể chỉ định ID tài khoản đã có bằng tham số CLI. Không tự thay chủ trang, đổi mật khẩu hoặc ghi đè avatar mới khi chạy lại. Tệp JSON cũ chỉ còn dùng cho migration, trang cá nhân không đọc/ghi tệp này.
+Avatar Hải dùng MySQL: sao lưu rồi chạy `php database/nang-cap-ca-nhan-hai.php`. Script giữ ảnh cũ, nhập tên ảnh từ JSON vào `tv_anh_dai_dien` và liên kết tài khoản chủ trang qua `thanh_vien.nguoi_dung_id`. Nếu chưa có chủ, dùng/tạo tài khoản mẫu `hai` bên dưới; có thể chỉ định ID tài khoản đã có bằng tham số CLI. Khi chạy mặc định hoặc qua bộ cài, chủ đã có phải khớp tài khoản `hai / hai@example.com`; nếu không khớp, script dừng và báo ID hai bên để kiểm tra, không tự đổi chủ. Tham số ID tường minh chỉ xác nhận chủ hiện có hoặc gán khi chưa có chủ, không ghi đè chủ khác. Không đổi mật khẩu hoặc ghi đè avatar mới khi chạy lại. Tệp JSON cũ chỉ còn dùng cho migration, trang cá nhân không đọc/ghi tệp này.
 
 ### Chạy không cần Apache
 

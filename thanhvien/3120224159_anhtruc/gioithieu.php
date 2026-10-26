@@ -6,7 +6,9 @@
  */
 
 require_once __DIR__ . '/../../inc/config.php';
+require_once __DIR__ . '/../../src/Data/KhoTrangCaNhanTruc.php';
 
+use App\Data\KhoTrangCaNhanTruc;
 $pageTitle = 'Giới thiệu - Lê Nguyễn Anh Trúc';
 $tieuDe = $pageTitle;
 $goc = '../../';

@@ -139,3 +139,25 @@ CREATE TABLE IF NOT EXISTS tv_tra_cuu_mang (
     INDEX idx_mssv_id (mssv, id),
     FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- ============================================
+-- PHẦN B - BẢNG RIÊNG CỦA LÊ NGUYỄN ANH TRÚC
+-- Danh sách dự án cá nhân
+-- ============================================
+CREATE TABLE IF NOT EXISTS tv_du_an (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    mssv CHAR(10) NOT NULL,
+    ten_du_an VARCHAR(200) NOT NULL,
+    mo_ta TEXT NOT NULL,
+    cong_nghe VARCHAR(255) NOT NULL,
+    nam_thuc_hien YEAR NOT NULL,
+    ngay_tao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (mssv)
+        REFERENCES thanh_vien(mssv)
+        ON DELETE CASCADE,
+
+    INDEX idx_tv_du_an_mssv (mssv),
+    INDEX idx_tv_du_an_nam (nam_thuc_hien)
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;

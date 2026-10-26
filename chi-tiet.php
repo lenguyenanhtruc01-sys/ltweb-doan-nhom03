@@ -4,7 +4,6 @@
  * Hiển thị thông tin chi tiết môn học theo tham số ?id=.
  * ID không hợp lệ hoặc không tồn tại sẽ trả về trang 404.
  * Lưu tối đa 4 môn đã xem gần đây bằng cookie da_xem.
- * Thử: mở ?id=1, ID không tồn tại và ID dạng mảng; kiểm tra cookie đã xem.
  */
 declare(strict_types=1);
 
@@ -18,21 +17,18 @@ $kho = new KhoMonHoc(db());
 // Chỉ nhận ID dạng số nguyên đơn; chặn trường hợp ?id[]=1.
 $giaTriId = $_GET['id'] ?? null;
 
-$id = (is_string($giaTriId) || is_int($giaTriId))
-    ? filter_var($giaTriId, FILTER_VALIDATE_INT)
-    : false;
-
-$mh = ($id !== false && $id > 0)
-    ? $kho->timTheoId($id)
-    : null;
-
-// Seed lưu tên file (ví dụ MAT101.png); nối với thư mục ảnh của website.
-$anhMonHoc = trim((string) ($mh?->anh ?? ''));
-if ($anhMonHoc !== ''
-    && !str_starts_with($anhMonHoc, 'http')
-    && !str_starts_with($anhMonHoc, 'images/')) {
-    $anhMonHoc = 'images/' . $anhMonHoc;
+$id = null;
+if (is_string($giaTriId) || is_int($giaTriId)) {
+    $id = filter_var(
+        $giaTriId,
+        FILTER_VALIDATE_INT,
+        ['options' => ['min_range' => 1]]
+    );
 }
+
+$mh = $id !== false && $id !== null
+    ? $kho->timTheoId((int) $id)
+    : null;
 
 // ID sai hoặc môn học không tồn tại: trả về trang 404.
 if ($mh === null) {
@@ -41,17 +37,50 @@ if ($mh === null) {
     exit;
 }
 
-$monCungDanhMuc = $kho->cungDanhMuc($mh->danhMucId, (int) $mh->id);
 // Đọc cookie như dữ liệu không đáng tin cậy.
-$idsCu = array_map(
-    static fn ($mon): int => (int) $mon->id,
-    $kho->daXemGanDay($_COOKIE['da_xem'] ?? '', 3, (int) $mh->id)
+$idsCu = [];
+$cookieRaw = $_COOKIE['da_xem'] ?? '';
+
+if (is_string($cookieRaw) && $cookieRaw !== '') {
+    $cacIdCu = array_slice(explode(',', $cookieRaw), 0, 20);
+    $idHopLe = [];
+
+    foreach ($cacIdCu as $giaTriCu) {
+        $idCu = filter_var(trim((string) $giaTriCu), FILTER_VALIDATE_INT);
+        if ($idCu === false || $idCu <= 0) {
+            continue;
+        }
+        if (
+            $idCu === (int) $mh->id
+            || in_array($idCu, $idHopLe, true)
+        ) {
+            continue;
+        }
+        $idHopLe[] = (int) $idCu;
+    }
+
+    $idHopLe = array_values(array_unique($idHopLe, SORT_NUMERIC));
+    $monCuTheoId = $kho->theoNhieuId($idHopLe);
+    foreach ($idHopLe as $idCu) {
+        if (!isset($monCuTheoId[$idCu])) {
+            continue;
+        }
+        $idsCu[] = $idCu;
+        if (count($idsCu) >= 3) {
+            break;
+        }
+    }
+}
+$monCungDanhMuc = $kho->cungDanhMuc(
+    (int) $mh->danhMucId,
+    (int) $mh->id
 );
 
-$dsDaXemMoi = array_merge(
+$dsDaXemMoi = array_values(array_unique(array_merge(
     [(int) $mh->id],
     $idsCu
-);
+), SORT_NUMERIC));
+$dsDaXemMoi = array_slice($dsDaXemMoi, 0, 4);
 
 // Ghi cookie trước khi xuất HTML.
 setcookie('da_xem', implode(',', $dsDaXemMoi), [
@@ -104,10 +133,10 @@ require __DIR__ . '/inc/header.php';
         class="chi-tiet__noi-dung"
         aria-labelledby="tieu-de-chi-tiet">
 
-        <?php if ($anhMonHoc !== ''): ?>
+        <?php if (trim((string) $mh->anh) !== ''): ?>
             <figure>
                 <img
-                    src="<?= e($anhMonHoc) ?>"
+                    src="<?= e((string) $mh->anh) ?>"
                     alt="<?= e(
                         'Hình minh họa môn học '
                         . (string) $mh->tenMon
@@ -123,17 +152,18 @@ require __DIR__ . '/inc/header.php';
 
         <ul class="thong-tin-mon">
             <li>
-                <strong>Danh mục:</strong>
-                <a href="danh-sach.php?dm=<?= e($mh->danhMucId) ?>"><?= e($mh->tenDanhMuc) ?></a>
-            </li>
-            <li>
                 <strong>Mã môn:</strong>
                 <?= e((string) $mh->maMon) ?>
             </li>
 
             <li>
+                <strong>Danh mục:</strong>
+                <?= e((string) $mh->tenDanhMuc) ?>
+            </li>
+
+            <li>
                 <strong>Số tín chỉ:</strong>
-                <?= e((int) $mh->soTinChi) ?>
+                <?= (int) $mh->soTinChi ?>
             </li>
 
             <?php if (trim((string) $mh->trangThai) !== ''): ?>
@@ -173,11 +203,10 @@ require __DIR__ . '/inc/header.php';
 
         <div class="form-them-gio-hang">
             <form action="gio-hang.php" method="post" data-gio-hang-api="api/gio-hang.php">
-                <input type="hidden" name="_csrf" value="<?= e($_SESSION['csrf_gio_hang']) ?>">
                 <input
                     type="hidden"
                     name="quay_lai"
-                    value="chi-tiet.php?id=<?= e((int) $mh->id) ?>">
+                    value="chi-tiet.php?id=<?= (int) $mh->id ?>">
 
                 <input
                     type="hidden"
@@ -187,7 +216,7 @@ require __DIR__ . '/inc/header.php';
                 <input
                     type="hidden"
                     name="id"
-                    value="<?= e((int) $mh->id) ?>">
+                    value="<?= (int) $mh->id ?>">
 
                 <input
                     type="hidden"
@@ -213,26 +242,27 @@ require __DIR__ . '/inc/header.php';
             </a>
         </p>
     </article>
-    <section class="khu-vuc" aria-labelledby="tieu-de-cung-danh-muc">
-        <div class="bao">
-            <h2 id="tieu-de-cung-danh-muc" class="tieu-de-khu-vuc__tieu-de">Môn học cùng danh mục</h2>
-            <?php if ($monCungDanhMuc === []): ?>
-                <p>Chưa có môn học khác trong danh mục này.</p>
-            <?php else: ?>
-                <div class="luoi-the">
-                    <?php foreach ($monCungDanhMuc as $mon): ?>
-                        <article class="the">
-                            <h3 class="the__tieu-de">
-                                <a class="the__lien-ket" href="chi-tiet.php?id=<?= e((int) $mon->id) ?>"><?= e((string) $mon->tenMon) ?></a>
-                            </h3>
-                            <p class="the__noi-dung">Mã môn: <strong><?= e((string) $mon->maMon) ?></strong> — <?= e((int) $mon->soTinChi) ?> tín chỉ</p>
-                            <a class="the__lien-ket" href="chi-tiet.php?id=<?= e((int) $mon->id) ?>">Xem chi tiết</a>
-                        </article>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-        </div>
-    </section>
+
+    <?php if ($monCungDanhMuc !== []): ?>
+        <section class="khu-vuc" aria-labelledby="tieu-de-cung-danh-muc">
+            <h2 id="tieu-de-cung-danh-muc">Môn học cùng danh mục</h2>
+            <div class="luoi-the">
+                <?php foreach ($monCungDanhMuc as $mon): ?>
+                    <article class="the">
+                        <h3 class="the__tieu-de">
+                            <a class="the__lien-ket" href="chi-tiet.php?id=<?= (int) $mon->id ?>">
+                                <?= e((string) $mon->tenMon) ?>
+                            </a>
+                        </h3>
+                        <p class="the__noi-dung">
+                            Mã môn: <strong><?= e((string) $mon->maMon) ?></strong>
+                            — <?= (int) $mon->soTinChi ?> tín chỉ
+                        </p>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        </section>
+    <?php endif; ?>
 </main>
 
 <?php require __DIR__ . '/inc/footer.php'; ?>

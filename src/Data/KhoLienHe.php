@@ -15,6 +15,61 @@ class KhoLienHe
     public function them(array $lh): void
     {
         $thuMuc = dirname($this->tep);
+<?php
+declare(strict_types=1);
+
+namespace App\Data;
+
+use PDO;
+
+class KhoLienHe
+{
+    public function __construct(private PDO $db) {}
+
+    public function them(array $lh): void
+    {
+        $st = $this->db->prepare(
+            'INSERT INTO lien_he
+                (ho_ten, email, so_dien_thoai, chu_de, uu_tien, noi_dung, anh)
+             VALUES (?, ?, ?, ?, ?, ?, ?)'
+        );
+        $st->execute([
+            $lh['hoTen'],
+            $lh['email'],
+            $lh['sdt'] !== '' ? $lh['sdt'] : null,
+            $lh['chuDe'],
+            $lh['uuTien'],
+            $lh['noiDung'],
+            $lh['anh'],
+        ]);
+    }
+
+    /** @return list<array<string, mixed>> */
+    public function tatCa(): array
+    {
+        $st = $this->db->query(
+            'SELECT id, ho_ten, email, so_dien_thoai, chu_de, uu_tien,
+                    noi_dung, anh, ngay_tao
+             FROM lien_he
+             ORDER BY ngay_tao DESC, id DESC'
+        );
+
+        return array_map(
+            static fn(array $row): array => [
+                'id' => (int) $row['id'],
+                'hoTen' => $row['ho_ten'],
+                'email' => $row['email'],
+                'sdt' => $row['so_dien_thoai'],
+                'chuDe' => $row['chu_de'],
+                'uuTien' => $row['uu_tien'],
+                'noiDung' => $row['noi_dung'],
+                'anh' => $row['anh'],
+                'thoiGian' => $row['ngay_tao'],
+            ],
+            $st->fetchAll()
+        );
+    }
+}
 
         if (!is_dir($thuMuc) && !mkdir($thuMuc, 0775, true) && !is_dir($thuMuc)) {
             throw new \RuntimeException('Không thể tạo thư mục lưu liên hệ.');

@@ -138,6 +138,8 @@
 .quan-tri-mon th, .quan-tri-mon td { padding: 10px; border: 1px solid #cbd5e1; text-align: left; }
 .quan-tri-mon th { background: #e8eef8; }
 .quan-tri-mon__loi { padding: 16px 28px; color: #721c24; background: #f8d7da; }
+.quan-tri-mon__loi-truong { margin: -4px 0 8px; color: #9b1c1c; font-size: 0.9rem; }
+.quan-tri-mon__form [aria-invalid="true"] { border: 2px solid #b91c1c; }
 .quan-tri-mon__thanh-cong { padding: 16px; color: #155724; background: #d4edda; }
 .quan-tri-mon__xac-nhan { padding: 16px; border: 2px solid #b45309; }
 .quan-tri-mon nav a { display: inline-block; padding: 10px; }

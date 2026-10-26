@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $trangThai = layChuoiDauVao($_POST['trang_thai'] ?? '');
         $hopLe = ['nang', 'mua', 'may', 'giong_bao'];
         if (in_array($trangThai, $hopLe, true)) {
-            $khoCaNhan->themCheckIn($trangThai);
+            $khoCaNhan->themCheckIn(MSSV_DUY, $trangThai);
             $_SESSION['flash_duy'] = "Đã ghi nhận thời tiết! Cảm ơn bạn.";
         }
         header('Location: gioithieu.php#thoi-tiet'); exit;
@@ -88,7 +88,7 @@ $tongVan = array_sum($stOtt);
 $tiLeThang = $tongVan > 0 ? round($stOtt['thang'] * 100 / $tongVan, 1) : 0.0;
 $lichSuOtt = $khoCaNhan->layLichSuOtt(MSSV_DUY);
 
-$dsThoiTiet = $khoCaNhan->thongKeThoiTiet();
+$dsThoiTiet = $khoCaNhan->thongKeThoiTiet(MSSV_DUY);
 $tongCheckIn = array_sum(array_column($dsThoiTiet, 'so_luot'));
 
 $buaChoPhep  = ['bat_ky' => 'Bất kỳ', 'sang' => 'Sáng', 'trua' => 'Trưa', 'toi' => 'Tối', 'dem' => 'Đêm'];

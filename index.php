@@ -412,7 +412,7 @@ require __DIR__ . '/inc/header.php';
 
                         <p>
                             Truy cập trang danh sách để xem
-                            các học phần được tải từ dữ liệu JSON.
+                            các học phần được tải từ cơ sở dữ liệu MySQL.
                         </p>
 
                     </div>

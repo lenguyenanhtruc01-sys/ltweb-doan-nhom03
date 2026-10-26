@@ -1,0 +1,39 @@
+MOI_TRUONG: {"commit":"67a731b + local fixes 2026-10-27","database":"edugpa_pc_8a201ac7fc95","server":"10.4.32-MariaDB","courses":30,"schema":"LIKE local đã nâng cấp, dữ liệu môn/danh mục local"}
+SQL_GHEP: "SELECT * FROM mon_hoc WHERE (ten_mon LIKE '%Levi's%' OR ma_mon LIKE '%Levi's%') ORDER BY id DESC LIMIT 6"
+LOI_GHEP: ["42000",1064,"SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 's%' OR ma_mon LIKE '%Levi's%') ORDER BY id DESC LIMIT 6' at line 1"]
+PREPARED_LEVIS: 0
+ORDER_BY_THAM_SO_gia: [{"id":7,"so_tin_chi":2},{"id":27,"so_tin_chi":2},{"id":28,"so_tin_chi":2},{"id":29,"so_tin_chi":2},{"id":30,"so_tin_chi":2},{"id":2,"so_tin_chi":3}]
+ORDER_BY_THAM_SO_so_tin_chi: [{"id":7,"so_tin_chi":2},{"id":27,"so_tin_chi":2},{"id":28,"so_tin_chi":2},{"id":29,"so_tin_chi":2},{"id":30,"so_tin_chi":2},{"id":2,"so_tin_chi":3}]
+ORDER_BY_COT: [{"id":7,"so_tin_chi":2},{"id":27,"so_tin_chi":2},{"id":28,"so_tin_chi":2},{"id":29,"so_tin_chi":2},{"id":30,"so_tin_chi":2},{"id":2,"so_tin_chi":3}]
+SX_BAT_KY_BANG_MOI: true
+SO_SANH_VONG_LAP_VA_IN_da_xem: {"vong_lap_thuc_nghiem":4,"IN_hien_tai":1}
+SO_SANH_VONG_LAP_VA_IN_gio: {"vong_lap_thuc_nghiem":3,"IN_hien_tai":1}
+EXPLAIN_TRUOC_loc: [{"id":1,"select_type":"SIMPLE","table":"mon_hoc","type":"ref","possible_keys":"danh_muc_id","key":"danh_muc_id","key_len":"4","ref":"const","rows":"7","Extra":"Using where; Using filesort"}]
+EXPLAIN_TRUOC_tim: [{"id":1,"select_type":"SIMPLE","table":"mon_hoc","type":"index","possible_keys":null,"key":"PRIMARY","key_len":"4","ref":null,"rows":"6","Extra":"Using where"}]
+EXPLAIN_SAU_loc: [{"id":1,"select_type":"SIMPLE","table":"mon_hoc","type":"ref","possible_keys":"idx_pc_dm_tc","key":"idx_pc_dm_tc","key_len":"4","ref":"const","rows":"7","Extra":"Using where"}]
+EXPLAIN_SAU_tim: [{"id":1,"select_type":"SIMPLE","table":"mon_hoc","type":"index","possible_keys":null,"key":"PRIMARY","key_len":"4","ref":null,"rows":"6","Extra":"Using where"}]
+KHONG_TRANSACTION_loi: "Môn MAT102 không còn đủ chỗ đăng ký."
+KHONG_TRANSACTION: {"ke_hoach":1,"chi_tiet":1,"cho":[{"id":1,"so_cho":1},{"id":2,"so_cho":0}]}
+CO_TRANSACTION_loi: "Môn MAT102 không còn đủ chỗ đăng ký."
+CO_TRANSACTION: {"ke_hoach":0,"chi_tiet":0,"cho":[{"id":1,"so_cho":2},{"id":2,"so_cho":0}]}
+HAI_KHACH: ["THANH_CONG","THIEU_CHO"]
+SAU_TRANH_CHO: {"ke_hoach":1,"so_cho":0}
+IDOR_DOC: {"chu":true,"nguoi_khac":null,"quan_tri":true}
+SNAPSHOT_GIU_NGUYEN: true
+IDOR_GIO: {"xoa_mon_cua_B_bang_uid_A":false,"gio_B":{"2":1}}
+HAI_MAT_KHAU: [{"ten_dang_nhap":"pc_a","mat_khau":"$2y$10$9jz6bnZYx6wyBOdwllgi5esiuez6K0lF/ZONCZVAu/LoRDbFspmMa"},{"ten_dang_nhap":"pc_b","mat_khau":"$2y$10$N7RW4hWD1.1dHAl/mL2tw.w/5HAtysrm0/GpTdR0cIi4ELxoH7Gi6"}]
+PASSWORD_VERIFY: [true,true]
+HTTP_don-hang.php?id=3: "HTTP/1.1 404 Not Found"
+HTTP_quan-tri.php: "HTTP/1.1 403 Forbidden"
+HTTP_quan-tri-mon-hoc.php?sua=1: "HTTP/1.1 403 Forbidden"
+HTTP_POST_don-hang.php: "HTTP/1.1 403 Forbidden"
+HTTP_POST_xoa-mon-hoc.php: "HTTP/1.1 403 Forbidden"
+HTTP_JSON_GIA_UID: {"status":"HTTP/1.1 200 OK","body":"{\"du_lieu\":[1]}","yeu_thich_nguoi_gui":[1],"yeu_thich_nguoi_bi_gia":[]}
+HTTP_THEM_GIO_MODEL_HIEN_TAI: {"status":"HTTP/1.1 200 OK","body":"{\"so_mon\":1,\"du_lieu\":[{\"id\":2,\"maMon\":\"MAT102\",\"tenMon\":\"Đại số tuyến tính\",\"soTinChi\":3,\"soLuong\":1,\"tongTinChi\":3}],\"thong_bao\":\"Môn học đã được thêm vào kế hoạch học tập.\"}"}
+NGUYEN_NHAN_API_500: false
+HTTP_YEU_THICH_KHACH: {"status":"HTTP/1.1 401 Unauthorized","body":"{\"loi\":\"Vui lòng đăng nhập.\"}"}
+SELECT index uid=0: 3
+SELECT index uid=1: 6
+SELECT gio-hang uid=0: 2
+SELECT gio-hang uid=1: 7
+DA_DON_CSDL: "edugpa_pc_8a201ac7fc95"

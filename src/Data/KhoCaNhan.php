@@ -97,15 +97,20 @@ class KhoCaNhan
     }
 
     // ============ CHỨC NĂNG 3: CHECK-IN THỜI TIẾT ============
-    public function themCheckIn(string $trangThai): void
+    public function themCheckIn(string $mssv, string $trangThai): void
     {
-        $st = $this->db->prepare('INSERT INTO tv_thoi_tiet_duy (trang_thai) VALUES (?)');
-        $st->execute([$trangThai]);
+        if (!in_array($trangThai, ['nang','mua','may','giong_bao'], true)) {
+            throw new \DomainException('Trạng thái thời tiết không hợp lệ.');
+        }
+        $st = $this->db->prepare('INSERT INTO tv_thoi_tiet_duy (mssv,trang_thai) VALUES (?,?)');
+        $st->execute([$mssv, $trangThai]);
     }
 
-    public function thongKeThoiTiet(): array
+    public function thongKeThoiTiet(string $mssv): array
     {
-        $st = $this->db->query('SELECT trang_thai, COUNT(*) AS so_luot FROM tv_thoi_tiet_duy GROUP BY trang_thai ORDER BY so_luot DESC');
+        $st = $this->db->prepare('SELECT trang_thai, COUNT(*) AS so_luot FROM tv_thoi_tiet_duy
+            WHERE mssv=? GROUP BY trang_thai ORDER BY so_luot DESC, trang_thai');
+        $st->execute([$mssv]);
         return $st->fetchAll();
     }
 }

@@ -37,6 +37,12 @@ if ($mh === null) {
     exit;
 }
 
+// Seed lưu tên tệp ảnh, còn ảnh upload đã có đường dẫn uploads/.
+$anhMonHoc = trim((string) $mh->anh);
+if ($anhMonHoc !== '' && !preg_match('~^(?:https?://|/|images/|uploads/)~i', $anhMonHoc)) {
+    $anhMonHoc = 'images/' . $anhMonHoc;
+}
+
 // Đọc cookie như dữ liệu không đáng tin cậy.
 $idsCu = [];
 $cookieRaw = $_COOKIE['da_xem'] ?? '';
@@ -133,10 +139,10 @@ require __DIR__ . '/inc/header.php';
         class="chi-tiet__noi-dung"
         aria-labelledby="tieu-de-chi-tiet">
 
-        <?php if (trim((string) $mh->anh) !== ''): ?>
+        <?php if ($anhMonHoc !== ''): ?>
             <figure>
                 <img
-                    src="<?= e((string) $mh->anh) ?>"
+                    src="<?= e($anhMonHoc) ?>"
                     alt="<?= e(
                         'Hình minh họa môn học '
                         . (string) $mh->tenMon
@@ -203,6 +209,7 @@ require __DIR__ . '/inc/header.php';
 
         <div class="form-them-gio-hang">
             <form action="gio-hang.php" method="post" data-gio-hang-api="api/gio-hang.php">
+                <input type="hidden" name="_csrf" value="<?= e($_SESSION['csrf_gio_hang']) ?>">
                 <input
                     type="hidden"
                     name="quay_lai"

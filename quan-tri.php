@@ -38,6 +38,7 @@ require __DIR__ . '/inc/header.php';
     <div class="quan-tri__dau-trang">
         <div>
             <h1>Trang quản trị hệ thống EduGPA</h1>
+            <p><a class="nut nut--chinh" href="quan-tri-mon-hoc.php">Quản lý môn học</a></p>
 
             <p class="quan-tri__loi-chao">
                 Xin chào,

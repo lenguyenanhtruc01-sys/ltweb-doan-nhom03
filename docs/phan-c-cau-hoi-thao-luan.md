@@ -1,5 +1,7 @@
 # 2.3. Phần C – Câu hỏi thảo luận (2,0 điểm)
 
+**Cập nhật 27/10/2026:** phần số đo gốc dưới đây là bản chụp tại commit `57a3094`, không phải trạng thái bản vá hiện tại. Đã khôi phục `soCho` và chạy lại bộ thử trên CSDL riêng: [log mới](../kiemtra/ket-qua-phan-c-20261027.txt) cho thấy POST giỏ hợp lệ trả 200, không còn lỗi thuộc tính. Bộ thử đặt lại số chỗ môn thử trước request thành công để không lẫn với ca hết chỗ. Kết quả cài mới/nâng cấp và các phần còn thiếu nằm trong [biên bản rà soát](../kiemtra/ra-soat-tu-86c7414-20261027.md). Giữ log cũ để truy vết; các số dòng source trong báo cáo gốc cần đối chiếu lại trước khi xuất PDF.
+
 **Căn cứ:** mã nguồn commit `57a3094` (`Update KhoLienHe.php`), là HEAD mới nhất khi chạy thử. Các phần truy vấn, giao dịch, phân quyền được đối chiếu trực tiếp với commit này. Không sửa, stage, commit hoặc push mã ứng dụng trong quá trình viết báo cáo.
 
 Website EduGPA dùng nghiệp vụ đăng ký môn học. Vì vậy, các thuật ngữ của đề được đối chiếu như sau:

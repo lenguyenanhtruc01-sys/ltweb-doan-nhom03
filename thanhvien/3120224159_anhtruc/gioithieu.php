@@ -1,7 +1,7 @@
 <?php
 /**
  * Trang cá nhân Trúc: giới thiệu, tính chi phí học kỳ/GPA và mini quiz IT.
- * Kiểm tra đầu vào phía máy chủ, giữ kết quả trong session và dùng POST/PRG.
+ * Kiểm tra đầu vào phía máy chủ, lưu kết quả trong MySQL và dùng POST/PRG.
  * Thử dữ liệu GPA/học phí sai, chọn đáp án quiz rồi F5 sau POST thành công.
  */
 
@@ -24,6 +24,18 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 const MSSV_TRUC = '3120224159';
 
 $khoTruc = new KhoTrangCaNhanTruc(db());
+// Tài khoản xem được kết quả trên máy khác; khách có định danh riêng trong phiên.
+$nguoiXem = nguoiDung();
+if (!isset($_SESSION['truc_khach'])) $_SESSION['truc_khach'] = bin2hex(random_bytes(32));
+$phamVi = hash('sha256', $nguoiXem !== null
+    ? 'user:' . $nguoiXem['id'] : 'guest:' . $_SESSION['truc_khach']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    && !csrfKiemTra(is_string($_POST['_csrf'] ?? null) ? $_POST['_csrf'] : null)) {
+    http_response_code(403);
+    exit('Phiên gửi form không hợp lệ. Vui lòng tải lại trang.');
+}
+// Dọn trạng thái cũ: kết quả và điểm số nay được đọc từ CSDL.
+unset($_SESSION['gpa_result'], $_SESSION['quiz_result'], $_SESSION['quiz_score'], $_SESSION['quiz_total']);
 
 $tuKhoaDuAn = '';
 
@@ -37,6 +49,13 @@ if (isset($_GET['sx']) && is_string($_GET['sx'])) {
     $sapXepDuAn = $_GET['sx'];
 }
 
+$sapXepChoPhep = ['moi' => 'Năm mới nhất', 'cu' => 'Năm cũ nhất', 'ten' => 'Tên A–Z'];
+if (!isset($sapXepChoPhep[$sapXepDuAn])) $sapXepDuAn = 'moi';
+$loiTimDuAn = '';
+if (mb_strlen($tuKhoaDuAn) > 200) {
+    $tuKhoaDuAn = mb_substr($tuKhoaDuAn, 0, 200);
+    $loiTimDuAn = 'Từ khóa dự án tối đa 200 ký tự.';
+}
 $danhSachDuAn = $khoTruc->layDuAn(
     MSSV_TRUC,
     $tuKhoaDuAn,
@@ -114,10 +133,10 @@ if (!isset($_SESSION['quiz_current'])) {
    LẤY KẾT QUẢ SAU POST/PRG
    ========================================================= */
 
-$gpaResult = $_SESSION['gpa_result'] ?? null;
+$gpaResult = $khoTruc->layGpa(MSSV_TRUC, $phamVi);
 $gpaErrors = $_SESSION['gpa_errors'] ?? [];
 
-$quizResult = $_SESSION['quiz_result'] ?? null;
+$quizResult = $khoTruc->layQuizGanNhat(MSSV_TRUC, $phamVi);
 $quizErrors = $_SESSION['quiz_errors'] ?? [];
 
 unset(
@@ -194,8 +213,9 @@ if (
         $tinChiDaHoc === false
         || $tinChiDaHoc === null
         || $tinChiDaHoc < 0
+        || $tinChiDaHoc > 10000
     ) {
-        $errors[] = 'Số tín chỉ đã học phải là số nguyên không âm.';
+        $errors[] = 'Số tín chỉ đã học phải là số nguyên từ 0 đến 10000.';
     }
 
 
@@ -203,8 +223,9 @@ if (
         $tinChiHocKy === false
         || $tinChiHocKy === null
         || $tinChiHocKy <= 0
+        || $tinChiHocKy > 1000
     ) {
-        $errors[] = 'Số tín chỉ học kỳ phải lớn hơn 0.';
+        $errors[] = 'Số tín chỉ học kỳ phải là số nguyên từ 1 đến 1000.';
     }
 
 
@@ -212,8 +233,9 @@ if (
         $hocPhiTinChi === false
         || $hocPhiTinChi === null
         || $hocPhiTinChi <= 0
+        || $hocPhiTinChi > 1000000000
     ) {
-        $errors[] = 'Học phí mỗi tín chỉ phải lớn hơn 0.';
+        $errors[] = 'Học phí mỗi tín chỉ phải là số nguyên từ 1 đến 1 tỷ đồng.';
     }
 
 
@@ -228,7 +250,7 @@ if (
     if (!empty($errors)) {
         $_SESSION['gpa_errors'] = $errors;
 
-        header('Location: ' . $_SERVER['PHP_SELF']);
+        header('Location: gioithieu.php', true, 303);
         exit;
     }
 
@@ -250,7 +272,7 @@ if (
     }
 
 
-    $_SESSION['gpa_result'] = [
+    $ketQuaGpa = [
         'gpa_hien_tai' => $gpaHienTai,
         'gpa_muc_tieu' => $gpaMucTieu,
         'tin_chi_da_hoc' => $tinChiDaHoc,
@@ -260,9 +282,10 @@ if (
         'tong_hoc_phi' => $tongHocPhi,
         'co_the_dat' => $coTheDat
     ];
+    $khoTruc->luuGpa(MSSV_TRUC, $phamVi, $ketQuaGpa);
 
 
-    header('Location: ' . $_SERVER['PHP_SELF']);
+    header('Location: gioithieu.php', true, 303);
     exit;
 }
 
@@ -307,43 +330,14 @@ if (
     if (!empty($errors)) {
         $_SESSION['quiz_errors'] = $errors;
 
-        header('Location: ' . $_SERVER['PHP_SELF']);
+        header('Location: gioithieu.php', true, 303);
         exit;
     }
 
 
     $currentQuestion = $quizQuestions[$questionIndex];
 
-    $isCorrect = $selectedAnswer === $currentQuestion['answer'];
-
-
-    /* Khởi tạo điểm Quiz */
-
-    if (!isset($_SESSION['quiz_score'])) {
-        $_SESSION['quiz_score'] = 0;
-    }
-
-    if (!isset($_SESSION['quiz_total'])) {
-        $_SESSION['quiz_total'] = 0;
-    }
-
-
-    $_SESSION['quiz_total']++;
-
-    if ($isCorrect) {
-        $_SESSION['quiz_score']++;
-    }
-
-
-    $quizResult = [
-        'correct' => $isCorrect,
-        'correct_answer' => $currentQuestion['answer'],
-        'score' => $_SESSION['quiz_score'],
-        'total' => $_SESSION['quiz_total']
-    ];
-
-    $_SESSION['quiz_result'] = $quizResult;
-
+    $khoTruc->luuQuiz(MSSV_TRUC, $phamVi, $currentQuestion['question'], $selectedAnswer, $currentQuestion['answer']);
 
     /*
      * Chọn câu hỏi mới sau khi trả lời.
@@ -363,7 +357,7 @@ if (
     ];
 
 
-    header('Location: ' . $_SERVER['PHP_SELF']);
+    header('Location: gioithieu.php', true, 303);
     exit;
 }
 
@@ -376,11 +370,10 @@ if (
     $_SERVER['REQUEST_METHOD'] === 'POST'
     && isset($_POST['reset_quiz'])
 ) {
-    $_SESSION['quiz_score'] = 0;
-    $_SESSION['quiz_total'] = 0;
+    $khoTruc->xoaQuiz(MSSV_TRUC, $phamVi);
     $_SESSION['quiz_current'] = array_rand($quizQuestions);
 
-    header('Location: ' . $_SERVER['PHP_SELF']);
+    header('Location: gioithieu.php', true, 303);
     exit;
 }
 
@@ -393,8 +386,9 @@ $currentQuestionIndex = $_SESSION['quiz_current'];
 
 $currentQuestion = $quizQuestions[$currentQuestionIndex];
 
-$currentScore = $_SESSION['quiz_score'] ?? 0;
-$currentTotal = $_SESSION['quiz_total'] ?? 0;
+$thongKeQuiz = $khoTruc->thongKeQuiz(MSSV_TRUC, $phamVi);
+$currentScore = $thongKeQuiz['score'];
+$currentTotal = $thongKeQuiz['total'];
 
 
 require_once __DIR__ . '/../../inc/header.php';
@@ -402,6 +396,33 @@ require_once __DIR__ . '/../../inc/header.php';
 
 
 <main class="container">
+
+    <section class="profile-section" aria-labelledby="tieu-de-du-an">
+        <h2 id="tieu-de-du-an">Dự án cá nhân</h2>
+        <form method="get" action="gioithieu.php#tieu-de-du-an">
+            <label for="tim-du-an">Tìm theo tên hoặc công nghệ</label>
+            <input id="tim-du-an" name="q" maxlength="200" value="<?= e($tuKhoaDuAn) ?>">
+            <label for="sap-xep-du-an">Sắp xếp dự án</label>
+            <select id="sap-xep-du-an" name="sx">
+                <?php foreach ($sapXepChoPhep as $giaTri => $nhan): ?>
+                    <option value="<?= e($giaTri) ?>" <?= $sapXepDuAn === $giaTri ? 'selected' : '' ?>><?= e($nhan) ?></option>
+                <?php endforeach; ?>
+            </select>
+            <button type="submit">Tìm dự án</button>
+        </form>
+        <?php if ($loiTimDuAn !== ''): ?><p role="alert"><?= e($loiTimDuAn) ?></p><?php endif; ?>
+        <?php if ($danhSachDuAn === []): ?>
+            <p>Không có dự án phù hợp.</p>
+        <?php else: ?>
+            <?php foreach ($danhSachDuAn as $duAn): ?>
+                <article>
+                    <h3><?= e($duAn['ten_du_an']) ?></h3>
+                    <p><?= e($duAn['mo_ta']) ?></p>
+                    <p>Công nghệ: <?= e($duAn['cong_nghe']) ?> — Năm: <?= e($duAn['nam_thuc_hien']) ?></p>
+                </article>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </section>
 
     <!-- =====================================================
          GIỚI THIỆU THÀNH VIÊN
@@ -467,6 +488,7 @@ require_once __DIR__ . '/../../inc/header.php';
             action="gioithieu.php"
             class="gpa-form"
         >
+                <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
 
             <div class="form-group">
 
@@ -746,6 +768,7 @@ require_once __DIR__ . '/../../inc/header.php';
                 method="post"
                 action="gioithieu.php"
             >
+                <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
 
                 <?php foreach (
                     $currentQuestion['options'] as $key => $option
@@ -786,6 +809,7 @@ require_once __DIR__ . '/../../inc/header.php';
                 method="post"
                 action="gioithieu.php"
             >
+                <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
 
                 <button
                     type="submit"

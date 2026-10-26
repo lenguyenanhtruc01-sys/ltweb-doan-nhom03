@@ -53,7 +53,7 @@ try {
     $users=new KhoNguoiDung($p); $password='PhanC_2026!';
     $u1=$users->dangKy('pc_a','pc_a@example.invalid',password_hash($password,PASSWORD_DEFAULT),'Thử A');
     $u2=$users->dangKy('pc_b','pc_b@example.invalid',password_hash($password,PASSWORD_DEFAULT),'Thử B');
-    out('MOI_TRUONG',['commit'=>trim((string)shell_exec('git rev-parse --short HEAD')),'database'=>$name,'server'=>$p->query('SELECT VERSION()')->fetchColumn(),'courses'=>$p->query('SELECT COUNT(*) FROM mon_hoc')->fetchColumn(),'schema'=>'LIKE local đã nâng cấp, dữ liệu môn/danh mục local']);
+    out('MOI_TRUONG',['commit'=>getenv('EDUGPA_TEST_REVISION') ?: 'working-tree','database'=>$name,'server'=>$p->query('SELECT VERSION()')->fetchColumn(),'courses'=>$p->query('SELECT COUNT(*) FROM mon_hoc')->fetchColumn(),'schema'=>'LIKE local đã nâng cấp, dữ liệu môn/danh mục local']);
     $q="Levi's"; $bad="SELECT * FROM mon_hoc WHERE (ten_mon LIKE '%$q%' OR ma_mon LIKE '%$q%') ORDER BY id DESC LIMIT 6";
     out('SQL_GHEP',$bad);
     try { $p->query($bad); } catch (PDOException $e) { out('LOI_GHEP',[$e->getCode(),$e->errorInfo[1],$e->getMessage()]); }
@@ -129,7 +129,10 @@ try {
     $r=$http('api/yeu-thich.php','POST',json_encode(['id'=>1,'chon'=>true,'uid'=>$owner,'nguoi_dung_id'=>$owner]),$sid,true);
     out('HTTP_JSON_GIA_UID',['status'=>$r['status'],'body'=>$r['body'],'yeu_thich_nguoi_gui'=>$state->yeuThich($other),'yeu_thich_nguoi_bi_gia'=>$state->yeuThich($owner)]);
     $appLog=$root.'/logs/php-error.log'; clearstatcache(true,$appLog); $logOffset=is_file($appLog)?filesize($appLog):0;
+    // Đặt lại chỗ sau thí nghiệm rollback để đây thực sự là request hợp lệ.
+    $p->exec('UPDATE mon_hoc SET so_cho=2 WHERE id=2');
     $r=$http('api/gio-hang.php','POST','{"id":2,"sl":1}',$sid,true); out('HTTP_THEM_GIO_MODEL_HIEN_TAI',$r);
+    if (!str_contains($r['status'], ' 200 ')) throw new RuntimeException('API thêm giỏ hợp lệ chưa trả 200.');
     $logText=is_file($appLog)?substr((string)file_get_contents($appLog),(int)$logOffset):'';
     out('NGUYEN_NHAN_API_500',str_contains($logText,'Undefined property: App\\Models\\MonHoc::$soCho'));
     $r=$http('api/yeu-thich.php'); out('HTTP_YEU_THICH_KHACH',$r);

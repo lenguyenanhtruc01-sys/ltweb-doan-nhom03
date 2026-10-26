@@ -16,6 +16,8 @@ require_once __DIR__ . '/nang-cap-khoa-ngoai-mon-hoc.php';
 require_once __DIR__ . '/nang-cap-so-cho.php';
 require_once __DIR__ . '/nang-cap-ca-nhan-hai.php';
 require_once __DIR__ . '/nang-cap-ca-nhan-uyen.php';
+require_once __DIR__ . '/nang-cap-lien-he.php';
+require_once __DIR__ . '/nang-cap-thoi-tiet-duy.php';
 
 function caiDatDocSql(string $tep, string $tenCsdl): string
 {
@@ -141,6 +143,7 @@ function caiDatGopDuLieu(PDO $pdo, string $mau): array
     caiDatGopBang($pdo, $mau, 'tv_uyen_ky_nang', ['mssv','ten']);
     caiDatGopBang($pdo, $mau, 'tv_uyen_thoi_khoa_bieu', ['mssv','ma_mon','thu','tiet_bat_dau']);
     caiDatGopBang($pdo, $mau, 'tv_mon_an', ['mssv','ten_mon','bua']);
+    caiDatGopBang($pdo, $mau, 'tv_du_an', ['mssv','ten_du_an']);
     caiDatGopBang($pdo, $mau, 'tv_anh_dai_dien', ['mssv']);
     // Không chèn thêm phiếu/lượt xem/lịch sử mẫu vào dữ liệu thật đã phát sinh.
     foreach (['tv_luot_xem','tv_tra_cuu_mang','tv_lich_su_ott','tv_luu_but'] as $bang) {
@@ -161,7 +164,7 @@ function caiDatNhom(PDO $pdo, string $tenCsdl = 'ltweb_nhom03', ?string $tepAvat
     $schema = caiDatDocSql('schema.sql', $tenCsdl);
     preg_match_all('/CREATE TABLE(?: IF NOT EXISTS)?\s+(\w+)\s*\([\s\S]*?\n\)[^;]*;/m', $schema, $dinhNghia, PREG_SET_ORDER);
     $batBuoc = array_column($dinhNghia, 1);
-    foreach (['nguoi_dung','mon_hoc','gio_hang_nguoi_dung','mon_yeu_thich','tv_uyen_ky_nang','tv_uyen_thoi_khoa_bieu','tv_thoi_tiet_duy'] as $bang) {
+    foreach (['nguoi_dung','mon_hoc','gio_hang_nguoi_dung','mon_yeu_thich','tv_uyen_ky_nang','tv_uyen_thoi_khoa_bieu','tv_thoi_tiet_duy','tv_du_an','tv_truc_gpa','tv_truc_quiz'] as $bang) {
         if (!in_array($bang, $batBuoc, true)) throw new RuntimeException('Schema thiếu bảng bắt buộc ' . $bang . '; chưa thay đổi CSDL.');
     }
     $tenKhoa = 'edugpa_setup_' . substr(hash('sha256', $tenCsdl), 0, 40);
@@ -229,6 +232,8 @@ function caiDatNhom(PDO $pdo, string $tenCsdl = 'ltweb_nhom03', ?string $tepAvat
                 ON DUPLICATE KEY UPDATE mssv=VALUES(mssv)");
             nangCapCaNhanUyen($pdo);
         }
+        nangCapLienHe($pdo);
+        nangCapThoiTietDuy($pdo);
         caiDatEmail($pdo);
         nangCapKeHoach($pdo);
         nangCapSoCho($pdo);

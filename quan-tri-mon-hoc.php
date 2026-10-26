@@ -41,11 +41,13 @@ if ($method === 'POST') {
     $duLieu['anh'] = $monCu['anh'] ?? null;
     $tenMoi = null;
     if ($loi === []) {
+        $truongDangXuLy = 'anh';
         try {
             $tep = $_FILES['anh'] ?? null;
             if ($tep !== null && !is_array($tep)) throw new RuntimeException('Ảnh không hợp lệ.');
             if ($tep !== null) $tenMoi = (new TaiAnh(__DIR__ . '/uploads'))->luu($tep);
             if ($tenMoi !== null) $duLieu['anh'] = 'uploads/' . $tenMoi;
+            $truongDangXuLy = 'chung';
             if ($id === null) {
                 $id = $kho->them($duLieu);
             } elseif (!$kho->sua($id, $duLieu)) {
@@ -57,9 +59,9 @@ if ($method === 'POST') {
             if ($tenMoi !== null) @unlink(__DIR__ . '/uploads/' . $tenMoi);
             $duLieu['anh'] = $monCu['anh'] ?? null;
             if ($err instanceof PDOException) {
-                if ((int) ($err->errorInfo[1] ?? 0) === 1062) $loi[] = 'Mã môn đã tồn tại. Vui lòng chọn mã khác.';
+                if ((int) ($err->errorInfo[1] ?? 0) === 1062) $loi['ma_mon'] = 'Mã môn đã tồn tại. Vui lòng chọn mã khác.';
                 else throw $err;
-            } elseif ($err instanceof RuntimeException) $loi[] = $err->getMessage();
+            } elseif ($err instanceof RuntimeException) $loi[$truongDangXuLy] = $err->getMessage();
             else throw $err;
         }
     }
@@ -75,6 +77,15 @@ $thanhCong = $_SESSION['flash_success'] ?? '';
 $thatBai = $_SESSION['flash_error'] ?? '';
 unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 $tieuDe = 'Quản trị môn học'; $trang = 'quan-tri'; $goc = ''; $cssTrang = 'css/quan-tri.css';
+$idTruong = ['ma_mon'=>'ma-mon','ten_mon'=>'ten-mon','danh_muc_id'=>'danh-muc',
+    'so_tin_chi'=>'tin-chi','so_cho'=>'so-cho','mo_ta'=>'mo-ta','anh'=>'anh-mon'];
+$thuocTinhLoi = static fn (string $truong): string => isset($loi[$truong])
+    ? ' aria-invalid="true" aria-describedby="loi-' . e($idTruong[$truong]) . '"' : '';
+$hienThiLoi = static function (string $truong) use ($loi, $idTruong): void {
+    if (isset($loi[$truong])) {
+        echo '<p class="quan-tri-mon__loi-truong" id="loi-' . e($idTruong[$truong]) . '">' . e($loi[$truong]) . '</p>';
+    }
+};
 require __DIR__ . '/inc/header.php';
 ?>
 <main class="bao quan-tri-mon">
@@ -96,20 +107,33 @@ require __DIR__ . '/inc/header.php';
     <?php endif; ?>
     <section aria-labelledby="tieu-de-form-mon">
         <h2 id="tieu-de-form-mon"><?= e($id === null ? 'Thêm môn học' : 'Sửa môn học') ?></h2>
-        <?php if ($loi !== []): ?><ul class="quan-tri-mon__loi" role="alert"><?php foreach ($loi as $l): ?><li><?= e($l) ?></li><?php endforeach; ?></ul><?php endif; ?>
+        <?php if ($loi !== []): ?>
+            <ul class="quan-tri-mon__loi" role="alert">
+                <?php foreach ($loi as $truong => $l): ?>
+                    <li><?php if (isset($idTruong[$truong])): ?><a href="#<?= e($idTruong[$truong]) ?>"><?= e($l) ?></a><?php else: ?><?= e($l) ?><?php endif; ?></li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
         <form action="quan-tri-mon-hoc.php" method="post" enctype="multipart/form-data" class="quan-tri-mon__form">
             <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
             <?php if ($id !== null): ?><input type="hidden" name="id" value="<?= e($id) ?>"><?php endif; ?>
-            <label for="ma-mon">Mã môn</label><input id="ma-mon" name="ma_mon" maxlength="20" required value="<?= e($duLieu['ma_mon']) ?>">
-            <label for="ten-mon">Tên môn</label><input id="ten-mon" name="ten_mon" maxlength="200" required value="<?= e($duLieu['ten_mon']) ?>">
-            <label for="danh-muc">Danh mục</label><select id="danh-muc" name="danh_muc_id" required>
+            <label for="ma-mon">Mã môn</label><input id="ma-mon" name="ma_mon" maxlength="20" required value="<?= e($duLieu['ma_mon']) ?>"<?= $thuocTinhLoi('ma_mon') ?>>
+            <?php $hienThiLoi('ma_mon'); ?>
+            <label for="ten-mon">Tên môn</label><input id="ten-mon" name="ten_mon" maxlength="200" required value="<?= e($duLieu['ten_mon']) ?>"<?= $thuocTinhLoi('ten_mon') ?>>
+            <?php $hienThiLoi('ten_mon'); ?>
+            <label for="danh-muc">Danh mục</label><select id="danh-muc" name="danh_muc_id" required<?= $thuocTinhLoi('danh_muc_id') ?>>
                 <option value="">Chọn danh mục</option>
                 <?php foreach ($danhMuc as $dm): ?><option value="<?= e($dm['id']) ?>" <?= (string) $duLieu['danh_muc_id'] === (string) $dm['id'] ? 'selected' : '' ?>><?= e($dm['ten']) ?></option><?php endforeach; ?>
             </select>
-            <label for="tin-chi">Số tín chỉ</label><input id="tin-chi" name="so_tin_chi" type="number" min="1" max="30" required value="<?= e($duLieu['so_tin_chi']) ?>">
-            <label for="so-cho">Số chỗ còn lại</label><input id="so-cho" name="so_cho" type="number" min="0" max="1000000" required value="<?= e($duLieu['so_cho']) ?>">
-            <label for="mo-ta">Mô tả</label><textarea id="mo-ta" name="mo_ta" maxlength="10000" rows="4"><?= e($duLieu['mo_ta'] ?? '') ?></textarea>
-            <label for="anh-mon">Ảnh môn học (JPG, PNG, WebP, tối đa 2MB)</label><input id="anh-mon" type="file" name="anh" accept="image/jpeg,image/png,image/webp">
+            <?php $hienThiLoi('danh_muc_id'); ?>
+            <label for="tin-chi">Số tín chỉ</label><input id="tin-chi" name="so_tin_chi" type="number" min="1" max="30" required value="<?= e($duLieu['so_tin_chi']) ?>"<?= $thuocTinhLoi('so_tin_chi') ?>>
+            <?php $hienThiLoi('so_tin_chi'); ?>
+            <label for="so-cho">Số chỗ còn lại</label><input id="so-cho" name="so_cho" type="number" min="0" max="1000000" required value="<?= e($duLieu['so_cho']) ?>"<?= $thuocTinhLoi('so_cho') ?>>
+            <?php $hienThiLoi('so_cho'); ?>
+            <label for="mo-ta">Mô tả</label><textarea id="mo-ta" name="mo_ta" maxlength="10000" rows="4"<?= $thuocTinhLoi('mo_ta') ?>><?= e($duLieu['mo_ta'] ?? '') ?></textarea>
+            <?php $hienThiLoi('mo_ta'); ?>
+            <label for="anh-mon">Ảnh môn học (JPG, PNG, WebP, tối đa 2MB)</label><input id="anh-mon" type="file" name="anh" accept="image/jpeg,image/png,image/webp"<?= $thuocTinhLoi('anh') ?>>
+            <?php $hienThiLoi('anh'); ?>
             <?php if (!empty($duLieu['anh'])): ?><img src="<?= e($duLieu['anh']) ?>" alt="Ảnh hiện tại của môn học" width="120" height="80"><?php endif; ?>
             <div><button class="nut nut--chinh" type="submit">Lưu môn học</button> <a href="quan-tri-mon-hoc.php">Tạo môn mới</a></div>
         </form>

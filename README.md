@@ -119,7 +119,7 @@ ltweb-doan-nhom03/
 - Kế hoạch học tập: khách dùng session; tài khoản lưu vào `gio_hang_nguoi_dung`. Đăng nhập gộp giỏ khách, đăng xuất về giỏ khách trống, đăng nhập lại khôi phục giỏ đã lưu.
 - Giỏ tài khoản cập nhật từng môn trong MySQL và đọc lại khi tải trang/API; phiên cũ đăng xuất không ghi đè giỏ của phiên khác. Thao tác xóa hết vẫn chủ động xóa toàn bộ giỏ của tài khoản.
 - Yêu thích: khách dùng localStorage; tài khoản dùng bảng `mon_yeu_thich`, tách riêng theo người dùng. Danh sách localStorage cũ được chuyển vào tài khoản khi đăng nhập.
-- Liên hệ: `storage/lien-he.jsonl`; trang quản trị hiển thị bản ghi mới nhất trước.
+- Liên hệ: bảng MySQL `lien_he` qua `KhoLienHe(PDO)`; trang quản trị hiển thị bản ghi mới nhất trước. JSONL cũ chỉ giữ làm bản lưu, chưa tự nhập vào MySQL.
 - Ảnh liên hệ: `uploads/`.
 - Log PHP: `logs/php-error.log`.
 - Dữ liệu cá nhân đã tích hợp: các bảng `tv_binh_chon`, `tv_tra_cuu_mang`, `tv_luot_xem`; phần lưu JSONL cũ không được dùng để ghi thêm lịch sử tra cứu.
@@ -141,7 +141,7 @@ Các thư mục `storage/`, `uploads/` và `logs/` cần có quyền ghi cho ti�
 
 1. Mở `lien-he.php`.
 2. Nhập họ tên từ 3 ký tự, email hợp lệ, chọn chủ đề và nhập nội dung tối thiểu 10 ký tự.
-3. Gửi thành công sẽ redirect theo PRG; bản ghi mới xuất hiện trong `storage/lien-he.jsonl`.
+3. Gửi thành công sẽ redirect theo PRG; bản ghi mới xuất hiện trong bảng `lien_he`.
 4. Đăng nhập bằng tài khoản mẫu, mở `quan-tri.php` và kiểm tra liên hệ ở đầu bảng.
 5. Kiểm tra nhãn chủ đề ở quản trị khớp nhãn trên form, không hiển thị mã nội bộ như `gpa` hoặc `taikhoan`.
 
@@ -246,7 +246,11 @@ Danh sách tìm kiếm có debounce 350ms; thêm giỏ bằng fetch cập nhật
 
 Kiểm thử API bằng [api.http](api.http), đổi `@goc` theo cách chạy. Ảnh và kết quả kiểm thử của các thành viên lưu tại `kiemtra/`; số liệu Bảng 2–5 và ERD được tổng hợp trong báo cáo chung.
 
-Liên hệ hiện vẫn đọc/ghi JSONL; chưa chuyển luồng liên hệ sang MySQL. ERD mô tả 21 bảng và 21 khóa ngoại trong schema; bảng thời tiết Duy hiện chưa có khóa ngoại tới thành viên. Chỉ ghi tính năng đã có và kết quả đã đo khi chốt bài.
+Liên hệ đã đọc/ghi MySQL; bộ cài bổ sung `so_dien_thoai` và `uu_tien` cho bảng cũ mà không xóa liên hệ. ERD mô tả 24 bảng và 25 khóa ngoại, có `tv_du_an` của Trúc và liên kết thời tiết tới thành viên. Bảng thời tiết cũ được bổ sung `mssv`, gắn các lượt chưa có mã với Duy (`3120224034`), giữ ID/trạng thái/thời gian; thống kê luôn lọc theo MSSV. Chỉ ghi tính năng đã có và kết quả đã đo khi chốt bài.
+
+Phân công Bài 6: Trúc phụ trách chức năng 1; Uyên chức năng 2 và 4; Hải chức năng 3; Duy chức năng 5; Hợp chức năng 6.
+
+Trang Trúc có danh sách dự án đọc từ `tv_du_an`, tìm theo tên/công nghệ và sắp xếp bằng form GET, dùng được khi tắt JavaScript. GPA lưu kết quả vào `tv_truc_gpa`; quiz lưu từng lần trả lời và thống kê từ `tv_truc_quiz`. Cả hai bảng có MSSV và khóa ngoại tới thành viên. Dữ liệu tách theo tài khoản đăng nhập (dùng được trên máy khác); khách chưa đăng nhập có định danh riêng trong phiên, hết phiên sẽ không truy xuất lại kết quả khách cũ. Session chỉ giữ định danh khách, câu hỏi đang làm, CSRF và thông báo lỗi. Reset quiz chỉ xóa lịch sử trong phạm vi người đang xem; không xóa kết quả người khác. Chạy bộ cài sau khi lấy code mới để bổ sung hai bảng, không tạo kết quả mẫu.
 
 ### Trang cá nhân Huỳnh Phương Uyên
 

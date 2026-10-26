@@ -2,9 +2,9 @@
 
 [Ảnh PNG](erd.png) · [Bản vector SVG](erd.svg) · [Nguồn Graphviz DOT](erd.dot)
 
-Sơ đồ được dựng từ `schema.sql`: **21 bảng, 21 khóa ngoại**. Bao gồm bảng chính, bảng tài khoản/phiên đăng nhập, giỏ/yêu thích và toàn bộ bảng `tv_` đang được khai báo, gồm kỹ năng và thời khóa biểu của Huỳnh Phương Uyên, check-in thời tiết của Duy. Việc một bảng xuất hiện trong ERD không khẳng định mọi trang đã tích hợp sử dụng bảng đó.
+Sơ đồ được dựng từ `schema.sql`: **24 bảng, 25 khóa ngoại**. Có đủ bảng tài khoản/phiên, giỏ/yêu thích, liên hệ, dữ liệu cá nhân và bảng dự án `tv_du_an` của Trúc. Việc một bảng xuất hiện trong ERD không khẳng định mọi trang đã tích hợp sử dụng bảng đó.
 
-`tv_thoi_tiet_duy` hiện chưa có cột `mssv` hoặc khóa ngoại trong schema, nên được vẽ độc lập. Sơ đồ phản ánh đúng cấu trúc hiện tại; việc bổ sung liên kết thành viên theo đề là thay đổi schema riêng.
+`tv_thoi_tiet_duy.mssv` là khóa ngoại tới `thanh_vien.mssv`, xóa thành viên thì xóa check-in của thành viên đó (CASCADE). Chỉ mục `(mssv, trang_thai)` phục vụ thống kê riêng từng người. Bộ cài gắn lượt cũ chưa có MSSV với Duy và không thay ID/trạng thái/thời gian.
 
 - `PK`: khóa chính; nhiều cột PK trong cùng bảng tạo khóa ghép.
 - `FK`: khóa ngoại; `UQ`: ràng buộc duy nhất. UNIQUE nhiều cột ghi ở cuối thẻ bảng.
@@ -22,4 +22,6 @@ dot -Tsvg database/erd.dot -o database/erd.svg
 
 Mốc Bài 5 dùng cho đối chiếu: tag `btn5` tại commit `8ea75efc4a88469208496161e4478c48a1fe79c5`, thời gian tác giả 23:19:55 ngày 16/10/2026 (UTC+7). Dùng `git diff --stat btn5 HEAD` sau khi commit bản Bài 6 cần ghi vào báo cáo. Các thay đổi chưa commit không nằm trong kết quả lệnh này.
 
-Liên hệ hiện vẫn đọc/ghi JSONL trong runtime; cần chuyển sang bảng `lien_he` trước khi loại bỏ tệp dữ liệu liên hệ cũ. Đừng xóa dữ liệu đang dùng chỉ vì bảng đã có trong sơ đồ.
+Liên hệ hiện đọc/ghi MySQL. Bộ cài bổ sung hai cột điện thoại/ưu tiên cho bảng cũ và giữ dữ liệu SQL đã có. JSONL cũ không còn là nguồn runtime; giữ tệp cũ để đối chiếu hoặc nhập dữ liệu riêng, không xóa tùy tiện.
+
+GPA/quiz của Trúc: `tv_truc_gpa`, `tv_truc_quiz` liên kết MSSV tới `thanh_vien`, chỉ mục `(mssv, pham_vi, id)` tách kết quả theo người xem.

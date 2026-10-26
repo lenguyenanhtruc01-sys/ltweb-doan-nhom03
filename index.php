@@ -29,7 +29,35 @@ $monMoi = $kho->moiNhat();
  * dùng để truy vấn dữ liệu.
  */
 
-$daXem = $kho->daXemGanDay($_COOKIE['da_xem'] ?? '');
+$daXem = [];
+$idsDaXem = [];
+
+$rawCookie = layChuoiDauVao($_COOKIE['da_xem'] ?? '');
+
+if ($rawCookie !== '') {
+    foreach (array_slice(explode(',', $rawCookie), 0, 20) as $giaTri) {
+        $giaTri = trim($giaTri);
+        $id = filter_var($giaTri, FILTER_VALIDATE_INT);
+        if ($id === false || $id <= 0) {
+            continue;
+        }
+        if (!in_array($id, $idsDaXem, true)) {
+            $idsDaXem[] = $id;
+        }
+    }
+
+    $monTheoId = $kho->theoNhieuId($idsDaXem);
+    foreach ($idsDaXem as $id) {
+        if (!isset($monTheoId[$id])) {
+            continue;
+        }
+
+        $daXem[] = $monTheoId[$id];
+        if (count($daXem) >= 4) {
+            break;
+        }
+    }
+}
 
 
 /*
@@ -117,31 +145,41 @@ require __DIR__ . '/inc/header.php';
     </section>
 
 
-    <section class="khu-vuc" aria-labelledby="tieu-de-mon-moi">
-        <div class="bao">
-            <div class="tieu-de-khu-vuc">
-                <h2 id="tieu-de-mon-moi" class="tieu-de-khu-vuc__tieu-de">Môn học mới nhất</h2>
-                <p class="tieu-de-khu-vuc__mo-ta">Những môn vừa được bổ sung vào EduGPA.</p>
-            </div>
-            <?php if ($monMoi === []): ?>
-                <p>Chưa có môn học.</p>
-            <?php else: ?>
+    <!-- ================= ĐÃ XEM GẦN ĐÂY ================= -->
+
+    <?php if (!empty($monMoi)): ?>
+
+        <section class="khu-vuc khu-vuc--mon-moi" aria-labelledby="tieu-de-mon-moi">
+            <div class="bao">
+                <div class="tieu-de-khu-vuc">
+                    <p class="tieu-de-khu-vuc__nhan">Cập nhật</p>
+                    <h2 id="tieu-de-mon-moi" class="tieu-de-khu-vuc__tieu-de">
+                        Môn học mới
+                    </h2>
+                    <p class="tieu-de-khu-vuc__mo-ta">
+                        Những môn học được thêm gần đây.
+                    </p>
+                </div>
+
                 <div class="luoi-the">
                     <?php foreach ($monMoi as $mon): ?>
                         <article class="the">
                             <h3 class="the__tieu-de">
-                                <a class="the__lien-ket" href="chi-tiet.php?id=<?= e((int) $mon->id) ?>"><?= e((string) $mon->tenMon) ?></a>
+                                <a class="the__lien-ket" href="chi-tiet.php?id=<?= (int) $mon->id ?>">
+                                    <?= e((string) $mon->tenMon) ?>
+                                </a>
                             </h3>
-                            <p class="the__noi-dung">Mã môn: <strong><?= e((string) $mon->maMon) ?></strong> — <?= e((int) $mon->soTinChi) ?> tín chỉ</p>
-                            <a class="the__lien-ket" href="chi-tiet.php?id=<?= e((int) $mon->id) ?>">Xem chi tiết</a>
+                            <p class="the__noi-dung">
+                                Mã môn: <strong><?= e((string) $mon->maMon) ?></strong>
+                                — <?= (int) $mon->soTinChi ?> tín chỉ
+                            </p>
                         </article>
                     <?php endforeach; ?>
                 </div>
-            <?php endif; ?>
-        </div>
-    </section>
+            </div>
+        </section>
 
-    <!-- ================= ĐÃ XEM GẦN ĐÂY ================= -->
+    <?php endif; ?>
 
     <?php if (!empty($daXem)): ?>
 
@@ -186,7 +224,7 @@ require __DIR__ . '/inc/header.php';
 
                                 <a
                                     class="the__lien-ket"
-                                    href="chi-tiet.php?id=<?= e((int) $mon->id) ?>">
+                                    href="chi-tiet.php?id=<?= (int) $mon->id ?>">
                                     <?= e((string) $mon->tenMon) ?>
                                 </a>
 
@@ -199,13 +237,13 @@ require __DIR__ . '/inc/header.php';
                                     <?= e((string) $mon->maMon) ?>
                                 </strong>
 
-                                — <?= e((int) $mon->soTinChi) ?> tín chỉ
+                                — <?= (int) $mon->soTinChi ?> tín chỉ
 
                             </p>
 
                             <a
                                 class="the__lien-ket"
-                                href="chi-tiet.php?id=<?= e((int) $mon->id) ?>">
+                                href="chi-tiet.php?id=<?= (int) $mon->id ?>">
                                 Xem lại
                             </a>
 
@@ -291,9 +329,9 @@ require __DIR__ . '/inc/header.php';
                     </h3>
 
                     <p class="the__noi-dung">
-                        Thêm hoặc bỏ môn học khỏi danh sách yêu thích.
-                        Khách lưu trên trình duyệt; tài khoản đăng nhập
-                        lưu trên MySQL.
+                        Thêm hoặc bỏ môn học khỏi danh sách
+                        yêu thích và lưu trạng thái trên trình duyệt
+                        bằng localStorage.
                     </p>
 
                     <a
@@ -374,7 +412,7 @@ require __DIR__ . '/inc/header.php';
 
                         <p>
                             Truy cập trang danh sách để xem
-                            các học phần được tải từ cơ sở dữ liệu MySQL.
+                            các học phần được tải từ dữ liệu JSON.
                         </p>
 
                     </div>
@@ -440,8 +478,8 @@ require __DIR__ . '/inc/header.php';
 
                         <p>
                             Đánh dấu các môn quan tâm.
-                            Khách lưu bằng localStorage; tài khoản
-                            đăng nhập lưu danh sách trên MySQL.
+                            Danh sách yêu thích được lưu
+                            bằng localStorage trên trình duyệt.
                         </p>
 
                     </div>

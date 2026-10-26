@@ -1,6 +1,8 @@
 # Đánh giá mã nguồn theo đề Bài tập nhóm số 6
 
-**Cập nhật sau vá:** các vấn đề 5.1–5.4 đã được xử lý và đo lại trong [biên bản bản chốt](../kiemtra/ket-qua-va-ban-chot-20261027.md). Phần bên dưới giữ nguyên kết quả đánh giá trước vá, không dùng nó thay trạng thái mới.
+**Cập nhật sau vá, đối chiếu ngày 27/10/2026:** các vấn đề 5.1–5.4 đã được xử lý trong commit `ed2448970d3bffe10b23a0715365bef7a04e18be`; kết quả đo của lượt vá nằm trong [biên bản bản chốt](../kiemtra/ket-qua-va-ban-chot-20261027.md). HEAD local `main` và `main` từ xa (kiểm tra bằng `git ls-remote origin refs/heads/main`) cùng ở `83124f39ec2ff02137bde3399639a112898acc51`, commit kế tiếp dọn minh chứng HTML trùng. Bản vá đã commit/push; không dùng ghi chú “chưa commit/push” của lượt đánh giá ban đầu để mô tả trạng thái mã hiện tại. Lượt cập nhật tài liệu này không chạy lại các phép đo cũ và chưa commit/push phần tài liệu vừa sửa.
+
+**Lưu ý hiện tại cho báo cáo:** GPA lưu gói kết quả JSON trong cột `tv_truc_gpa.ket_qua` của MySQL, không phải tệp JSON; xem mục 3.1. Trang Duy đã có CSRF cho cả ba POST và chỉ chủ trang được lưu thêm món chung. Seed cập nhật trong working tree đã có tài khoản duy và liên kết chủ Duy; bộ cài chỉ bổ sung liên kết còn trống theo username/email, giữ chủ hiện có. Thay đổi bộ tài khoản này chưa commit/push và nằm sau mốc remote 83124f3 được đối chiếu ở trên. Oẳn tù tì và check-in thời tiết vẫn ghi/đọc các bảng riêng, không phụ thuộc quyền chủ trang. Các phần đánh giá, số đo, số commit và checklist bên dưới mô tả mốc **trước vá `5b20cc8`**, trừ phần giải thích thiết kế bổ sung; các lỗi được ghi ở mục 5 là phát hiện lịch sử, không phải lỗi còn tồn tại sau vá. Trạng thái sau vá lấy theo biên bản bản chốt.
 
 Ngày đánh giá: 27/10/2026, giờ Việt Nam. Mã nguồn được kiểm tra: `5b20cc814369ea24eb0a252273ffe84c13c9b36d`, working tree sạch trước khi rà soát. Đề đối chiếu: `BaiTapNhom6_Chuong6 (1).docx` do người dùng cung cấp. Phân công áp dụng theo lời chốt của người dùng, không theo các phần việc cũ trong ảnh.
 
@@ -46,7 +48,15 @@ Các hàm ghi theo từng dòng chi tiết trong giao dịch không được đ�
 | Chuẩn hóa | Snapshot được lưu trong chi tiết; GPA lưu đối tượng JSON trong một cột | Snapshot hợp lý theo đề. Nếu tuyên bố toàn bộ đạt 3NF, phải giải thích cấu trúc JSON GPA; không tự chứng nhận 3NF chỉ bằng số bảng/FK |
 | Cấu hình lỗi | MOI_TRUONG='dev'; trang 500 không nạp header/CSDL; API handler riêng | Đúng yêu cầu source; mô phỏng prod mất CSDL trả HTML 500 và JSON 500, không lộ SQL/tài khoản |
 
-## 4 Phần B từng thành viên
+### 3.1 Giải thích lựa chọn JSON cho kết quả GPA
+
+Theo `database/schema.sql`, bảng `tv_truc_gpa` lưu mỗi lần tính thành một bản ghi gồm `id`, `mssv`, `pham_vi`, `ket_qua JSON`, `ngay_tao`, có khóa ngoại MSSV tới `thanh_vien`. Trang Trúc kiểm tra đầu vào và tính GPA/chi phí bằng PHP; `KhoTrangCaNhanTruc::luuGpa()` mã hóa mảng kết quả rồi INSERT bằng PDO. `layGpa()` lấy toàn bộ gói mới nhất theo MSSV và phạm vi người xem, sau đó giải mã để hiển thị. Tài khoản đăng nhập có phạm vi theo UID; khách có phạm vi theo định danh session do máy chủ tạo.
+
+Có thể giải thích lựa chọn này trong báo cáo như sau: “Ứng dụng lưu một gói đầu vào và kết quả cho mỗi lần tính GPA/chi phí để hiển thị lại sau chuyển hướng hoặc tải lại trang. JSON trong MySQL phù hợp cách đọc nguyên gói hiện tại; đây không phải lưu kết quả bằng tệp JSON hay chỉ trong session. Các trường định danh, phạm vi và thời gian vẫn là cột riêng để lọc bản ghi.”
+
+Giới hạn phải nêu cùng lý do: JSON không tự ràng buộc đầy đủ miền giá trị từng trường hoặc quan hệ giữa đầu vào và kết quả; mã PHP chịu trách nhiệm kiểm tra và tính toán. Việc lưu cả kết quả suy ra có thể cần phân biệt công thức cũ/mới khi nghiệp vụ thay đổi. Chưa có chức năng truy vấn SQL tổng hợp từng trường bên trong gói. Vì vậy không tuyên bố mọi thành phần JSON đạt 3NF chỉ dựa trên khóa chính/FK của bảng. Nếu cần thống kê SQL hoặc ràng buộc GPA/tín chỉ/học phí theo từng trường, nên cân nhắc các cột có kiểu và ràng buộc tương ứng; chưa thực hiện thay đổi cấu trúc đó trong lượt này.
+
+## 4 Phần B từng thành viên (đánh giá trước vá)
 
 | Thành viên | Bảng và chức năng thực tế | Đánh giá |
 | --- | --- | --- |

@@ -62,16 +62,17 @@ Mở http://localhost:8000/index.php; MySQL vẫn cần chạy. PHP cần quyề
 
 ## 3. Tài khoản thử
 
-Đăng nhập bằng **tên đăng nhập hoặc email**. Sau khi cài mới bằng `database/schema.sql` và `database/seed.sql`, cả 4 tài khoản mẫu đều dùng mật khẩu `matkhau123`:
+Đăng nhập bằng **tên đăng nhập hoặc email**. Sau khi cài mới bằng `database/schema.sql` và `database/seed.sql`, cả 5 tài khoản mẫu đều dùng mật khẩu `matkhau123`:
 
 | Tên đăng nhập | Email | Vai trò |
 | --- | --- | --- |
 | `admin` | `admin@example.com` | Quản trị |
-| `an` | `an@example.com` | Khách hàng |
-| `binh` | `binh@example.com` | Khách hàng |
+| `hop` | `hop@example.com` | Khách hàng |
+| `uyen` | `uyen@example.com` | Khách hàng |
+| `duy` | `duy@example.com` | Khách hàng, chủ trang cá nhân Duy |
 | `hai` | `hai@example.com` | Khách hàng, chủ trang cá nhân Hải |
 
-Đăng nhập tại [dang-nhap.php](dang-nhap.php); quản trị viên được chuyển đến [quan-tri.php](quan-tri.php), khách về trang chủ. Database nâng cấp có thể giữ tài khoản/mật khẩu cũ khác seed.
+Đăng nhập tại [dang-nhap.php](dang-nhap.php); quản trị viên được chuyển đến [quan-tri.php](quan-tri.php), khách về trang chủ. Với CSDL đã có dữ liệu, chạy `php database/cai-dat.php` để bổ sung tài khoản mẫu còn thiếu; bộ cài không đổi tên/xóa `an`, `binh`, không đặt lại mật khẩu tài khoản đã có và giữ lịch sử kế hoạch của họ. Chủ Duy được gắn theo tài khoản `duy / duy@example.com` khi liên kết chủ còn trống, không ghi đè chủ hiện có. Nếu username/email hoặc chủ trên máy cũ khác seed, cần kiểm tra ánh xạ thực tế; không mặc định mật khẩu cũ là `matkhau123`.
 
 ## 4. Chức năng chính
 
@@ -252,12 +253,18 @@ Phân công Bài 6: Trúc phụ trách chức năng 1; Uyên chức năng 2 và 
 
 Trang Trúc có danh sách dự án đọc từ `tv_du_an`, tìm theo tên/công nghệ và sắp xếp bằng form GET, dùng được khi tắt JavaScript. GPA lưu kết quả vào `tv_truc_gpa`; quiz lưu từng lần trả lời và thống kê từ `tv_truc_quiz`. Cả hai bảng có MSSV và khóa ngoại tới thành viên. Dữ liệu tách theo tài khoản đăng nhập (dùng được trên máy khác); khách chưa đăng nhập có định danh riêng trong phiên, hết phiên sẽ không truy xuất lại kết quả khách cũ. Session chỉ giữ định danh khách, câu hỏi đang làm, CSRF và thông báo lỗi. Reset quiz chỉ xóa lịch sử trong phạm vi người đang xem; không xóa kết quả người khác. Chạy bộ cài sau khi lấy code mới để bổ sung hai bảng, không tạo kết quả mẫu.
 
+GPA lưu một gói đầu vào và kết quả trong cột MySQL `tv_truc_gpa.ket_qua` kiểu JSON để đọc lại nguyên gói, không dùng tệp JSON riêng. PHP kiểm tra đầu vào/tính toán; kiểu JSON không thay thế ràng buộc nghiệp vụ từng trường và không đủ để tự chứng nhận toàn bộ thiết kế đạt 3NF. Giải thích và đánh đổi để đưa vào báo cáo nằm ở [mục 3.1 của bản đánh giá](docs/danh-gia-bai-6-20261027.md#31-giải-thích-lựa-chọn-json-cho-kết-quả-gpa).
+
 ### Trang cá nhân Huỳnh Phương Uyên
 
 `thanhvien/3120224174_uyen/gioithieu.php` dùng `KhoTrangCaNhanUyen` để đọc kỹ năng từ `tv_uyen_ky_nang` và tìm kiếm thời khóa biểu trong `tv_uyen_thoi_khoa_bieu`. Hai bảng có khóa ngoại tới `thanh_vien`; cấu trúc nằm trong `database/schema.sql`, dữ liệu mẫu nằm trong `database/seed.sql` và bộ cài bổ sung idempotent khi nâng cấp CSDL cũ. Sau mỗi lần cập nhật, chạy `php database/cai-dat.php`, sau đó thử lọc kỹ năng, tìm môn theo tên/mã/lớp/phòng và thử lại khi tắt JavaScript. Không import schema thủ công vào CSDL đang có dữ liệu vì tệp này có lệnh `DROP DATABASE`.
 
 ### Vá và kiểm tra bản chốt ngày 27/10/2026
 
-Ảnh môn học dùng được với cả tên tệp seed và đường dẫn uploads/ ở HTML/fetch. Trang Duy yêu cầu CSRF cho ba form POST; danh sách món tự nhập của khách giữ riêng trong session. Chỉ tài khoản liên kết với MSSV Duy qua thanh_vien.nguoi_dung_id mới lưu thêm món vào danh sách chung; không tự gán quyền admin làm chủ trang. Seed chưa gán tài khoản chủ Duy, việc liên kết cần được nhóm cấu hình theo tài khoản thực tế.
+Ảnh môn học dùng được với cả tên tệp seed và đường dẫn uploads/ ở HTML/fetch. Trang Duy yêu cầu CSRF cho ba form POST; danh sách món tự nhập của khách giữ riêng trong session. Chỉ tài khoản liên kết với MSSV Duy qua thanh_vien.nguoi_dung_id mới lưu thêm món vào danh sách chung; không tự gán quyền admin làm chủ trang. Seed cập nhật đã có tài khoản `duy` và liên kết chủ Duy; bộ cài bổ sung liên kết còn trống trên máy cũ theo username/email, không dựa vào ID cố định và không ghi đè chủ đã có.
+
+Oẳn tù tì vẫn lưu lịch sử/thống kê trong `tv_lich_su_ott`; check-in thời tiết vẫn lưu/thống kê trong `tv_thoi_tiet_duy`. Hai thao tác này yêu cầu token CSRF và dữ liệu hợp lệ, không yêu cầu quyền chủ trang. Quyền chủ Duy chỉ giới hạn thao tác lưu thêm món chung.
+
+Bản vá đã được commit tại `ed2448970d3bffe10b23a0715365bef7a04e18be`. Ngày 27/10/2026, đối chiếu HEAD local `main` và `git ls-remote origin refs/heads/main` cùng ở `83124f39ec2ff02137bde3399639a112898acc51` (commit kế tiếp dọn minh chứng HTML trùng). Đây là mốc mã nguồn đã có trên remote, chưa phải xác nhận PDF/ZIP cuối đã nộp; phần cập nhật tài liệu trong lượt này chưa commit/push.
 
 Kết quả đo và bảng chất lượng: [biên bản bản chốt](kiemtra/ket-qua-va-ban-chot-20261027.md). Ba trang bắt buộc đạt Lighthouse Mobile Accessibility 100; Nu Html Checker cục bộ đo 16 trang/trạng thái có 0 lỗi HTML, một cảnh báo heading ở chi tiết. Có ảnh và JSON gốc trong kiemtra/ban-chot-20261027/. Phạm vi và các trạng thái chưa thử được ghi rõ trong biên bản; không dùng số liệu này để khẳng định mọi ca kiểm thử đều đã hoàn tất.

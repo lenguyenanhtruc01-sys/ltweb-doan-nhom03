@@ -1,5 +1,5 @@
 -- database/seed.sql
--- Mật khẩu của cả 4 tài khoản: matkhau123
+-- Mật khẩu của cả 5 tài khoản: matkhau123
 SET NAMES utf8mb4;
 USE ltweb_nhom03;
 
@@ -8,9 +8,10 @@ USE ltweb_nhom03;
 -- ============================================
 INSERT INTO nguoi_dung (id, email, ten_dang_nhap, mat_khau, ho_ten, vai_tro) VALUES
 (1, 'admin@example.com', 'admin', '$2y$12$qHb8qF.xgsQsDEN5nvxo6OsTDLDQmDQmTnjDdlNCp7MqAzd4fkWBG', 'Quản trị viên', 'quan_tri'),
-(2, 'an@example.com', 'an', '$2y$12$u.0T5HsnlVJWcPLCbRUsIO9EXccEweLCYOD7R46J.TJ9bH4ju5eGC', 'Trần Văn An', 'khach_hang'),
-(3, 'binh@example.com', 'binh', '$2y$12$3ZoP8Zw46/1SUlmMu/unR.ZIvgTjCuo2NGWs2F9ttQBE.FmFo83bO', 'Nguyễn Thị Bình', 'khach_hang'),
-(4, 'hai@example.com', 'hai', '$2y$12$qHb8qF.xgsQsDEN5nvxo6OsTDLDQmDQmTnjDdlNCp7MqAzd4fkWBG', 'Lê Dương Hoàng Hải', 'khach_hang');
+(2, 'hop@example.com', 'hop', '$2y$12$u.0T5HsnlVJWcPLCbRUsIO9EXccEweLCYOD7R46J.TJ9bH4ju5eGC', 'Phan Văn Hợp', 'khach_hang'),
+(3, 'uyen@example.com', 'uyen', '$2y$12$3ZoP8Zw46/1SUlmMu/unR.ZIvgTjCuo2NGWs2F9ttQBE.FmFo83bO', 'Huỳnh Phương Uyên', 'khach_hang'),
+(4, 'hai@example.com', 'hai', '$2y$12$qHb8qF.xgsQsDEN5nvxo6OsTDLDQmDQmTnjDdlNCp7MqAzd4fkWBG', 'Lê Dương Hoàng Hải', 'khach_hang'),
+(5, 'duy@example.com', 'duy', '$2y$12$qHb8qF.xgsQsDEN5nvxo6OsTDLDQmDQmTnjDdlNCp7MqAzd4fkWBG', 'Dương Bảo Duy', 'khach_hang');
 
 -- ============================================
 -- 2. DANH MỤC (5 danh mục, mục 5 rỗng theo yêu cầu đề)
@@ -139,6 +140,7 @@ SELECT '3120224042', 'Lê Dương Hoàng Hải'
 WHERE NOT EXISTS (SELECT 1 FROM thanh_vien WHERE mssv = '3120224042');
 
 UPDATE thanh_vien SET nguoi_dung_id=4 WHERE mssv='3120224042';
+UPDATE thanh_vien SET nguoi_dung_id=5 WHERE mssv='3120224034';
 INSERT INTO tv_anh_dai_dien (mssv,ten_tep) VALUES ('3120224042',NULL);
 INSERT INTO tv_luot_xem (mssv,ngay,so_luot) VALUES
 ('3120224042',CURRENT_DATE,3),

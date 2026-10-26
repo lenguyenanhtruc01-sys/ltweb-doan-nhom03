@@ -1,6 +1,10 @@
 # Kết quả vá và kiểm tra Bài 6 ngày 27 tháng 10 năm 2026
 
-Đã sửa đường dẫn ảnh ở HTML và fetch; bảo vệ ba POST trang Duy bằng CSRF; chỉ chủ trang được lưu thêm món dùng chung; bổ sung chú thích đầu tệp và cập nhật các kết luận tài liệu đã cũ. Chưa commit/push. Đây là kết quả working tree sau vá từ HEAD `5b20cc814369ea24eb0a252273ffe84c13c9b36d`, không phải mã commit nộp cuối.
+**Bổ sung bộ tài khoản theo yêu cầu:** seed hiện dùng admin, hop, uyen, duy, hai; bốn tài khoản thành viên có email tương ứng `@example.com`. Đã kiểm thử cài mới, cài dở, nâng cấp, ID khác seed, giữ chủ/mật khẩu cũ và chạy lại không trùng trên CSDL riêng; các bộ xác thực/chủ Hải và PHP lint cũng đạt. Sau đó đã chạy bộ cài trên CSDL local có sao lưu: tạo thêm hop, uyen, duy, gắn chủ Duy còn trống và giữ chủ Hải. Đối chiếu local xác nhận cả bốn tài khoản thành viên có mật khẩu `matkhau123`, hai liên kết chủ đúng. Tài khoản an/binh cũ và lịch sử được giữ; seed cài mới không còn hai tài khoản đó. Các kiểm tra này không phải chạy lại toàn bộ browser/Lighthouse; thay đổi bộ tài khoản chưa commit/push.
+
+Đã sửa đường dẫn ảnh ở HTML và fetch; bảo vệ ba POST trang Duy bằng CSRF; chỉ chủ trang được lưu thêm món dùng chung; bổ sung chú thích đầu tệp và cập nhật các kết luận tài liệu đã cũ. Bản vá từ mốc `5b20cc814369ea24eb0a252273ffe84c13c9b36d` đã được ghi trong commit `ed2448970d3bffe10b23a0715365bef7a04e18be` (`va loi`). Commit tiếp theo `83124f39ec2ff02137bde3399639a112898acc51` (`delete`) dọn ba HTML Lighthouse trùng và cập nhật tài liệu. Đối chiếu ngày 27/10/2026: HEAD local trên `main` và đầu nhánh `main` trên origin cùng là `83124f39ec2ff02137bde3399639a112898acc51` (`git ls-remote origin refs/heads/main`); bản vá đã có trên remote, không còn ở trạng thái chưa commit/push. Đây là mốc mã nguồn đối chiếu, chưa phải xác nhận PDF/ZIP cuối đã nộp.
+
+Các kết quả browser/Lighthouse và bảng đo bên dưới được giữ từ lượt vá ban đầu. Lượt đồng bộ tài liệu trước chỉ đối chiếu mã nguồn, schema/seed và lịch sử Git; phần kiểm thử CSDL và áp dụng bộ tài khoản mới được ghi riêng ở đầu biên bản. Các thay đổi trong working tree hiện chưa commit/push.
 
 ## Thay đổi và hành vi
 
@@ -8,8 +12,22 @@
 - Trang Duy dùng token CSRF chung có sẵn, kiểm tra kiểu và token trước xử lý mọi POST. Thiếu/sai/token dạng mảng trả 403, không ghi dữ liệu.
 - Khách vẫn chọn món từ danh sách tự nhập; danh sách đó ở session của khách. Chỉ tài khoản được liên kết với MSSV Duy trong `thanh_vien.nguoi_dung_id` mới lưu thêm món vào MySQL. Vai trò admin tự nó không cấp quyền chủ trang. Không nhận UID/MSSV do form gửi để xác định chủ.
 - Oẳn tù tì và check-in vẫn công khai với token hợp lệ; POST thành công dùng PRG 303. CSRF không thay thế biện pháp chống spam tự động.
-- Không tự tạo tài khoản Duy, gán chủ trang hoặc thay dữ liệu CSDL thật. Seed hiện chưa liên kết tài khoản cho Duy; việc lưu món chung cần một liên kết chủ trang hợp lệ được nhóm cấu hình riêng. Khách vẫn dùng đầy đủ chức năng chọn món cá nhân.
+- Không tự tạo tài khoản Duy, gán chủ trang hoặc thay dữ liệu CSDL thật. Ở mốc bản vá đã push, seed chưa liên kết tài khoản cho Duy. Seed cập nhật trong working tree đã thêm tài khoản duy và liên kết chủ Duy; bộ cài chỉ bổ sung chủ còn trống theo username/email, không ghi đè chủ hiện có. Khách vẫn dùng đầy đủ chức năng chọn món cá nhân.
 - Chú thích chức năng/cách thử đã đủ ở năm trang cá nhân và các lớp dữ liệu cá nhân được rà soát.
+
+## Giải thích GPA lưu JSON trong MySQL
+
+`database/schema.sql` khai báo bảng `tv_truc_gpa` gồm `id`, `mssv`, `pham_vi`, `ket_qua JSON` và `ngay_tao`; MSSV có khóa ngoại tới `thanh_vien`. `KhoTrangCaNhanTruc::luuGpa()` mã hóa mảng kết quả bằng `json_encode(..., JSON_THROW_ON_ERROR)` rồi INSERT qua PDO. `layGpa()` lọc theo MSSV và phạm vi người xem, lấy bản ghi có ID mới nhất và giải mã JSON để hiển thị. Đây là dữ liệu lưu trong CSDL, không phải cơ chế đọc/ghi tệp JSON cũ.
+
+Đơn vị lưu là một lần tính chi phí/GPA: gói đầu vào và kết quả được lưu cùng nhau để đọc lại sau chuyển hướng hoặc khi tải lại trang. Cách đóng gói này phù hợp luồng hiện tại vì ứng dụng lấy lại toàn bộ kết quả; chưa có truy vấn SQL lọc hoặc tổng hợp riêng từng trường bên trong JSON. Phạm vi người xem được máy chủ tạo từ tài khoản đăng nhập hoặc định danh khách trong session, không nhận trực tiếp từ form.
+
+Đánh đổi: kiểu JSON kiểm soát cú pháp tài liệu nhưng không tự áp đặt đầy đủ kiểu, miền giá trị và quan hệ giữa các trường GPA; việc kiểm tra đầu vào và tính toán nằm ở PHP. Các giá trị tính ra được lưu cùng đầu vào, nên khi thay đổi công thức phải phân biệt kết quả lịch sử với kết quả tính mới. Không dùng thiết kế này để tuyên bố toàn bộ dữ liệu bên trong JSON đã được chuẩn hóa quan hệ tới 3NF. Nếu cần báo cáo SQL theo GPA/tín chỉ/học phí, ràng buộc từng trường hoặc truy vấn thường xuyên, nên cân nhắc tách thành các cột có kiểu và ràng buộc phù hợp. Đây là giải thích giới hạn thiết kế hiện tại, không phải một migration đã thực hiện.
+
+## Quyền và thao tác CSDL của trang Duy
+
+Ba POST đều qua kiểm tra CSRF trước xử lý. Riêng việc thêm món dùng chung còn yêu cầu tài khoản đăng nhập khớp `thanh_vien.nguoi_dung_id` của MSSV `3120224034`, do `KhoCaNhan::laChuTrang()` kiểm tra. Seed mới có duy/duy@example.com và gắn chủ Duy; tài khoản admin không mặc nhiên được quyền này. Bộ cài nâng cấp bổ sung tài khoản thiếu và gắn chủ còn trống theo username/email, không chép ID cố định lên dữ liệu cũ. Khi đã có chủ hoặc tài khoản khác seed, cần đối chiếu dữ liệu thực tế, không ghi đè. Lượt đồng bộ tài liệu trước không tự tạo hoặc gán tài khoản trong CSDL thật; lần cập nhật bộ tài khoản theo yêu cầu sau đó đã áp dụng trên local như ghi ở đầu biên bản.
+
+Giới hạn trên không làm mất hai thao tác CSDL độc lập: oẳn tù tì ghi `tv_lich_su_ott` rồi đọc lịch sử/thống kê; check-in thời tiết ghi `tv_thoi_tiet_duy` rồi thống kê theo MSSV. Hai thao tác này vẫn công khai với đầu vào và token hợp lệ, không yêu cầu quyền chủ trang. Danh sách món riêng của khách chỉ lưu session; không lấy thao tác đó làm minh chứng khách được ghi vào bảng món chung.
 
 ## Phương pháp kiểm tra
 
@@ -69,12 +87,12 @@ Mỗi giá trị 360/360 là viewport và document.scrollWidth cùng bằng 360.
 
 ## Bảng 5 minh chứng phần cá nhân
 
-| Thành viên | Chức năng CSDL hiện có | Chức năng A | PHP quan sát | HTML Nu | 360px | Commit local btn5..HEAD trước vá |
+| Thành viên | Chức năng CSDL hiện có | Chức năng A | PHP quan sát | HTML Nu | 360px | Commit local btn5..5b20cc8 trước vá |
 | --- | --- | --- | --- | --- | --- | --- |
-| Trúc | Dự án; GPA; quiz | 1 | 0 | 0 | 360/360 | 16 |
+| Trúc | Dự án; GPA (JSON trong MySQL); quiz | 1 | 0 | 0 | 360/360 | 16 |
 | Uyên | Kỹ năng; thời khóa biểu | 2 và 4 | 0 | 0 | 360/360 | 13 theo hai tên tác giả |
 | Hải | Avatar chủ trang; lượt xem bảy ngày | 3 | 0 | 0 | 360/360 | 6 |
-| Duy | Chọn món; lịch sử chơi; thời tiết | 5 | 0 | 0 | 360/360 | 12 theo hai tên tác giả |
+| Duy | Món chung cần liên kết chủ trang; lịch sử chơi; thời tiết | 5 | 0 | 0 | 360/360 | 12 theo hai tên tác giả |
 | Hợp | Bình chọn; lịch sử tra cứu mạng | 6 | 0 | 0 | 360/360 | 28 theo hai tên tác giả |
 
 Số commit là thống kê local của lượt đánh giá trước trên cùng HEAD, không đo lại GitHub trong lượt vá và không phải tỷ lệ đóng góp. Các phép đo phần cá nhân là tải trang mặc định; không khẳng định mọi trạng thái sau gửi form đều đã được kiểm Nu riêng.
@@ -93,4 +111,4 @@ Tất cả nằm trong [ban-chot-20261027](ban-chot-20261027/). JSON là số li
 
 ## Giới hạn khi đưa vào báo cáo nộp
 
-Chưa xác minh PDF/ZIP cuối, tag trên remote, demo cạnh tranh bằng hai trình duyệt, W3C trực tuyến hay mọi trạng thái lỗi động của từng trang. Các kết quả ở trên đủ để cập nhật những ô đã đo trong Bảng 4/5; các ô chưa đo phải giữ rõ trạng thái. Không gọi working tree hiện tại là commit cuối đã nộp.
+Chưa xác minh PDF/ZIP cuối, tag trên remote, demo cạnh tranh bằng hai trình duyệt, W3C trực tuyến hay mọi trạng thái lỗi động của từng trang. Các kết quả ở trên đủ để cập nhật những ô đã đo trong Bảng 4/5; các ô chưa đo phải giữ rõ trạng thái. Mã vá đã có trên `main` từ xa tại mốc đối chiếu `83124f3`, nhưng chưa có căn cứ gọi đó là commit cuối đã nộp. Báo cáo phải nêu JSON GPA là lựa chọn lưu gói kết quả trong MySQL và seed mới đã có chủ Duy; máy cũ cần chạy bộ cài và đối chiếu liên kết thực tế.

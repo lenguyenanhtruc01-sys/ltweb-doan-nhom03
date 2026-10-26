@@ -126,6 +126,11 @@ function caiDatGopDuLieu(PDO $pdo, string $mau): array
         LEFT JOIN nguoi_dung u ON u.ten_dang_nhap=mu.ten_dang_nhap
         WHERE NOT EXISTS (SELECT 1 FROM thanh_vien d WHERE d.mssv=s.mssv)');
 
+    // Máy đã có thành viên Duy: chỉ gắn khi chưa có chủ và tài khoản khớp cả tên/email.
+    $pdo->exec("UPDATE thanh_vien tv JOIN nguoi_dung u
+        ON u.ten_dang_nhap='duy' AND u.email='duy@example.com'
+        SET tv.nguoi_dung_id=u.id WHERE tv.mssv='3120224034' AND tv.nguoi_dung_id IS NULL");
+
     // Chỉ tạo kế hoạch mẫu cho tài khoản chưa có kế hoạch; không sửa đơn đang có.
     $keHoach = $pdo->query('SELECT s.id,s.trang_thai,s.ghi_chu,u.id AS uid
         FROM `' . $mau . '`.ke_hoach_hoc_tap s JOIN `' . $mau . '`.nguoi_dung mu ON mu.id=s.nguoi_dung_id

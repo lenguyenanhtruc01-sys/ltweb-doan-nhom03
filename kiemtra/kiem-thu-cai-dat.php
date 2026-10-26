@@ -16,6 +16,26 @@ function kiemThuCaiDat(bool $dung, string $loi): void
     if (!$dung) throw new RuntimeException($loi);
 }
 
+function kiemThuTaiKhoanNhom(PDO $pdo): void
+{
+    foreach (['admin', 'hop', 'uyen', 'duy', 'hai'] as $ten) {
+        $st = $pdo->prepare('SELECT id,email,mat_khau,vai_tro FROM nguoi_dung WHERE ten_dang_nhap=?');
+        $st->execute([$ten]);
+        $u = $st->fetch();
+        kiemThuCaiDat($u !== false && $u['email'] === $ten . '@example.com'
+            && password_verify('matkhau123', $u['mat_khau']), 'Sai tài khoản/mật khẩu mẫu ' . $ten);
+        kiemThuCaiDat($u['vai_tro'] === ($ten === 'admin' ? 'quan_tri' : 'khach_hang'), 'Sai quyền ' . $ten);
+        if ($ten === 'duy') {
+            $kho = new App\Data\KhoCaNhan($pdo);
+            kiemThuCaiDat($kho->laChuTrang('3120224034', (int) $u['id']), 'Chưa gắn tài khoản Duy làm chủ trang.');
+            kiemThuCaiDat(!$kho->laChuTrang('3120224034', 1), 'Admin tự có quyền chủ trang Duy.');
+            $kho->luuDanhSachMon('3120224034', ['Món thử của chủ Duy', 'Món thử thứ hai'], 'trua');
+            kiemThuCaiDat(in_array('Món thử của chủ Duy', $kho->layDanhSachMon('3120224034'), true), 'Chủ Duy không lưu được món.');
+            $pdo->exec("DELETE FROM tv_mon_an WHERE mssv='3120224034' AND ten_mon IN ('Món thử của chủ Duy','Món thử thứ hai')");
+        }
+    }
+}
+
 function kiemThuMonAnMau(PDO $pdo): void
 {
     $ds = $pdo->query("SELECT ten_mon,bua FROM tv_mon_an WHERE mssv='3120224034' ORDER BY ten_mon")->fetchAll(PDO::FETCH_KEY_PAIR);
@@ -49,6 +69,7 @@ $tenId = $ten . '_id';
 $cacBanSao = [];
 try {
     $moi = caiDatNhom($pdo, $ten);
+    kiemThuTaiKhoanNhom($pdo);
     kiemThuCaiDat($moi['cai_moi'] && $moi['so_mon'] === 30, 'Không cài mới đủ môn.');
     kiemThuMonAnMau($pdo);
     kiemThuCaiDat(count($pdo->query('SHOW TABLES')->fetchAll()) === 24, 'Thiếu bảng.');
@@ -148,17 +169,19 @@ try {
     $truoc = anhDuLieuCaiDat($pdo);
     $kq = caiDatNhom($pdo, $tenCu); $cacBanSao[] = $kq['sao_luu'];
     kiemThuCaiDat($truoc === anhDuLieuCaiDat($pdo), 'Nâng cấp lại làm đổi dữ liệu.');
-    // Có schema nhưng chưa seed: phải tạo cả admin/an/binh, không chỉ Hải.
+    // Có schema nhưng chưa seed: phải tạo đủ admin và bốn tài khoản thành viên.
     $pdo->exec(caiDatDocSql('schema.sql', $tenDo));
+    $pdo->exec("INSERT INTO thanh_vien (mssv,ho_ten) VALUES ('3120224034','Dương Bảo Duy')");
     $kq = caiDatNhom($pdo, $tenDo); $cacBanSao[] = $kq['sao_luu'];
-    kiemThuCaiDat(count($kq['tai_khoan_moi']) === 4, 'Cài dở không bổ sung đủ tài khoản.');
+    kiemThuCaiDat(count($kq['tai_khoan_moi']) === 5, 'Cài dở không bổ sung đủ tài khoản.');
+    kiemThuTaiKhoanNhom($pdo);
     kiemThuCaiDat((int) $pdo->query('SELECT COUNT(*) FROM ke_hoach_hoc_tap')->fetchColumn() === 3, 'Cài dở thiếu kế hoạch.');
     kiemThuCaiDat((int) $pdo->query('SELECT COUNT(*) FROM tv_luot_xem')->fetchColumn() === 7, 'Cài dở thiếu lượt xem mẫu.');
     kiemThuMonAnMau($pdo);
     $truoc = anhDuLieuCaiDat($pdo);
     $kq = caiDatNhom($pdo, $tenDo); $cacBanSao[] = $kq['sao_luu'];
     kiemThuCaiDat($truoc === anhDuLieuCaiDat($pdo), 'Cài dở chạy lại tạo trùng.');
-    echo "PASS đã có schema/chưa seed: đủ 4 tài khoản, kế hoạch và dữ liệu mẫu; chạy lại không trùng.\n";
+    echo "PASS đã có schema/chưa seed: đủ 5 tài khoản, kế hoạch và dữ liệu mẫu; chạy lại không trùng.\n";
 
     // Mô phỏng 9485c44: mất hai bảng chung, chưa có dữ liệu Uyên trên máy cũ.
     caiDatNhom($pdo, $tenMerge);
@@ -193,12 +216,20 @@ try {
         SET tv.nguoi_dung_id=u.id WHERE tv.mssv='3120224042'");
     $kq = caiDatNhom($pdo, $tenId); $cacBanSao[] = $kq['sao_luu'];
     $nguoiDat = $pdo->query('SELECT u.ten_dang_nhap FROM ke_hoach_hoc_tap k JOIN nguoi_dung u ON u.id=k.nguoi_dung_id ORDER BY u.ten_dang_nhap')->fetchAll(PDO::FETCH_COLUMN);
-    kiemThuCaiDat($nguoiDat === ['an','binh','hai'], 'Ánh xạ sai người đặt kế hoạch mẫu.');
+    kiemThuCaiDat($nguoiDat === ['hai','hop','uyen'], 'Ánh xạ sai người đặt kế hoạch mẫu.');
+    kiemThuTaiKhoanNhom($pdo);
     kiemThuCaiDat((int) $pdo->query("SELECT COUNT(*) FROM chi_tiet_ke_hoach WHERE ma_mon='MAT101' AND mon_hoc_id=502")->fetchColumn() === 1, 'Ánh xạ sai ID môn trong chi tiết.');
     $truoc = anhDuLieuCaiDat($pdo);
     $kq = caiDatNhom($pdo, $tenId); $cacBanSao[] = $kq['sao_luu'];
     kiemThuCaiDat($truoc === anhDuLieuCaiDat($pdo), 'ID khác seed chạy lại bị đổi dữ liệu.');
     echo "PASS ID khác seed: giữ tài khoản, chủ trang, môn riêng; ánh xạ đúng kế hoạch/chi tiết.\n";
+    $pdo->exec("UPDATE thanh_vien SET nguoi_dung_id=1 WHERE mssv='3120224034'");
+    $st = $pdo->prepare("UPDATE nguoi_dung SET mat_khau=? WHERE ten_dang_nhap='duy'");
+    $st->execute([$bam]);
+    $truoc = anhDuLieuCaiDat($pdo);
+    $kq = caiDatNhom($pdo, $tenId); $cacBanSao[] = $kq['sao_luu'];
+    kiemThuCaiDat($truoc === anhDuLieuCaiDat($pdo), 'Ghi đè chủ trang Duy hoặc mật khẩu đã có.');
+    echo "PASS Duy: liên kết theo tài khoản thực tế, giữ chủ và mật khẩu đã có khi nâng cấp.\n";
     try { caiDatNhom($pdo, 'bad;DROP DATABASE x'); throw new LogicException('Chấp nhận tên CSDL sai.'); }
     catch (InvalidArgumentException) {}
     echo "PASS nâng cấp lặp và kiểm tra tên CSDL.\n";

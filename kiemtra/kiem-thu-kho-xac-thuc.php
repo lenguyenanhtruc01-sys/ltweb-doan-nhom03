@@ -24,15 +24,15 @@ try {
     caiDatNhom($pdo, $ten);
     $nguoi = new App\Data\KhoNguoiDung($pdo);
     $phien = new App\Data\KhoPhienGhiNho($pdo);
-    $an = $nguoi->timDeDangNhap('an');
-    kiemTraKhoXacThuc($an !== null && $nguoi->timDeDangNhap('AN@EXAMPLE.COM')['id'] === $an['id'], 'Tên/email không cùng tài khoản.');
-    $uid = (int) $an['id'];
+    $hop = $nguoi->timDeDangNhap('hop');
+    kiemTraKhoXacThuc($hop !== null && $nguoi->timDeDangNhap('HOP@EXAMPLE.COM')['id'] === $hop['id'], 'Tên/email không cùng tài khoản.');
+    $uid = (int) $hop['id'];
     kiemTraKhoXacThuc($nguoi->timDeDangNhap("' OR 1=1 --") === null, 'Đầu vào SQL không được coi là văn bản.');
     $congKhai = $nguoi->timTheoId($uid);
     kiemTraKhoXacThuc($congKhai !== null && !isset($congKhai['mat_khau']) && $nguoi->timTheoId(99999999) === null, 'Sai dữ liệu người dùng hiện tại.');
     $hash = password_hash('AuditPass123!', PASSWORD_DEFAULT);
     $nguoi->capNhatMatKhauBam($uid, $hash);
-    kiemTraKhoXacThuc(password_verify('AuditPass123!', $nguoi->timDeDangNhap('an')['mat_khau']), 'Không cập nhật được hash.');
+    kiemTraKhoXacThuc(password_verify('AuditPass123!', $nguoi->timDeDangNhap('hop')['mat_khau']), 'Không cập nhật được hash.');
     echo "PASS tìm tài khoản, đầu vào SQL, thông tin công khai và cập nhật hash.\n";
 
     $selector = str_repeat('a',18);
@@ -45,7 +45,7 @@ try {
     $phien->them(str_repeat('c',18), 3, $tokenHash, time()+3600);
 
     $token = bin2hex(random_bytes(32));
-    $nguoi->taoYeuCauDatLai('an@example.com', hash('sha256',$token));
+    $nguoi->taoYeuCauDatLai('hop@example.com', hash('sha256',$token));
     $pdo->exec("CREATE TRIGGER audit_chan_thu_hoi BEFORE DELETE ON phien_ghi_nho
         FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='audit rollback'");
     try {
@@ -54,7 +54,7 @@ try {
     } catch (PDOException $e) {
         kiemTraKhoXacThuc($e->getCode() === '45000', 'Sai lỗi kiểm thử rollback.');
     }
-    kiemTraKhoXacThuc(!$pdo->inTransaction() && $nguoi->timDeDangNhap('an')['mat_khau'] === $hash
+    kiemTraKhoXacThuc(!$pdo->inTransaction() && $nguoi->timDeDangNhap('hop')['mat_khau'] === $hash
         && $nguoi->timYeuCauDatLai($token) !== null && $phien->timConHan($selector) !== null,
         'Lỗi thu hồi phiên không rollback mật khẩu/mã/phiên.');
     $pdo->exec('DROP TRIGGER audit_chan_thu_hoi');

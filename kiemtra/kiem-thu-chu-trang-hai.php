@@ -21,7 +21,7 @@ $ten = 'edugpa_owner_' . bin2hex(random_bytes(8));
 try {
     caiDatNhom($pdo, $ten);
     $hai = (int) $pdo->query("SELECT id FROM nguoi_dung WHERE email='hai@example.com'")->fetchColumn();
-    $khac = (int) $pdo->query("SELECT id FROM nguoi_dung WHERE ten_dang_nhap='an'")->fetchColumn();
+    $khac = (int) $pdo->query("SELECT id FROM nguoi_dung WHERE ten_dang_nhap='hop'")->fetchColumn();
     $doiChu = $pdo->prepare("UPDATE thanh_vien SET nguoi_dung_id=? WHERE mssv='3120224042'");
     $layChu = static fn (): int => (int) $pdo->query("SELECT nguoi_dung_id FROM thanh_vien WHERE mssv='3120224042'")->fetchColumn();
     $anh = 'anh_' . str_repeat('a', 32) . '.png';

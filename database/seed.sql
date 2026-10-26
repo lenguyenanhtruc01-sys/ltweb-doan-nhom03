@@ -177,7 +177,28 @@ INSERT INTO tv_lich_su_ott (mssv, nguoi_chon, may_chon, ket_qua) VALUES
 ('3120224034', 'bua', 'bao', 'thua'),
 ('3120224034', 'bao', 'bao', 'hoa');
 
+-- ============================================
+-- PHẦN B - DỮ LIỆU MẪU CỦA ANH TRÚC
+-- MSSV: 3120224159
+-- ============================================
 
+INSERT INTO tv_du_an
+    (mssv, ten_du_an, mo_ta, cong_nghe, nam_thuc_hien)
+VALUES
+(
+    '3120224159',
+    'EduGPA',
+    'Website hỗ trợ sinh viên tra cứu môn học và lập kế hoạch học tập.',
+    'HTML, CSS, JavaScript, PHP, MySQL',
+    2026
+),
+(
+    '3120224159',
+    'Liên Chiểu Xanh',
+    'Website hỗ trợ báo cáo vấn đề môi trường và kết nối hoạt động tình nguyện.',
+    'HTML, CSS, JavaScript, PostgreSQL, Leaflet',
+    2026
+);
 INSERT INTO thanh_vien (mssv, ho_ten)
 VALUES ('3120224174', 'Huỳnh Phương Uyên')
 ON DUPLICATE KEY UPDATE ho_ten = VALUES(ho_ten);

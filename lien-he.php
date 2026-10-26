@@ -4,7 +4,6 @@ declare(strict_types=1);
 /**
  * Tệp: lien-he.php
  * Chức năng: kiểm tra, lưu liên hệ và xử lý tệp đính kèm ảnh an toàn.
- * Thử: gửi form đúng/sai, ảnh giả và F5 sau thành công; thông báo chỉ hiện một lần.
  */
 
 require_once __DIR__ . '/inc/config.php';
@@ -60,9 +59,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'Họ tên bắt buộc phải từ 3 đến 50 ký tự.';
     }
 
-    if (!filter_var($du['email'], FILTER_VALIDATE_EMAIL)) {
+    if (
+        !filter_var($du['email'], FILTER_VALIDATE_EMAIL)
+        || mb_strlen($du['email']) > 100
+    ) {
         $loi['email'] =
-            'Định dạng email không hợp lệ.';
+            'Email phải hợp lệ và không dài quá 100 ký tự.';
     }
 
     if (
@@ -112,11 +114,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      * LƯU LIÊN HỆ
      */
     if (empty($loi)) {
-        $kho = new KhoLienHe(
-            __DIR__ . '/storage/lien-he.jsonl'
-        );
-
         try {
+            $kho = new KhoLienHe(db());
             $kho->them([
                 'thoiGian' => date('Y-m-d H:i:s'),
                 'hoTen' => $du['hoten'],

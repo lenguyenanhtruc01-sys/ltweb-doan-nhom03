@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Đọc kỹ năng và tìm môn trong thời khóa biểu của Uyên bằng PDO.
+ * Mọi kết quả giới hạn theo MSSV; tìm kiếm escape ký tự LIKE.
+ * Thử lọc nhóm, tìm tên/mã/phòng và từ khóa có dấu nháy trên trang Uyên.
+ */
 namespace App\Data;
 
 use PDO;

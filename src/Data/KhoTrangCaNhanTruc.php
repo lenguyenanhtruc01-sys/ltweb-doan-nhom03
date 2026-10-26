@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+/**
+ * Đọc dự án và lưu kết quả GPA/quiz của Trúc trong MySQL bằng PDO.
+ * Kết quả và reset giới hạn theo MSSV và phạm vi người xem do máy chủ xác định.
+ * Thử tìm dự án, tính GPA, trả lời/reset quiz và hai phiên khách độc lập.
+ */
 namespace App\Data;
 
 use PDO;

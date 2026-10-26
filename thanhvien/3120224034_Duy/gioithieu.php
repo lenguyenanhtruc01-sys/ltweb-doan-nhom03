@@ -1,6 +1,9 @@
 <?php
 /**
- * Tệp: thanhvien/3120224034_Duy/gioithieu.php (Duy — Phần B)
+ * Trang Duy: chọn món, lịch sử oẳn tù tì và thống kê thời tiết bằng MySQL.
+ * Khách chọn món riêng trong session; chỉ chủ trang lưu thêm vào danh sách chung.
+ * Ba form POST kiểm tra CSRF, thành công chuyển hướng để tránh gửi lại khi F5.
+ * Thử token đúng/sai/mảng, khách/chủ trang và tắt JavaScript trên CSDL thử.
  */
 declare(strict_types=1);
 require __DIR__ . '/../../inc/config.php';
@@ -22,6 +25,11 @@ $hanhDong  = layChuoiDauVao($_POST['hanh_dong'] ?? '');
 // XỬ LÝ POST
 // ============================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $token = $_POST['_csrf'] ?? null;
+    if (!is_string($token) || !csrfKiemTra($token)) {
+        http_response_code(403);
+        exit('Phiên biểu mẫu không hợp lệ. Vui lòng tải lại trang rồi thử lại.');
+    }
     // 1. Chọn món
     if ($hanhDong === 'chon_mon') {
         try {
@@ -34,7 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new DomainException('Danh sách món tối đa 3000 ký tự.');
             }
             $mangMon = KhoCaNhan::kiemTraDanhSachMon(explode("\n", $dsMonText), $bua);
-            $khoCaNhan->luuDanhSachMon(MSSV_DUY, $mangMon, $bua);
+            $nd = nguoiDung();
+            if ($nd !== null && $khoCaNhan->laChuTrang(MSSV_DUY, (int) $nd['id'])) {
+                $khoCaNhan->luuDanhSachMon(MSSV_DUY, $mangMon, $bua);
+            }
             $monChon = $khoCaNhan->chonMonNgauNhien($mangMon, $bua);
             $_SESSION['duy_danh_sach_mon'] = $mangMon;
             $_SESSION['duy_mon_an_ket_qua'] = ['mon' => $monChon, 'bua' => $bua, 'thoiGian' => date('H:i:s d/m/Y')];
@@ -59,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $khoCaNhan->ghiLichSuOtt(MSSV_DUY, $nguoiChon, $mayChon, $ketQua);
             $_SESSION['flash_duy'] = "Kết quả: Bạn chọn $nguoiChon, Máy chọn $mayChon => Bạn $ketQua!";
         }
-        header('Location: gioithieu.php#oan-tu-ti'); exit;
+        header('Location: gioithieu.php#oan-tu-ti', true, 303); exit;
     }
 
     // 3. Check-in thời tiết
@@ -70,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $khoCaNhan->themCheckIn(MSSV_DUY, $trangThai);
             $_SESSION['flash_duy'] = "Đã ghi nhận thời tiết! Cảm ơn bạn.";
         }
-        header('Location: gioithieu.php#thoi-tiet'); exit;
+        header('Location: gioithieu.php#thoi-tiet', true, 303); exit;
     }
 }
 
@@ -142,8 +153,10 @@ require __DIR__ . '/../../inc/header.php';
     <section id="chon-mon" class="the-noi-dung chon-mon" aria-labelledby="tieu-de-chon-mon">
         <h2 id="tieu-de-chon-mon" class="the-noi-dung__tieu-de" data-vi="🍜 Máy chọn món ăn hôm nay" data-en="🍜 Today's food picker">🍜 Máy chọn món ăn hôm nay</h2>
         <p data-vi="Không biết ăn gì? Paste danh sách món vào ô bên dưới, chọn bữa, rồi để máy quyết định!" data-en="Don't know what to eat?...">Không biết ăn gì? Paste danh sách món vào ô bên dưới, chọn bữa, rồi để máy quyết định!</p>
+        <p>Danh sách bạn nhập được giữ riêng trong phiên này. Chỉ chủ trang đã đăng nhập mới lưu thêm món vào danh sách dùng chung.</p>
 
         <form method="post" action="gioithieu.php" id="form-chon-mon" novalidate>
+            <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
             <input type="hidden" name="hanh_dong" value="chon_mon">
             <p>
                 <label for="dsMon">Danh sách món (2–50 món khác nhau, mỗi dòng 1 món, tối đa 100 ký tự/món):</label>
@@ -178,6 +191,7 @@ require __DIR__ . '/../../inc/header.php';
 
         <form method="post" action="gioithieu.php" class="oan-tu-ti__nut" id="form-oan-tu-ti">
             <input type="hidden" name="hanh_dong" value="choi_oan_tu_ti">
+            <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
             <button type="submit" name="chon" value="keo" class="nut-ott nut-ott--keo">✊<br>Kéo</button>
             <button type="submit" name="chon" value="bua" class="nut-ott nut-ott--bua">✋<br>Búa</button>
             <button type="submit" name="chon" value="bao" class="nut-ott nut-ott--bao">✌️<br>Bao</button>
@@ -231,6 +245,7 @@ require __DIR__ . '/../../inc/header.php';
 
         <form method="post" action="gioithieu.php#thoi-tiet" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
             <input type="hidden" name="hanh_dong" value="check_in_thoi_tiet">
+            <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
             <button type="submit" name="trang_thai" value="nang" style="padding: 15px 20px; background: #fff; border: 2px solid #f59e0b; border-radius: 8px; cursor: pointer;">☀️ Nắng</button>
             <button type="submit" name="trang_thai" value="mua" style="padding: 15px 20px; background: #fff; border: 2px solid #3b82f6; border-radius: 8px; cursor: pointer;">🌧️ Mưa</button>
             <button type="submit" name="trang_thai" value="may" style="padding: 15px 20px; background: #fff; border: 2px solid #9ca3af; border-radius: 8px; cursor: pointer;">☁️ Nhiều mây</button>

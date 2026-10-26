@@ -23,7 +23,7 @@ function card(mon, selected) {
     const article = element('article', undefined, 'the-san-pham');
     // Chỉ cho ảnh cùng nguồn; không nhận URL javascript/data từ API.
     if (mon.anh) {
-        const path = mon.anh.startsWith('images/') || /^(https?:|\/)/i.test(mon.anh)
+        const path = /^(?:images\/|uploads\/|https?:|\/)/i.test(mon.anh)
             ? mon.anh : `images/${mon.anh}`;
         const url = new URL(path, location.href);
         if (url.origin === location.origin && ['http:', 'https:'].includes(url.protocol)) {

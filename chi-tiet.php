@@ -38,10 +38,7 @@ if ($mh === null) {
 }
 
 // Seed lưu tên tệp ảnh, còn ảnh upload đã có đường dẫn uploads/.
-$anhMonHoc = trim((string) $mh->anh);
-if ($anhMonHoc !== '' && !preg_match('~^(?:https?://|/|images/|uploads/)~i', $anhMonHoc)) {
-    $anhMonHoc = 'images/' . $anhMonHoc;
-}
+$anhMonHoc = duongDanAnhMonHoc($mh->anh);
 
 // Đọc cookie như dữ liệu không đáng tin cậy.
 $idsCu = [];

@@ -36,3 +36,11 @@ function dinhDangSo(int|float $giaTri): string
 {
     return number_format($giaTri, 0, ',', '.');
 }
+
+// Seed chỉ lưu tên tệp; ảnh quản trị tải lên đã có tiền tố uploads/.
+function duongDanAnhMonHoc(?string $anh): string
+{
+    $anh = trim($anh ?? '');
+    return $anh === '' || preg_match('~^(?:https?://|/|images/|uploads/)~i', $anh)
+        ? $anh : 'images/' . $anh;
+}

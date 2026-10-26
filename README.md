@@ -255,3 +255,9 @@ Trang Trúc có danh sách dự án đọc từ `tv_du_an`, tìm theo tên/công
 ### Trang cá nhân Huỳnh Phương Uyên
 
 `thanhvien/3120224174_uyen/gioithieu.php` dùng `KhoTrangCaNhanUyen` để đọc kỹ năng từ `tv_uyen_ky_nang` và tìm kiếm thời khóa biểu trong `tv_uyen_thoi_khoa_bieu`. Hai bảng có khóa ngoại tới `thanh_vien`; cấu trúc nằm trong `database/schema.sql`, dữ liệu mẫu nằm trong `database/seed.sql` và bộ cài bổ sung idempotent khi nâng cấp CSDL cũ. Sau mỗi lần cập nhật, chạy `php database/cai-dat.php`, sau đó thử lọc kỹ năng, tìm môn theo tên/mã/lớp/phòng và thử lại khi tắt JavaScript. Không import schema thủ công vào CSDL đang có dữ liệu vì tệp này có lệnh `DROP DATABASE`.
+
+### Vá và kiểm tra bản chốt ngày 27/10/2026
+
+Ảnh môn học dùng được với cả tên tệp seed và đường dẫn uploads/ ở HTML/fetch. Trang Duy yêu cầu CSRF cho ba form POST; danh sách món tự nhập của khách giữ riêng trong session. Chỉ tài khoản liên kết với MSSV Duy qua thanh_vien.nguoi_dung_id mới lưu thêm món vào danh sách chung; không tự gán quyền admin làm chủ trang. Seed chưa gán tài khoản chủ Duy, việc liên kết cần được nhóm cấu hình theo tài khoản thực tế.
+
+Kết quả đo và bảng chất lượng: [biên bản bản chốt](kiemtra/ket-qua-va-ban-chot-20261027.md). Ba trang bắt buộc đạt Lighthouse Mobile Accessibility 100; Nu Html Checker cục bộ đo 16 trang/trạng thái có 0 lỗi HTML, một cảnh báo heading ở chi tiết. Có ảnh và JSON/HTML gốc trong kiemtra/ban-chot-20261027/. Phạm vi và các trạng thái chưa thử được ghi rõ trong biên bản; không dùng số liệu này để khẳng định mọi ca kiểm thử đều đã hoàn tất.

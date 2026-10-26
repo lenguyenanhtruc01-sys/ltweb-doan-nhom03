@@ -176,12 +176,7 @@ require __DIR__ . '/inc/header.php';
                     }
 
                     // Không tạo thẻ ảnh khi dữ liệu không có ảnh.
-                    $anh = trim((string)($mon->anh ?? ''));
-                    $duongDanAnh = $anh === ''
-                        ? ''
-                        : (str_starts_with($anh, 'http') || str_starts_with($anh, 'images/')
-                            ? $anh
-                            : 'images/' . $anh);
+                    $duongDanAnh = duongDanAnhMonHoc($mon->anh);
                     ?>
 
                     <article class="the-san-pham">

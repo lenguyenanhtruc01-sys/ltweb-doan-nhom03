@@ -1,8 +1,8 @@
 # 2.3. Phần C – Câu hỏi thảo luận (2,0 điểm)
 
-**Cập nhật 27/10/2026:** phần số đo gốc dưới đây là bản chụp tại commit `57a3094`, không phải trạng thái bản vá hiện tại. Đã khôi phục `soCho` và chạy lại bộ thử trên CSDL riêng: [log mới](../kiemtra/ket-qua-phan-c-20261027.txt) cho thấy POST giỏ hợp lệ trả 200, không còn lỗi thuộc tính. Bộ thử đặt lại số chỗ môn thử trước request thành công để không lẫn với ca hết chỗ. Kết quả cài mới/nâng cấp và các phần còn thiếu nằm trong [biên bản rà soát](../kiemtra/ra-soat-tu-86c7414-20261027.md). Giữ log cũ để truy vết; các số dòng source trong báo cáo gốc cần đối chiếu lại trước khi xuất PDF.
+**Cập nhật trạng thái ngày 27/10/2026:** MonHoc đã có soCho; API thêm hợp lệ trả 200. CSDL mới có 24 bảng/25 FK. Kết quả vá và phép đo mới nằm trong [biên bản bản chốt](../kiemtra/ket-qua-va-ban-chot-20261027.md).
 
-**Căn cứ:** mã nguồn commit `57a3094` (`Update KhoLienHe.php`), là HEAD mới nhất khi chạy thử. Các phần truy vấn, giao dịch, phân quyền được đối chiếu trực tiếp với commit này. Không sửa, stage, commit hoặc push mã ứng dụng trong quá trình viết báo cáo.
+**Phạm vi số đo lịch sử:** các thí nghiệm, số dòng và bảng kết quả gốc dưới đây tham chiếu commit `57a3094`, bổ sung bởi [log chạy lại](../kiemtra/ket-qua-phan-c-20261027.txt). Mọi lỗi chỉ xuất hiện ở mốc cũ được ghi rõ là lịch sử; không coi đó là trạng thái hiện tại. Log gốc được giữ nguyên để truy vết. Khi xuất PDF cần ghi commit của từng phép đo, không thay số liệu cũ bằng số mới mà thiếu căn cứ.
 
 Website EduGPA dùng nghiệp vụ đăng ký môn học. Vì vậy, các thuật ngữ của đề được đối chiếu như sau:
 
@@ -157,9 +157,9 @@ if ($stUpdate->rowCount() !== 1) {
 
 Kiểm tra và trừ chỗ nằm trong cùng một UPDATE. Với InnoDB, người ghi cạnh tranh phải chờ khóa; sau khi người trước hoàn tất, UPDATE còn lại phải thỏa điều kiện trên giá trị hiện hành. Khi chỗ bằng 0, nó không cập nhật dòng nào và hàm rollback kế hoạch vừa tạo. Nếu chỉ `SELECT so_cho` trước rồi UPDATE không điều kiện, hai khách có thể cùng đọc 1; đến lúc UPDATE, kết quả đọc đã cũ, dẫn đến nhận quá số chỗ, tồn âm hoặc ghi đè tùy cách viết UPDATE. SELECT kiểm tra trước chỉ có ích cho thông báo, không đủ bảo vệ cạnh tranh. Có thể dùng `SELECT ... FOR UPDATE` đúng trong giao dịch, nhưng mã hiện tại chọn UPDATE có điều kiện.
 
-**Giới hạn đối với đúng thao tác hai trình duyệt của đề:** chưa thể ghi là đã hoàn thành trên commit hiện tại. Thử HTTP thêm giỏ hợp lệ trả **500**, JSON `{"loi":"Lỗi máy chủ"}`; log mới ghi `Undefined property: App\Models\MonHoc::$soCho` tại `api/gio-hang.php:51`. Model `MonHoc` chưa khai báo/gán `soCho`. Vì vậy số liệu “một thành công, một thiếu chỗ” ở trên là kết quả tầng dữ liệu, không phải kết quả hai phiên trình duyệt đã thêm giỏ thành công.
+**Giới hạn đối với thao tác hai trình duyệt của đề:** thử nghiệm hai tiến trình ở trên chứng minh cạnh tranh ở tầng dữ liệu; chưa phải minh chứng hai trình duyệt. Tại snapshot `57a3094`, HTTP thêm giỏ từng trả 500 vì thiếu `MonHoc::$soCho` (xem log gốc). Mã đã khôi phục thuộc tính và các lượt kiểm tra sau trả 200; lỗi này không còn là trở ngại hiện tại. Vẫn cần phân biệt kiểm thử dữ liệu, HTTP và demo hai trình duyệt.
 
-Để bổ sung minh chứng giao diện sau khi sửa model: dùng hai tài khoản trên cửa sổ thường/ẩn danh, đặt môn thử còn 1 chỗ, mỗi giỏ thêm 1, gửi lần lượt; người đầu phải thành công, người sau phải bị từ chối, sau đó kiểm tra ba bảng bằng SQL ở (a). Chỉ thử với dữ liệu tạm và khôi phục số chỗ ban đầu. Việc thêm giỏ không đồng nghĩa giữ chỗ.
+Để bổ sung minh chứng giao diện: dùng hai tài khoản trên cửa sổ thường/ẩn danh, đặt môn thử còn 1 chỗ, mỗi giỏ thêm 1, gửi lần lượt; người đầu phải thành công, người sau phải bị từ chối, sau đó kiểm tra ba bảng bằng SQL ở (a). Chỉ thử với dữ liệu tạm và khôi phục số chỗ ban đầu. Việc thêm giỏ không đồng nghĩa giữ chỗ.
 
 ### (c) Lưu đơn giá/snapshot có trái chuẩn hóa không?
 
@@ -301,7 +301,7 @@ Website có ba endpoint trong thư mục `api`:
 | GET `api/san-pham.php?id=...` | `du_lieu`: một môn |
 | GET `api/san-pham.php` tìm kiếm | `du_lieu`: mảng môn; `tong`, `trang`, `so_trang`, `da_them` |
 | GET `api/gio-hang.php` | `so_mon`, `du_lieu`, `csrf` |
-| POST `api/gio-hang.php` | Theo nhánh thành công của mã: `so_mon`, `du_lieu`, `thong_bao`; request hợp lệ hiện đo được 500 do thiếu `soCho`, nên chưa coi nhánh thành công này đã được kiểm chứng trên commit hiện tại |
+| POST `api/gio-hang.php` | Theo nhánh thành công của mã: `so_mon`, `du_lieu`, `thong_bao`; request hợp lệ tại snapshot `57a3094` từng trả 500 do thiếu `soCho`; các lượt sau sửa đã trả 200, xem biên bản bản chốt |
 | GET/POST `api/yeu-thich.php` | `du_lieu`: mảng ID môn yêu thích của tài khoản hiện tại |
 | Phản hồi lỗi | `loi`; lỗi không dự kiến được chuẩn hóa 500 thành `{"loi":"Lỗi máy chủ"}` |
 
@@ -313,4 +313,4 @@ Không `json_encode()` nguyên dòng bảng `nguoi_dung` vì có `mat_khau` và 
 
 ## Ghi chú cần hoàn thiện trước khi nộp minh chứng
 
-Phần lý giải và các bảng số đo phía trên đã có lệnh, SQL và log đi kèm. Ba giới hạn phải giữ đúng khi sử dụng trong báo cáo: chưa có bản Bảng 3 để xác nhận số hiệu ca 10; chưa có ảnh phpMyAdmin/hai trình duyệt; luồng thêm giỏ trên commit hiện tại có lỗi `soCho`, trong khi giao dịch tầng dữ liệu đã thử thành công. Không dùng kết quả tầng dữ liệu để thay bằng lời khẳng định đã hoàn tất thử hai trình duyệt. Mã ứng dụng và CSDL thật không bị sửa; chỉ thêm báo cáo, bộ thử và tệp kết quả.
+Phần lý giải và các bảng số đo phía trên có lệnh, SQL và log đi kèm theo mốc đã ghi. Không dùng số liệu tầng dữ liệu để tuyên bố đã hoàn tất demo hai trình duyệt; cần bổ sung ảnh và các bảng kết quả theo đề khi xuất PDF. Lỗi thiếu soCho thuộc snapshot cũ, đã được sửa; các kết luận hiện hành phải theo biên bản bản chốt. Giữ nguyên log thí nghiệm lịch sử để truy vết.

@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Dữ liệu cá nhân Duy: món ăn, lịch sử chơi và check-in thời tiết theo MSSV.
+ * Khách chọn món trong session; chỉ chủ trang được lưu thêm món dùng chung.
+ * Thử danh sách sai, khách/chủ trang, thống kê và lọc riêng MSSV trên CSDL thử.
+ */
 namespace App\Data;
 
 use PDO;
@@ -8,6 +13,13 @@ use PDO;
 class KhoCaNhan
 {
     public function __construct(private PDO $db) {}
+
+    public function laChuTrang(string $mssv, int $uid): bool
+    {
+        $st = $this->db->prepare('SELECT COUNT(*) FROM thanh_vien WHERE mssv=? AND nguoi_dung_id=?');
+        $st->execute([$mssv, $uid]);
+        return (int) $st->fetchColumn() === 1;
+    }
 
     // ============ CHỨC NĂNG 1: MÓN ĂN ============
     public static function kiemTraDanhSachMon(array $mangMon, string $bua): array

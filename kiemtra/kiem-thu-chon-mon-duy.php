@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
-// Kiểm thử bằng CSDL ngẫu nhiên, không sửa dữ liệu ứng dụng.
+/**
+ * Kiểm tra danh sách món và xác định chủ trang Duy trên CSDL ngẫu nhiên.
+ * Thử đầu vào sai, chống trùng và không nhận UID giả từ biểu mẫu.
+ * Chạy CLI: php kiemtra/kiem-thu-chon-mon-duy.php; không sửa CSDL ứng dụng.
+ */
 if (PHP_SAPI !== 'cli') { http_response_code(403); exit; }
 require_once __DIR__ . '/../database/cai-dat.php';
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -21,6 +25,11 @@ $ten = 'edugpa_food_' . bin2hex(random_bytes(8));
 try {
     caiDatNhom($pdo, $ten);
     $kho = new KhoCaNhan($pdo);
+    kiemTraMonDuy(!$kho->laChuTrang('3120224034', 1), 'Trang chưa gán chủ nhưng cho phép admin lưu.');
+    $pdo->exec("UPDATE thanh_vien SET nguoi_dung_id=1 WHERE mssv='3120224034'");
+    kiemTraMonDuy($kho->laChuTrang('3120224034', 1), 'Không nhận chủ đã liên kết.');
+    kiemTraMonDuy(!$kho->laChuTrang('3120224034', 2) && !$kho->laChuTrang('3120224034', 0), 'Khách/người khác được coi là chủ.');
+    echo "PASS quyền lưu món dựa vào liên kết chủ trang, không dựa vai trò admin.\n";
     $ds = ['Món mới A', 'Món mới B'];
     $kho->luuDanhSachMon('3120224034', $ds, 'trua');
     for ($i=0; $i<100; $i++) {

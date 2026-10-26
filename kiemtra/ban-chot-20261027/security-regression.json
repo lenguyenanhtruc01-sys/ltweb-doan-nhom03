@@ -1,0 +1,5 @@
+{
+  "invalidTokensNoDBWrites": true,
+  "otherUserSpoofedUidCannotPersist": true,
+  "linkedOwnerCanPersist": true
+}

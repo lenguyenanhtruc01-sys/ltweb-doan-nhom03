@@ -1,0 +1,20 @@
+[
+  {
+    "page": "index",
+    "score": 100,
+    "formFactor": "mobile",
+    "lighthouseVersion": "13.5.0"
+  },
+  {
+    "page": "danh-sach",
+    "score": 100,
+    "formFactor": "mobile",
+    "lighthouseVersion": "13.5.0"
+  },
+  {
+    "page": "dang-ky",
+    "score": 100,
+    "formFactor": "mobile",
+    "lighthouseVersion": "13.5.0"
+  }
+]

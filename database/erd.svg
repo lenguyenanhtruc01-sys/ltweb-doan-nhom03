@@ -10,10 +10,24 @@
 <title>EduGPA</title>
 <polygon fill="white" stroke="none" points="-36,36 -36,-2420.8 1547.45,-2420.8 1547.45,36 -36,36"/>
 <text xml:space="preserve" text-anchor="middle" x="755.73" y="-2361" font-family="Arial" font-size="22.00">EduGPA &#45; ERD theo database/schema.sql</text>
-<text xml:space="preserve" text-anchor="middle" x="755.73" y="-2334.6" font-family="Arial" font-size="22.00">20 bang | PK: khoa chinh | FK: khoa ngoai | UQ: duy nhat</text>
+<text xml:space="preserve" text-anchor="middle" x="755.73" y="-2334.6" font-family="Arial" font-size="22.00">21 bang, 21 khoa ngoai | PK: khoa chinh | FK: khoa ngoai | UQ: duy nhat</text>
 <text xml:space="preserve" text-anchor="middle" x="755.73" y="-2308.2" font-family="Arial" font-size="22.00">Nhan tren lien ket: ON DELETE; RESTRICT la mac dinh; cot ? cho phep NULL</text>
-<!-- nguoi_dung -->
+<!-- tv_thoi_tiet_duy -->
 <g id="node1" class="node">
+<title>tv_thoi_tiet_duy</title>
+<polygon fill="#fff1d8" stroke="none" points="1,-1837.6 1,-1868.4 206.04,-1868.4 206.04,-1837.6 1,-1837.6"/>
+<text xml:space="preserve" text-anchor="start" x="41.94" y="-1849.8" font-family="Consolas" font-weight="bold" font-size="14.00">tv_thoi_tiet_duy</text>
+<text xml:space="preserve" text-anchor="start" x="8" y="-1816.6" font-family="Consolas" font-size="14.00">PK id</text>
+<text xml:space="preserve" text-anchor="start" x="106.67" y="-1816.6" font-family="Consolas" font-size="14.00" fill="#53627a">INT UNSIGNED</text>
+<text xml:space="preserve" text-anchor="start" x="8" y="-1785.8" font-family="Consolas" font-size="14.00"> trang_thai</text>
+<text xml:space="preserve" text-anchor="start" x="106.67" y="-1785.8" font-family="Consolas" font-size="14.00" fill="#53627a">ENUM</text>
+<text xml:space="preserve" text-anchor="start" x="8" y="-1755" font-family="Consolas" font-size="14.00"> thoi_gian</text>
+<text xml:space="preserve" text-anchor="start" x="106.67" y="-1755" font-family="Consolas" font-size="14.00" fill="#53627a">DATETIME</text>
+<text xml:space="preserve" text-anchor="start" x="8" y="-1724.2" font-family="Consolas" font-size="14.00" fill="#53627a">INDEX (trang_thai)</text>
+<polygon fill="none" stroke="#8392a5" points="0,-1713.4 0,-1869.4 207.04,-1869.4 207.04,-1713.4 0,-1713.4"/>
+</g>
+<!-- nguoi_dung -->
+<g id="node2" class="node">
 <title>nguoi_dung</title>
 <polygon fill="#e4efff" stroke="none" points="362.04,-1517.8 362.04,-1548.6 605.56,-1548.6 605.56,-1517.8 362.04,-1517.8"/>
 <text xml:space="preserve" text-anchor="start" x="445.31" y="-1530" font-family="Consolas" font-weight="bold" font-size="14.00">nguoi_dung</text>
@@ -34,7 +48,7 @@
 <polygon fill="none" stroke="#8392a5" points="361.04,-1301.2 361.04,-1549.6 606.56,-1549.6 606.56,-1301.2 361.04,-1301.2"/>
 </g>
 <!-- phien_ghi_nho -->
-<g id="node2" class="node">
+<g id="node3" class="node">
 <title>phien_ghi_nho</title>
 <polygon fill="#e4efff" stroke="none" points="790.69,-1716 790.69,-1746.8 1034.22,-1746.8 1034.22,-1716 790.69,-1716"/>
 <text xml:space="preserve" text-anchor="start" x="862.42" y="-1728.2" font-family="Consolas" font-weight="bold" font-size="14.00">phien_ghi_nho</text>
@@ -60,7 +74,7 @@
 <text xml:space="preserve" text-anchor="middle" x="624.46" y="-1431.32" font-family="Arial" font-size="10.00">1</text>
 </g>
 <!-- yeu_cau_dat_lai_mat_khau -->
-<g id="node3" class="node">
+<g id="node4" class="node">
 <title>yeu_cau_dat_lai_mat_khau</title>
 <polygon fill="#e4efff" stroke="none" points="779.15,-1502.4 779.15,-1533.2 1045.76,-1533.2 1045.76,-1502.4 779.15,-1502.4"/>
 <text xml:space="preserve" text-anchor="start" x="820.09" y="-1514.6" font-family="Consolas" font-weight="bold" font-size="14.00">yeu_cau_dat_lai_mat_khau</text>
@@ -88,7 +102,7 @@
 <text xml:space="preserve" text-anchor="middle" x="624.69" y="-1413.95" font-family="Arial" font-size="10.00">1</text>
 </g>
 <!-- ke_hoach_hoc_tap -->
-<g id="node7" class="node">
+<g id="node8" class="node">
 <title>ke_hoach_hoc_tap</title>
 <polygon fill="#dcf4e6" stroke="none" points="783,-1258 783,-1288.8 1041.92,-1288.8 1041.92,-1258 783,-1258"/>
 <text xml:space="preserve" text-anchor="start" x="850.88" y="-1270.2" font-family="Consolas" font-weight="bold" font-size="14.00">ke_hoach_hoc_tap</text>
@@ -114,7 +128,7 @@
 <text xml:space="preserve" text-anchor="middle" x="610.83" y="-1402.86" font-family="Arial" font-size="10.00">0..1</text>
 </g>
 <!-- thanh_vien -->
-<g id="node9" class="node">
+<g id="node10" class="node">
 <title>thanh_vien</title>
 <polygon fill="#fff1d8" stroke="none" points="771.45,-1019.2 771.45,-1050 1053.46,-1050 1053.46,-1019.2 771.45,-1019.2"/>
 <text xml:space="preserve" text-anchor="start" x="873.97" y="-1031.4" font-family="Consolas" font-weight="bold" font-size="14.00">thanh_vien</text>
@@ -137,7 +151,7 @@
 <text xml:space="preserve" text-anchor="middle" x="604.68" y="-1402.49" font-family="Arial" font-size="10.00">0..1</text>
 </g>
 <!-- tv_binh_chon -->
-<g id="node13" class="node">
+<g id="node14" class="node">
 <title>tv_binh_chon</title>
 <polygon fill="#fff1d8" stroke="none" points="1243.14,-155 1243.14,-185.8 1486.66,-185.8 1486.66,-155 1243.14,-155"/>
 <text xml:space="preserve" text-anchor="start" x="1318.72" y="-167.2" font-family="Consolas" font-weight="bold" font-size="14.00">tv_binh_chon</text>
@@ -162,7 +176,7 @@
 <text xml:space="preserve" text-anchor="middle" x="601.68" y="-1403.01" font-family="Arial" font-size="10.00">1</text>
 </g>
 <!-- gio_hang_nguoi_dung -->
-<g id="node19" class="node">
+<g id="node20" class="node">
 <title>gio_hang_nguoi_dung</title>
 <polygon fill="#e4efff" stroke="none" points="759.91,-1990.2 759.91,-2021 1065.01,-2021 1065.01,-1990.2 759.91,-1990.2"/>
 <text xml:space="preserve" text-anchor="start" x="839.33" y="-2002.4" font-family="Consolas" font-weight="bold" font-size="14.00">gio_hang_nguoi_dung</text>
@@ -184,7 +198,7 @@
 <text xml:space="preserve" text-anchor="middle" x="618.46" y="-1438.47" font-family="Arial" font-size="10.00">1</text>
 </g>
 <!-- mon_yeu_thich -->
-<g id="node20" class="node">
+<g id="node21" class="node">
 <title>mon_yeu_thich</title>
 <polygon fill="#e4efff" stroke="none" points="779.15,-1837.8 779.15,-1868.6 1045.76,-1868.6 1045.76,-1837.8 779.15,-1837.8"/>
 <text xml:space="preserve" text-anchor="start" x="862.42" y="-1850" font-family="Consolas" font-weight="bold" font-size="14.00">mon_yeu_thich</text>
@@ -204,7 +218,7 @@
 <text xml:space="preserve" text-anchor="middle" x="620.83" y="-1436.42" font-family="Arial" font-size="10.00">1</text>
 </g>
 <!-- danh_muc -->
-<g id="node4" class="node">
+<g id="node5" class="node">
 <title>danh_muc</title>
 <polygon fill="#eae7ff" stroke="none" points="16.39,-1990.2 16.39,-2021 190.64,-2021 190.64,-1990.2 16.39,-1990.2"/>
 <text xml:space="preserve" text-anchor="start" x="72.73" y="-2002.4" font-family="Consolas" font-weight="bold" font-size="14.00">danh_muc</text>
@@ -217,7 +231,7 @@
 <polygon fill="none" stroke="#8392a5" points="15.39,-1896.8 15.39,-2022 191.64,-2022 191.64,-1896.8 15.39,-1896.8"/>
 </g>
 <!-- mon_hoc -->
-<g id="node5" class="node">
+<g id="node6" class="node">
 <title>mon_hoc</title>
 <polygon fill="#eae7ff" stroke="none" points="362.04,-2082.6 362.04,-2113.4 605.56,-2113.4 605.56,-2082.6 362.04,-2082.6"/>
 <text xml:space="preserve" text-anchor="start" x="456.86" y="-2094.8" font-family="Consolas" font-weight="bold" font-size="14.00">mon_hoc</text>
@@ -251,7 +265,7 @@
 <text xml:space="preserve" text-anchor="middle" x="210.69" y="-1947.95" font-family="Arial" font-size="10.00">1</text>
 </g>
 <!-- chi_tiet_ke_hoach -->
-<g id="node8" class="node">
+<g id="node9" class="node">
 <title>chi_tiet_ke_hoach</title>
 <polygon fill="#dcf4e6" stroke="none" points="1220.05,-2233.4 1220.05,-2264.2 1509.76,-2264.2 1509.76,-2233.4 1220.05,-2233.4"/>
 <text xml:space="preserve" text-anchor="start" x="1299.48" y="-2245.6" font-family="Consolas" font-weight="bold" font-size="14.00">chi_tiet_ke_hoach</text>
@@ -297,7 +311,7 @@
 <text xml:space="preserve" text-anchor="middle" x="615.91" y="-1938.72" font-family="Arial" font-size="10.00">1</text>
 </g>
 <!-- lien_he -->
-<g id="node6" class="node">
+<g id="node7" class="node">
 <title>lien_he</title>
 <polygon fill="#e4efff" stroke="none" points="1,-2265.8 1,-2296.6 206.04,-2296.6 206.04,-2265.8 1,-2265.8"/>
 <text xml:space="preserve" text-anchor="start" x="76.58" y="-2278" font-family="Consolas" font-weight="bold" font-size="14.00">lien_he</text>
@@ -327,7 +341,7 @@
 <text xml:space="preserve" text-anchor="middle" x="1055.75" y="-1209.43" font-family="Arial" font-size="10.00">1</text>
 </g>
 <!-- tv_luu_but -->
-<g id="node10" class="node">
+<g id="node11" class="node">
 <title>tv_luu_but</title>
 <polygon fill="#fff1d8" stroke="none" points="1266.23,-369 1266.23,-399.8 1463.57,-399.8 1463.57,-369 1266.23,-369"/>
 <text xml:space="preserve" text-anchor="start" x="1326.42" y="-381.2" font-family="Consolas" font-weight="bold" font-size="14.00">tv_luu_but</text>
@@ -353,7 +367,7 @@
 <text xml:space="preserve" text-anchor="middle" x="1051.29" y="-965.81" font-family="Arial" font-size="10.00">1</text>
 </g>
 <!-- tv_anh_dai_dien -->
-<g id="node11" class="node">
+<g id="node12" class="node">
 <title>tv_anh_dai_dien</title>
 <polygon fill="#fff1d8" stroke="none" points="1246.99,-1989.2 1246.99,-2020 1482.82,-2020 1482.82,-1989.2 1246.99,-1989.2"/>
 <text xml:space="preserve" text-anchor="start" x="1307.17" y="-2001.4" font-family="Consolas" font-weight="bold" font-size="14.00">tv_anh_dai_dien</text>
@@ -376,7 +390,7 @@
 <text xml:space="preserve" text-anchor="middle" x="1065.87" y="-1002.4" font-family="Arial" font-size="10.00">1</text>
 </g>
 <!-- tv_luot_xem -->
-<g id="node12" class="node">
+<g id="node13" class="node">
 <title>tv_luot_xem</title>
 <polygon fill="#fff1d8" stroke="none" points="1273.93,-1837 1273.93,-1867.8 1455.88,-1867.8 1455.88,-1837 1273.93,-1837"/>
 <text xml:space="preserve" text-anchor="start" x="1322.57" y="-1849.2" font-family="Consolas" font-weight="bold" font-size="14.00">tv_luot_xem</text>
@@ -410,7 +424,7 @@
 <text xml:space="preserve" text-anchor="middle" x="1049.59" y="-966.24" font-family="Arial" font-size="10.00">1</text>
 </g>
 <!-- tv_tra_cuu_mang -->
-<g id="node14" class="node">
+<g id="node15" class="node">
 <title>tv_tra_cuu_mang</title>
 <polygon fill="#fff1d8" stroke="none" points="1262.38,-1255.4 1262.38,-1286.2 1467.42,-1286.2 1467.42,-1255.4 1262.38,-1255.4"/>
 <text xml:space="preserve" text-anchor="start" x="1307.17" y="-1267.6" font-family="Consolas" font-weight="bold" font-size="14.00">tv_tra_cuu_mang</text>
@@ -438,7 +452,7 @@
 <text xml:space="preserve" text-anchor="middle" x="1074.37" y="-991.51" font-family="Arial" font-size="10.00">1</text>
 </g>
 <!-- tv_mon_an -->
-<g id="node15" class="node">
+<g id="node16" class="node">
 <title>tv_mon_an</title>
 <polygon fill="#fff1d8" stroke="none" points="1273.93,-1010.6 1273.93,-1041.4 1455.88,-1041.4 1455.88,-1010.6 1273.93,-1010.6"/>
 <text xml:space="preserve" text-anchor="start" x="1330.26" y="-1022.8" font-family="Consolas" font-weight="bold" font-size="14.00">tv_mon_an</text>
@@ -462,7 +476,7 @@
 <text xml:space="preserve" text-anchor="middle" x="1072.41" y="-975" font-family="Arial" font-size="10.00">1</text>
 </g>
 <!-- tv_lich_su_ott -->
-<g id="node16" class="node">
+<g id="node17" class="node">
 <title>tv_lich_su_ott</title>
 <polygon fill="#fff1d8" stroke="none" points="1262.38,-827.4 1262.38,-858.2 1467.42,-858.2 1467.42,-827.4 1262.38,-827.4"/>
 <text xml:space="preserve" text-anchor="start" x="1311.02" y="-839.6" font-family="Consolas" font-weight="bold" font-size="14.00">tv_lich_su_ott</text>
@@ -490,7 +504,7 @@
 <text xml:space="preserve" text-anchor="middle" x="1060.76" y="-966.15" font-family="Arial" font-size="10.00">1</text>
 </g>
 <!-- tv_uyen_ky_nang -->
-<g id="node17" class="node">
+<g id="node18" class="node">
 <title>tv_uyen_ky_nang</title>
 <polygon fill="#fff1d8" stroke="none" points="1277.78,-583 1277.78,-613.8 1452.03,-613.8 1452.03,-583 1277.78,-583"/>
 <text xml:space="preserve" text-anchor="start" x="1307.17" y="-595.2" font-family="Consolas" font-weight="bold" font-size="14.00">tv_uyen_ky_nang</text>
@@ -515,7 +529,7 @@
 <text xml:space="preserve" text-anchor="middle" x="1054.81" y="-965.41" font-family="Arial" font-size="10.00">1</text>
 </g>
 <!-- tv_uyen_thoi_khoa_bieu -->
-<g id="node18" class="node">
+<g id="node19" class="node">
 <title>tv_uyen_thoi_khoa_bieu</title>
 <polygon fill="#fff1d8" stroke="none" points="1219.35,-1623 1219.35,-1653.8 1510.45,-1653.8 1510.45,-1623 1219.35,-1623"/>
 <text xml:space="preserve" text-anchor="start" x="1280.23" y="-1635.2" font-family="Consolas" font-weight="bold" font-size="14.00">tv_uyen_thoi_khoa_bieu</text>

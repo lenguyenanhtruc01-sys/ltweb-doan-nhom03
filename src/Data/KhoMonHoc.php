@@ -35,10 +35,27 @@ class KhoMonHoc
 
     public function timTheoId(int $id): ?MonHoc
     {
-        $st = $this->db->prepare("SELECT * FROM mon_hoc WHERE id = ?");
+        $st = $this->db->prepare('SELECT m.*, d.ten AS ten_danh_muc FROM mon_hoc m
+            JOIN danh_muc d ON d.id=m.danh_muc_id WHERE m.id=?');
         $st->execute([$id]);
         $row = $st->fetch();
         return $row ? new MonHoc($row) : null;
+    }
+
+    /** Bốn môn mới nhất; ID quyết định thứ tự khi ngày tạo bằng nhau. */
+    public function moiNhat(): array
+    {
+        $st = $this->db->query('SELECT * FROM mon_hoc ORDER BY ngay_tao DESC, id DESC LIMIT 4');
+        return array_map(static fn (array $row): MonHoc => new MonHoc($row), $st->fetchAll());
+    }
+
+    /** Lấy tối đa bốn môn khác cùng danh mục bằng một truy vấn. */
+    public function cungDanhMuc(int $danhMucId, int $loaiTruId): array
+    {
+        $st = $this->db->prepare('SELECT * FROM mon_hoc WHERE danh_muc_id=? AND id<>?
+            ORDER BY ngay_tao DESC, id DESC LIMIT 4');
+        $st->execute([$danhMucId, $loaiTruId]);
+        return array_map(static fn (array $row): MonHoc => new MonHoc($row), $st->fetchAll());
     }
 
     /** Lấy cả giỏ bằng một truy vấn; vòng lặp chỉ chuyển đổi model. */
@@ -55,6 +72,25 @@ class KhoMonHoc
             $result[(int) $row['id']] = new MonHoc($row);
         }
         return $result;
+    }
+
+    /** Đọc tối đa 20 mục cookie, lấy một lần bằng IN và giữ thứ tự xem. */
+    public function daXemGanDay(mixed $cookie, int $gioiHan = 4, ?int $loaiTruId = null): array
+    {
+        if (!is_string($cookie) || $cookie === '' || $gioiHan <= 0) return [];
+        $ids = [];
+        foreach (array_slice(explode(',', $cookie), 0, 20) as $raw) {
+            $id = filter_var(trim($raw), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+            if ($id !== false && $id !== $loaiTruId) $ids[$id] = $id;
+        }
+        $cacMon = $this->theoNhieuId(array_values($ids));
+        $ketQua = [];
+        foreach ($ids as $id) {
+            if (!isset($cacMon[$id])) continue;
+            $ketQua[] = $cacMon[$id];
+            if (count($ketQua) >= $gioiHan) break;
+        }
+        return $ketQua;
     }
 
     // ==========================================

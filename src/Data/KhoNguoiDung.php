@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Truy cập PDO cho đăng ký và yêu cầu quên/đặt lại mật khẩu.
+ * Truy cập PDO cho tài khoản, đăng nhập và yêu cầu quên/đặt lại mật khẩu.
  * Tạo tài khoản khách hàng; đổi mật khẩu và thu hồi cookie ghi nhớ trong transaction.
  * Thử đăng ký trùng/giả vai trò, mã hết hạn/dùng lại và hai lần đổi cùng một mã.
  */
@@ -13,6 +13,29 @@ use PDO;
 final class KhoNguoiDung
 {
     public function __construct(private PDO $pdo) {}
+
+    public function timDeDangNhap(string $tenHoacEmail): ?array
+    {
+        $st = $this->pdo->prepare('SELECT id, mat_khau, vai_tro FROM nguoi_dung
+            WHERE email=? OR ten_dang_nhap=? LIMIT 2');
+        $st->execute([$tenHoacEmail, $tenHoacEmail]);
+        $ds = $st->fetchAll();
+        return count($ds) === 1 ? $ds[0] : null;
+    }
+
+    public function capNhatMatKhauBam(int $uid, string $matKhauBam): void
+    {
+        $st = $this->pdo->prepare('UPDATE nguoi_dung SET mat_khau=? WHERE id=?');
+        $st->execute([$matKhauBam, $uid]);
+    }
+
+    public function timTheoId(int $uid): ?array
+    {
+        $st = $this->pdo->prepare('SELECT id, ten_dang_nhap, email, ho_ten, vai_tro
+            FROM nguoi_dung WHERE id=?');
+        $st->execute([$uid]);
+        return $st->fetch() ?: null;
+    }
 
     public function dangKy(string $tenDangNhap, string $email, string $matKhauBam, string $hoTen): int
     {
@@ -85,8 +108,7 @@ final class KhoNguoiDung
             }
             $st = $this->pdo->prepare('UPDATE nguoi_dung SET mat_khau=? WHERE id=?');
             $st->execute([$matKhauBam, $uid]);
-            $st = $this->pdo->prepare('DELETE FROM phien_ghi_nho WHERE nguoi_dung_id=?');
-            $st->execute([$uid]);
+            (new KhoPhienGhiNho($this->pdo))->xoaCuaNguoiDung($uid);
             $this->pdo->commit();
             return true;
         } catch (\Throwable $loi) {

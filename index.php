@@ -14,6 +14,7 @@ require __DIR__ . '/inc/config.php';
 use App\Data\KhoMonHoc;
 
 $kho = new KhoMonHoc(db());
+$monMoi = $kho->moiNhat();
 
 /*
  * ============================================================
@@ -28,73 +29,7 @@ $kho = new KhoMonHoc(db());
  * dùng để truy vấn dữ liệu.
  */
 
-$daXem = [];
-
-$rawCookie = layChuoiDauVao($_COOKIE['da_xem'] ?? '');
-
-if ($rawCookie !== '') {
-
-    $danhSachId = explode(',', $rawCookie);
-
-    foreach ($danhSachId as $giaTri) {
-
-        $giaTri = trim($giaTri);
-
-        /*
-         * Chỉ chấp nhận số nguyên.
-         */
-        $id = filter_var(
-            $giaTri,
-            FILTER_VALIDATE_INT
-        );
-
-        /*
-         * Bỏ qua:
-         * - giá trị không phải số nguyên
-         * - số âm
-         * - số 0
-         */
-        if ($id === false || $id <= 0) {
-            continue;
-        }
-
-        /*
-         * Kiểm tra môn có tồn tại hay không.
-         */
-        $mon = $kho->timTheoId($id);
-
-        if ($mon === null) {
-            continue;
-        }
-
-        /*
-         * Không hiển thị một môn nhiều lần nếu cookie
-         * chứa ID bị trùng.
-         */
-        $biTrung = false;
-
-        foreach ($daXem as $monDaXem) {
-
-            if ((int) $monDaXem->id === (int) $id) {
-                $biTrung = true;
-                break;
-            }
-        }
-
-        if ($biTrung) {
-            continue;
-        }
-
-        $daXem[] = $mon;
-
-        /*
-         * Chỉ hiển thị tối đa 4 môn gần đây.
-         */
-        if (count($daXem) >= 4) {
-            break;
-        }
-    }
-}
+$daXem = $kho->daXemGanDay($_COOKIE['da_xem'] ?? '');
 
 
 /*
@@ -181,6 +116,30 @@ require __DIR__ . '/inc/header.php';
 
     </section>
 
+
+    <section class="khu-vuc" aria-labelledby="tieu-de-mon-moi">
+        <div class="bao">
+            <div class="tieu-de-khu-vuc">
+                <h2 id="tieu-de-mon-moi" class="tieu-de-khu-vuc__tieu-de">Môn học mới nhất</h2>
+                <p class="tieu-de-khu-vuc__mo-ta">Những môn vừa được bổ sung vào EduGPA.</p>
+            </div>
+            <?php if ($monMoi === []): ?>
+                <p>Chưa có môn học.</p>
+            <?php else: ?>
+                <div class="luoi-the">
+                    <?php foreach ($monMoi as $mon): ?>
+                        <article class="the">
+                            <h3 class="the__tieu-de">
+                                <a class="the__lien-ket" href="chi-tiet.php?id=<?= e((int) $mon->id) ?>"><?= e((string) $mon->tenMon) ?></a>
+                            </h3>
+                            <p class="the__noi-dung">Mã môn: <strong><?= e((string) $mon->maMon) ?></strong> — <?= e((int) $mon->soTinChi) ?> tín chỉ</p>
+                            <a class="the__lien-ket" href="chi-tiet.php?id=<?= e((int) $mon->id) ?>">Xem chi tiết</a>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </section>
 
     <!-- ================= ĐÃ XEM GẦN ĐÂY ================= -->
 

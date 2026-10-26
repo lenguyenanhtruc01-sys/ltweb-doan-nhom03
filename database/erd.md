@@ -2,7 +2,9 @@
 
 [Ảnh PNG](erd.png) · [Bản vector SVG](erd.svg) · [Nguồn Graphviz DOT](erd.dot)
 
-Sơ đồ được dựng từ `schema.sql`: **20 bảng, 21 khóa ngoại**. Bao gồm bảng chính, bảng tài khoản/phiên đăng nhập, giỏ/yêu thích và toàn bộ bảng `tv_` đang được khai báo, gồm kỹ năng và thời khóa biểu của Huỳnh Phương Uyên. Việc một bảng xuất hiện trong ERD không khẳng định mọi trang đã tích hợp sử dụng bảng đó.
+Sơ đồ được dựng từ `schema.sql`: **21 bảng, 21 khóa ngoại**. Bao gồm bảng chính, bảng tài khoản/phiên đăng nhập, giỏ/yêu thích và toàn bộ bảng `tv_` đang được khai báo, gồm kỹ năng và thời khóa biểu của Huỳnh Phương Uyên, check-in thời tiết của Duy. Việc một bảng xuất hiện trong ERD không khẳng định mọi trang đã tích hợp sử dụng bảng đó.
+
+`tv_thoi_tiet_duy` hiện chưa có cột `mssv` hoặc khóa ngoại trong schema, nên được vẽ độc lập. Sơ đồ phản ánh đúng cấu trúc hiện tại; việc bổ sung liên kết thành viên theo đề là thay đổi schema riêng.
 
 - `PK`: khóa chính; nhiều cột PK trong cùng bảng tạo khóa ghép.
 - `FK`: khóa ngoại; `UQ`: ràng buộc duy nhất. UNIQUE nhiều cột ghi ở cuối thẻ bảng.

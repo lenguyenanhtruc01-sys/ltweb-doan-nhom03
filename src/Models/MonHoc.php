@@ -27,10 +27,14 @@ class MonHoc implements \JsonSerializable
     public $trangThai;
     public $anh;
     public int $soCho;
+    public int $danhMucId;
+    public string $tenDanhMuc;
 
     public function __construct(array $data = [])
     {
         $this->id = $data['id'] ?? null;
+        $this->danhMucId = (int) ($data['danh_muc_id'] ?? 0);
+        $this->tenDanhMuc = (string) ($data['ten_danh_muc'] ?? '');
         $this->soCho = (int) ($data['so_cho'] ?? 0);
         $this->maMon = $data['maMon'] ?? $data['ma_mon'] ?? '';
         $this->tenMon = $data['tenMon'] ?? $data['ten_mon'] ?? $data['ten'] ?? '';

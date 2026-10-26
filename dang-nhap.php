@@ -27,14 +27,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     $ghiNho = ($_POST['ghi_nho'] ?? '') === '1';
     $thongBao = 'Tên đăng nhập/email hoặc mật khẩu không chính xác.';
     if ($emailNhap !== '' && mb_strlen($emailNhap) <= 254 && $matKhau !== '') {
-        $st = db()->prepare('SELECT id, mat_khau, vai_tro FROM nguoi_dung WHERE email = ? OR ten_dang_nhap = ? LIMIT 2');
-        $st->execute([$emailNhap, $emailNhap]);
-        $ketQua = $st->fetchAll();
-        $nd = count($ketQua) === 1 ? $ketQua[0] : null;
+        $khoNguoiDung = new \App\Data\KhoNguoiDung(db());
+        $nd = $khoNguoiDung->timDeDangNhap($emailNhap);
         if ($nd !== null && password_verify($matKhau, $nd['mat_khau'])) {
             if (password_needs_rehash($nd['mat_khau'], PASSWORD_DEFAULT)) {
-                $capNhat = db()->prepare('UPDATE nguoi_dung SET mat_khau = ? WHERE id = ?');
-                $capNhat->execute([password_hash($matKhau, PASSWORD_DEFAULT), (int) $nd['id']]);
+                $khoNguoiDung->capNhatMatKhauBam((int) $nd['id'], password_hash($matKhau, PASSWORD_DEFAULT));
             }
             $uidCu = $_SESSION['uid'] ?? null;
             if (is_int($uidCu) && $uidCu !== (int) $nd['id']) {

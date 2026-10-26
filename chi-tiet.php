@@ -41,47 +41,12 @@ if ($mh === null) {
     exit;
 }
 
+$monCungDanhMuc = $kho->cungDanhMuc($mh->danhMucId, (int) $mh->id);
 // Đọc cookie như dữ liệu không đáng tin cậy.
-$idsCu = [];
-$cookieRaw = $_COOKIE['da_xem'] ?? '';
-
-if (is_string($cookieRaw) && $cookieRaw !== '') {
-    // Cookie bình thường chỉ có tối đa 4 ID.
-    // Giới hạn số mục đọc nếu cookie bị chỉnh sửa.
-    $cacIdCu = array_slice(explode(',', $cookieRaw), 0, 20);
-
-    foreach ($cacIdCu as $giaTriCu) {
-        $idCu = filter_var(
-            trim($giaTriCu),
-            FILTER_VALIDATE_INT
-        );
-
-        // Bỏ giá trị không phải số nguyên dương.
-        if ($idCu === false || $idCu <= 0) {
-            continue;
-        }
-
-        // Không thêm lại môn hiện tại hoặc ID đã có.
-        if (
-            $idCu === (int) $mh->id
-            || in_array($idCu, $idsCu, true)
-        ) {
-            continue;
-        }
-
-        // Chỉ giữ ID của môn thực sự tồn tại.
-        if ($kho->timTheoId($idCu) === null) {
-            continue;
-        }
-
-        $idsCu[] = $idCu;
-
-        // Môn hiện tại đứng đầu nên chỉ giữ thêm 3 môn cũ.
-        if (count($idsCu) >= 3) {
-            break;
-        }
-    }
-}
+$idsCu = array_map(
+    static fn ($mon): int => (int) $mon->id,
+    $kho->daXemGanDay($_COOKIE['da_xem'] ?? '', 3, (int) $mh->id)
+);
 
 $dsDaXemMoi = array_merge(
     [(int) $mh->id],
@@ -157,6 +122,10 @@ require __DIR__ . '/inc/header.php';
         <?php endif; ?>
 
         <ul class="thong-tin-mon">
+            <li>
+                <strong>Danh mục:</strong>
+                <a href="danh-sach.php?dm=<?= e($mh->danhMucId) ?>"><?= e($mh->tenDanhMuc) ?></a>
+            </li>
             <li>
                 <strong>Mã môn:</strong>
                 <?= e((string) $mh->maMon) ?>
@@ -244,6 +213,26 @@ require __DIR__ . '/inc/header.php';
             </a>
         </p>
     </article>
+    <section class="khu-vuc" aria-labelledby="tieu-de-cung-danh-muc">
+        <div class="bao">
+            <h2 id="tieu-de-cung-danh-muc" class="tieu-de-khu-vuc__tieu-de">Môn học cùng danh mục</h2>
+            <?php if ($monCungDanhMuc === []): ?>
+                <p>Chưa có môn học khác trong danh mục này.</p>
+            <?php else: ?>
+                <div class="luoi-the">
+                    <?php foreach ($monCungDanhMuc as $mon): ?>
+                        <article class="the">
+                            <h3 class="the__tieu-de">
+                                <a class="the__lien-ket" href="chi-tiet.php?id=<?= e((int) $mon->id) ?>"><?= e((string) $mon->tenMon) ?></a>
+                            </h3>
+                            <p class="the__noi-dung">Mã môn: <strong><?= e((string) $mon->maMon) ?></strong> — <?= e((int) $mon->soTinChi) ?> tín chỉ</p>
+                            <a class="the__lien-ket" href="chi-tiet.php?id=<?= e((int) $mon->id) ?>">Xem chi tiết</a>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </section>
 </main>
 
 <?php require __DIR__ . '/inc/footer.php'; ?>

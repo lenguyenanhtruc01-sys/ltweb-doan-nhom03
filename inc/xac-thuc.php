@@ -5,6 +5,9 @@
  * Thông tin người dùng lấy từ MySQL bằng uid trong session; cung cấp hàm bảo vệ trang.
  * Thử đăng nhập/đăng xuất, khách vào quản trị và tài khoản thường truy cập trang admin.
  */
+use App\Data\KhoNguoiDung;
+use App\Data\KhoPhienGhiNho;
+
 const TEN_COOKIE_GHI_NHO = 'edugpa_ghi_nho';
 const THOI_HAN_GHI_NHO = 2592000; // 30 ngày
 
@@ -58,11 +61,7 @@ function taoPhienGhiNho(int $uid): void
     $token = bin2hex(random_bytes(32));
     $hetHan = time() + THOI_HAN_GHI_NHO;
 
-    $st = db()->prepare(
-        'INSERT INTO phien_ghi_nho (selector, nguoi_dung_id, token_hash, het_han)
-         VALUES (?, ?, ?, FROM_UNIXTIME(?))'
-    );
-    $st->execute([$selector, $uid, hash('sha256', $token), $hetHan]);
+    (new KhoPhienGhiNho(db()))->them($selector, $uid, hash('sha256', $token), $hetHan);
 
     setcookie(
         TEN_COOKIE_GHI_NHO,
@@ -76,8 +75,7 @@ function xoaGhiNhoHienTai(): void
     $duLieu = docCookieGhiNho();
     if ($duLieu !== null) {
         [$selector] = $duLieu;
-        $st = db()->prepare('DELETE FROM phien_ghi_nho WHERE selector = ?');
-        $st->execute([$selector]);
+        (new KhoPhienGhiNho(db()))->xoaTheoSelector($selector);
     }
 
     xoaCookieGhiNho();
@@ -95,26 +93,19 @@ function khoiPhucDangNhapTuCookie(): void
     }
     [$selector, $token] = $duLieu;
 
-    $st = db()->prepare(
-        'SELECT nguoi_dung_id, token_hash
-         FROM phien_ghi_nho
-         WHERE selector = ? AND het_han > NOW()'
-    );
-    $st->execute([$selector]);
-    $phien = $st->fetch();
+    $khoPhien = new KhoPhienGhiNho(db());
+    $phien = $khoPhien->timConHan($selector);
 
     if (!$phien || !hash_equals($phien['token_hash'], hash('sha256', $token))) {
         if ($phien) {
-            $xoa = db()->prepare('DELETE FROM phien_ghi_nho WHERE selector = ?');
-            $xoa->execute([$selector]);
+            $khoPhien->xoaTheoSelector($selector);
         }
         xoaCookieGhiNho();
         return;
     }
 
     // Xoay token sau mỗi lần dùng để hạn chế rủi ro token bị đánh cắp.
-    $xoa = db()->prepare('DELETE FROM phien_ghi_nho WHERE selector = ?');
-    $xoa->execute([$selector]);
+    $khoPhien->xoaTheoSelector($selector);
 
     session_regenerate_id(true);
     $_SESSION['uid'] = (int) $phien['nguoi_dung_id'];
@@ -151,14 +142,7 @@ function nguoiDung(): ?array
         return null;
     }
 
-    $st = db()->prepare(
-        'SELECT id, ten_dang_nhap, email, ho_ten, vai_tro
-         FROM nguoi_dung
-         WHERE id = ?'
-    );
-    $st->execute([$uid]);
-
-    $nd = $st->fetch() ?: null;
+    $nd = (new KhoNguoiDung(db()))->timTheoId($uid);
 
     return $nd;
 }

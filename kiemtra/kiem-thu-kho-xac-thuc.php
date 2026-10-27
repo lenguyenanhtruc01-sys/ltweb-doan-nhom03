@@ -31,6 +31,16 @@ try {
     $congKhai = $nguoi->timTheoId($uid);
     kiemTraKhoXacThuc($congKhai !== null && !isset($congKhai['mat_khau']) && $nguoi->timTheoId(99999999) === null, 'Sai dữ liệu người dùng hiện tại.');
     $hash = password_hash('AuditPass123!', PASSWORD_DEFAULT);
+    $admin = $nguoi->timDeDangNhap('admin');
+    $trungEmail = $nguoi->dangKy('admin@example.com', 'trung_email@example.invalid', $hash, 'Thử trùng email');
+    kiemTraKhoXacThuc(($nguoi->timDeDangNhap('ADMIN@EXAMPLE.COM')['id'] ?? null) === $admin['id'],
+        'Username trùng email đã chặn đăng nhập của chủ email.');
+    kiemTraKhoXacThuc((int) $nguoi->timDeDangNhap('trung_email@example.invalid')['id'] === $trungEmail
+        && $nguoi->timDeDangNhap('admin')['id'] === $admin['id'], 'Tài khoản xung đột mất đường đăng nhập riêng.');
+    $tenCu = $nguoi->dangKy('ten@cu', 'ten_cu@example.invalid', $hash, 'Tên cũ');
+    kiemTraKhoXacThuc((int) $nguoi->timDeDangNhap('ten@cu')['id'] === $tenCu,
+        'Username cũ có @ nhưng không trùng email không còn đăng nhập được.');
+    echo "PASS ưu tiên chủ email khi username cũ trùng email, giữ đăng nhập bằng tên/email riêng.\n";
     $nguoi->capNhatMatKhauBam($uid, $hash);
     kiemTraKhoXacThuc(password_verify('AuditPass123!', $nguoi->timDeDangNhap('hop')['mat_khau']), 'Không cập nhật được hash.');
     echo "PASS tìm tài khoản, đầu vào SQL, thông tin công khai và cập nhật hash.\n";

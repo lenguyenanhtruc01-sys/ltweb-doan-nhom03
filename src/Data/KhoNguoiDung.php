@@ -16,11 +16,11 @@ final class KhoNguoiDung
 
     public function timDeDangNhap(string $tenHoacEmail): ?array
     {
+        // Dữ liệu cũ có thể có username trùng email: chủ email luôn được ưu tiên.
         $st = $this->pdo->prepare('SELECT id, mat_khau, vai_tro FROM nguoi_dung
-            WHERE email=? OR ten_dang_nhap=? LIMIT 2');
-        $st->execute([$tenHoacEmail, $tenHoacEmail]);
-        $ds = $st->fetchAll();
-        return count($ds) === 1 ? $ds[0] : null;
+            WHERE email=? OR ten_dang_nhap=? ORDER BY (email=?) DESC LIMIT 1');
+        $st->execute([$tenHoacEmail, $tenHoacEmail, $tenHoacEmail]);
+        return $st->fetch() ?: null;
     }
 
     public function capNhatMatKhauBam(int $uid, string $matKhauBam): void

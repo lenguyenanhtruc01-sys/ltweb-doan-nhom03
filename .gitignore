@@ -13,3 +13,7 @@
 /.tmp-repair/
 
 /thanhvien/*/images/avatar_*
+
+# Bao cao va minh chung audit sinh tren may local.
+/kiemtra/audit-*/
+/docs/kiem-thu-toan-bo-bai6-f274987-20261027.md

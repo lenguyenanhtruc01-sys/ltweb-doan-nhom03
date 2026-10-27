@@ -36,6 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 1. Kiểm tra dữ liệu và gán lỗi cạnh từng ô
     if (mb_strlen($tenDangNhap) < 3 || mb_strlen($tenDangNhap) > 50) {
         $loi['ten_dang_nhap'] = 'Tên đăng nhập phải từ 3 đến 50 ký tự.';
+    } elseif (str_contains($tenDangNhap, '@')) {
+        $loi['ten_dang_nhap'] = 'Tên đăng nhập không được chứa ký tự @. Hãy nhập email ở ô Email.';
     }
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 100) {

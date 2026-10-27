@@ -205,7 +205,7 @@ INSERT INTO thanh_vien (mssv, ho_ten)
 VALUES ('3120224174', 'Huỳnh Phương Uyên')
 ON DUPLICATE KEY UPDATE ho_ten = VALUES(ho_ten);
 
-INSERT INTO tv_uyen_ky_nang (mssv, ten, nhom) VALUES
+INSERT INTO tv_ky_nang (mssv, ten, nhom) VALUES
 ('3120224174', 'HTML5', 'web'),
 ('3120224174', 'Thiết kế giao diện website', 'web'),
 ('3120224174', 'Làm việc nhóm', 'lam-viec'),
@@ -213,7 +213,7 @@ INSERT INTO tv_uyen_ky_nang (mssv, ten, nhom) VALUES
 ('3120224174', 'Thiết kế và quản lý cơ sở dữ liệu', 'du-lieu')
 ON DUPLICATE KEY UPDATE id = id;
 
-INSERT INTO tv_uyen_thoi_khoa_bieu
+INSERT INTO tv_thoi_khoa_bieu
     (mssv, ma_mon, ten_mon, ma_lop, thu, tiet_bat_dau, tiet_ket_thuc, phong)
 VALUES
 ('3120224174', '31231755', 'Thiết kế và lập trình web', '24-0102', 8, 1, 3, 'B3-303'),

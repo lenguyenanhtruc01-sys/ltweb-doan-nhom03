@@ -204,16 +204,16 @@ CREATE TABLE IF NOT EXISTS tv_lich_su_ott (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dữ liệu kỹ năng và thời khóa biểu riêng của Huỳnh Phương Uyên.
-CREATE TABLE tv_uyen_ky_nang (
+CREATE TABLE tv_ky_nang (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     mssv CHAR(10) NOT NULL,
     ten VARCHAR(120) NOT NULL,
     nhom ENUM('web', 'du-lieu', 'lam-viec') NOT NULL,
-    UNIQUE KEY uq_tv_uyen_ky_nang (mssv, ten),
+    UNIQUE KEY uq_tv_ky_nang (mssv, ten),
     FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE tv_uyen_thoi_khoa_bieu (
+CREATE TABLE tv_thoi_khoa_bieu (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     mssv CHAR(10) NOT NULL,
     ma_mon VARCHAR(20) NOT NULL,
@@ -226,8 +226,8 @@ CREATE TABLE tv_uyen_thoi_khoa_bieu (
     CHECK (thu BETWEEN 2 AND 8),
     CHECK (tiet_bat_dau BETWEEN 1 AND 12),
     CHECK (tiet_ket_thuc BETWEEN tiet_bat_dau AND 12),
-    UNIQUE KEY uq_tv_uyen_lich_mon (mssv, ma_mon, thu, tiet_bat_dau),
-    INDEX idx_tv_uyen_lich_thu_tiet (mssv, thu, tiet_bat_dau),
+    UNIQUE KEY uq_tv_thoi_khoa_bieu (mssv, ma_mon, thu, tiet_bat_dau),
+    INDEX idx_tv_thoi_khoa_bieu (mssv, thu, tiet_bat_dau),
     FOREIGN KEY (mssv) REFERENCES thanh_vien(mssv) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

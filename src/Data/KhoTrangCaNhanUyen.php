@@ -18,7 +18,7 @@ final class KhoTrangCaNhanUyen
 
     public function layKyNang(string $mssv, string $nhom): array
     {
-        $sql = 'SELECT ten FROM tv_uyen_ky_nang WHERE mssv = ?';
+        $sql = 'SELECT ten FROM tv_ky_nang WHERE mssv = ?';
         $thamSo = [$mssv];
         if ($nhom !== 'tat-ca') {
             $sql .= ' AND nhom = ?';
@@ -34,7 +34,7 @@ final class KhoTrangCaNhanUyen
     public function timThoiKhoaBieu(string $mssv, string $tuKhoa): array
     {
         $sql = 'SELECT ma_mon, ten_mon, ma_lop, thu, tiet_bat_dau, tiet_ket_thuc, phong
-                FROM tv_uyen_thoi_khoa_bieu
+                FROM tv_thoi_khoa_bieu
                 WHERE mssv = ?';
         $thamSo = [$mssv];
         if ($tuKhoa !== '') {

@@ -20,7 +20,7 @@ try {
     if ($method === 'GET') {
         $cart = (new KeHoachHocTap())->layDanhSachChiTiet();
         traJson(['so_mon' => $cart['tong_so_mon'], 'du_lieu' => $cart['danh_sach'],
-            'csrf' => tokenGioHangApi()]);
+            'csrf' => tokenGioHang()]);
     }
     try {
         $raw = file_get_contents('php://input');
@@ -34,8 +34,8 @@ try {
     if (!$data instanceof stdClass) {
         traJson(['loi' => 'Thân JSON phải là đối tượng.'], 422);
     }
-    $id = soNguyenApi($data->id ?? null);
-    $quantity = soNguyenApi($data->sl ?? $data->so_luong ?? null, 1, 5);
+    $id = soNguyenDauVao($data->id ?? null);
+    $quantity = soNguyenDauVao($data->sl ?? $data->so_luong ?? null, 1, 5);
     if ($id === false || $quantity === false) {
         traJson(['loi' => 'ID phải dương, số lượng là số nguyên từ 1 đến 5.'], 422);
     }

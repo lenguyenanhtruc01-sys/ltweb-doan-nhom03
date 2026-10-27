@@ -35,7 +35,7 @@ try {
         if (!$data instanceof stdClass || !is_bool($data->chon ?? null)) {
             traJson(['loi' => 'Dữ liệu yêu thích không hợp lệ.'], 422);
         }
-        $id = soNguyenApi($data->id ?? null);
+        $id = soNguyenDauVao($data->id ?? null);
         if ($id === false) traJson(['loi' => 'Mã môn không hợp lệ.'], 422);
         if ((new KhoMonHoc(db()))->timTheoId($id) === null) traJson(['loi' => 'Không tìm thấy môn học.'], 404);
         $kho->datYeuThich($uid, $id, $data->chon);

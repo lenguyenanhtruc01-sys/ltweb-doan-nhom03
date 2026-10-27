@@ -9,21 +9,6 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/inc/config.php';
 
-// Định nghĩa hàm CSRF dự phòng
-if (!function_exists('csrfToken')) {
-    function csrfToken(): string {
-        if (empty($_SESSION['_csrf_token']) || !is_string($_SESSION['_csrf_token'])) {
-            $_SESSION['_csrf_token'] = bin2hex(random_bytes(32));
-        }
-        return $_SESSION['_csrf_token'];
-    }
-}
-if (!function_exists('csrfKiemTra')) {
-    function csrfKiemTra(?string $token): bool {
-        return is_string($token) && $token !== '' && isset($_SESSION['_csrf_token']) && hash_equals($_SESSION['_csrf_token'], $token);
-    }
-}
-
 use App\Services\KeHoachHocTap;
 
 /* Xử lý form POST */
@@ -49,15 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $keHoachService = new KeHoachHocTap();
 
-    $idDauVao = $_POST['id'] ?? null;
-    $id = (is_string($idDauVao) || is_int($idDauVao))
-        ? filter_var($idDauVao, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])
-        : false;
-
-    $soLuongDauVao = $_POST['so_luong'] ?? null;
-    $soLuong = (is_string($soLuongDauVao) || is_int($soLuongDauVao))
-        ? filter_var($soLuongDauVao, FILTER_VALIDATE_INT)
-        : false;
+    $id = soNguyenDauVao($_POST['id'] ?? null);
+    $soLuong = soNguyenDauVao($_POST['so_luong'] ?? null, PHP_INT_MIN);
 
     $thanhCong = false;
 

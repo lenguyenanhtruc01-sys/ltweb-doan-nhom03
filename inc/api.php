@@ -29,14 +29,6 @@ function loiApi(Throwable $error): never
     traJson(['loi' => 'Lỗi máy chủ'], 500);
 }
 
-function soNguyenApi(mixed $raw, int $min = 1, int $max = PHP_INT_MAX): int|false
-{
-    if (!is_int($raw) && !is_string($raw)) {
-        return false;
-    }
-    return filter_var($raw, FILTER_VALIDATE_INT, ['options' => ['min_range' => $min, 'max_range' => $max]]);
-}
-
 set_error_handler(static function (int $severity, string $message, string $file, int $line): bool {
     if (!(error_reporting() & $severity)) {
         return false;
@@ -50,11 +42,3 @@ try {
 }
 // config.php có handler HTML; endpoint phải đăng ký lại handler JSON.
 set_exception_handler('loiApi');
-
-function tokenGioHangApi(): string
-{
-    if (!is_string($_SESSION['csrf_gio_hang'] ?? null) || $_SESSION['csrf_gio_hang'] === '') {
-        $_SESSION['csrf_gio_hang'] = bin2hex(random_bytes(32));
-    }
-    return $_SESSION['csrf_gio_hang'];
-}

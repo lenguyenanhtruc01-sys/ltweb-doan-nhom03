@@ -11,24 +11,18 @@ use App\Data\KhoKeHoach;
 use App\Data\MonKhongTonTaiException;
 use App\Data\MonKhongDuChoException;
 
-if (!function_exists('csrfKiemTra')) {
-    function csrfKiemTra(?string $token): bool {
-        return is_string($token) && $token !== '' && isset($_SESSION['_csrf_token']) && hash_equals($_SESSION['_csrf_token'], $token);
-    }
-}
-
 // 1. Kiểm tra đăng nhập
 $nd = yeuCauDangNhap();
 
-// 2. Kiểm tra phương thức POST và CSRF (Gộp làm 1 lần cho gọn)
+// 2. Kiểm tra phương thức POST và CSRF.
 $token = $_POST['_csrf'] ?? null;
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST' || !is_string($token) || !csrfKiemTra($token)) {
     $_SESSION['flash_error'] = 'Phiên làm việc đã hết hạn hoặc sai phương thức.';
-    header('Location: gio-hang.php', true, 303); 
+    header('Location: gio-hang.php', true, 303);
     exit;
 }
 
-// 3. Đồng bộ lại giỏ hàng từ session
+// 3. Đọc lại giỏ và loại bỏ môn không còn tồn tại.
 $gioHienTai = new \App\Services\KeHoachHocTap();
 $gioHienTai->layDanhSachChiTiet();
 $gioSession = $_SESSION['ke_hoach_dang_ky'] ?? [];
@@ -48,7 +42,6 @@ if (mb_strlen($ghiChu) > 500) {
 try {
     $kho = new KhoKeHoach(db());
     
-    // FIX LỖI TẠI ĐÂY: Đổi $gio thành $gioSession
     $id = $kho->taoKeHoach((int)$nd['id'], $gioSession, $ghiChu);
     
     // Xóa giỏ hàng sau khi gửi thành công

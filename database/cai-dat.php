@@ -214,9 +214,8 @@ function caiDatNhom(PDO $pdo, string $tenCsdl = 'ltweb_nhom03', ?string $tepAvat
             nangCapCaNhanUyen($pdo);
             $pdo->commit();
         } else {
-            $saoLuu = caiDatSaoLuu($pdo, $tenCsdl);
+            if ($saoLuu === null) $saoLuu = caiDatSaoLuu($pdo, $tenCsdl);
             // Chỉ tạo bảng còn thiếu; không dùng seed có ID cố định trên CSDL cũ.
-            preg_match_all('/CREATE TABLE(?: IF NOT EXISTS)?\s+(\w+)\s*\([\s\S]*?\n\)[^;]*;/m', $schema, $dinhNghia, PREG_SET_ORDER);
             foreach ($dinhNghia as $bang) {
                 if (!in_array($bang[1], $cacBang, true)) {
                     $sql = preg_replace('/^CREATE TABLE(?: IF NOT EXISTS)?/', 'CREATE TABLE IF NOT EXISTS', $bang[0]);
@@ -239,10 +238,12 @@ function caiDatNhom(PDO $pdo, string $tenCsdl = 'ltweb_nhom03', ?string $tepAvat
         }
         nangCapLienHe($pdo);
         nangCapThoiTietDuy($pdo);
-        caiDatEmail($pdo);
-        nangCapKeHoach($pdo);
-        nangCapSoCho($pdo);
-        nangCapKhoaNgoaiMonHoc($pdo);
+        if ($caiMoi) {
+            caiDatEmail($pdo);
+            nangCapKeHoach($pdo);
+            nangCapSoCho($pdo);
+            nangCapKhoaNgoaiMonHoc($pdo);
+        }
         preg_match_all('/CREATE INDEX (\w+) ON (\w+) \([^;]+;/m', $schema, $chiMuc, PREG_SET_ORDER);
         $st = $pdo->prepare('SELECT COUNT(*) FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=? AND INDEX_NAME=?');
         foreach ($chiMuc as $cm) {

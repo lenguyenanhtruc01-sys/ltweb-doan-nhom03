@@ -14,20 +14,9 @@ require __DIR__ . '/inc/config.php';
 
 $kho = new KhoMonHoc(db());
 
-// Chỉ nhận ID dạng số nguyên đơn; chặn trường hợp ?id[]=1.
-$giaTriId = $_GET['id'] ?? null;
-
-$id = null;
-if (is_string($giaTriId) || is_int($giaTriId)) {
-    $id = filter_var(
-        $giaTriId,
-        FILTER_VALIDATE_INT,
-        ['options' => ['min_range' => 1]]
-    );
-}
-
-$mh = $id !== false && $id !== null
-    ? $kho->timTheoId((int) $id)
+$id = soNguyenDauVao($_GET['id'] ?? null);
+$mh = $id !== false
+    ? $kho->timTheoId($id)
     : null;
 
 // ID sai hoặc môn học không tồn tại: trả về trang 404.

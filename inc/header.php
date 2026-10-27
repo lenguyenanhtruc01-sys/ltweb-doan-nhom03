@@ -8,9 +8,7 @@ $tieuDe ??= 'Trang chủ';
 $trang ??= '';
 $goc ??= '';
 $phienBanCss = filemtime(__DIR__ . '/../css/style.css') ?: 1;
-if (!is_string($_SESSION['csrf_gio_hang'] ?? null) || $_SESSION['csrf_gio_hang'] === '') {
-    $_SESSION['csrf_gio_hang'] = bin2hex(random_bytes(32));
-}
+tokenGioHang();
 
 $soMonTrongGio = 0;
 try {

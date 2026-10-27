@@ -1,8 +1,8 @@
 # Kết quả vá và kiểm tra Bài 6 ngày 27 tháng 10 năm 2026
 
-**Bổ sung bộ tài khoản theo yêu cầu:** seed hiện dùng admin, hop, uyen, duy, hai; bốn tài khoản thành viên có email tương ứng `@example.com`. Đã kiểm thử cài mới, cài dở, nâng cấp, ID khác seed, giữ chủ/mật khẩu cũ và chạy lại không trùng trên CSDL riêng; các bộ xác thực/chủ Hải và PHP lint cũng đạt. Sau đó đã chạy bộ cài trên CSDL local có sao lưu: tạo thêm hop, uyen, duy, gắn chủ Duy còn trống và giữ chủ Hải. Đối chiếu local xác nhận cả bốn tài khoản thành viên có mật khẩu `matkhau123`, hai liên kết chủ đúng. Tài khoản an/binh cũ và lịch sử được giữ; seed cài mới không còn hai tài khoản đó. Các kiểm tra này không phải chạy lại toàn bộ browser/Lighthouse; thay đổi bộ tài khoản chưa commit/push.
+**Bổ sung bộ tài khoản theo yêu cầu:** seed hiện dùng admin, hop, uyen, duy, hai; bốn tài khoản thành viên có email tương ứng `@example.com`. Đã kiểm thử cài mới, cài dở, nâng cấp, ID khác seed, giữ chủ/mật khẩu cũ và chạy lại không trùng trên CSDL riêng; các bộ xác thực/chủ Hải và PHP lint cũng đạt. Sau đó đã chạy bộ cài trên CSDL local có sao lưu: tạo thêm hop, uyen, duy, gắn chủ Duy còn trống và giữ chủ Hải. Đối chiếu local xác nhận cả bốn tài khoản thành viên có mật khẩu `matkhau123`, hai liên kết chủ đúng. Tài khoản an/binh cũ và lịch sử được giữ; seed cài mới không còn hai tài khoản đó. Các kiểm tra này không phải chạy lại toàn bộ browser/Lighthouse; bộ tài khoản đã có trong commit local `267f370` (`thay doi tai khoan mau`). Lượt xác minh chủ Duy không đối chiếu lại remote.
 
-Đã sửa đường dẫn ảnh ở HTML và fetch; bảo vệ ba POST trang Duy bằng CSRF; chỉ chủ trang được lưu thêm món dùng chung; bổ sung chú thích đầu tệp và cập nhật các kết luận tài liệu đã cũ. Bản vá từ mốc `5b20cc814369ea24eb0a252273ffe84c13c9b36d` đã được ghi trong commit `ed2448970d3bffe10b23a0715365bef7a04e18be` (`va loi`). Commit tiếp theo `83124f39ec2ff02137bde3399639a112898acc51` (`delete`) dọn ba HTML Lighthouse trùng và cập nhật tài liệu. Đối chiếu ngày 27/10/2026: HEAD local trên `main` và đầu nhánh `main` trên origin cùng là `83124f39ec2ff02137bde3399639a112898acc51` (`git ls-remote origin refs/heads/main`); bản vá đã có trên remote, không còn ở trạng thái chưa commit/push. Đây là mốc mã nguồn đối chiếu, chưa phải xác nhận PDF/ZIP cuối đã nộp.
+Đã sửa đường dẫn ảnh ở HTML và fetch; bảo vệ ba POST trang Duy bằng CSRF; chỉ chủ trang được lưu thêm món dùng chung; bổ sung chú thích đầu tệp và cập nhật các kết luận tài liệu đã cũ. Bản vá từ mốc `5b20cc814369ea24eb0a252273ffe84c13c9b36d` đã được ghi trong commit `ed2448970d3bffe10b23a0715365bef7a04e18be` (`va loi`). Commit tiếp theo `83124f39ec2ff02137bde3399639a112898acc51` (`delete`) dọn ba HTML Lighthouse trùng và cập nhật tài liệu. Ở lượt đối chiếu trước ngày 27/10/2026: HEAD local trên `main` và đầu nhánh `main` trên origin cùng là `83124f39ec2ff02137bde3399639a112898acc51` (`git ls-remote origin refs/heads/main`); bản vá đã có trên remote, không còn ở trạng thái chưa commit/push. Đây là mốc mã nguồn đối chiếu, chưa phải xác nhận PDF/ZIP cuối đã nộp.
 
 Các kết quả browser/Lighthouse và bảng đo bên dưới được giữ từ lượt vá ban đầu. Lượt đồng bộ tài liệu trước chỉ đối chiếu mã nguồn, schema/seed và lịch sử Git; phần kiểm thử CSDL và áp dụng bộ tài khoản mới được ghi riêng ở đầu biên bản. Các thay đổi trong working tree hiện chưa commit/push.
 
@@ -12,7 +12,7 @@ Các kết quả browser/Lighthouse và bảng đo bên dưới được giữ t
 - Trang Duy dùng token CSRF chung có sẵn, kiểm tra kiểu và token trước xử lý mọi POST. Thiếu/sai/token dạng mảng trả 403, không ghi dữ liệu.
 - Khách vẫn chọn món từ danh sách tự nhập; danh sách đó ở session của khách. Chỉ tài khoản được liên kết với MSSV Duy trong `thanh_vien.nguoi_dung_id` mới lưu thêm món vào MySQL. Vai trò admin tự nó không cấp quyền chủ trang. Không nhận UID/MSSV do form gửi để xác định chủ.
 - Oẳn tù tì và check-in vẫn công khai với token hợp lệ; POST thành công dùng PRG 303. CSRF không thay thế biện pháp chống spam tự động.
-- Không tự tạo tài khoản Duy, gán chủ trang hoặc thay dữ liệu CSDL thật. Ở mốc bản vá đã push, seed chưa liên kết tài khoản cho Duy. Seed cập nhật trong working tree đã thêm tài khoản duy và liên kết chủ Duy; bộ cài chỉ bổ sung chủ còn trống theo username/email, không ghi đè chủ hiện có. Khách vẫn dùng đầy đủ chức năng chọn món cá nhân.
+- Tài khoản mẫu `duy / matkhau123`, vai trò khach_hang và liên kết chủ Duy đã có trong seed ở commit `267f370`. Bộ cài gắn tài khoản theo username/email khi chủ còn trống, không ghi đè chủ hiện có hoặc mật khẩu đã đổi. Lượt xác minh này chỉ dùng CSDL thử, không chạy bộ cài lên CSDL thật. Khách vẫn dùng chức năng chọn món cá nhân.
 - Chú thích chức năng/cách thử đã đủ ở năm trang cá nhân và các lớp dữ liệu cá nhân được rà soát.
 
 ## Giải thích GPA lưu JSON trong MySQL
@@ -112,3 +112,24 @@ Tất cả nằm trong [ban-chot-20261027](ban-chot-20261027/). JSON là số li
 ## Giới hạn khi đưa vào báo cáo nộp
 
 Chưa xác minh PDF/ZIP cuối, tag trên remote, demo cạnh tranh bằng hai trình duyệt, W3C trực tuyến hay mọi trạng thái lỗi động của từng trang. Các kết quả ở trên đủ để cập nhật những ô đã đo trong Bảng 4/5; các ô chưa đo phải giữ rõ trạng thái. Mã vá đã có trên `main` từ xa tại mốc đối chiếu `83124f3`, nhưng chưa có căn cứ gọi đó là commit cuối đã nộp. Báo cáo phải nêu JSON GPA là lựa chọn lưu gói kết quả trong MySQL và seed mới đã có chủ Duy; máy cũ cần chạy bộ cài và đối chiếu liên kết thực tế.
+
+## Gom logic đầu vào và giảm xử lý nâng cấp bị lặp
+
+- Dùng chung `soNguyenDauVao()` trong API, chi tiết và form giỏ; giữ nguyên việc từ chối mảng/boolean/float, khoảng giá trị và thông báo lỗi ở từng nơi gọi. Số lượng form vẫn được đọc như số nguyên có dấu rồi kiểm tra nghiệp vụ, không đổi thông báo bằng cách siết khoảng quá sớm.
+- Header và API dùng chung `tokenGioHang()` trong inc/csrf.php; token giỏ vẫn tách với token form đặt hàng/quản trị. Các nhánh quyền, phương thức và thông báo lỗi khác ngữ cảnh được giữ tại endpoint.
+- Bộ cài không sao lưu trùng, dùng lại kết quả đọc định nghĩa bảng và không chạy lại email/kế hoạch/số chỗ/khóa ngoại ở cuối nhánh nâng cấp. Giữ nguyên các tệp migration và thứ tự cần thiết trước khi nhập dữ liệu cũ; luồng gọi được ghi trong README.
+- Kiểm thử sao lưu mới thất bại trước sửa vì một lượt nâng cấp tạo hai tệp; sau sửa mỗi lượt chỉ có một bản sao lưu. Bộ kiểm thử cài đặt vẫn xác nhận cài mới/cài dở/nâng cấp/lặp/ID khác seed và giữ dữ liệu cũ.
+- Đối chiếu 62 ca HTTP trước/sau giống nhau cả JSON, mã trạng thái, chuyển hướng và Allow; bộ thử CSRF giỏ đạt. Cả 9 bộ PHP hồi quy cũ và bộ thử đầu vào mới đạt; 77 tệp PHP qua lint. Không chạy lại Lighthouse/W3C trong lượt refactor này. CSDL, server, bản sao và kết quả tạm của lượt thử đã được dọn; không thay đổi CSDL thật, không commit/push.
+
+## Xác minh chủ trang Duy từ schema và seed
+
+Chạy lại ngày 27/10/2026 trên mã có commit nền `267f370` cùng bản refactor CSRF đang ở working tree. Tạo CSDL ngẫu nhiên trực tiếp từ schema.sql và seed.sql; không dùng bộ cài để bù tài khoản/liên kết cho ca HTTP này.
+
+| Phiên thử | Đăng nhập | POST chọn món có token | Ghi món vào CSDL chung | POST thiếu token |
+| --- | --- | --- | --- | --- |
+| Khách | Không cần | 303, giữ món riêng trong session | Không | 403 |
+| admin | Thành công bằng mật khẩu mẫu | 303 | Không | 403 |
+| hop | Thành công bằng mật khẩu mẫu | 303 | Không | 403 |
+| duy | Thành công bằng mật khẩu mẫu | 303 | Có | 403 |
+
+Phiên khách mới đọc được món do Duy đã lưu chung. Token thiếu không đổi danh sách CSDL; không quan sát Warning/Notice/Deprecated/Fatal trong ca thử. Bộ `kiem-thu-cai-dat.php` đạt cài mới/cài dở/nâng cấp, ID khác seed, chạy lặp và giữ chủ Duy/mật khẩu cũ; `kiem-thu-chon-mon-duy.php` đạt. CSDL, server và thư mục tạm của lượt này đã được dọn. Không có sửa đổi schema/seed/bộ cài trong lượt xác minh vì chức năng đã có sẵn; không commit/push.

@@ -115,8 +115,15 @@ try {
     $pdo->exec("INSERT INTO tv_binh_chon(mssv,nguoi_dung_id,tuy_chon) VALUES ('3120224064',3,'de_hieu')");
     $truoc = anhDuLieuCaiDat($pdo);
     foreach ([1,2] as $lan) {
+        $tepTruoc = glob(sys_get_temp_dir() . '/edugpa-truoc-cap-nhat-*.sql');
         $kq = caiDatNhom($pdo, $ten);
         $cacBanSao[] = $kq['sao_luu'];
+        $tepMoi = array_values(array_filter(
+            array_diff(glob(sys_get_temp_dir() . '/edugpa-truoc-cap-nhat-*.sql'), $tepTruoc),
+            static fn (string $tep): bool => str_contains(file_get_contents($tep), 'USE `' . $ten . '`;')
+        ));
+        array_push($cacBanSao, ...$tepMoi);
+        kiemThuCaiDat(count($tepMoi) === 1, 'Một lần nâng cấp tạo nhiều bản sao lưu trùng.');
         kiemThuCaiDat(!$kq['cai_moi'] && !$kq['hai']['tao_tai_khoan'], 'Chạy lại tạo trùng dữ liệu.');
         kiemThuCaiDat($truoc === anhDuLieuCaiDat($pdo), 'Chạy lại làm đổi dữ liệu/mật khẩu.');
         kiemThuCaiDat(is_string($kq['sao_luu']) && filesize($kq['sao_luu']) > 0, 'Chưa có bản sao lưu.');

@@ -19,3 +19,12 @@ function csrfKiemTra(?string $token): bool {
         && isset($_SESSION['_csrf_token'])
         && hash_equals($_SESSION['_csrf_token'], $token);
 }
+
+// Header và API dùng cùng token giỏ, tách với token các form quản trị/đặt hàng.
+function tokenGioHang(): string
+{
+    if (!is_string($_SESSION['csrf_gio_hang'] ?? null) || $_SESSION['csrf_gio_hang'] === '') {
+        $_SESSION['csrf_gio_hang'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_gio_hang'];
+}

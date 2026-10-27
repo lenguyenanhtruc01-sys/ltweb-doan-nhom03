@@ -31,6 +31,13 @@ function layChuoiDauVao(mixed $giaTri, string $macDinh = ''): string
     return is_string($giaTri) ? trim($giaTri) : $macDinh;
 }
 
+// Chỉ nhận số nguyên hoặc chuỗi số; JSON boolean/float và đầu vào mảng bị từ chối.
+function soNguyenDauVao(mixed $giaTri, int $min = 1, int $max = PHP_INT_MAX): int|false
+{
+    if (!is_int($giaTri) && !is_string($giaTri)) return false;
+    return filter_var($giaTri, FILTER_VALIDATE_INT, ['options' => ['min_range'=>$min, 'max_range'=>$max]]);
+}
+
 // Định dạng số theo cách hiển thị thông dụng tại Việt Nam.
 function dinhDangSo(int|float $giaTri): string
 {

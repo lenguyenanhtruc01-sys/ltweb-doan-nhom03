@@ -41,6 +41,10 @@ Cài mới thủ công theo đề vẫn có thể import `database/schema.sql` r
 
 Với database cũ chưa có email, sao lưu rồi chạy `php database/migrate-email.php`; migration giữ tài khoản và dữ liệu, không thay thế toàn bộ schema.
 
+Luồng của `database/cai-dat.php`: cài mới dùng schema/seed; nâng cấp sao lưu một lần trước thay đổi, tạo bảng/cột thiếu rồi gộp dữ liệu theo khóa tự nhiên. Bộ cài nạp bảy tệp `nang-cap-*.php`: kế hoạch, khóa ngoại môn học, số chỗ, cá nhân Hải, cá nhân Uyên, liên hệ và thời tiết Duy. Nhánh nâng cấp còn đọc `bo-sung-30-mon.sql`. Các bước email/kế hoạch/số chỗ/khóa ngoại chỉ chạy một lần mỗi lượt cài đặt; không chạy lại ở cuối nhánh nâng cấp.
+
+Các tệp `migrate-email.php`, `luu-gio-va-yeu-thich.sql`, `nang-cap-chuc-nang-4.sql` là công cụ nâng cấp thủ công riêng, không được bộ cài gọi trực tiếp. Giữ chúng để hỗ trợ các cách nâng cấp cũ; không cần chạy thêm nếu đã dùng bộ cài chung. Không xóa/gộp các tệp migration chỉ vì tên hoặc nội dung gần giống nhau: chúng còn phục vụ nâng cấp từng phần và kiểm thử dữ liệu cũ.
+
 Không mở trực tiếp tệp PHP bằng đường dẫn ổ đĩa.
 
 Với CSDL đang dùng, `php database/cai-dat.php` sao lưu rồi tự tạo các bảng giỏ/yêu thích còn thiếu. Nếu cần chạy riêng thay cho bộ cài, có thể import `database/luu-gio-va-yeu-thich.sql`; không import lại schema có `DROP DATABASE`.

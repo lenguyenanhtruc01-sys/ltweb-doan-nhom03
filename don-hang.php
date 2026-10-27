@@ -11,21 +11,6 @@ require_once __DIR__ . '/inc/config.php';
 
 use App\Data\KhoKeHoach;
 
-// Khai báo hàm CSRF dự phòng (nếu file inc/csrf.php chưa nạp đúng)
-if (!function_exists('csrfToken')) {
-    function csrfToken(): string {
-        if (empty($_SESSION['_csrf_token']) || !is_string($_SESSION['_csrf_token'])) {
-            $_SESSION['_csrf_token'] = bin2hex(random_bytes(32));
-        }
-        return $_SESSION['_csrf_token'];
-    }
-}
-if (!function_exists('csrfKiemTra')) {
-    function csrfKiemTra(?string $token): bool {
-        return is_string($token) && $token !== '' && isset($_SESSION['_csrf_token']) && hash_equals($_SESSION['_csrf_token'], $token);
-    }
-}
-
 // 1. Kiểm tra đăng nhập
 $nd        = yeuCauDangNhap();
 $uid       = (int) $nd['id'];
@@ -80,9 +65,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 // ==========================================
 $id = filter_var($_GET['id'] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
-if ($id !== false && $id > 0) {
+if ($id !== false) {
     // ----- TRANG CHI TIẾT -----
-    $keHoach = $kho->chiTiet((int) $id, $uid, $laQuanTri);
+    $keHoach = $kho->chiTiet($id, $uid, $laQuanTri);
     
     // Nếu không có quyền xem (hoặc ID không tồn tại) -> 404
     if ($keHoach === null) {

@@ -4,6 +4,8 @@
 
 Sơ đồ được dựng từ `schema.sql`: **24 bảng, 25 khóa ngoại**. Có đủ bảng tài khoản/phiên, giỏ/yêu thích, liên hệ, dữ liệu cá nhân và bảng dự án `tv_du_an` của Trúc. Việc một bảng xuất hiện trong ERD không khẳng định mọi trang đã tích hợp sử dụng bảng đó.
 
+Hai bảng của Uyên dùng tên `tv_ky_nang` và `tv_thoi_khoa_bieu`, thống nhất với schema/seed và lớp dữ liệu. Bộ cài đổi tên các bảng cũ có tiền tố `tv_uyen_` sau khi sao lưu; dừng để đối chiếu nếu tên cũ và mới cùng tồn tại.
+
 `tv_thoi_tiet_duy.mssv` là khóa ngoại tới `thanh_vien.mssv`, xóa thành viên thì xóa check-in của thành viên đó (CASCADE). Chỉ mục `(mssv, trang_thai)` phục vụ thống kê riêng từng người. Bộ cài gắn lượt cũ chưa có MSSV với Duy và không thay ID/trạng thái/thời gian.
 
 - `PK`: khóa chính; nhiều cột PK trong cùng bảng tạo khóa ghép.

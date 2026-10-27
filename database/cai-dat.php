@@ -145,8 +145,8 @@ function caiDatGopDuLieu(PDO $pdo, string $mau): array
         $them->execute([(int) $k['uid'], $k['trang_thai'], $k['ghi_chu']]);
         $ct->execute([(int) $pdo->lastInsertId(), (int) $k['id']]);
     }
-    caiDatGopBang($pdo, $mau, 'tv_uyen_ky_nang', ['mssv','ten']);
-    caiDatGopBang($pdo, $mau, 'tv_uyen_thoi_khoa_bieu', ['mssv','ma_mon','thu','tiet_bat_dau']);
+    caiDatGopBang($pdo, $mau, 'tv_ky_nang', ['mssv','ten']);
+    caiDatGopBang($pdo, $mau, 'tv_thoi_khoa_bieu', ['mssv','ma_mon','thu','tiet_bat_dau']);
     caiDatGopBang($pdo, $mau, 'tv_mon_an', ['mssv','ten_mon','bua']);
     caiDatGopBang($pdo, $mau, 'tv_du_an', ['mssv','ten_du_an']);
     caiDatGopBang($pdo, $mau, 'tv_anh_dai_dien', ['mssv']);
@@ -169,7 +169,7 @@ function caiDatNhom(PDO $pdo, string $tenCsdl = 'ltweb_nhom03', ?string $tepAvat
     $schema = caiDatDocSql('schema.sql', $tenCsdl);
     preg_match_all('/CREATE TABLE(?: IF NOT EXISTS)?\s+(\w+)\s*\([\s\S]*?\n\)[^;]*;/m', $schema, $dinhNghia, PREG_SET_ORDER);
     $batBuoc = array_column($dinhNghia, 1);
-    foreach (['nguoi_dung','mon_hoc','gio_hang_nguoi_dung','mon_yeu_thich','tv_uyen_ky_nang','tv_uyen_thoi_khoa_bieu','tv_thoi_tiet_duy','tv_du_an','tv_truc_gpa','tv_truc_quiz'] as $bang) {
+    foreach (['nguoi_dung','mon_hoc','gio_hang_nguoi_dung','mon_yeu_thich','tv_ky_nang','tv_thoi_khoa_bieu','tv_thoi_tiet_duy','tv_du_an','tv_truc_gpa','tv_truc_quiz'] as $bang) {
         if (!in_array($bang, $batBuoc, true)) throw new RuntimeException('Schema thiếu bảng bắt buộc ' . $bang . '; chưa thay đổi CSDL.');
     }
     $tenKhoa = 'edugpa_setup_' . substr(hash('sha256', $tenCsdl), 0, 40);
@@ -215,6 +215,9 @@ function caiDatNhom(PDO $pdo, string $tenCsdl = 'ltweb_nhom03', ?string $tepAvat
             $pdo->commit();
         } else {
             if ($saoLuu === null) $saoLuu = caiDatSaoLuu($pdo, $tenCsdl);
+            if (doiTenBangCaNhanUyen($pdo)) {
+                $cacBang = $pdo->query('SHOW TABLES')->fetchAll(PDO::FETCH_COLUMN);
+            }
             // Chỉ tạo bảng còn thiếu; không dùng seed có ID cố định trên CSDL cũ.
             foreach ($dinhNghia as $bang) {
                 if (!in_array($bang[1], $cacBang, true)) {

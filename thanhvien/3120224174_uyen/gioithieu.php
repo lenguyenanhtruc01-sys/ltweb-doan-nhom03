@@ -2,7 +2,7 @@
 declare(strict_types=1);
 /**
  * gioithieu.php – Trang cá nhân Huỳnh Phương Uyên, Nhóm 03.
- * CSDL: tìm/lọc kỹ năng và tìm môn học từ hai bảng tv_uyen_*.
+ * CSDL: tìm/lọc kỹ năng và tìm môn học từ hai bảng tv_ky_nang và tv_thoi_khoa_bieu.
  * PHP: tính điểm A1/A2/A3 bằng POST, kiểm tra máy chủ và PRG.
  * Thử: lọc kỹ năng, tìm môn theo tên/phòng; nhập điểm; tắt JavaScript.
  */
@@ -205,7 +205,7 @@ require __DIR__ . '/../../inc/header.php';
             <button type="submit">Lọc kỹ năng</button>
         </div>
     </form>
-    <p class="uyen-huong-dan">Kỹ năng được đọc và lọc trên máy chủ từ bảng tv_uyen_ky_nang.</p>
+    <p class="uyen-huong-dan">Danh sách kỹ năng được đọc từ cơ sở dữ liệu và lọc trên máy chủ.</p>
     <?php if ($kyNangLoc): ?>
         <ul class="ky-nang__danh-sach">
             <?php foreach ($kyNangLoc as $kyNang): ?>
@@ -286,7 +286,7 @@ require __DIR__ . '/../../inc/header.php';
                 <p class="thong-bao-tuong-tac" role="status">Không tìm thấy môn học phù hợp.</p>
             <?php endif; ?>
             <p class="lich-hoc__huong-dan">
-                Dữ liệu thời khóa biểu được truy vấn từ bảng tv_uyen_thoi_khoa_bieu.
+                Dữ liệu thời khóa biểu được tìm kiếm trực tiếp từ cơ sở dữ liệu.
             </p>
             <div class="tkb-container" tabindex="0" role="region"
                 aria-label="Thời khóa biểu có thể cuộn ngang">

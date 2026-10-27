@@ -113,6 +113,14 @@ Tất cả nằm trong [ban-chot-20261027](ban-chot-20261027/). JSON là số li
 
 Chưa xác minh PDF/ZIP cuối, tag trên remote, demo cạnh tranh bằng hai trình duyệt, W3C trực tuyến hay mọi trạng thái lỗi động của từng trang. Các kết quả ở trên đủ để cập nhật những ô đã đo trong Bảng 4/5; các ô chưa đo phải giữ rõ trạng thái. Mã vá đã có trên `main` từ xa tại mốc đối chiếu `83124f3`, nhưng chưa có căn cứ gọi đó là commit cuối đã nộp. Báo cáo phải nêu JSON GPA là lựa chọn lưu gói kết quả trong MySQL và seed mới đã có chủ Duy; máy cũ cần chạy bộ cài và đối chiếu liên kết thực tế.
 
+## Sửa tích hợp đổi tên bảng Uyên sau commit 717cd45
+
+Commit `717cd45` đổi schema/seed và lớp dữ liệu sang `tv_ky_nang`, `tv_thoi_khoa_bieu`, nhưng bộ cài/migration còn tên cũ nên kiểm thử cài đặt dừng với lỗi thiếu bảng. Bản vá đồng bộ các truy vấn của bộ cài, dữ liệu mẫu nâng cấp, kiểm thử, README, nội dung trang Uyên và ERD DOT/SVG/PNG theo tên mới.
+
+Bộ cài gọi `doiTenBangCaNhanUyen()` sau sao lưu và trước khi tạo bảng còn thiếu. Nếu chỉ tồn tại tên cũ, dùng RENAME TABLE để giữ ID, dữ liệu và khóa ngoại; hỗ trợ cả máy chỉ còn một bảng chưa đổi tên. Nếu một cặp có cả tên cũ và mới, kiểm tra toàn bộ cặp trước khi đổi bất kỳ bảng nào, dừng rõ ràng để người vận hành đối chiếu; không tự gộp hoặc xóa bảng. Lượt này không chạy bộ cài trên CSDL thật.
+
+Đã tái hiện lỗi trước sửa; sau sửa 11 bộ kiểm thử PHP đều đạt, 78 tệp PHP qua lint. Bộ thử mới `kiem-thu-doi-ten-bang-uyen.php` xác nhận schema/seed mới, giữ ID/dữ liệu riêng/khóa ngoại khi nâng cấp, chạy lặp, nâng cấp một phần và bộ cài dừng an toàn khi xung đột hai tên. CSDL thử qua HTTP trả 500 khi chỉ có bảng cũ trước nâng cấp; sau chạy bộ cài, trang Uyên trả 200, đọc được kỹ năng/lịch tự thêm và xử lý truy vấn rỗng/dạng mảng không có chẩn đoán PHP trong phản hồi. Số bảng/khóa ngoại và ERD vẫn là 24/25. Không đo lại Lighthouse/W3C trong lượt sửa này; không commit/push. Server, CSDL, sao lưu và thư mục thử của lượt này đã được dọn.
+
 ## Gom logic đầu vào và giảm xử lý nâng cấp bị lặp
 
 - Dùng chung `soNguyenDauVao()` trong API, chi tiết và form giỏ; giữ nguyên việc từ chối mảng/boolean/float, khoảng giá trị và thông báo lỗi ở từng nơi gọi. Số lượng form vẫn được đọc như số nguyên có dấu rồi kiểm tra nghiệp vụ, không đổi thông báo bằng cách siết khoảng quá sớm.

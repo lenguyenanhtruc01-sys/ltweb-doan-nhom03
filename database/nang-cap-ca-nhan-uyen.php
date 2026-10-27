@@ -1,13 +1,36 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Nâng cấp bảng kỹ năng/thời khóa biểu của Uyên và bổ sung dữ liệu mẫu thiếu.
+ * Đổi tên bảng cũ trước khi tạo bảng mới; giữ ID, dữ liệu riêng và khóa ngoại.
+ * Thử: php kiemtra/kiem-thu-doi-ten-bang-uyen.php; chạy bộ cài sau khi lấy code mới.
+ */
+function doiTenBangCaNhanUyen(PDO $pdo): bool
+{
+    $cacBang = $pdo->query('SHOW TABLES')->fetchAll(PDO::FETCH_COLUMN);
+    $doiTen = [];
+    foreach (['tv_uyen_ky_nang'=>'tv_ky_nang', 'tv_uyen_thoi_khoa_bieu'=>'tv_thoi_khoa_bieu'] as $cu=>$moi) {
+        if (!in_array($cu, $cacBang, true)) continue;
+        if (in_array($moi, $cacBang, true)) {
+            throw new RuntimeException('Đồng thời tồn tại ' . $cu . ' và ' . $moi
+                . '; giữ nguyên dữ liệu, cần đối chiếu hai bảng trước khi nâng cấp.');
+        }
+        $doiTen[] = '`' . $cu . '` TO `' . $moi . '`';
+    }
+    // Kiểm tra tất cả cặp trước khi đổi bất kỳ bảng nào.
+    if ($doiTen === []) return false;
+    $pdo->exec('RENAME TABLE ' . implode(', ', $doiTen));
+    return true;
+}
+
 function nangCapCaNhanUyen(PDO $pdo): void
 {
     $pdo->exec("INSERT INTO thanh_vien (mssv, ho_ten)
         VALUES ('3120224174', 'Huỳnh Phương Uyên')
         ON DUPLICATE KEY UPDATE ho_ten = VALUES(ho_ten)");
 
-    $kyNang = $pdo->prepare('INSERT INTO tv_uyen_ky_nang (mssv, ten, nhom) VALUES (?, ?, ?)
+    $kyNang = $pdo->prepare('INSERT INTO tv_ky_nang (mssv, ten, nhom) VALUES (?, ?, ?)
         ON DUPLICATE KEY UPDATE id = id');
     foreach ([
         ['HTML5', 'web'],
@@ -19,7 +42,7 @@ function nangCapCaNhanUyen(PDO $pdo): void
         $kyNang->execute(['3120224174', $ten, $nhom]);
     }
 
-    $monHoc = $pdo->prepare('INSERT INTO tv_uyen_thoi_khoa_bieu
+    $monHoc = $pdo->prepare('INSERT INTO tv_thoi_khoa_bieu
         (mssv, ma_mon, ten_mon, ma_lop, thu, tiet_bat_dau, tiet_ket_thuc, phong)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE id = id');

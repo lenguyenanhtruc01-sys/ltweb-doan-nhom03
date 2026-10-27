@@ -261,7 +261,9 @@ GPA lưu một gói đầu vào và kết quả trong cột MySQL `tv_truc_gpa.k
 
 ### Trang cá nhân Huỳnh Phương Uyên
 
-`thanhvien/3120224174_uyen/gioithieu.php` dùng `KhoTrangCaNhanUyen` để đọc kỹ năng từ `tv_uyen_ky_nang` và tìm kiếm thời khóa biểu trong `tv_uyen_thoi_khoa_bieu`. Hai bảng có khóa ngoại tới `thanh_vien`; cấu trúc nằm trong `database/schema.sql`, dữ liệu mẫu nằm trong `database/seed.sql` và bộ cài bổ sung idempotent khi nâng cấp CSDL cũ. Sau mỗi lần cập nhật, chạy `php database/cai-dat.php`, sau đó thử lọc kỹ năng, tìm môn theo tên/mã/lớp/phòng và thử lại khi tắt JavaScript. Không import schema thủ công vào CSDL đang có dữ liệu vì tệp này có lệnh `DROP DATABASE`.
+`thanhvien/3120224174_uyen/gioithieu.php` dùng `KhoTrangCaNhanUyen` để đọc kỹ năng từ `tv_ky_nang` và tìm kiếm thời khóa biểu trong `tv_thoi_khoa_bieu`. Hai bảng có khóa ngoại tới `thanh_vien`; cấu trúc nằm trong `database/schema.sql`, dữ liệu mẫu nằm trong `database/seed.sql` và bộ cài bổ sung idempotent khi nâng cấp CSDL cũ. Sau mỗi lần cập nhật, chạy `php database/cai-dat.php`, sau đó thử lọc kỹ năng, tìm môn theo tên/mã/lớp/phòng và thử lại khi tắt JavaScript. Không import schema thủ công vào CSDL đang có dữ liệu vì tệp này có lệnh `DROP DATABASE`.
+
+Máy còn bảng `tv_uyen_ky_nang` / `tv_uyen_thoi_khoa_bieu`: bộ cài sao lưu rồi đổi sang tên mới trước khi tạo bảng còn thiếu, giữ ID, dữ liệu riêng và khóa ngoại. Chạy lại không tạo bảng trùng. Nếu cả tên cũ và tên mới cùng tồn tại cho một bảng, bộ cài dừng và báo hai tên để đối chiếu; không tự gộp, ghi đè hoặc xóa dữ liệu. Không xóa bảng bằng tay chỉ để vượt thông báo này. Kiểm tra trên CSDL riêng bằng `php kiemtra/kiem-thu-doi-ten-bang-uyen.php`.
 
 ### Vá và kiểm tra bản chốt ngày 27/10/2026
 

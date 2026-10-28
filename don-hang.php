@@ -100,7 +100,7 @@ if ($id !== false) {
         <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 5px solid #0d6efd; margin-bottom: 20px;">
             <p style="margin: 5px 0;"><strong>Ngày gửi:</strong> <?= e((string) $keHoach['ngay_tao']) ?></p>
             <p style="margin: 5px 0;"><strong>Trạng thái:</strong> 
-                <span style="font-weight: bold; color: #0d6efd;"><?= e(KhoKeHoach::nhanTrangThai((string) $keHoach['trang_thai'])) ?></span>
+                <span style="font-weight: bold; color: var(--mau-chinh);"><?= e(KhoKeHoach::nhanTrangThai((string) $keHoach['trang_thai'])) ?></span>
             </p>
             <?php if (!empty($keHoach['ghi_chu'])): ?>
                 <p style="margin: 5px 0;"><strong>Ghi chú:</strong> <?= e((string) $keHoach['ghi_chu']) ?></p>
@@ -132,7 +132,7 @@ if ($id !== false) {
             </tbody>
         </table>
         
-        <p style="text-align: right; font-size: 1.2rem;"><strong>Tổng tín chỉ tích lũy:</strong> <span style="color: #0d6efd; font-weight: bold;"><?= e((int)$tong) ?></span></p>
+        <p style="text-align: right; font-size: 1.2rem;"><strong>Tổng tín chỉ tích lũy:</strong> <span style="color: var(--mau-chinh); font-weight: bold;"><?= e((int)$tong) ?></span></p>
 
         <!-- FORM ĐỔI TRẠNG THÁI (Chỉ hiện với Admin) -->
         <?php if ($laQuanTri): ?>
@@ -156,7 +156,7 @@ if ($id !== false) {
         </div>
         <?php endif; ?>
 
-        <p style="margin-top: 30px;"><a href="don-hang.php" style="color: #0d6efd; text-decoration: none; font-weight: bold;">&larr; Quay lại danh sách kế hoạch</a></p>
+        <p style="margin-top: 30px;"><a href="don-hang.php" style="color: var(--mau-chinh); text-decoration: none; font-weight: bold;">&larr; Quay lại danh sách kế hoạch</a></p>
     </main>
     <?php 
     require __DIR__ . '/inc/footer.php'; 
@@ -204,12 +204,12 @@ require __DIR__ . '/inc/header.php';
                     <?php endif; ?>
                     <td style="padding: 12px; border: 1px solid #ddd;"><?= e((string) $k['ngay_tao']) ?></td>
                     <td style="padding: 12px; border: 1px solid #ddd; text-align: center;"><?= e((int)$k['so_mon']) ?></td>
-                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center; color: #0d6efd; font-weight: bold;"><?= e((int)$k['tong_tin_chi']) ?></td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center; color: var(--mau-chinh); font-weight: bold;"><?= e((int)$k['tong_tin_chi']) ?></td>
                     <td style="padding: 12px; border: 1px solid #ddd;">
                         <?= e(KhoKeHoach::nhanTrangThai((string) $k['trang_thai'])) ?>
                     </td>
                     <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">
-                        <a href="don-hang.php?id=<?= e((int)$k['id']) ?>" style="color: #0d6efd; text-decoration: none; font-weight: bold;">Xem chi tiết</a>
+                        <a href="don-hang.php?id=<?= e((int)$k['id']) ?>" style="color: var(--mau-chinh); text-decoration: none; font-weight: bold;">Xem chi tiết</a>
                     </td>
                 </tr>
             <?php endforeach; ?>

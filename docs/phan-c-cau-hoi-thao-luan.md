@@ -1,6 +1,6 @@
 # 2.3. Phần C – Câu hỏi thảo luận (2,0 điểm)
 
-**Cập nhật trạng thái ngày 27/10/2026:** MonHoc đã có soCho; API thêm hợp lệ trả 200. CSDL mới có 24 bảng/25 FK. Kết quả vá và phép đo mới nằm trong [biên bản bản chốt](../kiemtra/ket-qua-va-ban-chot-20261027.md).
+**Cập nhật trạng thái ngày 27/10/2026:** MonHoc đã có soCho; API thêm hợp lệ trả 200. CSDL mới có 24 bảng/25 FK. Minh chứng phép đo của lượt vá nằm trong [thư mục ảnh và JSON](../kiemtra/ban-chot-20261027/).
 
 **Phạm vi số đo lịch sử:** các thí nghiệm, số dòng và bảng kết quả gốc dưới đây tham chiếu commit `57a3094`, bổ sung bởi [log chạy lại](../kiemtra/ket-qua-phan-c-20261027.txt). Mọi lỗi chỉ xuất hiện ở mốc cũ được ghi rõ là lịch sử; không coi đó là trạng thái hiện tại. Log gốc được giữ nguyên để truy vết. Khi xuất PDF cần ghi commit của từng phép đo, không thay số liệu cũ bằng số mới mà thiếu căn cứ.
 

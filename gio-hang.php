@@ -144,7 +144,7 @@ require __DIR__ . '/inc/header.php';
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <!-- Form cập nhật -->
                         <form action="gio-hang.php" method="post" style="margin: 0; display: flex; gap: 5px;">
-                            <input type="hidden" name="_csrf" value="<?= e($_SESSION['csrf_gio_hang']) ?>">
+                            <?= csrfField() ?>
                             <input type="hidden" name="hanh_dong" value="cap_nhat">
                             <input type="hidden" name="id" value="<?= e((int) ($item['id'] ?? 0)) ?>">
                             <input type="number" name="so_luong" value="<?= e((int) ($item['soLuong'] ?? 1)) ?>" min="1" max="5" style="width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
@@ -154,7 +154,7 @@ require __DIR__ . '/inc/header.php';
 
                         <!-- Form xóa -->
                         <form action="gio-hang.php" method="post" style="margin: 0;">
-                            <input type="hidden" name="_csrf" value="<?= e($_SESSION['csrf_gio_hang']) ?>">
+                            <?= csrfField() ?>
                             <input type="hidden" name="hanh_dong" value="xoa">
                             <input type="hidden" name="id" value="<?= e((int) ($item['id'] ?? 0)) ?>">
                             <button type="submit" style="padding: 6px 12px; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">Xóa</button>
@@ -166,7 +166,7 @@ require __DIR__ . '/inc/header.php';
 
         <div style="text-align: right; margin-bottom: 40px;">
             <form action="gio-hang.php" method="post" style="margin: 0;">
-                <input type="hidden" name="_csrf" value="<?= e($_SESSION['csrf_gio_hang']) ?>">
+                <?= csrfField() ?>
                 <input type="hidden" name="hanh_dong" value="xoa_het">
                 <button type="submit" style="padding: 10px 15px; background: #dc2626; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Xóa hết kế hoạch</button>
             </form>
@@ -180,8 +180,7 @@ require __DIR__ . '/inc/header.php';
             <?php if (nguoiDung() !== null): ?>
                 
                 <form action="dat-hang.php" method="post" style="margin: 0;">
-                    <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
-                    
+                    <?= csrfField() ?>
                     <div style="margin-bottom: 20px;">
                         <label style="font-weight: 600; display: block; margin-bottom: 8px; color: #333;">Ghi chú (tuỳ chọn):</label>
                         <textarea name="ghi_chu" rows="3" placeholder="Nhập ghi chú cho kế hoạch của bạn (ví dụ: Kế hoạch học kỳ 1)..." style="width: 100%; max-width: 600px; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-family: inherit; font-size: 1rem; box-sizing: border-box; resize: vertical;"></textarea>

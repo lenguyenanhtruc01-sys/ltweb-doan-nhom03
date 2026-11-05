@@ -20,8 +20,9 @@ use App\Data\KhoBinhChon;
     <?php else: ?>
         <?php if ($hopVoteUser !== false): ?>
         <form method="post" action="gioithieu.php#binh-chon" class="cong-cu-form">
+            <?= csrfField() ?>
             <input type="hidden" name="hanh_dong" value="binh_chon">
-            <input type="hidden" name="csrf_hop_vote" value="<?= e($hopVoteToken) ?>">
+
             <fieldset><legend>Chọn một đánh giá</legend>
             <?php foreach (KhoBinhChon::TUY_CHON as $key => $label): ?>
                 <p><label><input type="radio" name="tuy_chon" value="<?= e($key) ?>" required> <?= e($label) ?></label></p>

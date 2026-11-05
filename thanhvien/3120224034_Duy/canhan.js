@@ -125,7 +125,7 @@ async function guiAjax(formEl, extra = {}) {
     }
     const res = await fetch(formEl.action || 'gioithieu.php', {
         method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content ?? '' },
         body: fd,
     });
     if (!res.ok) throw new Error('HTTP ' + res.status);

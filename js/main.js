@@ -99,7 +99,7 @@ async function goiApiYeuThich(data) {
             method: data ? 'POST' : 'GET', credentials: 'same-origin',
             headers: {Accept: 'application/json', ...(data ? {
                 'Content-Type': 'application/json',
-                'X-CSRF-Token': document.querySelector('meta[name="csrf-gio-hang"]')?.content ?? '',
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
             } : {})},
             ...(data ? {body: JSON.stringify(data)} : {}),
         });

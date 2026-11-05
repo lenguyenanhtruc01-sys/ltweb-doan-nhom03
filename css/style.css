@@ -1750,3 +1750,13 @@ details > p {
 .trang-thai--mac-dinh {
     color: gray;
 }
+
+/* Bố cục header dùng chung, không có style nội tuyến. */
+.dau-trang__bo-cuc { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+.dau-trang__mo-ta-khoang-cach { margin-top: 5px; }
+.dau-trang__tai-khoan { display: flex; align-items: center; gap: 10px; }
+.dau-trang__loi-chao { color: #fff; font-weight: bold; font-size: 1.1em; margin-right: 10px; }
+.dau-trang__nut-quan-tri { background: #6f42c1; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.9em; }
+.dau-trang__nut-ke-hoach { background: #0d6efd; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.9em; }
+.dau-trang__nut-dang-xuat { background: #dc3545; color: white; padding: 8px 12px; border: 0; border-radius: 5px; font-weight: bold; font-size: 0.9em; cursor: pointer; }
+.dau-trang__nut-dang-nhap { background: #198754; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; }

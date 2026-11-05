@@ -1,0 +1,227 @@
+{
+    "database": "CSDL thử ngẫu nhiên đã xóa",
+    "php": "8.2.12",
+    "cases": [
+        {
+            "case": "GET trang và token",
+            "pass": true
+        },
+        {
+            "case": "B1 Stored XSS lịch sử hiện nguyên văn",
+            "pass": true
+        },
+        {
+            "case": "B2 Không script/style nội tuyến trong HTML trang Hợp",
+            "pass": true
+        },
+        {
+            "case": "B3 CSRF thiếu tra_cuu_mang",
+            "pass": true,
+            "status": 403,
+            "db_unchanged": true
+        },
+        {
+            "case": "B3 CSRF thiếu binh_chon",
+            "pass": true,
+            "status": 403,
+            "db_unchanged": true
+        },
+        {
+            "case": "B3 CSRF thiếu kiem_tra_pass",
+            "pass": true,
+            "status": 403,
+            "db_unchanged": true
+        },
+        {
+            "case": "B4 CSRF sai hoặc mảng",
+            "pass": true,
+            "status": 403,
+            "db_unchanged": true
+        },
+        {
+            "case": "B4 CSRF sai hoặc mảng",
+            "pass": true,
+            "status": 403,
+            "db_unchanged": true
+        },
+        {
+            "case": "B5 Reflected XSS đầu vào bị từ chối và escape",
+            "pass": true
+        },
+        {
+            "case": "B6 GET trang dạng mảng",
+            "pass": true,
+            "status": 200
+        },
+        {
+            "case": "B7 POST mảng target",
+            "pass": true,
+            "status": 200
+        },
+        {
+            "case": "B7 POST mảng password",
+            "pass": true,
+            "status": 200
+        },
+        {
+            "case": "B8 Khách giả mạo xóa bị từ chối",
+            "pass": true,
+            "status": 400,
+            "db_unchanged": true
+        },
+        {
+            "case": "B9 Tên tài khoản chứa HTML được escape",
+            "pass": true
+        },
+        {
+            "case": "B10 Tài khoản khác giả mạo xóa id 2",
+            "pass": true,
+            "status": 400,
+            "db_unchanged": true
+        },
+        {
+            "case": "B10 Tài khoản khác giả mạo xóa id 3",
+            "pass": true,
+            "status": 400,
+            "db_unchanged": true
+        },
+        {
+            "case": "B11 Hành động và id dạng mảng",
+            "pass": true,
+            "status": 400
+        },
+        {
+            "case": "B12 GET không ghi lịch sử",
+            "pass": true,
+            "db_unchanged": true
+        },
+        {
+            "case": "B13 Tra cứu hợp lệ hoạt động",
+            "pass": true,
+            "status": 303
+        },
+        {
+            "case": "B14 Không tin MSSV từ form",
+            "pass": true
+        },
+        {
+            "case": "B15 Bình chọn hợp lệ",
+            "pass": true
+        },
+        {
+            "case": "B16 Bình chọn trùng không thêm dòng",
+            "pass": true
+        },
+        {
+            "case": "A CSRF toàn nhóm dang-nhap.php",
+            "pass": true,
+            "status": 403
+        },
+        {
+            "case": "A CSRF toàn nhóm dang-ky.php",
+            "pass": true,
+            "status": 403
+        },
+        {
+            "case": "A CSRF toàn nhóm quen-mat-khau.php",
+            "pass": true,
+            "status": 403
+        },
+        {
+            "case": "A CSRF toàn nhóm dat-lai-mat-khau.php",
+            "pass": true,
+            "status": 403
+        },
+        {
+            "case": "A CSRF toàn nhóm lien-he.php",
+            "pass": true,
+            "status": 403
+        },
+        {
+            "case": "A CSRF toàn nhóm gio-hang.php",
+            "pass": true,
+            "status": 403
+        },
+        {
+            "case": "A CSRF toàn nhóm dat-hang.php",
+            "pass": true,
+            "status": 403
+        },
+        {
+            "case": "A CSRF toàn nhóm don-hang.php",
+            "pass": true,
+            "status": 403
+        },
+        {
+            "case": "A CSRF toàn nhóm quan-tri-mon-hoc.php",
+            "pass": true,
+            "status": 403
+        },
+        {
+            "case": "A CSRF toàn nhóm xoa-mon-hoc.php",
+            "pass": true,
+            "status": 403
+        },
+        {
+            "case": "A CSRF toàn nhóm dang-xuat.php",
+            "pass": true,
+            "status": 403
+        },
+        {
+            "case": "A CSRF toàn nhóm thanhvien/3120224034_Duy/gioithieu.php",
+            "pass": true,
+            "status": 403
+        },
+        {
+            "case": "A CSRF toàn nhóm thanhvien/3120224042_hai/gioithieu.php",
+            "pass": true,
+            "status": 403
+        },
+        {
+            "case": "A CSRF toàn nhóm thanhvien/3120224159_anhtruc/gioithieu.php",
+            "pass": true,
+            "status": 403
+        },
+        {
+            "case": "A CSRF toàn nhóm thanhvien/3120224174_uyen/gioithieu.php",
+            "pass": true,
+            "status": 403
+        },
+        {
+            "case": "A API thiếu CSRF trả JSON 403",
+            "pass": true
+        },
+        {
+            "case": "A API header đúng thêm giỏ",
+            "pass": true
+        },
+        {
+            "case": "A API JSON sai với token đúng trả 400",
+            "pass": true
+        },
+        {
+            "case": "A Form giỏ không JS hoạt động",
+            "pass": true
+        },
+        {
+            "case": "A GET Hải không ghi lượt xem",
+            "pass": true
+        },
+        {
+            "case": "A POST Hải có CSRF ghi lượt xem",
+            "pass": true
+        },
+        {
+            "case": "A Đăng xuất GET trả 405",
+            "pass": true
+        },
+        {
+            "case": "A Đăng xuất POST hợp lệ",
+            "pass": true
+        },
+        {
+            "case": "A Token phiên cũ sau đăng xuất bị từ chối",
+            "pass": true
+        }
+    ]
+}

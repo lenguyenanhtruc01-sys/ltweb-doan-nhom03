@@ -62,6 +62,7 @@ require __DIR__ . '/inc/header.php';
             <p role="status"><?= e($flashDangKy) ?></p>
         <?php endif; ?>
         <form method="post" action="dang-nhap.php" class="form-lien-he">
+            <?= csrfField() ?>
             <div>
                 <label for="email">Tên đăng nhập hoặc email</label>
                 <input id="email" name="email" type="text" maxlength="254" autocomplete="username" required value="<?= e($emailNhap) ?>">

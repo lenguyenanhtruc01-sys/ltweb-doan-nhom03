@@ -98,7 +98,7 @@ require __DIR__ . '/inc/header.php';
         <h2 id="xac-nhan-xoa">Xác nhận xóa môn học</h2>
         <p>Bạn muốn xóa <?= e($monXoa['ma_mon']) ?> — <?= e($monXoa['ten_mon']) ?>?</p>
         <form method="post" action="xoa-mon-hoc.php">
-            <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
+            <?= csrfField() ?>
             <input type="hidden" name="id" value="<?= e($monXoa['id']) ?>">
             <button class="nut" type="submit">Xác nhận xóa</button>
             <a href="quan-tri-mon-hoc.php">Hủy</a>
@@ -115,7 +115,7 @@ require __DIR__ . '/inc/header.php';
             </ul>
         <?php endif; ?>
         <form action="quan-tri-mon-hoc.php" method="post" enctype="multipart/form-data" class="quan-tri-mon__form">
-            <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
+            <?= csrfField() ?>
             <?php if ($id !== null): ?><input type="hidden" name="id" value="<?= e($id) ?>"><?php endif; ?>
             <label for="ma-mon">Mã môn</label><input id="ma-mon" name="ma_mon" maxlength="20" required value="<?= e($duLieu['ma_mon']) ?>"<?= $thuocTinhLoi('ma_mon') ?>>
             <?php $hienThiLoi('ma_mon'); ?>

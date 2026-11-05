@@ -11,8 +11,8 @@ require_once __DIR__ . '/db.php';
 
 $hopVoteMssv = '3120224064';
 $hopVotePost = ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST'
-    && layChuoiDauVao($_POST['hanh_dong'] ?? '') === 'binh_chon';
-$hopVoteMessage = layChuoiDauVao($_SESSION['hop_vote_flash'] ?? '');
+    && chuoi($_POST['hanh_dong'] ?? '') === 'binh_chon';
+$hopVoteMessage = chuoi($_SESSION['hop_vote_flash'] ?? '');
 unset($_SESSION['hop_vote_flash']);
 $hopVoteError = '';
 $hopVoteCounts = array_fill_keys(array_keys(KhoBinhChon::TUY_CHON), 0);
@@ -23,23 +23,16 @@ $hopVoteUser = (is_int($hopVoteUserRaw) || is_string($hopVoteUserRaw))
 if ($hopVoteUser !== false && nguoiDung() === null) {
     $hopVoteUser = false;
 }
-if (!is_string($_SESSION['hop_vote_csrf'] ?? null) || $_SESSION['hop_vote_csrf'] === '') {
-    $_SESSION['hop_vote_csrf'] = bin2hex(random_bytes(32));
-}
-$hopVoteToken = $_SESSION['hop_vote_csrf'];
+
 
 try {
     $pdoHopVote = db();
     $khoHopVote = new KhoBinhChon($pdoHopVote);
     if ($hopVotePost) {
-        $received = $_POST['csrf_hop_vote'] ?? null;
-        if (!is_string($received) || !hash_equals($hopVoteToken, $received)) {
-            throw new DomainException('Phiên biểu mẫu không hợp lệ. Vui lòng thử lại.');
-        }
         if ($hopVoteUser === false) {
             throw new DomainException('Vui lòng đăng nhập tài khoản MySQL trước khi bình chọn.');
         }
-        $khoHopVote->boPhieu($hopVoteMssv, $hopVoteUser, layChuoiDauVao($_POST['tuy_chon'] ?? ''));
+        $khoHopVote->boPhieu($hopVoteMssv, $hopVoteUser, chuoi($_POST['tuy_chon'] ?? ''));
         $_SESSION['hop_vote_flash'] = 'Bình chọn thành công.';
     }
     foreach ($khoHopVote->thongKe($hopVoteMssv) as $row) {

@@ -46,6 +46,22 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Kiểm tra trước mọi xử lý POST, kể cả khôi phục đăng nhập có truy vấn CSDL.
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && !csrfHopLe()) {
+    http_response_code(403);
+    $loi = 'Phiên biểu mẫu không hợp lệ. Vui lòng tải lại trang rồi gửi lại.';
+    if (function_exists('traJson')
+        || str_contains(strtolower($_SERVER['CONTENT_TYPE'] ?? ''), 'json')
+        || str_contains(strtolower($_SERVER['HTTP_ACCEPT'] ?? ''), 'application/json')
+        || ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest') {
+        header('Content-Type: application/json; charset=utf-8');
+        exit(json_encode(['loi' => $loi], JSON_UNESCAPED_UNICODE));
+    }
+    header('Content-Type: text/plain; charset=utf-8');
+    exit($loi);
+}
+tokenGioHang();
+
 // 5. Xử lý ngoại lệ chưa được bắt.
 set_exception_handler(
     static function (Throwable $loi): void {

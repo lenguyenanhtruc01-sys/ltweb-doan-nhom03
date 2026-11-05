@@ -221,6 +221,7 @@ require __DIR__ . '/../../inc/header.php';
     <h2 class="the-noi-dung__tieu-de">Máy tính điểm học phần bằng PHP</h2>
     <p>Điểm tổng kết dự kiến = 20% A1 + 30% A2 + 50% A3.</p>
     <form class="uyen-form" method="post" action="gioithieu.php#tinh-diem" novalidate>
+        <?= csrfField() ?>
         <input type="hidden" name="csrf_uyen" value="<?= e($maXacThuc) ?>">
         <div class="uyen-form__luoi">
             <?php foreach (['a1' => 'Điểm A1 (20%)', 'a2' => 'Điểm A2 (30%)', 'a3' => 'Điểm A3 (50%)'] as $maDiem => $nhanDiem): ?>

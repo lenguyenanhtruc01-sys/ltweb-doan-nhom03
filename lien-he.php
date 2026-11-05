@@ -215,6 +215,7 @@ require_once __DIR__ . '/inc/header.php';
             method="post"
             enctype="multipart/form-data"
         >
+            <?= csrfField() ?>
             <fieldset>
                 <legend>Thông tin người liên hệ</legend>
 

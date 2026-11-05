@@ -17,6 +17,11 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 if (!in_array($method, ['GET', 'POST'], true)) {
     header('Allow: GET, POST'); http_response_code(405); exit('Phương thức không hợp lệ.');
 }
+if ($method === 'POST' && chuoi($_POST['hanh_dong'] ?? '') === 'ghi_luot_xem') {
+    (new \App\Data\KhoLuotXem(db()))->ghiNhan($mssvTrangCaNhan, date('Y-m-d'));
+    http_response_code(204);
+    exit;
+}
 if ($method === 'POST') {
     if (!$laChuTrang) { require __DIR__ . '/../../403.php'; exit; }
     $token = $_POST['_csrf'] ?? null;
@@ -53,7 +58,7 @@ $avatarHienTai = $tenAvatar !== null && is_file($thuMucAnh . '/' . $tenAvatar)
     ? '../../uploads/' . $tenAvatar : 'images/hoanghai.jpg';
 $khoLuotXem = new \App\Data\KhoLuotXem(db());
 $ngayHomNay = new DateTimeImmutable('today');
-$khoLuotXem->ghiNhan($mssvTrangCaNhan, $ngayHomNay->format('Y-m-d'));
+// Lượt xem được ghi bằng POST có CSRF từ canhan.js.
 $thongKeLuotXem = $khoLuotXem->bayNgay($mssvTrangCaNhan, $ngayHomNay);
 
 // ==========================================
@@ -96,7 +101,7 @@ require_once __DIR__ . '/../../inc/header.php';
         <!-- FORM ĐỔI ẢNH ĐẠI DIỆN (CHỨC NĂNG 1) -->
         <?php if ($laChuTrang): ?>
         <form action="gioithieu.php" method="post" enctype="multipart/form-data" style="margin: 10px 0; padding: 10px; background: #f4f4f4; border-radius: 5px;">
-            <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
+            <?= csrfField() ?>
             <label for="avatar" style="font-size: 0.9em; font-weight: bold;">Đổi ảnh đại diện (≤ 2MB):</label><br>
             <input type="file" name="avatar" id="avatar" accept="image/jpeg, image/png, image/webp" required style="font-size: 0.85em; margin: 5px 0;">
             <button type="submit" class="btn-primary" style="padding: 8px 14px; font-size: 0.85em; background-color: #123b6d; color: #ffffff;">Tải lên</button>

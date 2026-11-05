@@ -20,11 +20,19 @@ function csrfKiemTra(?string $token): bool {
         && hash_equals($_SESSION['_csrf_token'], $token);
 }
 
-// Header và API dùng cùng token giỏ, tách với token các form quản trị/đặt hàng.
+function csrfField(): string
+{
+    return '<input type="hidden" name="_csrf" value="' . e(csrfToken()) . '">';
+}
+
+function csrfHopLe(): bool
+{
+    $token = $_POST['_csrf'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+    return is_string($token) && csrfKiemTra($token);
+}
+
+// Giữ tên hàm cũ cho các caller BT6, cùng một token cho form và API.
 function tokenGioHang(): string
 {
-    if (!is_string($_SESSION['csrf_gio_hang'] ?? null) || $_SESSION['csrf_gio_hang'] === '') {
-        $_SESSION['csrf_gio_hang'] = bin2hex(random_bytes(32));
-    }
-    return $_SESSION['csrf_gio_hang'];
+    return $_SESSION['csrf_gio_hang'] = csrfToken();
 }

@@ -12,6 +12,11 @@ $tieuDe = 'Trang cá nhân Phan Văn Hợp';
 $trang = 'gioi-thieu';
 
 require_once __DIR__ . '/../../inc/config.php';
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST'
+    && !in_array(chuoi($_POST['hanh_dong'] ?? ''), ['binh_chon', 'tra_cuu_mang', 'kiem_tra_pass'], true)) {
+    http_response_code(400);
+    exit('Thao tác không hợp lệ.');
+}
 require __DIR__ . '/../../inc/binh-chon-hop.php';
 
 // Phần B: tra cứu mạng và lịch sử dùng bảng tv_tra_cuu_mang.
@@ -24,8 +29,8 @@ unset($_SESSION['hop_flash_net']);
 $loiNet = '';
 $savedTarget = $_SESSION['hop_saved_target'] ?? '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && layChuoiDauVao($_POST['hanh_dong'] ?? '') === 'tra_cuu_mang') {
-    $target = layChuoiDauVao($_POST['target'] ?? '');
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && chuoi($_POST['hanh_dong'] ?? '') === 'tra_cuu_mang') {
+    $target = trim(chuoi($_POST['target'] ?? ''));
     $savedTarget = $target;
     $_SESSION['hop_saved_target'] = $target;
 
@@ -53,15 +58,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && layChuoiDauVao($_POST['hanh_dong'] 
                 'time' => date('Y-m-d H:i:s')
             ];
             try {
-                $tokenMang = $_POST['csrf_mang'] ?? null;
-                if (!is_string($tokenMang) || !hash_equals($hopVoteToken, $tokenMang)) {
-                    $loiNet = 'Phiên biểu mẫu không hợp lệ. Vui lòng thử lại.';
-                } else {
-                    (new \App\Data\KhoTraCuuMang(db()))->them('3120224064', $target, $resolvedIp, $loaiIp);
-                    $_SESSION['hop_flash_net'] = $ketQuaNet;
-                    header('Location: gioithieu.php?cong-cu=mang#cong-cu-section', true, 303);
-                    exit;
-                }
+                (new \App\Data\KhoTraCuuMang(db()))->them('3120224064', $target, $resolvedIp, $loaiIp);
+                $_SESSION['hop_flash_net'] = $ketQuaNet;
+                header('Location: gioithieu.php?cong-cu=mang#cong-cu-section', true, 303);
+                exit;
             } catch (Throwable $error) {
                 error_log((string) $error);
                 $ketQuaNet = null;
@@ -77,8 +77,8 @@ unset($_SESSION['hop_flash_pass']);
 $loiPass = '';
 $savedPass = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && layChuoiDauVao($_POST['hanh_dong'] ?? '') === 'kiem_tra_pass') {
-    $password = layChuoiDauVao($_POST['password'] ?? '');
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && chuoi($_POST['hanh_dong'] ?? '') === 'kiem_tra_pass') {
+    $password = chuoi($_POST['password'] ?? '');
     if (strlen($password) === 0) {
         $loiPass = 'Vui lòng nhập mật khẩu cần kiểm tra!';
     } else {
@@ -91,14 +91,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && layChuoiDauVao($_POST['hanh_dong'] 
 
         $entropy = ($pool > 0) ? round($len * log($pool, 2), 2) : 0;
         $mucDo = 'Yếu';
-        $mau = '#dc2626';
-        if ($entropy >= 70) { $mucDo = 'Rất mạnh'; $mau = '#059669'; }
-        elseif ($entropy >= 50) { $mucDo = 'Mạnh'; $mau = '#10b981'; }
-        elseif ($entropy >= 30) { $mucDo = 'Trung bình'; $mau = '#d97706'; }
+        $mau = 'yeu';
+        if ($entropy >= 70) { $mucDo = 'Rất mạnh'; $mau = 'rat-manh'; }
+        elseif ($entropy >= 50) { $mucDo = 'Mạnh'; $mau = 'manh'; }
+        elseif ($entropy >= 30) { $mucDo = 'Trung bình'; $mau = 'trung-binh'; }
 
         $ketQuaPass = ['len' => $len, 'entropy' => $entropy, 'muc_do' => $mucDo, 'mau' => $mau];
         $_SESSION['hop_flash_pass'] = $ketQuaPass;
-        header('Location: gioithieu.php?cong-cu=mat-khau#cong-cu-section');
+        header('Location: gioithieu.php?cong-cu=mat-khau#cong-cu-section', true, 303);
         exit;
     }
 }
@@ -229,9 +229,7 @@ include __DIR__ . '/../../inc/header.php';
             <p class="roadmap__tien-do-chu">
                 Tiến độ tổng: <strong id="roadmap-phan-tram">0%</strong>
             </p>
-            <div class="roadmap__thanh" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="roadmap-thanh">
-                <div class="roadmap__thanh-fill" id="roadmap-thanh-fill"></div>
-            </div>
+            <progress class="roadmap__thanh" id="roadmap-thanh" max="100" value="0" aria-label="Tiến độ học DevOps">0%</progress>
         </div>
     </section>
 
@@ -265,8 +263,9 @@ include __DIR__ . '/../../inc/header.php';
                 <?php endif; ?>
                 <!-- Giữ vị trí cuộn trang bằng #cong-cu-section -->
                 <form action="gioithieu.php#cong-cu-section" method="POST" class="cong-cu-form">
+                    <?= csrfField() ?>
                     <input type="hidden" name="hanh_dong" value="tra_cuu_mang">
-                    <input type="hidden" name="csrf_mang" value="<?= e($hopVoteToken) ?>">
+
                     <input type="text" name="target" placeholder="Nhập domain hoặc IP..." value="<?= e($savedTarget) ?>" required>
                     <button type="submit" class="btn-net">Tra cứu</button>
                 </form>
@@ -279,12 +278,13 @@ include __DIR__ . '/../../inc/header.php';
                     <p class="loi"><?= e($loiPass) ?></p>
                 <?php endif; ?>
                 <?php if ($ketQuaPass): ?>
-                    <p class="ket-qua-pass" style="border-left: 4px solid <?= e($ketQuaPass['mau']) ?>;">
-                        Entropy: <strong><?= e((string) $ketQuaPass['entropy']) ?> bits</strong> - Mức độ: <strong style="color: <?= e($ketQuaPass['mau']) ?>;"><?= e($ketQuaPass['muc_do']) ?></strong>
+                    <p class="ket-qua-pass ket-qua-pass--<?= e($ketQuaPass['mau']) ?>">
+                        Entropy: <strong><?= e((string) $ketQuaPass['entropy']) ?> bits</strong> - Mức độ: <strong class="ket-qua-pass__muc-do"><?= e($ketQuaPass['muc_do']) ?></strong>
                     </p>
                 <?php endif; ?>
                 <!-- Giữ vị trí cuộn trang bằng #cong-cu-section -->
                 <form action="gioithieu.php#cong-cu-section" method="POST" class="cong-cu-form">
+                    <?= csrfField() ?>
                     <input type="hidden" name="hanh_dong" value="kiem_tra_pass">
                     <input type="password" name="password" placeholder="Nhập mật khẩu cần kiểm tra..." value="<?= e($savedPass) ?>" required>
                     <button type="submit" class="btn-pass">Kiểm tra</button>

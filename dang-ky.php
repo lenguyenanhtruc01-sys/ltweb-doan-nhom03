@@ -98,6 +98,7 @@ require __DIR__ . '/inc/header.php';
         <?php endif; ?>
 
         <form method="POST" action="dang-ky.php" class="form-lien-he">
+            <?= csrfField() ?>
             <div>
                 <label for="ho_ten">Họ tên:</label>
                 <input type="text" id="ho_ten" name="ho_ten" maxlength="100" value="<?= e($hoTen) ?>" required

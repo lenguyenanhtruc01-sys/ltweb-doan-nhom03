@@ -31,6 +31,12 @@ function layChuoiDauVao(mixed $giaTri, string $macDinh = ''): string
     return is_string($giaTri) ? trim($giaTri) : $macDinh;
 }
 
+// Giữ nguyên khoảng trắng, đặc biệt với mật khẩu.
+function chuoi(mixed $giaTri): string
+{
+    return is_string($giaTri) ? $giaTri : '';
+}
+
 // Chỉ nhận số nguyên hoặc chuỗi số; JSON boolean/float và đầu vào mảng bị từ chối.
 function soNguyenDauVao(mixed $giaTri, int $min = 1, int $max = PHP_INT_MAX): int|false
 {

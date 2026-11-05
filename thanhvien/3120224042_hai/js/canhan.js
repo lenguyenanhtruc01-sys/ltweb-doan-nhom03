@@ -43,3 +43,9 @@ btnToggleTkb.addEventListener('click', function() {
         btnToggleTkb.textContent = 'Thu gọn ⬆️';
     }
 });
+// GET chỉ đọc thống kê; POST ghi lượt xem qua kiểm tra CSRF tập trung.
+fetch('gioithieu.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content ?? '' },
+    body: 'hanh_dong=ghi_luot_xem'
+}).catch(() => {});

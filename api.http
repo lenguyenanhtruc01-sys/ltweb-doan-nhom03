@@ -27,6 +27,7 @@ X-CSRF-Token: {{gio.response.body.$.csrf}}
 ### JSON lỗi: 400
 POST {{goc}}/api/gio-hang.php
 Content-Type: application/json
+X-CSRF-Token: {{gio.response.body.$.csrf}}
 
 {id:1}
 
@@ -51,7 +52,7 @@ X-CSRF-Token: {{gio.response.body.$.csrf}}
 
 {"id":999999,"sl":1}
 
-### Thiếu token phiên: 401
+### Thiếu token phiên: 403
 POST {{goc}}/api/gio-hang.php
 Content-Type: application/json
 
@@ -62,6 +63,7 @@ DELETE {{goc}}/api/gio-hang.php
 
 ### Phương thức sai: 405 + Allow: GET
 POST {{goc}}/api/san-pham.php
+X-CSRF-Token: {{gio.response.body.$.csrf}}
 
 ### Tham số mảng: 422, không Warning
 GET {{goc}}/api/san-pham.php?q[]=x

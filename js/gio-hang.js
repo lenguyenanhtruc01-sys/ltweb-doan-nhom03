@@ -33,7 +33,7 @@ document.addEventListener('submit', async (event) => {
         const response = await fetch(form.dataset.gioHangApi, {
             method: 'POST', credentials: 'same-origin',
             headers: {'Content-Type': 'application/json', Accept: 'application/json',
-                'X-CSRF-Token': document.querySelector('meta[name="csrf-gio-hang"]')?.content ?? ''},
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content ?? ''},
             body: JSON.stringify({id: fields.get('id'), sl: fields.get('so_luong')}),
         });
         const data = await response.json();

@@ -390,6 +390,9 @@ button:focus-visible {
 }
 
 .roadmap__thanh {
+    width: 100%;
+    border: 0;
+    accent-color: #0f766e;
     height: 0.65rem;
     background: #e2e8f0;
     border-radius: 999px;
@@ -568,3 +571,9 @@ button:focus-visible {
 .btn-pass:hover {
     background: #0d9488;
 }
+/* Màu kết quả cố định để không cần style nội tuyến. */
+.ket-qua-pass { --mau-mat-khau: #dc2626; border-left: 4px solid var(--mau-mat-khau); }
+.ket-qua-pass--trung-binh { --mau-mat-khau: #a65e04; }
+.ket-qua-pass--manh { --mau-mat-khau: #047857; }
+.ket-qua-pass--rat-manh { --mau-mat-khau: #047857; }
+.ket-qua-pass__muc-do { color: var(--mau-mat-khau); }

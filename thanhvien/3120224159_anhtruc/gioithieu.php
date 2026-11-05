@@ -488,7 +488,8 @@ require_once __DIR__ . '/../../inc/header.php';
             action="gioithieu.php"
             class="gpa-form"
         >
-                <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
+            <?= csrfField() ?>
+
 
             <div class="form-group">
 
@@ -768,7 +769,8 @@ require_once __DIR__ . '/../../inc/header.php';
                 method="post"
                 action="gioithieu.php"
             >
-                <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
+            <?= csrfField() ?>
+
 
                 <?php foreach (
                     $currentQuestion['options'] as $key => $option
@@ -809,7 +811,8 @@ require_once __DIR__ . '/../../inc/header.php';
                 method="post"
                 action="gioithieu.php"
             >
-                <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
+            <?= csrfField() ?>
+
 
                 <button
                     type="submit"

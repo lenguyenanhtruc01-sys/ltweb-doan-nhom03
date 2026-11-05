@@ -68,6 +68,7 @@ require __DIR__ . '/inc/header.php';
         <?php endif; ?>
 
         <form method="POST" action="quen-mat-khau.php" class="form-lien-he">
+            <?= csrfField() ?>
             <div>
                 <label for="email">Email:</label>
                 <input

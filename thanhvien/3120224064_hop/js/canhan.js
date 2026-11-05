@@ -148,7 +148,6 @@
     var chiTiet = document.getElementById("roadmap-chi-tiet");
     var elPhanTram = document.getElementById("roadmap-phan-tram");
     var elThanh = document.getElementById("roadmap-thanh");
-    var elThanhFill = document.getElementById("roadmap-thanh-fill");
     var cacNutBuoc = document.querySelectorAll(".roadmap__buoc");
 
     function demTongItem() {
@@ -175,8 +174,7 @@
         var pct = tong === 0 ? 0 : Math.round((da / tong) * 100);
 
         if (elPhanTram) elPhanTram.textContent = pct + "%";
-        if (elThanhFill) elThanhFill.style.width = pct + "%";
-        if (elThanh) elThanh.setAttribute("aria-valuenow", String(pct));
+        if (elThanh) elThanh.value = pct;
     }
 
     function renderBuoc(key) {

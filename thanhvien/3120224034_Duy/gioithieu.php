@@ -156,7 +156,7 @@ require __DIR__ . '/../../inc/header.php';
         <p>Danh sách bạn nhập được giữ riêng trong phiên này. Chỉ chủ trang đã đăng nhập mới lưu thêm món vào danh sách dùng chung.</p>
 
         <form method="post" action="gioithieu.php" id="form-chon-mon" novalidate>
-            <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
+            <?= csrfField() ?>
             <input type="hidden" name="hanh_dong" value="chon_mon">
             <p>
                 <label for="dsMon">Danh sách món (2–50 món khác nhau, mỗi dòng 1 món, tối đa 100 ký tự/món):</label>
@@ -190,8 +190,9 @@ require __DIR__ . '/../../inc/header.php';
         <p data-vi="Bạn chọn Kéo / Búa / Bao, máy random. Ai thắng nhiều hơn?" data-en="Choose Rock / Paper / Scissors...">Bạn chọn Kéo / Búa / Bao, máy random. Ai thắng nhiều hơn?</p>
 
         <form method="post" action="gioithieu.php" class="oan-tu-ti__nut" id="form-oan-tu-ti">
+            <?= csrfField() ?>
             <input type="hidden" name="hanh_dong" value="choi_oan_tu_ti">
-            <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
+
             <button type="submit" name="chon" value="keo" class="nut-ott nut-ott--keo">✊<br>Kéo</button>
             <button type="submit" name="chon" value="bua" class="nut-ott nut-ott--bua">✋<br>Búa</button>
             <button type="submit" name="chon" value="bao" class="nut-ott nut-ott--bao">✌️<br>Bao</button>
@@ -244,8 +245,9 @@ require __DIR__ . '/../../inc/header.php';
         <p>Hôm nay chỗ bạn thời tiết thế nào? Bấm chọn để cùng mọi người cập nhật nhé!</p>
 
         <form method="post" action="gioithieu.php#thoi-tiet" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
+            <?= csrfField() ?>
             <input type="hidden" name="hanh_dong" value="check_in_thoi_tiet">
-            <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
+
             <button type="submit" name="trang_thai" value="nang" style="padding: 15px 20px; background: #fff; border: 2px solid #f59e0b; border-radius: 8px; cursor: pointer;">☀️ Nắng</button>
             <button type="submit" name="trang_thai" value="mua" style="padding: 15px 20px; background: #fff; border: 2px solid #3b82f6; border-radius: 8px; cursor: pointer;">🌧️ Mưa</button>
             <button type="submit" name="trang_thai" value="may" style="padding: 15px 20px; background: #fff; border: 2px solid #9ca3af; border-radius: 8px; cursor: pointer;">☁️ Nhiều mây</button>

@@ -60,6 +60,7 @@ require __DIR__ . '/inc/header.php';
 
         <?php if ($yeuCau !== null): ?>
             <form method="POST" action="dat-lai-mat-khau.php" class="form-lien-he">
+                <?= csrfField() ?>
                 <input type="hidden" name="token" value="<?= e($token) ?>">
 
                 <div>

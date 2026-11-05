@@ -139,7 +139,7 @@ if ($id !== false) {
         <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 8px;">
             <h2 style="margin-top: 0; color: #1a365d;">Quản trị viên: Đổi trạng thái</h2>
             <form method="post" style="display: flex; gap: 15px; align-items: center;">
-                <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
+                <?= csrfField() ?>
                 <input type="hidden" name="id" value="<?= e((int)$keHoach['id']) ?>">
                 
                 <select name="trang_thai" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 1rem;">

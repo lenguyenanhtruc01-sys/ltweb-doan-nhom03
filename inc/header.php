@@ -30,7 +30,7 @@ if (!is_string($nguoiDung) || $nguoiDung === '') {
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="csrf-gio-hang" content="<?= e($_SESSION['csrf_gio_hang']) ?>">
+    <meta name="csrf-token" content="<?= e($_SESSION['csrf_gio_hang']) ?>">
     <meta name="edugpa-uid" content="<?= e((string) ($ndHeader['id'] ?? '')) ?>">
     <meta name="yeu-thich-api" content="<?= e($goc) ?>api/yeu-thich.php">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,7 +46,7 @@ if (!is_string($nguoiDung) || $nguoiDung === '') {
 
     <!-- HEADER TRÊN CÙNG: Chứa Logo và Thông tin User (góc phải) -->
     <header class="dau-trang">
-        <div class="bao dau-trang__noi-dung" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div class="dau-trang__bo-cuc bao dau-trang__noi-dung">
             
             <!-- Bên trái: Logo & Yêu thích -->
             <div class="dau-trang__trai">
@@ -58,27 +58,27 @@ if (!is_string($nguoiDung) || $nguoiDung === '') {
                         <span data-so-luong-yeu-thich aria-live="polite" aria-atomic="true">0</span>
                     </a>
                 </div>
-                <p class="dau-trang__mo-ta" style="margin-top: 5px;">
+                <p class="dau-trang__mo-ta-khoang-cach dau-trang__mo-ta">
                     Hệ thống hỗ trợ tra cứu và theo dõi thông tin học tập cho sinh viên
                 </p>
             </div>
 
             <!-- Bên phải: Tài khoản / Đăng nhập -->
-            <div class="dau-trang__phai" style="display: flex; align-items: center; gap: 10px;">
+            <div class="dau-trang__tai-khoan dau-trang__phai">
                 <?php if ($nguoiDung !== null): ?>
-                    <span style="color: #fff; font-weight: bold; font-size: 1.1em; margin-right: 10px;">
+                    <span class="dau-trang__loi-chao">
                         Xin chào, <?= e($nguoiDung) ?>
                     </span>
                     <?php if (($ndHeader['vai_tro'] ?? null) === 'quan_tri'): ?>
-                        <a href="<?= e($goc) ?>quan-tri.php" style="background: #6f42c1; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.9em;">Quản trị</a>
+                        <a href="<?= e($goc) ?>quan-tri.php" class="dau-trang__nut-quan-tri">Quản trị</a>
                     <?php endif; ?>
-                    <a href="<?= e($goc) ?>don-hang.php" style="background: #0d6efd; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.9em;">Kế hoạch của tôi</a>
+                    <a href="<?= e($goc) ?>don-hang.php" class="dau-trang__nut-ke-hoach">Kế hoạch của tôi</a>
                     <form action="<?= e($goc) ?>dang-xuat.php" method="post">
-                        <input type="hidden" name="_csrf" value="<?= e(csrfToken()) ?>">
-                        <button type="submit" style="background: #dc3545; color: white; padding: 8px 12px; border: 0; border-radius: 5px; font-weight: bold; font-size: 0.9em; cursor: pointer;">Đăng xuất</button>
+                        <?= csrfField() ?>
+                        <button type="submit" class="dau-trang__nut-dang-xuat">Đăng xuất</button>
                     </form>
                 <?php else: ?>
-                    <a href="<?= e($goc) ?>dang-nhap.php" style="background: #198754; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: bold;">Đăng nhập</a>
+                    <a href="<?= e($goc) ?>dang-nhap.php" class="dau-trang__nut-dang-nhap">Đăng nhập</a>
                 <?php endif; ?>
             </div>
         </div>

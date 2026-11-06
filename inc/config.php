@@ -41,10 +41,28 @@ ini_set(
 // 3. Thiết lập múi giờ Việt Nam.
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
-// 4. Khởi tạo session trước khi xuất HTML.
+// 4. Cấu hình và khởi tạo session an toàn (Chương 7 - Biện pháp 2).
+ini_set('session.use_strict_mode', '1');
+ini_set('session.use_only_cookies', '1');
+
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'secure' => !empty($_SERVER['HTTPS']),
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Tự động hết hạn phiên sau 30 phút không hoạt động
+if (isset($_SESSION['hoat_dong_cuoi']) && (time() - $_SESSION['hoat_dong_cuoi'] > 1800)) {
+    $_SESSION = []; // Xóa sạch dữ liệu
+    session_regenerate_id(true); // Cấp mã phiên mới
+}
+$_SESSION['hoat_dong_cuoi'] = time(); // Cập nhật thời gian hoạt động
 
 // Kiểm tra trước mọi xử lý POST, kể cả khôi phục đăng nhập có truy vấn CSDL.
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && !csrfHopLe()) {

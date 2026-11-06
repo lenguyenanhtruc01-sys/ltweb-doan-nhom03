@@ -173,3 +173,29 @@ function yeuCauQuyen(string $vaiTro): array
 
     return $nd;
 }
+// Hàm đăng xuất chuẩn (Chương 7 - Biện pháp 2)
+function dangXuat(): void
+{
+    // 1. Xóa sạch dữ liệu phiên
+    $_SESSION = [];
+
+    // 2. Xóa cookie phiên (PHPSESSID) trên trình duyệt
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(
+            session_name(),
+            '',
+            time() - 42000,
+            $params["path"],
+            $params["domain"],
+            $params["secure"],
+            $params["httponly"]
+        );
+    }
+
+    // 3. Hủy phiên trên máy chủ
+    session_destroy();
+
+    // 4. Xóa cookie ghi nhớ đăng nhập (nếu có sử dụng)
+    xoaGhiNhoHienTai(); 
+}

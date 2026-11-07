@@ -13,15 +13,17 @@ declare(strict_types=1);
 require_once __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
-$dotenv->required(['DB_HOST', 'DB_DATABASE', 'DB_USERNAME'])->required()->notEmpty();
-$dotenv->required('DB_PASSWORD')->required();
+$dotenv->required(['DB_HOST', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD'])
+    ->required()
+    ->notEmpty();
 
 require_once __DIR__ . '/ham.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/csrf.php';
 require_once __DIR__ . '/xac-thuc.php';
 // 2. Cấu hình môi trường.
-$batGoiLoi = ($_ENV['APP_DEBUG'] ?? 'false') === 'true';
+$giaTriGoiLoi = $_ENV['APP_DEBUG'] ?? $_SERVER['APP_DEBUG'] ?? getenv('APP_DEBUG');
+$batGoiLoi = $giaTriGoiLoi === 'true';
 define('MOI_TRUONG', $batGoiLoi ? 'dev' : 'prod');
 error_reporting(E_ALL);
 

@@ -14,16 +14,26 @@ Website PHP hỗ trợ sinh viên tra cứu môn học, lập kế hoạch học
 
 1. Chép thư mục dự án vào `C:\xampp\htdocs\ltweb-doan-nhom03`.
 2. Mở XAMPP Control Panel, khởi động Apache và MySQL.
-3. Tại thư mục dự án, cài các thư viện và tạo tệp cấu hình cục bộ:
+3. Tại thư mục dự án, cài Composer dependencies và sao chép tệp môi trường mẫu:
 
    ```powershell
    composer install
    Copy-Item .env.example .env
    ```
 
-   Chỉnh `.env` với thông tin MySQL của máy. Không đưa `.env` lên GitHub; chỉ `.env.example` được chia sẻ. Đặt `APP_DEBUG=false` khi website chạy thực tế.
+4. Cấu hình đủ 5 biến trong `.env`:
 
-4. Tạo/nâng cấp CSDL bằng tài khoản MySQL quản trị (root), không dùng tài khoản ứng dụng quyền tối thiểu cho bước này:
+   ```dotenv
+   APP_DEBUG=false
+   DB_HOST=127.0.0.1
+   DB_DATABASE=ltweb_nhom03
+   DB_USERNAME=nhom03_app
+   DB_PASSWORD=mat_khau_ban_tu_dat
+   ```
+
+   Thay `mat_khau_ban_tu_dat` bằng mật khẩu mạnh bạn sẽ đặt ở bước 6. Không dùng `root` cho website, không commit `.env`, và để `APP_DEBUG=false` khi chạy thực tế. `.env.example` chỉ chứa giá trị mẫu, không chứa mật khẩu dùng thật.
+
+5. Tạo CSDL `ltweb_nhom03` và cài/nâng cấp schema bằng bộ cài CLI với tài khoản quản trị MySQL:
 
    ```bash
    php database/cai-dat.php
@@ -35,26 +45,29 @@ Website PHP hỗ trợ sinh viên tra cứu môn học, lập kế hoạch học
    C:\xampp\php\php.exe database\cai-dat.php
    ```
 
-   Bộ cài và các migration có thể tạo cấu trúc, nâng cấp và sao lưu nên cần quyền quản trị. Nếu MySQL root có mật khẩu, cung cấp riêng cho tiến trình CLI bằng các biến môi trường mà bộ cài hỗ trợ (`DB_USER`, `DB_PASS`); không lưu mật khẩu root vào Git. Sau khi cài đặt/nâng cấp xong, chạy `database/tai-khoan.sql` bằng phpMyAdmin/tài khoản quản trị để tạo tài khoản ứng dụng. Trước khi chạy, thay `MAT_KHAU_THAY_THE` bằng mật khẩu mạnh riêng. Tệp SQL chỉ cấp `SELECT`, `INSERT`, `UPDATE`, `DELETE` trên `ltweb_nhom03.*`.
+   Bộ cài tự tạo CSDL nếu chưa tồn tại. Trên CSDL hiện có, nó sao lưu trước khi nâng cấp và không xóa dữ liệu dự án. Bộ cài/migration cần quyền quản trị vì có thể tạo CSDL, bảng/cột và bản sao lưu; chúng không dùng thông tin tài khoản ứng dụng để chạy. `database/cai-dat.php` mặc định dùng `root` với mật khẩu rỗng; nếu cần thông tin khác, truyền riêng cho tiến trình CLI qua `DB_USER` và `DB_PASS`, không lưu mật khẩu quản trị vào `.env` hoặc Git.
 
-   Bộ cài tạo đủ bảng và bổ sung dữ liệu còn thiếu ở cả máy mới, máy có bản cũ và máy đã tạo bảng nhưng chưa nạp seed. Trước khi nâng cấp máy có dữ liệu, nó sao lưu các bảng vào tệp SQL ngoài webroot (đường dẫn được in ra). Mật khẩu, quyền, giỏ, yêu thích, chủ trang và kế hoạch hiện có được giữ nguyên.
+6. Sau khi CSDL đã tồn tại, mở phpMyAdmin bằng tài khoản quản trị, chọn tab SQL, thay `MAT_KHAU_THAY_THE` trong `database/tai-khoan.sql` bằng mật khẩu mạnh bạn đã nhập ở `.env`, rồi chạy tệp. Script tạo `nhom03_app` tại host `127.0.0.1` và chỉ cấp `SELECT`, `INSERT`, `UPDATE`, `DELETE` trên `ltweb_nhom03.*`. Nếu tài khoản đã tồn tại, không chạy lại mù quáng; kiểm tra và xử lý quyền cũ trước.
 
-   Dữ liệu mẫu được đối chiếu bằng tên đăng nhập, slug danh mục, mã môn và MSSV; không ép ID mẫu lên dữ liệu thật. Bộ cài dùng một CSDL mẫu tạm để kiểm tra schema/seed và gộp dữ liệu, sau đó xóa CSDL tạm đó; **không xóa CSDL dự án**. Tài khoản MySQL chạy bộ cài cần quyền tạo/xóa CSDL (root mặc định của XAMPP đáp ứng).
+7. Kiểm tra quyền với tài khoản quản trị:
 
-5. Sửa `.env` để dùng thông tin tài khoản `nhom03_app` vừa tạo:
-
-   ```dotenv
-   APP_DEBUG=false
-   DB_HOST=127.0.0.1
-   DB_DATABASE=ltweb_nhom03
-   DB_USERNAME=nhom03_app
-   DB_PASSWORD=mat_khau_da_dat_trong_tai-khoan.sql
+   ```sql
+   SHOW GRANTS FOR 'nhom03_app'@'127.0.0.1';
    ```
 
-   Thay giá trị mật khẩu bằng mật khẩu thực tế đã dùng khi tạo tài khoản; không ghi mật khẩu vào tài liệu hoặc commit. Ứng dụng PDO dùng tài khoản này để vận hành và không cần quyền DDL/quản trị.
-6. Mở http://localhost/ltweb-doan-nhom03/
+   Xác nhận chỉ có bốn quyền dữ liệu nêu trên; `USAGE` (nếu MySQL hiển thị) không phải quyền truy cập dữ liệu. Kiểm tra `.env` bị Git bỏ qua bằng `git check-ignore -v .env`, và `.env.example` không bị bỏ qua.
 
-**Sau mỗi lần `git pull`:** chạy lại `php database/cai-dat.php` bằng tài khoản quản trị. Bộ cài chính đọc `DB_USER`/`DB_PASS` từ môi trường tiến trình (mặc định `root`/mật khẩu rỗng); với các migration dùng `inc/db.php`, đặt tạm `DB_USERNAME`/`DB_PASSWORD` của tài khoản quản trị trong môi trường tiến trình để ghi đè cấu hình `.env`. Không ghi thông tin quản trị vào Git hoặc để các biến tạm này tồn tại khi khởi chạy website. Git chỉ kéo code; lệnh cài đặt áp dụng các nâng cấp CSDL đã khai báo. Chạy lại không đặt mật khẩu tài khoản website về mặc định. Chủ trang Hải chưa có sẽ được tạo bằng `hai / matkhau123`; nếu đã có chủ thì giữ nguyên tài khoản và mật khẩu. Ảnh upload/dữ liệu runtime của máy khác không được tải xuống qua Git.
+8. Kiểm tra kết nối PDO bằng đúng cấu hình ứng dụng trong `.env`:
+
+   ```bash
+   php -r "require 'inc/db.php'; db(); echo 'PDO connection OK', PHP_EOL;"
+   ```
+
+   Lệnh phải in `PDO connection OK`. Để kiểm tra quyền an toàn, quản trị viên tạo bảng thử nghiệm rỗng `ltweb_nhom03.__kiem_tra_quyen_test` trước. Với `nhom03_app`, thử SELECT, INSERT, UPDATE, DELETE trên bảng đó; thử tạo bảng riêng `ltweb_nhom03.__kiem_tra_quyen_create (id INT)` và xóa bảng thử nghiệm đã tạo sẵn. CRUD phải thành công, còn CREATE và DROP phải bị từ chối với MySQL error 1142. Quản trị viên dọn bảng thử nghiệm sau khi kiểm tra; không thử trên bảng chứa dữ liệu thật.
+
+9. Khởi động website và mở http://localhost/ltweb-doan-nhom03/. Website kết nối bằng `nhom03_app`; tầng PDO từ chối tài khoản `root` trong các tiến trình web.
+
+**Sau mỗi lần `git pull`:** chạy lại `php database/cai-dat.php` bằng tài khoản quản trị. Bộ cài chính đọc `DB_USER`/`DB_PASS` từ môi trường tiến trình (mặc định `root`/mật khẩu rỗng); với các migration dùng `inc/db.php`, đặt tạm `DB_USERNAME`/`DB_PASSWORD` của tài khoản quản trị trong tiến trình CLI để ghi đè cấu hình `.env`. Không ghi thông tin quản trị vào Git hoặc để các biến tạm này tồn tại khi khởi chạy website. Git chỉ kéo code; lệnh cài đặt áp dụng các nâng cấp CSDL đã khai báo. Chạy lại không đặt mật khẩu tài khoản website về mặc định. Chủ trang Hải chưa có sẽ được tạo bằng `hai / matkhau123`; nếu đã có chủ thì giữ nguyên tài khoản và mật khẩu. Ảnh upload/dữ liệu runtime của máy khác không được tải xuống qua Git.
 
 Cài mới thủ công theo đề vẫn có thể import `database/schema.sql` rồi `database/seed.sql` bằng phpMyAdmin thay cho bộ cài. **Schema thủ công có `DROP DATABASE`**, không import lại để cập nhật máy đang có dữ liệu. Các lệnh nâng cấp riêng bên dưới chỉ cần khi muốn chạy từng bước thay cho bộ cài chung.
 

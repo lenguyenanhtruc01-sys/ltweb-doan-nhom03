@@ -27,8 +27,8 @@ function db(): PDO
 
         $giaTriBien = static function (string $ten) use ($layBienMoiTruong): string {
             $giaTri = $layBienMoiTruong($ten);
-            if ($giaTri === false) {
-                throw new RuntimeException('Thiếu biến cấu hình môi trường ' . $ten . '.');
+            if ($giaTri === false || $giaTri === '') {
+                throw new RuntimeException('Thiếu hoặc rỗng biến cấu hình môi trường ' . $ten . '.');
             }
             return $giaTri;
         };
@@ -38,6 +38,12 @@ function db(): PDO
         $taiKhoan = $giaTriBien('DB_USERNAME');
         $matKhau = $giaTriBien('DB_PASSWORD');
         $cong = $layBienMoiTruong('DB_PORT');
+
+        if (PHP_SAPI !== 'cli' && strtolower($taiKhoan) === 'root') {
+            throw new RuntimeException(
+                'Website không được kết nối MySQL bằng root; hãy cấu hình DB_USERNAME=nhom03_app.'
+            );
+        }
 
         $pdo = new PDO(
             'mysql:host=' . $host

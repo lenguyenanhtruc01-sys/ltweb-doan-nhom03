@@ -8,14 +8,22 @@ Website PHP hỗ trợ sinh viên tra cứu môn học, lập kế hoạch học
 - Apache có PHP, ví dụ XAMPP; hoặc máy chủ tích hợp PHP.
 - MySQL/MariaDB và extension PHP `pdo_mysql`.
 - Tiện ích PHP `fileinfo` và `mbstring`.
-- Composer (chỉ cần khi thư mục `vendor/` chưa có).
+- Composer.
 
 ## 2. Cài đặt và chạy
 
 1. Chép thư mục dự án vào `C:\xampp\htdocs\ltweb-doan-nhom03`.
 2. Mở XAMPP Control Panel, khởi động Apache và MySQL.
-3. Tại thư mục dự án, chạy `composer install`.
-4. Tạo/nâng cấp CSDL bằng một lệnh tại thư mục dự án:
+3. Tại thư mục dự án, cài các thư viện và tạo tệp cấu hình cục bộ:
+
+   ```powershell
+   composer install
+   Copy-Item .env.example .env
+   ```
+
+   Chỉnh `.env` với thông tin MySQL của máy. Không đưa `.env` lên GitHub; chỉ `.env.example` được chia sẻ. Đặt `APP_DEBUG=false` khi website chạy thực tế.
+
+4. Tạo/nâng cấp CSDL bằng tài khoản MySQL quản trị (root), không dùng tài khoản ứng dụng quyền tối thiểu cho bước này:
 
    ```bash
    php database/cai-dat.php
@@ -27,19 +35,30 @@ Website PHP hỗ trợ sinh viên tra cứu môn học, lập kế hoạch học
    C:\xampp\php\php.exe database\cai-dat.php
    ```
 
+   Bộ cài và các migration có thể tạo cấu trúc, nâng cấp và sao lưu nên cần quyền quản trị. Nếu MySQL root có mật khẩu, cung cấp riêng cho tiến trình CLI bằng các biến môi trường mà bộ cài hỗ trợ (`DB_USER`, `DB_PASS`); không lưu mật khẩu root vào Git. Sau khi cài đặt/nâng cấp xong, chạy `database/tai-khoan.sql` bằng phpMyAdmin/tài khoản quản trị để tạo tài khoản ứng dụng. Trước khi chạy, thay `MAT_KHAU_THAY_THE` bằng mật khẩu mạnh riêng. Tệp SQL chỉ cấp `SELECT`, `INSERT`, `UPDATE`, `DELETE` trên `ltweb_nhom03.*`.
+
    Bộ cài tạo đủ bảng và bổ sung dữ liệu còn thiếu ở cả máy mới, máy có bản cũ và máy đã tạo bảng nhưng chưa nạp seed. Trước khi nâng cấp máy có dữ liệu, nó sao lưu các bảng vào tệp SQL ngoài webroot (đường dẫn được in ra). Mật khẩu, quyền, giỏ, yêu thích, chủ trang và kế hoạch hiện có được giữ nguyên.
 
    Dữ liệu mẫu được đối chiếu bằng tên đăng nhập, slug danh mục, mã môn và MSSV; không ép ID mẫu lên dữ liệu thật. Bộ cài dùng một CSDL mẫu tạm để kiểm tra schema/seed và gộp dữ liệu, sau đó xóa CSDL tạm đó; **không xóa CSDL dự án**. Tài khoản MySQL chạy bộ cài cần quyền tạo/xóa CSDL (root mặc định của XAMPP đáp ứng).
 
-5. Mở http://localhost/ltweb-doan-nhom03/
+5. Sửa `.env` để dùng thông tin tài khoản `nhom03_app` vừa tạo:
 
-Kết nối chung trong `inc/db.php`: database `ltweb_nhom03`, host `127.0.0.1`, port `3306`, user `root`, mật khẩu rỗng, charset `utf8mb4`. Có thể cấu hình `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS` qua môi trường PHP/Apache.
+   ```dotenv
+   APP_DEBUG=false
+   DB_HOST=127.0.0.1
+   DB_DATABASE=ltweb_nhom03
+   DB_USERNAME=nhom03_app
+   DB_PASSWORD=mat_khau_da_dat_trong_tai-khoan.sql
+   ```
 
-**Sau mỗi lần `git pull`:** chạy lại `php database/cai-dat.php`. Git chỉ kéo code; lệnh này áp dụng các nâng cấp CSDL đã được khai báo trong bộ cài. Chạy lại không đặt mật khẩu về mặc định. Chủ trang Hải chưa có sẽ được tạo bằng `hai / matkhau123`; nếu đã có chủ thì giữ nguyên tài khoản và mật khẩu. Ảnh upload/dữ liệu runtime của máy khác không được tải xuống qua Git.
+   Thay giá trị mật khẩu bằng mật khẩu thực tế đã dùng khi tạo tài khoản; không ghi mật khẩu vào tài liệu hoặc commit. Ứng dụng PDO dùng tài khoản này để vận hành và không cần quyền DDL/quản trị.
+6. Mở http://localhost/ltweb-doan-nhom03/
+
+**Sau mỗi lần `git pull`:** chạy lại `php database/cai-dat.php` bằng tài khoản quản trị. Bộ cài chính đọc `DB_USER`/`DB_PASS` từ môi trường tiến trình (mặc định `root`/mật khẩu rỗng); với các migration dùng `inc/db.php`, đặt tạm `DB_USERNAME`/`DB_PASSWORD` của tài khoản quản trị trong môi trường tiến trình để ghi đè cấu hình `.env`. Không ghi thông tin quản trị vào Git hoặc để các biến tạm này tồn tại khi khởi chạy website. Git chỉ kéo code; lệnh cài đặt áp dụng các nâng cấp CSDL đã khai báo. Chạy lại không đặt mật khẩu tài khoản website về mặc định. Chủ trang Hải chưa có sẽ được tạo bằng `hai / matkhau123`; nếu đã có chủ thì giữ nguyên tài khoản và mật khẩu. Ảnh upload/dữ liệu runtime của máy khác không được tải xuống qua Git.
 
 Cài mới thủ công theo đề vẫn có thể import `database/schema.sql` rồi `database/seed.sql` bằng phpMyAdmin thay cho bộ cài. **Schema thủ công có `DROP DATABASE`**, không import lại để cập nhật máy đang có dữ liệu. Các lệnh nâng cấp riêng bên dưới chỉ cần khi muốn chạy từng bước thay cho bộ cài chung.
 
-Với database cũ chưa có email, sao lưu rồi chạy `php database/migrate-email.php`; migration giữ tài khoản và dữ liệu, không thay thế toàn bộ schema.
+Với database cũ chưa có email, sao lưu rồi chạy `php database/migrate-email.php` bằng thông tin quản trị tạm nêu trên; migration giữ tài khoản và dữ liệu, không thay thế toàn bộ schema.
 
 Luồng của `database/cai-dat.php`: cài mới dùng schema/seed; nâng cấp sao lưu một lần trước thay đổi, tạo bảng/cột thiếu rồi gộp dữ liệu theo khóa tự nhiên. Bộ cài nạp bảy tệp `nang-cap-*.php`: kế hoạch, khóa ngoại môn học, số chỗ, cá nhân Hải, cá nhân Uyên, liên hệ và thời tiết Duy. Nhánh nâng cấp còn đọc `bo-sung-30-mon.sql`. Các bước email/kế hoạch/số chỗ/khóa ngoại chỉ chạy một lần mỗi lượt cài đặt; không chạy lại ở cuối nhánh nâng cấp.
 

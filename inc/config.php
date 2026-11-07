@@ -11,17 +11,23 @@ declare(strict_types=1);
 
 // 1. Nạp Composer và các hàm dùng chung.
 require_once __DIR__ . '/../vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv->load();
+$dotenv->required(['DB_HOST', 'DB_DATABASE', 'DB_USERNAME'])->required()->notEmpty();
+$dotenv->required('DB_PASSWORD')->required();
+
 require_once __DIR__ . '/ham.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/csrf.php';
 require_once __DIR__ . '/xac-thuc.php';
 // 2. Cấu hình môi trường.
-const MOI_TRUONG = 'dev';
+$batGoiLoi = ($_ENV['APP_DEBUG'] ?? 'false') === 'true';
+define('MOI_TRUONG', $batGoiLoi ? 'dev' : 'prod');
 error_reporting(E_ALL);
 
 ini_set(
     'display_errors',
-    MOI_TRUONG === 'dev' ? '1' : '0'
+    $batGoiLoi ? '1' : '0'
 );
 
 foreach (['logs', 'storage'] as $thuMuc) {

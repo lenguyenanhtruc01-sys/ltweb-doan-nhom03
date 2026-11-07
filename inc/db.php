@@ -10,6 +10,12 @@ function db(): PDO
     if ($pdo === null) {
         require_once __DIR__ . '/../vendor/autoload.php';
 
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+        $dotenv->safeLoad();
+        $dotenv->required(['DB_HOST', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD'])
+            ->required()
+            ->notEmpty();
+
         $layBienMoiTruong = static function (string $ten): string|false {
             if (array_key_exists($ten, $_ENV)) {
                 return (string) $_ENV[$ten];
@@ -19,11 +25,6 @@ function db(): PDO
             }
             return getenv($ten);
         };
-
-        $cacBienBatBuoc = ['DB_HOST', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD'];
-        if (array_filter($cacBienBatBuoc, static fn (string $ten): bool => $layBienMoiTruong($ten) === false) !== []) {
-            Dotenv\Dotenv::createImmutable(__DIR__ . '/..')->safeLoad();
-        }
 
         $giaTriBien = static function (string $ten) use ($layBienMoiTruong): string {
             $giaTri = $layBienMoiTruong($ten);
@@ -37,7 +38,6 @@ function db(): PDO
         $csdl = $giaTriBien('DB_DATABASE');
         $taiKhoan = $giaTriBien('DB_USERNAME');
         $matKhau = $giaTriBien('DB_PASSWORD');
-        $cong = $layBienMoiTruong('DB_PORT');
 
         if (PHP_SAPI !== 'cli' && strtolower($taiKhoan) === 'root') {
             throw new RuntimeException(
@@ -47,7 +47,7 @@ function db(): PDO
 
         $pdo = new PDO(
             'mysql:host=' . $host
-            . ';port=' . ($cong === false || $cong === '' ? '3306' : $cong)
+            . ';port=3306'
             . ';dbname=' . $csdl . ';charset=utf8mb4',
             $taiKhoan,
             $matKhau,

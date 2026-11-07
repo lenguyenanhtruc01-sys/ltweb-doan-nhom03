@@ -47,7 +47,7 @@ Website PHP hỗ trợ sinh viên tra cứu môn học, lập kế hoạch học
 
    Bộ cài tự tạo CSDL nếu chưa tồn tại. Trên CSDL hiện có, nó sao lưu trước khi nâng cấp và không xóa dữ liệu dự án. Bộ cài/migration cần quyền quản trị vì có thể tạo CSDL, bảng/cột và bản sao lưu; chúng không dùng thông tin tài khoản ứng dụng để chạy. `database/cai-dat.php` mặc định dùng `root` với mật khẩu rỗng; nếu cần thông tin khác, truyền riêng cho tiến trình CLI qua `DB_USER` và `DB_PASS`, không lưu mật khẩu quản trị vào `.env` hoặc Git.
 
-6. Sau khi CSDL đã tồn tại, mở phpMyAdmin bằng tài khoản quản trị, chọn tab SQL, thay `MAT_KHAU_THAY_THE` trong `database/tai-khoan.sql` bằng mật khẩu mạnh bạn đã nhập ở `.env`, rồi chạy tệp. Script tạo `nhom03_app` tại host `127.0.0.1` và chỉ cấp `SELECT`, `INSERT`, `UPDATE`, `DELETE` trên `ltweb_nhom03.*`. Nếu tài khoản đã tồn tại, không chạy lại mù quáng; kiểm tra và xử lý quyền cũ trước.
+6. Sau khi CSDL đã tồn tại, mở phpMyAdmin bằng tài khoản quản trị. Kiểm tra `SHOW GRANTS FOR 'nhom03_app'@'127.0.0.1'` và xác nhận đây là tài khoản chỉ dành cho EduGPA; dừng website để ngắt các kết nối đang dùng tài khoản này. Thay `MAT_KHAU_THAY_THE` trong `database/tai-khoan.sql` bằng mật khẩu mạnh đã cấu hình ở `.env`, rồi chạy tệp. Script xóa và tạo lại riêng tài khoản `nhom03_app` để thu hồi mọi quyền/role cũ, sau đó chỉ cấp `SELECT`, `INSERT`, `UPDATE`, `DELETE` trên `ltweb_nhom03.*`. Thao tác này không xóa dữ liệu CSDL; cập nhật `.env` với cùng mật khẩu mới rồi khởi động lại website. Không chạy nếu tài khoản đang được ứng dụng khác sử dụng.
 
 7. Kiểm tra quyền với tài khoản quản trị:
 

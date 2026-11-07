@@ -29,7 +29,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     if ($emailNhap !== '' && mb_strlen($emailNhap) <= 254 && $matKhau !== '') {
         $khoNguoiDung = new \App\Data\KhoNguoiDung(db());
         $nd = $khoNguoiDung->timDeDangNhap($emailNhap);
-        if ($nd !== null && password_verify($matKhau, $nd['mat_khau'])) {
+        // Cùng tài khoản dùng tên hoặc email vẫn chịu chung một giới hạn.
+        $khoa = hash('sha256', $nd !== null ? 'uid:' . $nd['id'] : 'ten:' . mb_strtolower($emailNhap));
+        if ($khoNguoiDung->soLanDangNhapSai($khoa) >= 5) {
+            http_response_code(429);
+            $thongBao = 'Đăng nhập tạm thời bị giới hạn. Vui lòng thử lại sau 15 phút.';
+        } elseif ($nd !== null && password_verify($matKhau, $nd['mat_khau'])) {
+            $khoNguoiDung->xoaDangNhapSai($khoa);
             if (password_needs_rehash($nd['mat_khau'], PASSWORD_DEFAULT)) {
                 $khoNguoiDung->capNhatMatKhauBam((int) $nd['id'], password_hash($matKhau, PASSWORD_DEFAULT));
             }
@@ -46,6 +52,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             if ($ghiNho) taoPhienGhiNho((int) $nd['id']);
             header('Location: ' . ($nd['vai_tro'] === 'quan_tri' ? 'quan-tri.php' : 'index.php'), true, 303);
             exit;
+        } else {
+            $khoNguoiDung->ghiDangNhapSai($khoa, $_SERVER['REMOTE_ADDR'] ?? '');
         }
     }
 }

@@ -108,11 +108,13 @@ require __DIR__ . '/inc/header.php';
     <section aria-labelledby="tieu-de-form-mon">
         <h2 id="tieu-de-form-mon"><?= e($id === null ? 'Thêm môn học' : 'Sửa môn học') ?></h2>
         <?php if ($loi !== []): ?>
-            <ul class="quan-tri-mon__loi" role="alert">
+            <div class="quan-tri-mon__loi" role="alert">
+            <ul>
                 <?php foreach ($loi as $truong => $l): ?>
                     <li><?php if (isset($idTruong[$truong])): ?><a href="#<?= e($idTruong[$truong]) ?>"><?= e($l) ?></a><?php else: ?><?= e($l) ?><?php endif; ?></li>
                 <?php endforeach; ?>
             </ul>
+            </div>
         <?php endif; ?>
         <form action="quan-tri-mon-hoc.php" method="post" enctype="multipart/form-data" class="quan-tri-mon__form">
             <?= csrfField() ?>

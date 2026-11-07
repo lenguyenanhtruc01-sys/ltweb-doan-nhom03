@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $token = bin2hex(random_bytes(32));
         if ((new KhoNguoiDung(db()))->taoYeuCauDatLai($email, hash('sha256', $token))) {
             $duongDan = 'dat-lai-mat-khau.php?token=' . urlencode($token);
-            error_log('Yêu cầu đặt lại mật khẩu: ' . $duongDan);
+            // Không ghi URL hoặc mã đặt lại mật khẩu vào log.
 
             // Chưa cấu hình SMTP; ở môi trường dev hiển thị link để demo luồng.
             if (MOI_TRUONG === 'dev') {

@@ -122,6 +122,45 @@ try {
     $r=$http('dang-xuat.php','POST',['_csrf'=>$token]); check($r['status']===303,'A Đăng xuất POST hợp lệ');
     $r=$http($page,'POST',['_csrf'=>$token,'hanh_dong'=>'tra_cuu_mang','target'=>'127.0.0.1']);
     check($r['status']===403,'A Token phiên cũ sau đăng xuất bị từ chối');
+    // Kiểm thử phản hồi BT6 trên cùng CSDL riêng.
+    $http($secret);
+    $r=$http($page); preg_match('/name="_csrf" value="([a-f0-9]{64})"/',$r['body'],$m); $token=$m[1];
+    $p->exec("UPDATE nguoi_dung SET vai_tro='quan_tri' WHERE id=".$uid);
+    $r=$http('quan-tri-mon-hoc.php','POST',['_csrf'=>$token,'ma_mon'=>'']);
+    check($r['status']===422 && preg_match('/<div[^>]*role="alert"[^>]*>\s*<ul>/',$r['body'])===1
+        && preg_match('/<ul[^>]*role="alert"/',$r['body'])===0,'BT6 HTML lỗi có div alert bọc ul');
+    $appLog=$root.'/logs/php-error.log';
+    clearstatcache(true,$appLog); $offset=is_file($appLog)?filesize($appLog):0;
+    $r=$http('quen-mat-khau.php','POST',['_csrf'=>$token,'email'=>'bt7@example.invalid']);
+    check($r['status']===303,'BT6 Quên mật khẩu PRG');
+    $r=$http('quen-mat-khau.php');
+    preg_match('/dat-lai-mat-khau.php\?token=([a-f0-9]{64})/',$r['body'],$reset);
+    $resetToken=$reset[1]??'';
+    check(strlen($resetToken)===64,'BT6 Có mã demo dev để thử reset');
+    $newLog=is_file($appLog)?substr((string)file_get_contents($appLog),(int)$offset):'';
+    check(!str_contains($newLog,$resetToken) && !str_contains($newLog,'dat-lai-mat-khau.php?token='),'BT6 Không ghi mã reset vào log');
+    foreach(['123456','1234567'] as $short){
+        $r=$http('dat-lai-mat-khau.php','POST',['_csrf'=>$token,'token'=>$resetToken,'mat_khau'=>$short,'xac_nhan_mat_khau'=>$short]);
+        check($r['status']===200 && str_contains($r['body'],'ít nhất 8 ký tự'),'BT6 Từ chối reset '.strlen($short).' ký tự');
+    }
+    $r=$http('dat-lai-mat-khau.php','POST',['_csrf'=>$token,'token'=>$resetToken,'mat_khau'=>'NewPass123','xac_nhan_mat_khau'=>'NewPass123']);
+    check($r['status']===303,'BT6 Reset mật khẩu đủ độ dài');
+    $freshToken=function() use($http): string {
+        $r=$http('dang-nhap.php'); preg_match('/name="_csrf" value="([a-f0-9]{64})"/',$r['body'],$m); return $m[1];
+    };
+    $token=$freshToken();
+    for($i=0;$i<5;$i++){
+        $r=$http('dang-nhap.php','POST',['_csrf'=>$token,'email'=>$i%2?'bt7_guest':'bt7@example.invalid','mat_khau'=>'sai']);
+        check($r['status']===200,'BT6 Lần đăng nhập sai '.($i+1));
+    }
+    curl_setopt($client,CURLOPT_COOKIELIST,'ALL');
+    $token=$freshToken();
+    $r=$http('dang-nhap.php','POST',['_csrf'=>$token,'email'=>'bt7_guest','mat_khau'=>'NewPass123']);
+    check($r['status']===429,'BT6 Khóa sau 5 lần sai dù đổi cookie và dùng mật khẩu đúng');
+    $p->exec('UPDATE dang_nhap_sai SET thoi_gian=NOW()-INTERVAL 16 MINUTE');
+    $r=$http('dang-nhap.php','POST',['_csrf'=>$token,'email'=>'bt7@example.invalid','mat_khau'=>'NewPass123']);
+    check($r['status']===303 && (int)$p->query('SELECT COUNT(*) FROM dang_nhap_sai')->fetchColumn()===0,'BT6 Hết hạn đăng nhập được và xóa lần sai');
+    check(!preg_match('/error_log\s*\(/',file_get_contents($root.'/quen-mat-khau.php')),'BT6 Không còn lệnh log trong luồng quên mật khẩu');
 } finally {
     if(is_resource($server)){proc_terminate($server);proc_close($server);}
     if($router && is_file($router)) unlink($router);

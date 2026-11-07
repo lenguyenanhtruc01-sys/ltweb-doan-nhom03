@@ -23,6 +23,26 @@ final class KhoNguoiDung
         return $st->fetch() ?: null;
     }
 
+    public function soLanDangNhapSai(string $khoa): int
+    {
+        $st = $this->pdo->prepare('SELECT COUNT(*) FROM dang_nhap_sai
+            WHERE khoa=? AND thoi_gian > NOW() - INTERVAL 15 MINUTE');
+        $st->execute([$khoa]);
+        return (int) $st->fetchColumn();
+    }
+
+    public function ghiDangNhapSai(string $khoa, string $ip): void
+    {
+        $st = $this->pdo->prepare('INSERT INTO dang_nhap_sai (khoa,ip) VALUES (?,?)');
+        $st->execute([$khoa, $ip]);
+    }
+
+    public function xoaDangNhapSai(string $khoa): void
+    {
+        $st = $this->pdo->prepare('DELETE FROM dang_nhap_sai WHERE khoa=?');
+        $st->execute([$khoa]);
+    }
+
     public function capNhatMatKhauBam(int $uid, string $matKhauBam): void
     {
         $st = $this->pdo->prepare('UPDATE nguoi_dung SET mat_khau=? WHERE id=?');

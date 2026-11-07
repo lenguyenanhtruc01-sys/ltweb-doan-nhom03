@@ -274,3 +274,9 @@ Oẳn tù tì vẫn lưu lịch sử/thống kê trong `tv_lich_su_ott`; check-i
 Bản vá đã được commit tại `ed2448970d3bffe10b23a0715365bef7a04e18be`. Ngày 27/10/2026, đối chiếu HEAD local `main` và `git ls-remote origin refs/heads/main` cùng ở `83124f39ec2ff02137bde3399639a112898acc51` (commit kế tiếp dọn minh chứng HTML trùng). Đây là mốc mã nguồn đã có trên remote, chưa phải xác nhận PDF/ZIP cuối đã nộp; phần cập nhật tài liệu trong lượt này chưa commit/push.
 
 Minh chứng đo ngày 27/10/2026: [ảnh và JSON gốc](kiemtra/ban-chot-20261027/). Ba trang bắt buộc đạt Lighthouse Mobile Accessibility 100; Nu Html Checker cục bộ đo 16 trang/trạng thái có 0 lỗi HTML, một cảnh báo heading ở chi tiết. Đây là số đo lịch sử của các trang/trạng thái đã thử; không dùng số liệu này để khẳng định mọi ca kiểm thử đều đã hoàn tất.
+
+### Sửa theo phản hồi BT6 về bảo mật
+Mật khẩu đặt lại có tối thiểu 8 ký tự như đăng ký. Không ghi mã/URL reset vào log; link demo vẫn chỉ dành cho môi trường dev, không dùng chế độ này khi triển khai công khai.
+Đăng nhập sai 5 lần trong 15 phút sẽ bị chặn 429 ở lần tiếp theo, kể cả khi nhập đúng mật khẩu; sau 15 phút có thể thử lại. Tên đăng nhập và email của cùng tài khoản dùng chung giới hạn, không phụ thuộc cookie. Đăng nhập thành công xóa các lần sai.
+CSDL mới có thêm bảng dang_nhap_sai (tổng 25 bảng). Máy đã có dữ liệu: chạy php database/cai-dat.php để sao lưu/nâng cấp, hoặc chọn CSDL ltweb_nhom03 rồi chạy database/nang-cap-dang-nhap.sql (CREATE TABLE IF NOT EXISTS, không xóa dữ liệu). Không import lại schema.sql để nâng cấp.
+uploads/.htaccess cấm truy cập các đuôi thực thi, cấm liệt kê và thêm nosniff trên Apache; cần AllowOverride cho thư mục này. php -S không đọc .htaccess.

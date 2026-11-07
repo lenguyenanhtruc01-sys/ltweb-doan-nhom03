@@ -30,8 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($yeuCau === null) {
         $thongBaoLoi = 'Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.';
-    } elseif (mb_strlen($matKhau) < 6 || $matKhau !== $xacNhan) {
-        $thongBaoLoi = 'Mật khẩu phải có ít nhất 6 ký tự và hai lần nhập phải giống nhau.';
+    } elseif (mb_strlen($matKhau) < 8 || $matKhau !== $xacNhan) {
+        $thongBaoLoi = 'Mật khẩu phải có ít nhất 8 ký tự và hai lần nhập phải giống nhau.';
     } else {
         if ($khoNguoiDung->datLaiMatKhau($token, password_hash($matKhau, PASSWORD_DEFAULT))) {
             xoaCookieGhiNho();
@@ -64,12 +64,12 @@ require __DIR__ . '/inc/header.php';
                 <input type="hidden" name="token" value="<?= e($token) ?>">
 
                 <div>
-                    <label for="mat_khau">Mật khẩu mới (ít nhất 6 ký tự):</label>
+                    <label for="mat_khau">Mật khẩu mới (ít nhất 8 ký tự):</label>
                     <input
                         type="password"
                         id="mat_khau"
                         name="mat_khau"
-                        minlength="6"
+                        minlength="8"
                         autocomplete="new-password"
                         required>
                 </div>
@@ -80,7 +80,7 @@ require __DIR__ . '/inc/header.php';
                         type="password"
                         id="xac_nhan_mat_khau"
                         name="xac_nhan_mat_khau"
-                        minlength="6"
+                        minlength="8"
                         autocomplete="new-password"
                         required>
                 </div>

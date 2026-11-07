@@ -2,6 +2,7 @@
 
 /uploads/*
 !/uploads/.gitkeep
+!/uploads/.htaccess
 
 /storage/*
 !/storage/.htaccess

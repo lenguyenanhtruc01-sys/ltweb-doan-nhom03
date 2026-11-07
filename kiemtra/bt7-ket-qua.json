@@ -222,6 +222,66 @@
         {
             "case": "A Token phiên cũ sau đăng xuất bị từ chối",
             "pass": true
+        },
+        {
+            "case": "BT6 HTML lỗi có div alert bọc ul",
+            "pass": true
+        },
+        {
+            "case": "BT6 Quên mật khẩu PRG",
+            "pass": true
+        },
+        {
+            "case": "BT6 Có mã demo dev để thử reset",
+            "pass": true
+        },
+        {
+            "case": "BT6 Không ghi mã reset vào log",
+            "pass": true
+        },
+        {
+            "case": "BT6 Từ chối reset 6 ký tự",
+            "pass": true
+        },
+        {
+            "case": "BT6 Từ chối reset 7 ký tự",
+            "pass": true
+        },
+        {
+            "case": "BT6 Reset mật khẩu đủ độ dài",
+            "pass": true
+        },
+        {
+            "case": "BT6 Lần đăng nhập sai 1",
+            "pass": true
+        },
+        {
+            "case": "BT6 Lần đăng nhập sai 2",
+            "pass": true
+        },
+        {
+            "case": "BT6 Lần đăng nhập sai 3",
+            "pass": true
+        },
+        {
+            "case": "BT6 Lần đăng nhập sai 4",
+            "pass": true
+        },
+        {
+            "case": "BT6 Lần đăng nhập sai 5",
+            "pass": true
+        },
+        {
+            "case": "BT6 Khóa sau 5 lần sai dù đổi cookie và dùng mật khẩu đúng",
+            "pass": true
+        },
+        {
+            "case": "BT6 Hết hạn đăng nhập được và xóa lần sai",
+            "pass": true
+        },
+        {
+            "case": "BT6 Không còn lệnh log trong luồng quên mật khẩu",
+            "pass": true
         }
     ]
 }

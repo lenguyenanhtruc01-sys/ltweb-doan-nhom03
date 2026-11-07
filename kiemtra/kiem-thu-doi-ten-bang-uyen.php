@@ -44,7 +44,7 @@ try {
     $kq = caiDatNhom($pdo, $ten); $cacBanSao[] = $kq['sao_luu'];
     kiemTraBangUyen($kyNang === anhBangUyen($pdo, 'tv_ky_nang'), 'Đổi ID hoặc dữ liệu kỹ năng cũ.');
     kiemTraBangUyen($lich === anhBangUyen($pdo, 'tv_thoi_khoa_bieu'), 'Đổi ID hoặc lịch cũ.');
-    kiemTraBangUyen($kq['so_bang'] === 24, 'Còn bảng cũ hoặc tạo bảng trùng.');
+    kiemTraBangUyen($kq['so_bang'] === 25, 'Còn bảng cũ hoặc tạo bảng trùng.');
     kiemTraBangUyen(count($kho->timThoiKhoaBieu('3120224174', 'UYENOLD')) === 1, 'Lớp dữ liệu không đọc được lịch đã nâng cấp.');
     try {
         $pdo->exec("INSERT INTO tv_ky_nang (mssv,ten,nhom) VALUES ('0000000000','Sai MSSV','web')");

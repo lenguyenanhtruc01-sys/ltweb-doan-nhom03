@@ -1,0 +1,10 @@
+Options -Indexes
+
+# Cấm truy cập mã thực thi, kể cả đuôi kép và chữ hoa.
+<FilesMatch "(?i)\.(php[0-9]*|phtml|pht|phar|cgi|pl|py|sh)(\.|$)">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+</IfModule>

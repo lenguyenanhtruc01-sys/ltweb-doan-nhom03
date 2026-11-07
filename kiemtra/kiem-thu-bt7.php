@@ -160,6 +160,19 @@ try {
     $p->exec('UPDATE dang_nhap_sai SET thoi_gian=NOW()-INTERVAL 16 MINUTE');
     $r=$http('dang-nhap.php','POST',['_csrf'=>$token,'email'=>'bt7@example.invalid','mat_khau'=>'NewPass123']);
     check($r['status']===303 && (int)$p->query('SELECT COUNT(*) FROM dang_nhap_sai')->fetchColumn()===0,'BT6 Hết hạn đăng nhập được và xóa lần sai');
+    $token=$freshToken();
+    $lock=$p->prepare('INSERT INTO dang_nhap_sai (khoa,ip) VALUES (?,?)');
+    for($i=0;$i<5;$i++) $lock->execute([hash('sha256','uid:'.$uid),'127.0.0.1']);
+    $r=$http('dang-nhap.php','POST',['_csrf'=>$token,'email'=>'bt7_guest','mat_khau'=>'NewPass123']);
+    check($r['status']===429,'Reset: tài khoản đang bị khóa');
+    $unlockToken=bin2hex(random_bytes(32));
+    $st=$p->prepare('INSERT INTO yeu_cau_dat_lai_mat_khau (nguoi_dung_id,token_hash,het_han) VALUES (?,?,NOW()+INTERVAL 30 MINUTE)');
+    $st->execute([$uid,hash('sha256',$unlockToken)]);
+    $r=$http('dat-lai-mat-khau.php','POST',['_csrf'=>$token,'token'=>$unlockToken,'mat_khau'=>'NewPass456','xac_nhan_mat_khau'=>'NewPass456']);
+    check($r['status']===303,'Reset: đổi mật khẩu khi tài khoản đang khóa');
+    $token=$freshToken();
+    $r=$http('dang-nhap.php','POST',['_csrf'=>$token,'email'=>'bt7@example.invalid','mat_khau'=>'NewPass456']);
+    check($r['status']===303,'Reset: đăng nhập ngay bằng mật khẩu mới không chờ 15 phút');
     check(!preg_match('/error_log\s*\(/',file_get_contents($root.'/quen-mat-khau.php')),'BT6 Không còn lệnh log trong luồng quên mật khẩu');
 } finally {
     if(is_resource($server)){proc_terminate($server);proc_close($server);}

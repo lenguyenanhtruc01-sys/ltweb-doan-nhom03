@@ -54,9 +54,21 @@ try {
     $phien->xoaTheoSelector(str_repeat('b',18));
     $phien->them(str_repeat('c',18), 3, $tokenHash, time()+3600);
 
+    $khoa = hash('sha256', 'uid:' . $uid);
+    $khoaKhac = hash('sha256', 'uid:khac');
+    for ($i=0; $i<5; $i++) $nguoi->ghiDangNhapSai($khoa, '127.0.0.1');
+    $nguoi->ghiDangNhapSai($khoaKhac, '127.0.0.2');
+    $cu = $pdo->prepare('INSERT INTO dang_nhap_sai (khoa,ip,thoi_gian) VALUES (?,?,NOW()-INTERVAL 16 MINUTE)');
+    $cu->execute([$khoa,'127.0.0.1']);
+    $cu->execute([hash('sha256','tai-khoan-khong-ton-tai'),'127.0.0.3']);
+    kiemTraKhoXacThuc($nguoi->soLanDangNhapSai($khoa) === 5
+        && (int)$pdo->query('SELECT COUNT(*) FROM dang_nhap_sai')->fetchColumn() === 6
+        && $nguoi->soLanDangNhapSai($khoaKhac) === 1, 'Dọn sai bản ghi hết hạn/còn hiệu lực.');
+    echo "PASS dọn bản ghi quá 15 phút của mọi khóa, giữ nguyên các lần sai còn hiệu lực.\n";
+
     $token = bin2hex(random_bytes(32));
     $nguoi->taoYeuCauDatLai('hop@example.com', hash('sha256',$token));
-    $pdo->exec("CREATE TRIGGER audit_chan_thu_hoi BEFORE DELETE ON phien_ghi_nho
+    $pdo->exec("CREATE TRIGGER audit_chan_thu_hoi BEFORE DELETE ON dang_nhap_sai
         FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='audit rollback'");
     try {
         $nguoi->datLaiMatKhau($token, password_hash('NewAuditPass123!', PASSWORD_DEFAULT));
@@ -65,13 +77,19 @@ try {
         kiemTraKhoXacThuc($e->getCode() === '45000', 'Sai lỗi kiểm thử rollback.');
     }
     kiemTraKhoXacThuc(!$pdo->inTransaction() && $nguoi->timDeDangNhap('hop')['mat_khau'] === $hash
-        && $nguoi->timYeuCauDatLai($token) !== null && $phien->timConHan($selector) !== null,
+        && $nguoi->timYeuCauDatLai($token) !== null && $phien->timConHan($selector) !== null
+        && $nguoi->soLanDangNhapSai($khoa) === 5,
         'Lỗi thu hồi phiên không rollback mật khẩu/mã/phiên.');
     $pdo->exec('DROP TRIGGER audit_chan_thu_hoi');
     kiemTraKhoXacThuc($nguoi->datLaiMatKhau($token, password_hash('NewAuditPass123!', PASSWORD_DEFAULT)), 'Đặt lại thất bại.');
     kiemTraKhoXacThuc($phien->timConHan($selector) === null && $phien->timConHan(str_repeat('c',18)) !== null,
         'Thu hồi sai tài khoản.');
+    kiemTraKhoXacThuc($nguoi->soLanDangNhapSai($khoa) === 0
+        && $nguoi->soLanDangNhapSai($khoaKhac) === 1, 'Reset mở khóa sai tài khoản.');
+    $nguoi->ghiDangNhapSai($khoa, '127.0.0.1');
     kiemTraKhoXacThuc(!$nguoi->datLaiMatKhau($token,$hash), 'Dùng lại được mã đặt lại.');
+    kiemTraKhoXacThuc($nguoi->soLanDangNhapSai($khoa) === 1, 'Mã đã dùng vẫn mở khóa tài khoản.');
+    echo "PASS reset mở khóa đúng tài khoản; mã dùng lại và lỗi transaction không làm mất khóa.\n";
     echo "PASS phiên hợp lệ/hết hạn; đặt lại thu hồi đúng tài khoản và rollback khi có lỗi.\n";
 } finally {
     $pdo->exec('DROP DATABASE IF EXISTS `' . $ten . '`');

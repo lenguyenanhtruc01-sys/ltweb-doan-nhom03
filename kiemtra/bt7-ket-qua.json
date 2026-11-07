@@ -280,6 +280,18 @@
             "pass": true
         },
         {
+            "case": "Reset: tài khoản đang bị khóa",
+            "pass": true
+        },
+        {
+            "case": "Reset: đổi mật khẩu khi tài khoản đang khóa",
+            "pass": true
+        },
+        {
+            "case": "Reset: đăng nhập ngay bằng mật khẩu mới không chờ 15 phút",
+            "pass": true
+        },
+        {
             "case": "BT6 Không còn lệnh log trong luồng quên mật khẩu",
             "pass": true
         }

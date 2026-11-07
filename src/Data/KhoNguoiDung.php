@@ -25,6 +25,8 @@ final class KhoNguoiDung
 
     public function soLanDangNhapSai(string $khoa): int
     {
+        // Chỉ dọn các lần sai không còn tham gia giới hạn 15 phút.
+        $this->pdo->exec('DELETE FROM dang_nhap_sai WHERE thoi_gian <= NOW() - INTERVAL 15 MINUTE');
         $st = $this->pdo->prepare('SELECT COUNT(*) FROM dang_nhap_sai
             WHERE khoa=? AND thoi_gian > NOW() - INTERVAL 15 MINUTE');
         $st->execute([$khoa]);
@@ -129,6 +131,7 @@ final class KhoNguoiDung
             $st = $this->pdo->prepare('UPDATE nguoi_dung SET mat_khau=? WHERE id=?');
             $st->execute([$matKhauBam, $uid]);
             (new KhoPhienGhiNho($this->pdo))->xoaCuaNguoiDung($uid);
+            $this->xoaDangNhapSai(hash('sha256', 'uid:' . $uid));
             $this->pdo->commit();
             return true;
         } catch (\Throwable $loi) {

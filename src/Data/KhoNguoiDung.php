@@ -33,10 +33,10 @@ final class KhoNguoiDung
         return (int) $st->fetchColumn();
     }
 
-    public function ghiDangNhapSai(string $khoa, string $ip): void
+    public function ghiDangNhapSai(string $khoa, string $ip, string $email = ''): void
     {
-        $st = $this->pdo->prepare('INSERT INTO dang_nhap_sai (khoa,ip) VALUES (?,?)');
-        $st->execute([$khoa, $ip]);
+        $st = $this->pdo->prepare('INSERT INTO dang_nhap_sai (khoa,email,ip) VALUES (?,?,?)');
+        $st->execute([$khoa, mb_substr(mb_strtolower(trim($email)), 0, 255), substr($ip, 0, 45)]);
     }
 
     public function xoaDangNhapSai(string $khoa): void

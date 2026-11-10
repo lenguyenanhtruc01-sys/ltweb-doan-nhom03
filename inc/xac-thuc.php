@@ -166,6 +166,7 @@ function yeuCauQuyen(string $vaiTro): array
 
     // Nếu vai trò không khớp -> Báo lỗi 403 (Slide 42)
     if ($nd['vai_tro'] !== $vaiTro) {
+        ghiLogBaoMat('cam_truy_cap', ['trang' => $_SERVER['REQUEST_URI'] ?? '-']);
         http_response_code(403);
         require __DIR__ . '/../403.php';
         exit;
@@ -173,6 +174,28 @@ function yeuCauQuyen(string $vaiTro): array
 
     return $nd;
 }
+// Chương 7 — chống đoán mật khẩu (slide 31, gợi ý 5): số lần sai trong 15 phút
+function khoaDangNhap(string $emailHoacKhoa): string
+{
+    if (preg_match('/\A[a-f0-9]{64}\z/D', $emailHoacKhoa) === 1) {
+        return $emailHoacKhoa;
+    }
+    $nd = (new KhoNguoiDung(db()))->timDeDangNhap($emailHoacKhoa);
+    return hash('sha256', $nd !== null ? 'uid:' . $nd['id'] : 'ten:' . mb_strtolower(trim($emailHoacKhoa)));
+}
+
+function soLanSai(string $email): int
+{
+    return (new KhoNguoiDung(db()))->soLanDangNhapSai(khoaDangNhap($email));
+}
+
+function ghiLanSai(string $email): void
+{
+    $ip = $_SERVER['REMOTE_ADDR'] ?? '-';
+    (new KhoNguoiDung(db()))->ghiDangNhapSai(khoaDangNhap($email), $ip, $email);
+    ghiLogBaoMat('dang_nhap_sai', ['email' => $email]);
+}
+
 // Hàm đăng xuất chuẩn (Chương 7 - Biện pháp 2)
 function dangXuat(): void
 {

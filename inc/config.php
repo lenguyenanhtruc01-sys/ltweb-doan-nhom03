@@ -101,6 +101,7 @@ $_SESSION['hoat_dong_cuoi'] = time(); // Cập nhật thời gian hoạt động
 
 // Kiểm tra trước mọi xử lý POST, kể cả khôi phục đăng nhập có truy vấn CSDL.
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && !csrfHopLe()) {
+    ghiLogBaoMat('csrf_sai', ['trang' => $_SERVER['REQUEST_URI'] ?? '-']);
     http_response_code(403);
     $loi = 'Phiên biểu mẫu không hợp lệ. Vui lòng tải lại trang rồi gửi lại.';
     if (function_exists('traJson')

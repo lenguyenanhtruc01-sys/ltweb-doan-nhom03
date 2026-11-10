@@ -53,7 +53,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             header('Location: ' . ($nd['vai_tro'] === 'quan_tri' ? 'quan-tri.php' : 'index.php'), true, 303);
             exit;
         } else {
-            $khoNguoiDung->ghiDangNhapSai($khoa, $_SERVER['REMOTE_ADDR'] ?? '');
+            $khoNguoiDung->ghiDangNhapSai($khoa, $_SERVER['REMOTE_ADDR'] ?? '', $emailNhap);
+            ghiLogBaoMat('dang_nhap_sai', ['email' => $emailNhap]);
         }
     }
 }

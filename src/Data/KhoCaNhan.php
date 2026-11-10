@@ -76,6 +76,35 @@ class KhoCaNhan
         return $st->fetchAll(PDO::FETCH_COLUMN);
     }
 
+    /** Danh sách món dùng chung kèm id để chủ trang xóa từng món. */
+    public function layMonTheoMssv(string $mssv): array
+    {
+        $st = $this->db->prepare('SELECT id, ten_mon, bua FROM tv_mon_an
+            WHERE mssv = ? ORDER BY id');
+        $st->execute([$mssv]);
+        return $st->fetchAll();
+    }
+
+    /**
+     * Xóa một món của chính chủ trang.
+     * Điều kiện AND mssv = ? ngăn chủ trang xóa bản ghi của người khác
+     * dù có sửa ô id trên biểu mẫu.
+     */
+    public function xoaMon(int $id, string $mssv): bool
+    {
+        $st = $this->db->prepare('DELETE FROM tv_mon_an WHERE id = ? AND mssv = ?');
+        $st->execute([$id, $mssv]);
+        return $st->rowCount() === 1;
+    }
+
+    /** Xóa lịch sử oẳn tù tì của đúng chủ trang; trả về số ván đã xóa. */
+    public function xoaLichSuOtt(string $mssv): int
+    {
+        $st = $this->db->prepare('DELETE FROM tv_lich_su_ott WHERE mssv = ?');
+        $st->execute([$mssv]);
+        return $st->rowCount();
+    }
+
     public function chonMonNgauNhien(array $mangMon, string $bua): string
     {
         $ds = self::kiemTraDanhSachMon($mangMon, $bua);

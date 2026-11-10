@@ -16,73 +16,256 @@ $goc      = '../../';
 $tieuDe   = 'Giới thiệu — Dương Bảo Duy';
 $trang    = '';
 $cssTrang = 'css/canhan.css';
+$scriptsTrang = ['thanhvien/3120224034_Duy/canhan.js'];
 $lopBody  = 'trang-ca-nhan';
 
 $khoCaNhan = new KhoCaNhan(db());
-$hanhDong  = layChuoiDauVao($_POST['hanh_dong'] ?? '');
+$laAjax = ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest';
 
-// ============================================================
-// XỬ LÝ POST
-// ============================================================
+/** Trả JSON cho fetch (giữ nguyên hợp đồng dữ liệu) rồi kết thúc request. */
+function traJsonCaNhan(array $duLieu, int $status = 200): never
+{
+    http_response_code($status);
+    header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store');
+    echo json_encode($duLieu, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+    exit;
+}
+
+/** Chỉ tài khoản liên kết thanh_vien.nguoi_dung_id của Duy mới được sửa dữ liệu dùng chung. */
+function laChuTrangDuy(KhoCaNhan $kho): bool
+{
+    $nd = nguoiDung();
+    return $nd !== null && $kho->laChuTrang(MSSV_DUY, (int) $nd['id']);
+}
+
+// Nhãn dùng chung cho cả trang và phản hồi JSON.
+$buaChoPhep  = ['bat_ky' => 'Bất kỳ', 'sang' => 'Sáng', 'trua' => 'Trưa', 'toi' => 'Tối', 'dem' => 'Đêm'];
+$labelChon   = ['keo' => '✊ Kéo', 'bua' => '✋ Búa', 'bao' => '✌️ Bao'];
+$labelKetQua = ['thang' => '🎉 Thắng', 'thua' => '😢 Thua', 'hoa' => '🤝 Hoà'];
+$labelThoiTiet = ['nang' => '☀️ Nắng', 'mua' => '🌧️ Mưa', 'may' => '☁️ Nhiều mây', 'giong_bao' => '⛈️ Giông bão'];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $token = $_POST['_csrf'] ?? null;
-    if (!is_string($token) || !csrfKiemTra($token)) {
+    // config.php đã chặn POST thiếu mã; kiểm tra lại để trang tự đứng vững.
+    // csrfHopLe() nhận mã trong _csrf của form hoặc header X-CSRF-Token của fetch.
+    if (!csrfHopLe()) {
+        if ($laAjax) {
+            traJsonCaNhan(['ok' => false, 'loi' => ['chung' => 'Phiên biểu mẫu không hợp lệ. Hãy tải lại trang.']], 403);
+        }
         http_response_code(403);
         exit('Phiên biểu mẫu không hợp lệ. Vui lòng tải lại trang rồi thử lại.');
     }
+    if ($laAjax) {
+        header('X-Content-Type-Options: nosniff');
+    }
+    $hanhDong = layChuoiDauVao($_POST['hanh_dong'] ?? '');
+    $laChuTrang = laChuTrangDuy($khoCaNhan);
+
     // 1. Chọn món
     if ($hanhDong === 'chon_mon') {
+        $loi = [];
         try {
             $dsMonText = $_POST['dsMon'] ?? '';
-            $bua = $_POST['bua'] ?? 'bat_ky';
-            if (!is_string($dsMonText) || !is_string($bua)) {
+            $bua = layChuoiDauVao($_POST['bua'] ?? 'bat_ky');
+            if (!is_string($dsMonText)) {
                 throw new DomainException('Danh sách món hoặc bữa ăn không hợp lệ.');
             }
             if (mb_strlen($dsMonText) > 3000) {
                 throw new DomainException('Danh sách món tối đa 3000 ký tự.');
             }
             $mangMon = KhoCaNhan::kiemTraDanhSachMon(explode("\n", $dsMonText), $bua);
-            $nd = nguoiDung();
-            if ($nd !== null && $khoCaNhan->laChuTrang(MSSV_DUY, (int) $nd['id'])) {
+            if ($laChuTrang) {
                 $khoCaNhan->luuDanhSachMon(MSSV_DUY, $mangMon, $bua);
             }
             $monChon = $khoCaNhan->chonMonNgauNhien($mangMon, $bua);
             $_SESSION['duy_danh_sach_mon'] = $mangMon;
             $_SESSION['duy_mon_an_ket_qua'] = ['mon' => $monChon, 'bua' => $bua, 'thoiGian' => date('H:i:s d/m/Y')];
-            $_SESSION['flash_duy'] = "Máy đã chọn: " . $monChon;
+            $_SESSION['flash_duy'] = ($laChuTrang ? 'Đã lưu danh sách. ' : 'Danh sách chỉ giữ trong phiên này. ')
+                . 'Máy đã chọn: ' . $monChon;
         } catch (DomainException $err) {
-            $_SESSION['flash_duy'] = $err->getMessage();
+            $loi['dsMon'] = $err->getMessage();
         } catch (PDOException $err) {
             error_log((string) $err);
-            $_SESSION['flash_duy'] = 'Chưa lưu được danh sách món. Vui lòng thử lại sau.';
+            $loi['chung'] = 'Chưa lưu được danh sách món. Vui lòng thử lại sau.';
         }
-        header('Location: gioithieu.php#chon-mon', true, 303); exit;
+
+        if ($laAjax) {
+            if ($loi !== []) {
+                traJsonCaNhan(['ok' => false, 'loi' => $loi], 422);
+            }
+            $mon = $_SESSION['duy_mon_an_ket_qua'];
+            $daLuu = [];
+            foreach ($khoCaNhan->layMonTheoMssv(MSSV_DUY) as $monDaLuu) {
+                $daLuu[] = [
+                    'id' => (int) $monDaLuu['id'],
+                    'ten' => (string) $monDaLuu['ten_mon'],
+                    'buaLabel' => $buaChoPhep[$monDaLuu['bua']] ?? $monDaLuu['bua'],
+                ];
+            }
+            traJsonCaNhan([
+                'ok' => true,
+                'mon' => $mon['mon'],
+                'buaLabel' => $buaChoPhep[$mon['bua']] ?? $mon['bua'],
+                'thoiGian' => $mon['thoiGian'],
+                'chuTrang' => $laChuTrang,
+                'daLuu' => $daLuu,
+                'thongBao' => (string) ($_SESSION['flash_duy'] ?? ''),
+            ]);
+        }
+        header('Location: gioithieu.php#chon-mon', true, 303);
+        exit;
     }
 
     // 2. Oẳn tù tì
     if ($hanhDong === 'choi_oan_tu_ti') {
         $nguoiChon = layChuoiDauVao($_POST['chon'] ?? '');
         $hopLe = ['keo', 'bua', 'bao'];
+        $loi = [];
         if (in_array($nguoiChon, $hopLe, true)) {
             $mayChon   = $hopLe[array_rand($hopLe)];
             $luatThang = ['keo' => 'bao', 'bua' => 'keo', 'bao' => 'bua'];
             $ketQua    = ($nguoiChon === $mayChon) ? 'hoa' : (($luatThang[$nguoiChon] === $mayChon) ? 'thang' : 'thua');
             $khoCaNhan->ghiLichSuOtt(MSSV_DUY, $nguoiChon, $mayChon, $ketQua);
             $_SESSION['flash_duy'] = "Kết quả: Bạn chọn $nguoiChon, Máy chọn $mayChon => Bạn $ketQua!";
+        } else {
+            $loi['chon'] = 'Vui lòng chọn Kéo, Búa hoặc Bao.';
         }
-        header('Location: gioithieu.php#oan-tu-ti', true, 303); exit;
+
+        if ($laAjax) {
+            if ($loi !== []) {
+                traJsonCaNhan(['ok' => false, 'loi' => $loi], 422);
+            }
+            $stOtt = $khoCaNhan->thongKeOtt(MSSV_DUY);
+            $tong = array_sum($stOtt);
+            $lichSu = [];
+            foreach ($khoCaNhan->layLichSuOtt(MSSV_DUY) as $van) {
+                $lichSu[] = [
+                    'thoiGian' => (string) $van['thoi_gian'],
+                    'nguoiLabel' => $labelChon[$van['nguoi_chon']] ?? $van['nguoi_chon'],
+                    'mayLabel' => $labelChon[$van['may_chon']] ?? $van['may_chon'],
+                    'ketQuaLabel' => $labelKetQua[$van['ket_qua']] ?? $van['ket_qua'],
+                ];
+            }
+            traJsonCaNhan([
+                'ok' => true,
+                'vua' => [
+                    'nguoiLabel' => $labelChon[$nguoiChon],
+                    'mayLabel' => $labelChon[$mayChon],
+                    'ketQua' => $ketQua,
+                    'ketQuaLabel' => $labelKetQua[$ketQua],
+                ],
+                'thongKe' => [
+                    'thang' => (int) $stOtt['thang'],
+                    'thua' => (int) $stOtt['thua'],
+                    'hoa' => (int) $stOtt['hoa'],
+                    'tong' => (int) $tong,
+                    'tiLe' => $tong > 0 ? round($stOtt['thang'] * 100 / $tong, 1) : 0,
+                ],
+                'lichSu' => $lichSu,
+                'chuTrang' => $laChuTrang,
+            ]);
+        }
+        header('Location: gioithieu.php#oan-tu-ti', true, 303);
+        exit;
     }
 
     // 3. Check-in thời tiết
     if ($hanhDong === 'check_in_thoi_tiet') {
         $trangThai = layChuoiDauVao($_POST['trang_thai'] ?? '');
         $hopLe = ['nang', 'mua', 'may', 'giong_bao'];
+        $loi = [];
         if (in_array($trangThai, $hopLe, true)) {
             $khoCaNhan->themCheckIn(MSSV_DUY, $trangThai);
             $_SESSION['flash_duy'] = "Đã ghi nhận thời tiết! Cảm ơn bạn.";
+        } else {
+            $loi['trang_thai'] = 'Trạng thái thời tiết không hợp lệ.';
         }
-        header('Location: gioithieu.php#thoi-tiet', true, 303); exit;
+
+        if ($laAjax) {
+            if ($loi !== []) {
+                traJsonCaNhan(['ok' => false, 'loi' => $loi], 422);
+            }
+            $dsThoiTiet = $khoCaNhan->thongKeThoiTiet(MSSV_DUY);
+            $tongCheckIn = array_sum(array_column($dsThoiTiet, 'so_luot'));
+            $thongKe = [];
+            foreach ($dsThoiTiet as $tt) {
+                $thongKe[] = [
+                    'trangThai' => $tt['trang_thai'],
+                    'label' => $labelThoiTiet[$tt['trang_thai']] ?? $tt['trang_thai'],
+                    'soLuot' => (int) $tt['so_luot'],
+                    'phanTram' => $tongCheckIn > 0 ? round($tt['so_luot'] / $tongCheckIn * 100, 1) : 0,
+                ];
+            }
+            traJsonCaNhan(['ok' => true, 'tong' => (int) $tongCheckIn, 'thongKe' => $thongKe]);
+        }
+        header('Location: gioithieu.php#thoi-tiet', true, 303);
+        exit;
     }
+
+    // 4. Xóa một món đã lưu (chỉ chủ trang; điều kiện AND mssv = ?)
+    if ($hanhDong === 'xoa_mon') {
+        if (!$laChuTrang) {
+            if ($laAjax) {
+                traJsonCaNhan(['ok' => false, 'loi' => ['chung' => 'Chỉ chủ trang đã đăng nhập mới được xóa món dùng chung.']], 403);
+            }
+            http_response_code(403);
+            exit('Chỉ chủ trang đã đăng nhập mới được xóa món dùng chung.');
+        }
+        $id = soNguyenDauVao($_POST['id'] ?? null);
+        if ($id === false) {
+            if ($laAjax) {
+                traJsonCaNhan(['ok' => false, 'loi' => ['id' => 'Mã món không hợp lệ.']], 422);
+            }
+            http_response_code(422);
+            exit('Mã món không hợp lệ.');
+        }
+        if (!$khoCaNhan->xoaMon($id, MSSV_DUY)) {
+            if ($laAjax) {
+                traJsonCaNhan(['ok' => false, 'loi' => ['chung' => 'Không tìm thấy món thuộc trang của bạn.']], 404);
+            }
+            http_response_code(404);
+            exit('Không tìm thấy món thuộc trang của bạn.');
+        }
+        if ($laAjax) {
+            $daLuu = [];
+            foreach ($khoCaNhan->layMonTheoMssv(MSSV_DUY) as $monDaLuu) {
+                $daLuu[] = [
+                    'id' => (int) $monDaLuu['id'],
+                    'ten' => (string) $monDaLuu['ten_mon'],
+                    'buaLabel' => $buaChoPhep[$monDaLuu['bua']] ?? $monDaLuu['bua'],
+                ];
+            }
+            traJsonCaNhan(['ok' => true, 'daLuu' => $daLuu, 'thongBao' => 'Đã xóa món khỏi danh sách dùng chung.']);
+        }
+        $_SESSION['flash_duy'] = 'Đã xóa món khỏi danh sách dùng chung.';
+        header('Location: gioithieu.php#chon-mon', true, 303);
+        exit;
+    }
+
+    // 5. Xóa lịch sử oẳn tù tì (chỉ chủ trang; điều kiện AND mssv = ?)
+    if ($hanhDong === 'reset_oan_tu_ti') {
+        if (!$laChuTrang) {
+            if ($laAjax) {
+                traJsonCaNhan(['ok' => false, 'loi' => ['chung' => 'Chỉ chủ trang đã đăng nhập mới được xóa lịch sử.']], 403);
+            }
+            http_response_code(403);
+            exit('Chỉ chủ trang đã đăng nhập mới được xóa lịch sử.');
+        }
+        $soVan = $khoCaNhan->xoaLichSuOtt(MSSV_DUY);
+        if ($laAjax) {
+            traJsonCaNhan(['ok' => true, 'soVan' => $soVan, 'thongBao' => 'Đã xóa ' . $soVan . ' ván của trang.']);
+        }
+        $_SESSION['flash_duy'] = 'Đã xóa ' . $soVan . ' ván của trang.';
+        header('Location: gioithieu.php#oan-tu-ti', true, 303);
+        exit;
+    }
+
+    if ($laAjax) {
+        traJsonCaNhan(['ok' => false, 'loi' => ['chung' => 'Thao tác không hợp lệ.']], 422);
+    }
+    $_SESSION['flash_duy'] = 'Thao tác không hợp lệ.';
+    header('Location: gioithieu.php', true, 303);
+    exit;
 }
 
 // ============================================================
@@ -102,10 +285,8 @@ $lichSuOtt = $khoCaNhan->layLichSuOtt(MSSV_DUY);
 $dsThoiTiet = $khoCaNhan->thongKeThoiTiet(MSSV_DUY);
 $tongCheckIn = array_sum(array_column($dsThoiTiet, 'so_luot'));
 
-$buaChoPhep  = ['bat_ky' => 'Bất kỳ', 'sang' => 'Sáng', 'trua' => 'Trưa', 'toi' => 'Tối', 'dem' => 'Đêm'];
-$labelChon   = ['keo' => '✊ Kéo', 'bua' => '✋ Búa', 'bao' => '✌️ Bao'];
-$labelKetQua = ['thang' => '🎉 Thắng', 'thua' => '😢 Thua', 'hoa' => '🤝 Hoà'];
-$labelThoiTiet = ['nang' => '☀️ Nắng', 'mua' => '🌧️ Mưa', 'may' => '☁️ Nhiều mây', 'giong_bao' => '⛈️ Giông bão'];
+$laChuTrang = laChuTrangDuy($khoCaNhan);
+$dsMonDaLuu = $khoCaNhan->layMonTheoMssv(MSSV_DUY);
 
 require __DIR__ . '/../../inc/header.php';
 ?>
@@ -120,7 +301,7 @@ require __DIR__ . '/../../inc/header.php';
 
 <!-- Toast flash -->
 <?php if ($tb !== ''): ?>
-    <div class="thong-bao-thanh-cong" role="status" aria-live="polite" style="background:#d4edda; color:#155724; padding:15px; margin: 20px auto; max-width: 800px; border-radius:5px;">
+    <div class="thong-bao-thanh-cong" role="status" aria-live="polite">
         <span class="thong-bao-thanh-cong__icon" aria-hidden="true">✔</span>
         <span class="thong-bao-thanh-cong__noi-dung"><?= e($tb) ?></span>
     </div>
@@ -182,6 +363,30 @@ require __DIR__ . '/../../inc/header.php';
                 </div>
             <?php endif; ?>
         </div>
+
+        <?php if ($dsMonDaLuu !== []): ?>
+            <div class="chon-mon__da-luu">
+                <h3>Danh sách món đã lưu dùng chung</h3>
+                <ul class="chon-mon__lich-su">
+                    <?php foreach ($dsMonDaLuu as $monDaLuu): ?>
+                        <li>
+                            <span><?= e((string) $monDaLuu['ten_mon']) ?> — bữa <?= e($buaChoPhep[$monDaLuu['bua']] ?? $monDaLuu['bua']) ?></span>
+                            <?php if ($laChuTrang): ?>
+                                <form method="post" action="gioithieu.php#chon-mon" class="chon-mon__xoa">
+                                    <?= csrfField() ?>
+                                    <input type="hidden" name="hanh_dong" value="xoa_mon">
+                                    <input type="hidden" name="id" value="<?= e((int) $monDaLuu['id']) ?>">
+                                    <button type="submit" class="nut-phu" data-xac-nhan="Xóa món này khỏi danh sách dùng chung?">Xóa</button>
+                                </form>
+                            <?php endif; ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+                <p class="chon-mon__phu"><?= $laChuTrang
+                    ? 'Bạn là chủ trang nên có thể xóa từng món dùng chung.'
+                    : 'Chỉ chủ trang đã đăng nhập mới xóa được món dùng chung.' ?></p>
+            </div>
+        <?php endif; ?>
     </section>
 
     <!-- CHỨC NĂNG 2: OẲN TÙ TÌ -->
@@ -216,6 +421,13 @@ require __DIR__ . '/../../inc/header.php';
                     <li>🤝 Hoà: <strong><?= (int)$stOtt['hoa'] ?></strong></li>
                     <li>Tổng: <strong><?= (int)$tongVan ?></strong> ván — Tỉ lệ thắng: <strong><?= $tiLeThang ?>%</strong></li>
                 </ul>
+                <?php if ($laChuTrang && $tongVan > 0): ?>
+                    <form method="post" action="gioithieu.php#oan-tu-ti" class="oan-tu-ti__xoa">
+                        <?= csrfField() ?>
+                        <input type="hidden" name="hanh_dong" value="reset_oan_tu_ti">
+                        <button type="submit" class="nut-phu" data-xac-nhan="Xóa toàn bộ lịch sử oẳn tù tì của trang?">Xóa lịch sử oẳn tù tì</button>
+                    </form>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -240,37 +452,37 @@ require __DIR__ . '/../../inc/header.php';
     </section>
 
     <!-- CHỨC NĂNG 3: CHECK-IN THỜI TIẾT -->
-    <section id="thoi-tiet" class="the-noi-dung" style="margin-top: 30px; background: #f0f8ff; padding: 20px; border-radius: 8px; border: 1px solid #b6d4fe;">
-        <h2 class="the-noi-dung__tieu-de">🌤️ Check-in Thời tiết hôm nay</h2>
+    <section id="thoi-tiet" class="the-noi-dung thoi-tiet" aria-labelledby="tieu-de-thoi-tiet">
+        <h2 id="tieu-de-thoi-tiet" class="the-noi-dung__tieu-de">🌤️ Check-in Thời tiết hôm nay</h2>
         <p>Hôm nay chỗ bạn thời tiết thế nào? Bấm chọn để cùng mọi người cập nhật nhé!</p>
 
-        <form method="post" action="gioithieu.php#thoi-tiet" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
+        <form method="post" action="gioithieu.php#thoi-tiet" class="thoi-tiet__nut">
             <?= csrfField() ?>
             <input type="hidden" name="hanh_dong" value="check_in_thoi_tiet">
 
-            <button type="submit" name="trang_thai" value="nang" style="padding: 15px 20px; background: #fff; border: 2px solid #f59e0b; border-radius: 8px; cursor: pointer;">☀️ Nắng</button>
-            <button type="submit" name="trang_thai" value="mua" style="padding: 15px 20px; background: #fff; border: 2px solid #3b82f6; border-radius: 8px; cursor: pointer;">🌧️ Mưa</button>
-            <button type="submit" name="trang_thai" value="may" style="padding: 15px 20px; background: #fff; border: 2px solid #9ca3af; border-radius: 8px; cursor: pointer;">☁️ Nhiều mây</button>
-            <button type="submit" name="trang_thai" value="giong_bao" style="padding: 15px 20px; background: #fff; border: 2px solid #4b5563; border-radius: 8px; cursor: pointer;">⛈️ Giông bão</button>
+            <button type="submit" name="trang_thai" value="nang" class="thoi-tiet__nut-bam thoi-tiet__nut-bam--nang">☀️ Nắng</button>
+            <button type="submit" name="trang_thai" value="mua" class="thoi-tiet__nut-bam thoi-tiet__nut-bam--mua">🌧️ Mưa</button>
+            <button type="submit" name="trang_thai" value="may" class="thoi-tiet__nut-bam thoi-tiet__nut-bam--may">☁️ Nhiều mây</button>
+            <button type="submit" name="trang_thai" value="giong_bao" class="thoi-tiet__nut-bam thoi-tiet__nut-bam--giong-bao">⛈️ Giông bão</button>
         </form>
 
-        <div style="background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
-            <h3 style="margin-top: 0;">Thống kê thời tiết từ CSDL</h3>
+        <div class="thoi-tiet__thong-ke">
+            <h3>Thống kê thời tiết từ CSDL</h3>
             <?php if ($tongCheckIn === 0): ?>
                 <p>Chưa có ai check-in. Hãy là người đầu tiên!</p>
             <?php else: ?>
-                <p>Tổng cộng: <strong><?= $tongCheckIn ?></strong> lượt check-in</p>
-                <ul style="list-style: none; padding: 0;">
-                    <?php foreach ($dsThoiTiet as $tt): 
+                <p>Tổng cộng: <strong><?= e((int) $tongCheckIn) ?></strong> lượt check-in</p>
+                <ul class="thoi-tiet__danh-sach">
+                    <?php foreach ($dsThoiTiet as $tt):
                         $phanTram = round(($tt['so_luot'] / $tongCheckIn) * 100, 1);
                     ?>
-                        <li style="margin-bottom: 10px;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                                <span><?= e($labelThoiTiet[$tt['trang_thai']] ?? $tt['trang_thai']) ?> (<?= $tt['so_luot'] ?>)</span>
-                                <strong><?= $phanTram ?>%</strong>
+                        <li class="thoi-tiet__muc">
+                            <div class="thoi-tiet__hang">
+                                <span><?= e($labelThoiTiet[$tt['trang_thai']] ?? $tt['trang_thai']) ?> (<?= e((int) $tt['so_luot']) ?>)</span>
+                                <strong><?= e($phanTram) ?>%</strong>
                             </div>
-                            <div style="width: 100%; background: #e2e8f0; border-radius: 4px; height: 10px;">
-                                <div style="width: <?= $phanTram ?>%; background: #0d6efd; height: 100%; border-radius: 4px;"></div>
+                            <div class="thoi-tiet__thanh">
+                                <div class="thoi-tiet__thanh-do" data-phan-tram="<?= e($phanTram) ?>"></div>
                             </div>
                         </li>
                     <?php endforeach; ?>
@@ -390,71 +602,6 @@ require __DIR__ . '/../../inc/header.php';
     </section>
 </main>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const ngayTet = new Date('2027-02-06T00:00:00').getTime();
-    const khungDongHo = document.getElementById('dong-ho');
-    
-    if (khungDongHo) {
-        const capNhatDongHo = setInterval(function() {
-            const bayGio = new Date().getTime();
-            const khoangCach = ngayTet - bayGio;
 
-            if (khoangCach < 0) {
-                clearInterval(capNhatDongHo);
-                khungDongHo.innerHTML = "<p style='text-align:center; font-weight:bold; color:#dc2626; font-size:1.5rem;'>🎉 Chúc Mừng Năm Mới! 🎉</p>";
-                return;
-            }
-
-            const ngay = Math.floor(khoangCach / (1000 * 60 * 60 * 24));
-            const gio = Math.floor((khoangCach % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const phut = Math.floor((khoangCach % (1000 * 60 * 60)) / (1000 * 60));
-            const giay = Math.floor((khoangCach % (1000 * 60)) / 1000);
-
-            const format = (num) => String(num).padStart(2, '0');
-
-            khungDongHo.innerHTML = `
-                <div class="dh-wrapper">
-                    <div class="dh-item">
-                        <div class="dh-so">${format(ngay)}</div>
-                        <div class="dh-nhan">Ngày</div>
-                    </div>
-                    <div class="dh-colon">:</div>
-                    <div class="dh-item">
-                        <div class="dh-so">${format(gio)}</div>
-                        <div class="dh-nhan">Giờ</div>
-                    </div>
-                    <div class="dh-colon">:</div>
-                    <div class="dh-item">
-                        <div class="dh-so">${format(phut)}</div>
-                        <div class="dh-nhan">Phút</div>
-                    </div>
-                    <div class="dh-colon">:</div>
-                    <div class="dh-item">
-                        <div class="dh-so">${format(giay)}</div>
-                        <div class="dh-nhan">Giây</div>
-                    </div>
-                </div>
-            `;
-        }, 1000);
-    }
-
-    // Chuyển ngôn ngữ VI/EN
-    const nutDoiNgonNgu = document.getElementById('nut-doi-ngon-ngu');
-    let laTiengAnh = false;
-    if (nutDoiNgonNgu) {
-        nutDoiNgonNgu.addEventListener('click', function() {
-            laTiengAnh = !laTiengAnh;
-            document.getElementById('nhan-ngon-ngu').textContent = laTiengAnh ? 'VI' : 'EN';
-            
-            const cacTheCoData = document.querySelectorAll('[data-vi][data-en]');
-            cacTheCoData.forEach(el => {
-                const noiDungMoi = laTiengAnh ? el.getAttribute('data-en') : el.getAttribute('data-vi');
-                if (noiDungMoi) el.textContent = noiDungMoi;
-            });
-        });
-    }
-});
-</script>
 
 <?php require __DIR__ . '/../../inc/footer.php'; ?>

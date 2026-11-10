@@ -791,3 +791,115 @@
     .dh-so { font-size: 1.5rem; }
     .dh-colon { font-size: 1.3rem; }
 }
+
+/* =====================================================================
+ * CHƯƠNG 7 - BIỆN PHÁP 3: các lớp thay cho style="" nội tuyến
+ * (khối check-in thời tiết, danh sách món đã lưu, nút xóa của chủ trang)
+ * ===================================================================== */
+.trang-ca-nhan .thoi-tiet {
+    margin-top: 30px;
+    background: #f0f8ff;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #b6d4fe;
+}
+
+.trang-ca-nhan .thoi-tiet__nut {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.trang-ca-nhan .thoi-tiet__nut-bam {
+    padding: 15px 20px;
+    background: #fff;
+    border: 2px solid #9ca3af;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.trang-ca-nhan .thoi-tiet__nut-bam--nang {
+    border-color: #f59e0b;
+}
+
+.trang-ca-nhan .thoi-tiet__nut-bam--mua {
+    border-color: #3b82f6;
+}
+
+.trang-ca-nhan .thoi-tiet__nut-bam--may {
+    border-color: #9ca3af;
+}
+
+.trang-ca-nhan .thoi-tiet__nut-bam--giong-bao {
+    border-color: #4b5563;
+}
+
+.trang-ca-nhan .thoi-tiet__thong-ke {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.trang-ca-nhan .thoi-tiet__thong-ke h3 {
+    margin-top: 0;
+}
+
+.trang-ca-nhan .thoi-tiet__danh-sach {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.trang-ca-nhan .thoi-tiet__muc {
+    margin-bottom: 10px;
+}
+
+.trang-ca-nhan .thoi-tiet__hang {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.trang-ca-nhan .thoi-tiet__thanh {
+    width: 100%;
+    background: #e2e8f0;
+    border-radius: 4px;
+    height: 10px;
+    overflow: hidden;
+}
+
+/* Chiều rộng do canhan.js đặt từ data-phan-tram (CSP chặn style nội tuyến). */
+.trang-ca-nhan .thoi-tiet__thanh-do {
+    width: 0;
+    background: #0d6efd;
+    height: 100%;
+    border-radius: 4px;
+}
+
+.trang-ca-nhan .chon-mon__da-luu {
+    margin-top: 1.2rem;
+}
+
+.trang-ca-nhan .chon-mon__da-luu h3 {
+    font-size: 1rem;
+    margin-bottom: .5rem;
+}
+
+.trang-ca-nhan .chon-mon__da-luu li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+}
+
+.trang-ca-nhan .chon-mon__xoa {
+    margin: 0;
+}
+
+.trang-ca-nhan .oan-tu-ti__xoa {
+    margin-top: .85rem;
+}

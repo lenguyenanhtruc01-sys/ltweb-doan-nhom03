@@ -1,24 +1,46 @@
 /**
- * Module 1: Đếm ngược Tết Nguyên Đán 2027 (06/02/2027).
- * Module 2: Đổi ngôn ngữ VI ↔ EN qua data-vi / data-en.
- * Module 3: Tự ẩn toast flash sau 3 giây.
- * Module 4: AJAX cho 2 chức năng Phần B (chọn món + oẳn tù tì)
- *           — không reload trang; tắt JS vẫn fallback POST thường.
+ * Trang cá nhân Dương Bảo Duy — JavaScript bên ngoài (CSP: không script nội tuyến).
+ *
+ * 1. Đếm ngược Tết Nguyên Đán 2027.
+ * 2. Đổi ngôn ngữ VI ↔ EN qua data-vi / data-en.
+ * 3. Tự ẩn toast flash sau 3 giây.
+ * 4. Thanh tỉ lệ thời tiết: đặt width từ data-phan-tram.
+ * 5. Xác nhận trước khi xóa (data-xac-nhan) — không dùng onclick nội tuyến.
+ * 6. Gửi form chọn món và oẳn tù tì bằng fetch, kèm header X-CSRF-Token.
+ *
+ * Mọi nội dung do máy chủ trả về đều được ghi bằng textContent, không dùng
+ * innerHTML, nên dữ liệu người dùng không thể chèn HTML vào trang.
  */
 
+/** Tạo phần tử với lớp và nội dung văn bản (an toàn, không chèn HTML). */
+function taoPhanTu(tag, lop, noiDung) {
+    const nut = document.createElement(tag);
+    if (lop) nut.className = lop;
+    if (noiDung !== undefined) nut.textContent = noiDung;
+    return nut;
+}
+
 // ============================================================
-// MODULE 1 — ĐẾM NGƯỢC TẾT NGUYÊN ĐÁN
+// 1. ĐẾM NGƯỢC TẾT NGUYÊN ĐÁN
 // ============================================================
 const khungDongHo = document.getElementById('dong-ho');
 
 if (khungDongHo) {
     const NGAY_TET = new Date('2027-02-06T00:00:00+07:00').getTime();
 
+    const veDongHo = (nhan, giaTri) => {
+        const o = taoPhanTu('div', 'dong-ho-tet__o');
+        o.appendChild(taoPhanTu('span', 'dong-ho-tet__so', giaTri));
+        o.appendChild(taoPhanTu('span', 'dong-ho-tet__nhan', nhan));
+        return o;
+    };
+
     function capNhatDongHo() {
         const hieu = NGAY_TET - Date.now();
+        khungDongHo.replaceChildren();
 
         if (hieu <= 0) {
-            khungDongHo.innerHTML = '<p class="dong-ho-tet__xong">🎉 Chúc mừng năm mới!</p>';
+            khungDongHo.appendChild(taoPhanTu('p', 'dong-ho-tet__xong', '🎉 Chúc mừng năm mới!'));
             return;
         }
 
@@ -27,24 +49,10 @@ if (khungDongHo) {
         const phut = Math.floor((hieu / 60000) % 60);
         const giay = Math.floor((hieu / 1000) % 60);
 
-        khungDongHo.innerHTML = `
-            <div class="dong-ho-tet__o">
-                <span class="dong-ho-tet__so">${ngay}</span>
-                <span class="dong-ho-tet__nhan">Ngày</span>
-            </div>
-            <div class="dong-ho-tet__o">
-                <span class="dong-ho-tet__so">${gio}</span>
-                <span class="dong-ho-tet__nhan">Giờ</span>
-            </div>
-            <div class="dong-ho-tet__o">
-                <span class="dong-ho-tet__so">${phut}</span>
-                <span class="dong-ho-tet__nhan">Phút</span>
-            </div>
-            <div class="dong-ho-tet__o">
-                <span class="dong-ho-tet__so">${giay}</span>
-                <span class="dong-ho-tet__nhan">Giây</span>
-            </div>
-        `;
+        khungDongHo.appendChild(veDongHo('Ngày', ngay));
+        khungDongHo.appendChild(veDongHo('Giờ', gio));
+        khungDongHo.appendChild(veDongHo('Phút', phut));
+        khungDongHo.appendChild(veDongHo('Giây', giay));
     }
 
     capNhatDongHo();
@@ -52,26 +60,35 @@ if (khungDongHo) {
 }
 
 // ============================================================
-// MODULE 2 — ĐỔI NGÔN NGỮ VI ↔ EN
+// 2. ĐỔI NGÔN NGỮ VI ↔ EN
 // ============================================================
-const nutNgongNgu  = document.getElementById('nut-doi-ngon-ngu');
-const nhanNgongNgu = document.getElementById('nhan-ngon-ngu');
+const nutNgonNgu  = document.getElementById('nut-doi-ngon-ngu');
+const nhanNgonNgu = document.getElementById('nhan-ngon-ngu');
 
-if (nutNgongNgu && nhanNgongNgu) {
-    let ngonNgu = localStorage.getItem('ngonNguDuy') || 'vi';
-
-    function apDungNgonNgu() {
-        document.querySelectorAll('[data-vi][data-en]').forEach(el => {
-            const text = el.getAttribute('data-' + ngonNgu);
-            if (text) el.textContent = text;
-        });
-        document.documentElement.lang = ngonNgu;
-        nhanNgongNgu.textContent = ngonNgu === 'vi' ? 'EN' : 'VI';
+if (nutNgonNgu && nhanNgonNgu) {
+    let ngonNgu = 'vi';
+    try {
+        ngonNgu = localStorage.getItem('ngonNguDuy') === 'en' ? 'en' : 'vi';
+    } catch (loi) {
+        ngonNgu = 'vi';
     }
 
-    nutNgongNgu.addEventListener('click', () => {
+    function apDungNgonNgu() {
+        document.querySelectorAll('[data-vi][data-en]').forEach((el) => {
+            const noiDungMoi = el.getAttribute('data-' + ngonNgu);
+            if (noiDungMoi) el.textContent = noiDungMoi;
+        });
+        document.documentElement.lang = ngonNgu;
+        nhanNgonNgu.textContent = ngonNgu === 'vi' ? 'EN' : 'VI';
+    }
+
+    nutNgonNgu.addEventListener('click', () => {
         ngonNgu = ngonNgu === 'vi' ? 'en' : 'vi';
-        localStorage.setItem('ngonNguDuy', ngonNgu);
+        try {
+            localStorage.setItem('ngonNguDuy', ngonNgu);
+        } catch (loi) {
+            /* Trình duyệt chặn localStorage: vẫn đổi ngôn ngữ trong trang. */
+        }
         apDungNgonNgu();
     });
 
@@ -79,216 +96,189 @@ if (nutNgongNgu && nhanNgongNgu) {
 }
 
 // ============================================================
-// MODULE 3 — TỰ ẨN TOAST FLASH SAU 3 GIÂY
+// 3. TỰ ẨN TOAST FLASH SAU 3 GIÂY
 // ============================================================
 const toast = document.querySelector('.thong-bao-thanh-cong');
 if (toast) {
-    const dong = () => {
+    const dongToast = () => {
         toast.classList.add('thong-bao-thanh-cong--an');
         toast.addEventListener('animationend', () => toast.remove(), { once: true });
     };
-    const timer = setTimeout(dong, 3000);
+    const henGio = setTimeout(dongToast, 3000);
     const nutDong = toast.querySelector('.thong-bao-thanh-cong__dong');
     if (nutDong) {
         nutDong.addEventListener('click', () => {
-            clearTimeout(timer);
-            dong();
+            clearTimeout(henGio);
+            dongToast();
         });
     }
 }
 
 // ============================================================
-// MODULE 4 — AJAX CHO 2 CHỨC NĂNG PHẦN B
+// 4. THANH TỈ LỆ THỜI TIẾT (CSP không cho style nội tuyến)
 // ============================================================
-
-/** Escape HTML để chống XSS khi chèn vào innerHTML. */
-function escapeHtml(str) {
-    return String(str ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
-
-/**
- * Gửi form qua fetch, trả về JSON.
- * @param {HTMLFormElement} formEl
- * @param {Object} extra - Các cặp key/value append thêm vào FormData
- *                         (dùng cho nút submit có name vì FormData
- *                          không tự lấy value của nút được bấm).
- */
-async function guiAjax(formEl, extra = {}) {
-    const fd = new FormData(formEl);
-    for (const [k, v] of Object.entries(extra)) {
-        fd.append(k, v);
+document.querySelectorAll('.thoi-tiet__thanh-do[data-phan-tram]').forEach((thanh) => {
+    const phanTram = Number.parseFloat(thanh.dataset.phanTram);
+    if (Number.isFinite(phanTram) && phanTram >= 0) {
+        thanh.style.width = Math.min(100, phanTram) + '%';
     }
-    const res = await fetch(formEl.action || 'gioithieu.php', {
-        method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content ?? '' },
-        body: fd,
+});
+
+// ============================================================
+// 5. XÁC NHẬN TRƯỚC KHI XÓA — thay cho onclick="return confirm(...)"
+// ============================================================
+document.querySelectorAll('[data-xac-nhan]').forEach((phanTu) => {
+    const bieuMau = phanTu.closest('form');
+    if (!bieuMau) return;
+    bieuMau.addEventListener('submit', (suKien) => {
+        if (!window.confirm(phanTu.dataset.xacNhan)) {
+            suKien.preventDefault();
+        }
     });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    return res.json();
+});
+
+// ============================================================
+// 6. GỬI FORM BẰNG FETCH, KÈM HEADER X-CSRF-TOKEN
+// ============================================================
+function maCsrf() {
+    const theMeta = document.querySelector('meta[name="csrf-token"]');
+    return theMeta ? theMeta.content : '';
 }
 
-// ---------- Chức năng 1: máy chọn món ----------
+/** Gửi form POST bằng fetch; trả về JSON của máy chủ. */
+async function guiAjax(bieuMau, themVao) {
+    const duLieu = new FormData(bieuMau);
+    Object.entries(themVao || {}).forEach(([khoa, giaTri]) => duLieu.append(khoa, giaTri));
+
+    const phanHoi = await fetch(bieuMau.action || 'gioithieu.php', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-Token': maCsrf(),
+            'Accept': 'application/json',
+        },
+        body: duLieu,
+        credentials: 'same-origin',
+    });
+
+    const kieuNoiDung = phanHoi.headers.get('content-type') || '';
+    if (!kieuNoiDung.includes('application/json')) {
+        throw new Error(await phanHoi.text());
+    }
+    return phanHoi.json();
+}
+
+/** Hiện lỗi cạnh ô nhập hoặc trên đầu khối kết quả. */
+function hienLoi(bieuMau, khoiLoi, tapLoi) {
+    bieuMau.querySelectorAll('.loi-bieu-mau').forEach((el) => el.remove());
+    if (!khoiLoi) return;
+    khoiLoi.replaceChildren();
+    Object.values(tapLoi || {}).forEach((thongDiep) => {
+        khoiLoi.appendChild(taoPhanTu('p', 'loi-bieu-mau', String(thongDiep)));
+    });
+}
+
+// ---------- 6a. Máy chọn món ----------
 const formChonMon = document.getElementById('form-chon-mon');
 if (formChonMon) {
-    formChonMon.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        let data;
+    const khungKetQua = document.getElementById('chon-mon-ket-qua');
+    formChonMon.addEventListener('submit', async (suKien) => {
+        suKien.preventDefault();
+        let duLieu;
         try {
-            data = await guiAjax(formChonMon);
-        } catch (err) {
-            console.error(err);
+            duLieu = await guiAjax(formChonMon);
+        } catch (loi) {
+            hienLoi(formChonMon, khungKetQua, { chung: 'Không gửi được biểu mẫu. Hãy tải lại trang rồi thử lại.' });
             return;
         }
 
-        // Xoá lỗi cũ
-        formChonMon.querySelectorAll('.loi-bieu-mau').forEach(el => el.remove());
-
-        if (!data.ok) {
-            for (const [khoa, msg] of Object.entries(data.loi || {})) {
-                const input = formChonMon.querySelector(`[name="${khoa}"]`);
-                if (!input) continue;
-                const small = document.createElement('small');
-                small.className = 'loi-bieu-mau';
-                small.textContent = msg;
-                input.insertAdjacentElement('afterend', small);
-            }
+        if (!duLieu.ok) {
+            hienLoi(formChonMon, khungKetQua, duLieu.loi || {});
             return;
         }
 
-        // Cập nhật khối kết quả
-        const khungKetQua = document.getElementById('chon-mon-ket-qua');
-        khungKetQua.innerHTML = `
-            <div class="chon-mon__ket-qua" role="status" aria-live="polite">
-                <p class="chon-mon__nhan">Hôm nay ăn gì?</p>
-                <p class="chon-mon__mon">${escapeHtml(data.mon)}</p>
-                <p class="chon-mon__meta">
-                    Bữa: <strong>${escapeHtml(data.buaLabel)}</strong>
-                    — lúc ${escapeHtml(data.thoiGian)}
-                </p>
-            </div>
-        `;
-
-        // Cập nhật lịch sử
-        const khungLs = document.getElementById('chon-mon-lich-su');
-        if (data.lichSu && data.lichSu.length) {
-            khungLs.innerHTML = `
-                <h3>5 lần chọn gần nhất</h3>
-                <ul class="chon-mon__lich-su">
-                    ${data.lichSu.map(m => `
-                        <li>
-                            <strong>${escapeHtml(m.mon)}</strong>
-                            — bữa ${escapeHtml(m.buaLabel)}
-                            <em>(${escapeHtml(m.thoiGian)})</em>
-                        </li>
-                    `).join('')}
-                </ul>
-                <form method="post" action="gioithieu.php" style="margin-top:.75rem;">
-                    <input type="hidden" name="hanh_dong" value="xoa_lich_su_mon">
-                    <button type="submit" class="nut-phu"
-                            onclick="return confirm('Xoá toàn bộ lịch sử chọn món?');">
-                        🗑 Xoá lịch sử
-                    </button>
-                </form>
-            `;
-        }
+        hienLoi(formChonMon, khungKetQua, {});
+        const khoi = taoPhanTu('div', 'chon-mon__ket-qua');
+        khoi.setAttribute('role', 'status');
+        khoi.setAttribute('aria-live', 'polite');
+        khoi.appendChild(taoPhanTu('p', 'chon-mon__nhan', 'Hôm nay ăn gì?'));
+        khoi.appendChild(taoPhanTu('p', 'chon-mon__mon', duLieu.mon));
+        khoi.appendChild(taoPhanTu(
+            'p',
+            'chon-mon__meta',
+            'Bữa: ' + duLieu.buaLabel + ' — lúc ' + duLieu.thoiGian
+        ));
+        khungKetQua.replaceChildren(khoi);
     });
 }
 
-// ---------- Chức năng 2: oẳn tù tì ----------
+// ---------- 6b. Oẳn tù tì ----------
 const formOtt = document.getElementById('form-oan-tu-ti');
 if (formOtt) {
-    formOtt.addEventListener('submit', async (e) => {
-        // Chỉ chặn khi bấm nút có name="chon"
-        if (!e.submitter || e.submitter.name !== 'chon') return;
-        e.preventDefault();
+    formOtt.addEventListener('submit', async (suKien) => {
+        if (!suKien.submitter || suKien.submitter.name !== 'chon') return;
+        suKien.preventDefault();
 
-        const chon = e.submitter.value; // "keo" | "bua" | "bao"
-
-        let data;
+        let duLieu;
         try {
-            data = await guiAjax(formOtt, { chon });
-        } catch (err) {
-            console.error(err);
+            duLieu = await guiAjax(formOtt, { chon: suKien.submitter.value });
+        } catch (loi) {
             return;
         }
+        if (!duLieu.ok) return;
 
-        if (!data.ok) return;
+        const khungVua = document.getElementById('oan-tu-ti-vua');
+        const khoiVua = taoPhanTu('div', 'oan-tu-ti__ket-qua oan-tu-ti__ket-qua--' + duLieu.vua.ketQua);
+        khoiVua.setAttribute('role', 'status');
+        khoiVua.setAttribute('aria-live', 'polite');
+        khoiVua.appendChild(taoPhanTu(
+            'p', '', 'Bạn: ' + duLieu.vua.nguoiLabel + ' vs Máy: ' + duLieu.vua.mayLabel
+        ));
+        khoiVua.appendChild(taoPhanTu('p', 'oan-tu-ti__vua', duLieu.vua.ketQuaLabel));
+        khungVua.replaceChildren(khoiVua);
 
-        const lop = data.vua.ketQua || 'hoa';
+        const thongKe = duLieu.thongKe;
+        const khungThongKe = document.getElementById('oan-tu-ti-thong-ke');
+        const khoiThongKe = taoPhanTu('div', 'oan-tu-ti__thong-ke');
+        khoiThongKe.appendChild(taoPhanTu('h3', '', 'Thống kê (Lưu DB)'));
+        const danhSach = taoPhanTu('ul');
+        [
+            ['🎉 Thắng: ', thongKe.thang],
+            ['😢 Thua: ', thongKe.thua],
+            ['🤝 Hoà: ', thongKe.hoa],
+        ].forEach(([nhan, so]) => {
+            const muc = taoPhanTu('li', '', nhan);
+            muc.appendChild(taoPhanTu('strong', '', String(so)));
+            danhSach.appendChild(muc);
+        });
+        const mucTong = taoPhanTu('li', '', 'Tổng: ');
+        mucTong.appendChild(taoPhanTu('strong', '', String(thongKe.tong)));
+        mucTong.appendChild(document.createTextNode(' ván — Tỉ lệ thắng: '));
+        mucTong.appendChild(taoPhanTu('strong', '', String(thongKe.tiLe) + '%'));
+        danhSach.appendChild(mucTong);
+        khoiThongKe.appendChild(danhSach);
+        khungThongKe.replaceChildren(khoiThongKe);
 
-        // Cập nhật ván vừa chơi
-        document.getElementById('oan-tu-ti-vua').innerHTML = `
-            <div class="oan-tu-ti__ket-qua oan-tu-ti__ket-qua--${lop}"
-                 role="status" aria-live="polite">
-                <p>
-                    Bạn: <strong>${escapeHtml(data.vua.nguoiLabel)}</strong>
-                    &nbsp;vs&nbsp;
-                    Máy: <strong>${escapeHtml(data.vua.mayLabel)}</strong>
-                </p>
-                <p class="oan-tu-ti__vua">${escapeHtml(data.vua.ketQuaLabel)}</p>
-            </div>
-        `;
-
-        // Cập nhật thống kê
-        const tk = data.thongKe;
-        document.getElementById('oan-tu-ti-thong-ke').innerHTML = `
-            <div class="oan-tu-ti__thong-ke">
-                <h3>Thống kê</h3>
-                <ul>
-                    <li>🎉 Thắng: <strong>${tk.thang}</strong></li>
-                    <li>😢 Thua: <strong>${tk.thua}</strong></li>
-                    <li>🤝 Hoà: <strong>${tk.hoa}</strong></li>
-                    <li>Tổng: <strong>${tk.tong}</strong> ván —
-                        Tỉ lệ thắng: <strong>${tk.tiLe}%</strong></li>
-                </ul>
-                ${tk.tong > 0 ? `
-                    <div class="oan-tu-ti__bar" aria-hidden="true">
-                        <div class="oan-tu-ti__bar-thang"
-                             style="width: ${tk.tiLe}%;"></div>
-                    </div>
-                ` : ''}
-            </div>
-        `;
-
-        // Cập nhật bảng lịch sử
-        const khungLs = document.getElementById('oan-tu-ti-lich-su');
-        if (data.lichSu && data.lichSu.length) {
-            khungLs.innerHTML = `
-                <h3>10 ván gần nhất</h3>
-                <table class="oan-tu-ti__bang">
-                    <thead>
-                        <tr>
-                            <th>Thời gian</th>
-                            <th>Bạn</th>
-                            <th>Máy</th>
-                            <th>Kết quả</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${data.lichSu.map(v => `
-                            <tr>
-                                <td>${escapeHtml(v.thoiGian)}</td>
-                                <td>${escapeHtml(v.nguoiLabel)}</td>
-                                <td>${escapeHtml(v.mayLabel)}</td>
-                                <td>${escapeHtml(v.ketQuaLabel)}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-                <form method="post" action="gioithieu.php" style="margin-top:.75rem;">
-                    <input type="hidden" name="hanh_dong" value="reset_oan_tu_ti">
-                    <button type="submit" class="nut-phu"
-                            onclick="return confirm('Reset toàn bộ thống kê oẳn tù tì?');">
-                        🔄 Reset thống kê
-                    </button>
-                </form>
-            `;
+        const khungLichSu = document.getElementById('oan-tu-ti-lich-su');
+        if (Array.isArray(duLieu.lichSu) && duLieu.lichSu.length) {
+            const bang = taoPhanTu('table', 'oan-tu-ti__bang');
+            const thead = taoPhanTu('thead');
+            const hangDau = taoPhanTu('tr');
+            ['Thời gian', 'Bạn', 'Máy', 'Kết quả'].forEach((nhan) => {
+                hangDau.appendChild(taoPhanTu('th', '', nhan));
+            });
+            thead.appendChild(hangDau);
+            bang.appendChild(thead);
+            const tbody = taoPhanTu('tbody');
+            duLieu.lichSu.forEach((van) => {
+                const hang = taoPhanTu('tr');
+                [van.thoiGian, van.nguoiLabel, van.mayLabel, van.ketQuaLabel].forEach((o) => {
+                    hang.appendChild(taoPhanTu('td', '', o));
+                });
+                tbody.appendChild(hang);
+            });
+            bang.appendChild(tbody);
+            khungLichSu.replaceChildren(taoPhanTu('h3', '', '10 ván gần nhất'), bang);
         }
     });
 }

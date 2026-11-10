@@ -1,0 +1,25 @@
+# .htaccess - thư mục gốc dự án EduGPA (Apache của XAMPP hoặc hosting)
+# Chương 7 - Biện pháp 5: chặn tệp nội bộ, tệp ẩn và liệt kê thư mục.
+# Tệp này CHỈ có tác dụng khi chạy bằng Apache; php -S bỏ qua .htaccess.
+# Chú thích luôn viết trên dòng riêng: viết cùng dòng với chỉ thị sẽ làm
+# Apache trả lỗi 500 cho mọi trang.
+
+# 1. Không liệt kê nội dung thư mục khi thiếu tệp chỉ mục.
+Options -Indexes
+
+# 2. Tệp và thư mục ẩn: .env, .git/, .htaccess, .gitignore...
+#    Chừa .well-known để dùng chứng chỉ HTTPS.
+RedirectMatch 404 /\.(?!well-known/)
+
+# 3. Thư mục nội bộ của dự án không được truy cập trực tiếp.
+RedirectMatch 404 /(inc|src|vendor|database|logs|storage|kiemtra)(/|$)
+
+# 4. Tệp SQL, log, sao lưu, cấu hình Composer, tài liệu nội bộ.
+<FilesMatch "\.(sql|log|bak|ini|lock|sh|md)$|^composer\.(json|lock)$">
+    Require all denied
+</FilesMatch>
+
+# 5. Hosting có HTTPS: bỏ dấu # ở ba dòng dưới để chuyển hướng toàn site.
+# RewriteEngine On
+# RewriteCond %{HTTPS} !=on
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

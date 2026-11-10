@@ -312,3 +312,36 @@ Mật khẩu đặt lại có tối thiểu 8 ký tự như đăng ký. Không g
 Đăng nhập sai 5 lần trong 15 phút sẽ bị chặn 429 ở lần tiếp theo, kể cả khi nhập đúng mật khẩu; sau 15 phút có thể thử lại. Tên đăng nhập và email của cùng tài khoản dùng chung giới hạn, không phụ thuộc cookie. Đăng nhập hoặc đặt lại mật khẩu thành công xóa các lần sai của đúng tài khoản. Reset thất bại không mở khóa. Mỗi lượt kiểm tra đăng nhập tự dọn bản ghi đã quá 15 phút; bản ghi còn hiệu lực được giữ nguyên, không cần tác vụ nền.
 CSDL mới có thêm bảng dang_nhap_sai (tổng 25 bảng). Máy đã có dữ liệu: chạy php database/cai-dat.php để sao lưu/nâng cấp, hoặc chọn CSDL ltweb_nhom03 rồi chạy database/nang-cap-dang-nhap.sql (CREATE TABLE IF NOT EXISTS, không xóa dữ liệu). Không import lại schema.sql để nâng cấp.
 uploads/.htaccess cấm truy cập các đuôi thực thi, cấm liệt kê và thêm nosniff trên Apache; cần AllowOverride cho thư mục này. php -S không đọc .htaccess.
+
+### Bảo mật Chương 7 – Biện pháp 3 (header, CSP) và Biện pháp 5 (.htaccess)
+
+**Biện pháp 3 – Header bảo mật và Content Security Policy.** `inc/config.php` gửi
+`Content-Security-Policy`, `X-Content-Type-Options: nosniff`, `Referrer-Policy:
+strict-origin-when-cross-origin` cho mọi phản hồi, gỡ `X-Powered-By` và chỉ thêm
+`Strict-Transport-Security` khi chạy HTTPS. Chính sách CSP:
+
+```text
+default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self';
+font-src 'self'; connect-src 'self' https://api.open-meteo.com;
+frame-src https://www.google.com; object-src 'none'; base-uri 'self';
+form-action 'self'; frame-ancestors 'none'
+```
+
+Không dùng `'unsafe-inline'`, không dùng `*`. Hai nguồn ngoài được khai báo đúng
+chỗ dùng: `api.open-meteo.com` cho khối thời tiết ở `js/trang-chu.js`,
+`www.google.com` cho bản đồ nhúng ở `lien-he.php`. Mọi thẻ `<script>` và thuộc
+tính `onclick`, `style` nội tuyến đã được chuyển ra tệp `js/*.js`, `css/*.css`;
+thanh tỉ lệ thời tiết đặt chiều rộng bằng CSSOM từ `data-phan-tram`, không dùng
+`style` trong HTML. Khi thêm thư viện ngoài, tải tệp về dự án hoặc bổ sung đúng
+tên miền vào chỉ thị tương ứng; đừng nới rộng CSP bằng `*` hay `'unsafe-inline'`.
+
+**Biện pháp 5 – Chặn tệp nội bộ trên Apache.** Tệp `.htaccess` ở thư mục gốc tắt
+liệt kê thư mục, trả 404 cho tệp/thư mục ẩn (`.env`, `.git/`) và các thư mục nội bộ
+`inc/`, `src/`, `vendor/`, `database/`, `logs/`, `storage/`, `kiemtra/`; trả 403
+cho tệp `.sql`, `.log`, `.bak`, `.ini`, `.lock`, `.sh`, `.md` và `composer.json`.
+`uploads/.htaccess` chặn mọi tệp thực thi, tắt liệt kê và thêm `nosniff`.
+`logs/.htaccess` và `storage/.htaccess` trả 403 cho toàn bộ thư mục.
+
+`.htaccess` chỉ có tác dụng khi chạy bằng Apache (XAMPP, hosting). `php -S` bỏ qua
+tệp này, nên khi chạy bằng `php -S` phải giữ các bước kiểm tra tệp tải lên trong
+`src/Services/TaiAnh.php` và không đặt bí mật trong thư mục web.

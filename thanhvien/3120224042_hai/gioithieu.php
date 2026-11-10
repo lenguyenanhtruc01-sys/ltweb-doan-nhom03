@@ -23,7 +23,7 @@ if ($method === 'POST' && chuoi($_POST['hanh_dong'] ?? '') === 'ghi_luot_xem') {
     exit;
 }
 if ($method === 'POST') {
-    if (!$laChuTrang) { require __DIR__ . '/../../403.php'; exit; }
+    if (!$laChuTrang) { ghiLogBaoMat('cam_truy_cap', ['trang' => $_SERVER['REQUEST_URI'] ?? '-']); http_response_code(403); require __DIR__ . '/../../403.php'; exit; }
     $token = $_POST['_csrf'] ?? null;
     if (!is_string($token) || !csrfKiemTra($token)) {
         $_SESSION['loi_avatar'] = 'Phiên làm việc đã hết hạn, vui lòng thử lại.';

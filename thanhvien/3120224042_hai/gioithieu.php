@@ -96,27 +96,27 @@ require_once __DIR__ . '/../../inc/header.php';
         <h1>Lê Dương Hoàng Hải</h1>
         
         <!-- HIỂN THỊ ẢNH ĐẠI DIỆN -->
-        <img src="<?= e($avatarHienTai) ?>" alt="Ảnh chân dung của Lê Dương Hoàng Hải" width="150" height="150" style="object-fit: cover; border-radius: 5px;">
+        <img src="<?= e($avatarHienTai) ?>" alt="Ảnh chân dung của Lê Dương Hoàng Hải" width="150" height="150" class="avatar-hai">
         
         <!-- FORM ĐỔI ẢNH ĐẠI DIỆN (CHỨC NĂNG 1) -->
         <?php if ($laChuTrang): ?>
-        <form action="gioithieu.php" method="post" enctype="multipart/form-data" style="margin: 10px 0; padding: 10px; background: #f4f4f4; border-radius: 5px;">
+        <form action="gioithieu.php" method="post" enctype="multipart/form-data" class="form-avatar">
             <?= csrfField() ?>
-            <label for="avatar" style="font-size: 0.9em; font-weight: bold;">Đổi ảnh đại diện (≤ 2MB):</label><br>
-            <input type="file" name="avatar" id="avatar" accept="image/jpeg, image/png, image/webp" required style="font-size: 0.85em; margin: 5px 0;">
-            <button type="submit" class="btn-primary" style="padding: 8px 14px; font-size: 0.85em; background-color: #123b6d; color: #ffffff;">Tải lên</button>
+            <label for="avatar" class="form-avatar__nhan">Đổi ảnh đại diện (≤ 2MB):</label><br>
+            <input type="file" name="avatar" id="avatar" accept="image/jpeg, image/png, image/webp" required class="form-avatar__tep">
+            <button type="submit" class="btn-primary form-avatar__nut">Tải lên</button>
             
             <?php if ($thongBaoAnh !== ''): ?>
-                <p style="color: green; font-size: 0.85em; margin-top: 5px;"><?= e($thongBaoAnh) ?></p>
+                <p class="thong-bao-anh"><?= e($thongBaoAnh) ?></p>
             <?php endif; ?>
             <?php if ($loiAnh !== ''): ?>
-                <p style="color: red; font-size: 0.85em; margin-top: 5px;"><?= e($loiAnh) ?></p>
+                <p class="loi-anh"><?= e($loiAnh) ?></p>
             <?php endif; ?>
         </form>
         <?php endif; ?>
 
         <!-- KHỐI ĐẾM NGƯỢC BẢO VỆ ĐỒ ÁN (CHỨC NĂNG 3) -->
-        <div style="margin: 10px 0; padding: 10px 12px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; font-size: 0.88em; color: #856404;">
+        <div class="khoi-dem-nguoc">
             ⏳ <strong>Đếm ngược bảo vệ Đồ án:</strong> 
             <?php if ($ngayHienTai < $ngayBaoVe): ?>
                 Còn <strong><?= e($thoiGianConLai->days) ?></strong> ngày <strong><?= e($thoiGianConLai->h) ?></strong> giờ nữa!
@@ -126,14 +126,14 @@ require_once __DIR__ . '/../../inc/header.php';
         </div>
 
         <!-- KHỐI CHÂM NGÔN IT NGẪU NHIÊN (CHỨC NĂNG 2) -->
-        <div style="margin: 10px 0 15px 0; padding: 10px 12px; background: #eef2ff; border-left: 4px solid #4f46e5; border-radius: 4px; font-style: italic; font-size: 0.88em; color: #3730a3;">
+        <div class="khoi-cham-ngon">
             💡 <strong>Châm ngôn hôm nay:</strong> "<?= e($chamNgonNgauNhien) ?>"
         </div>
 
         <p>Xin chào! Mình là sinh viên ngành Công nghệ Thông tin tại Khoa Toán - Tin, Trường Đại học Sư phạm - Đại học Đà Nẵng. Mình đam mê phát triển phần mềm và ứng dụng thị giác máy tính.</p>
         
         <div class="like-section">
-            <button id="btn-like" class="btn-primary" type="button" style="background-color: #123b6d; color: #ffffff;">
+            <button id="btn-like" class="btn-primary nut-ung-ho" type="button">
                 Ủng hộ Hải: ❤️ <span id="like-count">0</span>
             </button>
         </div>

@@ -78,85 +78,86 @@ if ($id !== false) {
 
     $tieuDe = 'Chi tiết kế hoạch #' . (int) $keHoach['id'];
     $trang  = 'don-hang';
+    $cssTrang = 'css/don-hang.css';
     require __DIR__ . '/inc/header.php';
     ?>
-    <main class="noi-dung-chinh" style="padding: 20px; max-width: 900px; margin: 0 auto; font-family: Arial, sans-serif;">
-        <h1 style="color: #1a365d; margin-bottom: 20px;">Chi tiết kế hoạch #<?= e((int) $keHoach['id']) ?></h1>
+    <main class="noi-dung-chinh dh-trang">
+        <h1 class="dh-tieu-de">Chi tiết kế hoạch #<?= e((int) $keHoach['id']) ?></h1>
 
         <!-- THÔNG BÁO FLASH -->
         <?php if (isset($_SESSION['flash_success'])): ?>
-            <p style="color: #155724; background-color: #d4edda; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+            <p class="dh-thong-bao dh-thong-bao--ok">
                 ✔ <?= e($_SESSION['flash_success']) ?>
             </p>
             <?php unset($_SESSION['flash_success']); ?>
         <?php endif; ?>
         <?php if (isset($_SESSION['flash_error'])): ?>
-            <p style="color: #721c24; background-color: #f8d7da; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+            <p class="dh-thong-bao dh-thong-bao--loi">
                 ✖ <?= e($_SESSION['flash_error']) ?>
             </p>
             <?php unset($_SESSION['flash_error']); ?>
         <?php endif; ?>
 
-        <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 5px solid #0d6efd; margin-bottom: 20px;">
-            <p style="margin: 5px 0;"><strong>Ngày gửi:</strong> <?= e((string) $keHoach['ngay_tao']) ?></p>
-            <p style="margin: 5px 0;"><strong>Trạng thái:</strong> 
-                <span style="font-weight: bold; color: var(--mau-chinh);"><?= e(KhoKeHoach::nhanTrangThai((string) $keHoach['trang_thai'])) ?></span>
+        <div class="dh-hop">
+            <p><strong>Ngày gửi:</strong> <?= e((string) $keHoach['ngay_tao']) ?></p>
+            <p><strong>Trạng thái:</strong>
+                <span class="dh-nhan"><?= e(KhoKeHoach::nhanTrangThai((string) $keHoach['trang_thai'])) ?></span>
             </p>
             <?php if (!empty($keHoach['ghi_chu'])): ?>
-                <p style="margin: 5px 0;"><strong>Ghi chú:</strong> <?= e((string) $keHoach['ghi_chu']) ?></p>
+                <p><strong>Ghi chú:</strong> <?= e((string) $keHoach['ghi_chu']) ?></p>
             <?php endif; ?>
         </div>
 
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; background: white;">
+        <table class="dh-bang">
             <thead>
-                <tr style="background: #1a365d; color: white;">
-                    <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Mã môn</th>
-                    <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Tên môn học</th>
-                    <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">Tín chỉ</th>
-                    <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">Số lượng</th>
-                    <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">Tổng tín chỉ</th>
+                <tr>
+                    <th>Mã môn</th>
+                    <th>Tên môn học</th>
+                    <th class="dh-giua">Tín chỉ</th>
+                    <th class="dh-giua">Số lượng</th>
+                    <th class="dh-giua">Tổng tín chỉ</th>
                 </tr>
             </thead>
             <tbody>
-            <?php $tong = 0; foreach ($keHoach['chi_tiet'] as $ct): 
-                $t = (int)$ct['so_tin_chi'] * (int)$ct['so_luong']; 
+            <?php $tong = 0; foreach ($keHoach['chi_tiet'] as $ct):
+                $t = (int)$ct['so_tin_chi'] * (int)$ct['so_luong'];
                 $tong += $t; ?>
                 <tr>
-                    <td style="padding: 12px; border: 1px solid #ddd;"><code><?= e($ct['ma_mon']) ?></code></td>
-                    <td style="padding: 12px; border: 1px solid #ddd;"><?= e($ct['ten_mon']) ?></td>
-                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center;"><?= e((int)$ct['so_tin_chi']) ?></td>
-                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center;"><?= e((int)$ct['so_luong']) ?></td>
-                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold;"><?= e((int)$t) ?></td>
+                    <td><code><?= e($ct['ma_mon']) ?></code></td>
+                    <td><?= e($ct['ten_mon']) ?></td>
+                    <td class="dh-giua"><?= e((int)$ct['so_tin_chi']) ?></td>
+                    <td class="dh-giua"><?= e((int)$ct['so_luong']) ?></td>
+                    <td class="dh-giua dh-dam"><?= e((int)$t) ?></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>
         </table>
-        
-        <p style="text-align: right; font-size: 1.2rem;"><strong>Tổng tín chỉ tích lũy:</strong> <span style="color: var(--mau-chinh); font-weight: bold;"><?= e((int)$tong) ?></span></p>
+
+        <p class="dh-tong"><strong>Tổng tín chỉ tích lũy:</strong> <span class="dh-nhan"><?= e((int)$tong) ?></span></p>
 
         <!-- FORM ĐỔI TRẠNG THÁI (Chỉ hiện với Admin) -->
         <?php if ($laQuanTri): ?>
-        <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 8px;">
-            <h2 style="margin-top: 0; color: #1a365d;">Quản trị viên: Đổi trạng thái</h2>
-            <form method="post" style="display: flex; gap: 15px; align-items: center;">
+        <div class="dh-quan-tri">
+            <h2>Quản trị viên: Đổi trạng thái</h2>
+            <form method="post" class="dh-form-ngang">
                 <?= csrfField() ?>
                 <input type="hidden" name="id" value="<?= e((int)$keHoach['id']) ?>">
-                
-                <select name="trang_thai" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 1rem;">
+
+                <select name="trang_thai" class="dh-select">
                     <?php foreach (KhoKeHoach::TRANG_THAI_HOP_LE as $tt): ?>
                         <option value="<?= e($tt) ?>" <?= $tt === $keHoach['trang_thai'] ? 'selected' : '' ?>>
                             <?= e(KhoKeHoach::nhanTrangThai($tt)) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
-                <button type="submit" style="background: #0d6efd; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">
+                <button type="submit" class="dh-nut">
                     Lưu trạng thái
                 </button>
             </form>
         </div>
         <?php endif; ?>
 
-        <p style="margin-top: 30px;"><a href="don-hang.php" style="color: var(--mau-chinh); text-decoration: none; font-weight: bold;">&larr; Quay lại danh sách kế hoạch</a></p>
+        <p class="dh-quay-lai"><a href="don-hang.php" class="dh-lien-ket">&larr; Quay lại danh sách kế hoạch</a></p>
     </main>
     <?php 
     require __DIR__ . '/inc/footer.php'; 
@@ -169,47 +170,48 @@ if ($id !== false) {
 $dsKeHoach = $laQuanTri ? $kho->dsTatCa() : $kho->dsCuaToi($uid);
 $tieuDe    = $laQuanTri ? 'Tất cả kế hoạch' : 'Kế hoạch của tôi';
 $trang     = 'don-hang';
+$cssTrang  = 'css/don-hang.css';
 require __DIR__ . '/inc/header.php';
 ?>
-<main class="noi-dung-chinh" style="padding: 20px; max-width: 1000px; margin: 0 auto; font-family: Arial, sans-serif;">
-    <h1 style="color: #1a365d; margin-bottom: 20px;"><?= e($tieuDe) ?></h1>
+<main class="noi-dung-chinh dh-trang dh-trang--rong">
+    <h1 class="dh-tieu-de"><?= e($tieuDe) ?></h1>
 
     <?php if (empty($dsKeHoach)): ?>
-        <div style="padding: 30px; background: #f8f9fa; border-radius: 8px; text-align: center; border: 1px dashed #ccc;">
-            <p style="font-size: 1.1rem; color: #666;">Chưa có kế hoạch nào được gửi.</p>
-            <a href="danh-sach.php" style="display: inline-block; margin-top: 10px; padding: 10px 20px; background: #0d6efd; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Thêm môn vào giỏ ngay</a>
+        <div class="dh-trong">
+            <p>Chưa có kế hoạch nào được gửi.</p>
+            <a href="danh-sach.php" class="dh-nut--lien-ket">Thêm môn vào giỏ ngay</a>
         </div>
     <?php else: ?>
-        <table style="width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+        <table class="dh-bang dh-bang--danh-sach">
             <thead>
-                <tr style="background: #1a365d; color: white;">
-                    <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Mã đơn</th>
-                    <?php if ($laQuanTri): ?><th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Người gửi</th><?php endif; ?>
-                    <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Ngày gửi</th>
-                    <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">Số môn</th>
-                    <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">Tổng tín chỉ</th>
-                    <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Trạng thái</th>
-                    <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">Thao tác</th>
+                <tr>
+                    <th>Mã đơn</th>
+                    <?php if ($laQuanTri): ?><th>Người gửi</th><?php endif; ?>
+                    <th>Ngày gửi</th>
+                    <th class="dh-giua">Số môn</th>
+                    <th class="dh-giua">Tổng tín chỉ</th>
+                    <th>Trạng thái</th>
+                    <th class="dh-giua">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
             <?php foreach ($dsKeHoach as $k): ?>
-                <tr style="border-bottom: 1px solid #eee;">
-                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold;">#<?= e((int)$k['id']) ?></td>
+                <tr>
+                    <td class="dh-giua dh-dam">#<?= e((int)$k['id']) ?></td>
                     <?php if ($laQuanTri): ?>
-                        <td style="padding: 12px; border: 1px solid #ddd;">
+                        <td>
                             <?= e((string) $k['ho_ten']) ?><br>
-                            <small style="color: #666;"><?= e((string) $k['email']) ?></small>
+                            <small class="dh-phu"><?= e((string) $k['email']) ?></small>
                         </td>
                     <?php endif; ?>
-                    <td style="padding: 12px; border: 1px solid #ddd;"><?= e((string) $k['ngay_tao']) ?></td>
-                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center;"><?= e((int)$k['so_mon']) ?></td>
-                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center; color: var(--mau-chinh); font-weight: bold;"><?= e((int)$k['tong_tin_chi']) ?></td>
-                    <td style="padding: 12px; border: 1px solid #ddd;">
+                    <td><?= e((string) $k['ngay_tao']) ?></td>
+                    <td class="dh-giua"><?= e((int)$k['so_mon']) ?></td>
+                    <td class="dh-giua dh-nhan"><?= e((int)$k['tong_tin_chi']) ?></td>
+                    <td>
                         <?= e(KhoKeHoach::nhanTrangThai((string) $k['trang_thai'])) ?>
                     </td>
-                    <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">
-                        <a href="don-hang.php?id=<?= e((int)$k['id']) ?>" style="color: var(--mau-chinh); text-decoration: none; font-weight: bold;">Xem chi tiết</a>
+                    <td class="dh-giua">
+                        <a href="don-hang.php?id=<?= e((int)$k['id']) ?>" class="dh-lien-ket">Xem chi tiết</a>
                     </td>
                 </tr>
             <?php endforeach; ?>

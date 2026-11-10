@@ -86,12 +86,12 @@ async function search(page = 1) {
         pager.replaceChildren();
         if (data.so_trang > 1) {
             const nav = element('nav'); nav.setAttribute('aria-label', 'Phân trang');
-            const list = element('ul', undefined, 'pagination');
-            list.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0';
+            const list = element('ul', undefined, 'pagination phan-trang__danh-sach');
+            
             for (let i = 1; i <= data.so_trang; i++) {
                 const p = new URLSearchParams(params); p.set('trang', String(i));
-                const a = element('a', String(i)); a.href = `danh-sach.php?${p}`; a.dataset.trangApi = String(i);
-                a.style.cssText = 'display:block;padding:8px 14px;border:1px solid #ddd;border-radius:4px';
+                const a = element('a', String(i), 'phan-trang__lien-ket'); a.href = `danh-sach.php?${p}`; a.dataset.trangApi = String(i);
+                
                 if (i === data.trang) a.setAttribute('aria-current', 'page');
                 const li = element('li'); li.append(a); list.append(li);
             }

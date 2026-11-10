@@ -181,7 +181,7 @@ require __DIR__ . '/inc/header.php';
 
                     <article class="the-san-pham">
                         <?php if ($duongDanAnh !== ''): ?>
-                            <img src="<?= e($duongDanAnh) ?>" alt="<?= e($mon->tenMon) ?>" width="400" height="250" style="object-fit: cover;" loading="lazy">
+                            <img src="<?= e($duongDanAnh) ?>" alt="<?= e($mon->tenMon) ?>" width="400" height="250" class="the-san-pham__anh" loading="lazy">
                         <?php endif; ?>
                         
                         <div class="the-san-pham__than">
@@ -227,13 +227,12 @@ require __DIR__ . '/inc/header.php';
         <!-- THANH PHÂN TRANG -->
         <div id="phan-trang-api">
         <?php if ($soTrang > 1): ?>
-            <nav aria-label="Phân trang" style="margin-top: 30px; text-align: center;">
-                <ul class="pagination" style="display: inline-flex; gap: 8px; list-style: none; padding: 0;">
+            <nav aria-label="Phân trang" class="phan-trang">
+                <ul class="pagination phan-trang__danh-sach">
                     <?php for ($i = 1; $i <= $soTrang; $i++): ?>
                         <li>
                             <a href="<?= e(lienKetTrang($i)) ?>"
-                               style="padding: 8px 14px; border: 1px solid #ddd; text-decoration: none; border-radius: 4px; 
-                                      <?= $i === $trangHienTai ? 'background-color: #0d6efd; color: white; border-color: #0d6efd;' : 'background-color: #fff; color: #333;' ?>">
+                               class="phan-trang__lien-ket<?= $i === $trangHienTai ? ' phan-trang__lien-ket--hien-tai' : '' ?>">
 
                                 <?= e((string) $i) ?>
                             </a>

@@ -1760,3 +1760,83 @@ details > p {
 .dau-trang__nut-ke-hoach { background: #0d6efd; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.9em; }
 .dau-trang__nut-dang-xuat { background: #dc3545; color: white; padding: 8px 12px; border: 0; border-radius: 5px; font-weight: bold; font-size: 0.9em; cursor: pointer; }
 .dau-trang__nut-dang-nhap { background: #198754; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; }
+
+/* ==========================================================================
+ * Chương 7 - Biện pháp 3: các lớp thay cho thuộc tính style="" nội tuyến.
+ * CSP không cho phép style nội tuyến, nên mọi khai báo dưới đây được đưa
+ * từ các trang đăng nhập / đăng ký / đặt lại mật khẩu / phân trang.
+ * ========================================================================== */
+.bao--hep {
+    max-width: 500px;
+    margin: 2rem auto;
+}
+
+.khoi-thong-bao {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+.khoi-thong-bao--loi {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.khoi-thong-bao--thanh-cong {
+    background: #d4edda;
+    color: #155724;
+}
+
+.loi-truong {
+    color: #dc2626;
+    font-size: 0.9em;
+}
+
+.nut--rong {
+    width: 100%;
+    padding: 0.75rem;
+    cursor: pointer;
+}
+
+.khoang-cach-tren {
+    margin-top: 1rem;
+}
+
+.anh-phu {
+    object-fit: cover;
+}
+
+.phan-trang {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.phan-trang__danh-sach {
+    display: inline-flex;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+}
+
+.phan-trang__lien-ket {
+    display: inline-block;
+    padding: 8px 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+    text-decoration: none;
+}
+
+.phan-trang__lien-ket--hien-tai {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+}
+
+/* Liên kết phân trang do JavaScript tạo (js/tim-kiem.js) dùng cùng lớp này. */
+.phan-trang__lien-ket[aria-current="page"] {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+}

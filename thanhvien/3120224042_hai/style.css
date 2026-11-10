@@ -316,3 +316,71 @@ body.dark-mode .tkb-table td {
 .btn-secondary:active {
     background-color: #0c274a;
 }
+
+/* Chương 7 - Biện pháp 3: các lớp thay cho style="" nội tuyến của trang. */
+.avatar-hai {
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.form-avatar {
+    margin: 10px 0;
+    padding: 10px;
+    background: #f4f4f4;
+    border-radius: 5px;
+}
+
+.form-avatar__nhan {
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.form-avatar__tep {
+    font-size: 0.85em;
+    margin: 5px 0;
+}
+
+.form-avatar__nut {
+    padding: 8px 14px;
+    font-size: 0.85em;
+    background-color: #123b6d;
+    color: #ffffff;
+}
+
+.thong-bao-anh {
+    color: green;
+    font-size: 0.85em;
+    margin-top: 5px;
+}
+
+.loi-anh {
+    color: red;
+    font-size: 0.85em;
+    margin-top: 5px;
+}
+
+.khoi-dem-nguoc {
+    margin: 10px 0;
+    padding: 10px 12px;
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    border-radius: 4px;
+    font-size: 0.88em;
+    color: #856404;
+}
+
+.khoi-cham-ngon {
+    margin: 10px 0 15px 0;
+    padding: 10px 12px;
+    background: #eef2ff;
+    border-left: 4px solid #4f46e5;
+    border-radius: 4px;
+    font-style: italic;
+    font-size: 0.88em;
+    color: #3730a3;
+}
+
+.nut-ung-ho {
+    background-color: #123b6d;
+    color: #ffffff;
+}

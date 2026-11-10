@@ -61,7 +61,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 require __DIR__ . '/inc/header.php';
 ?>
 <main class="noi-dung-chinh">
-    <div class="bao" style="max-width: 500px; margin: 2rem auto;">
+    <div class="bao bao--hep">
         <h1>Đăng nhập</h1>
         <?php if ($thongBao !== ''): ?>
             <p role="alert"><?= e($thongBao) ?></p>
@@ -80,9 +80,9 @@ require __DIR__ . '/inc/header.php';
                 <input id="mat-khau" name="mat_khau" type="password" autocomplete="current-password" required>
             </div>
 
-            <button type="submit" class="nut nut--chinh" style="width: 100%; padding: 0.75rem; cursor: pointer;">Đăng nhập</button>
+            <button type="submit" class="nut nut--chinh nut--rong">Đăng nhập</button>
             <p>Chưa có tài khoản? <a href="dang-ky.php">Đăng ký ngay</a></p>
-            <div style="margin-top: 1rem;">
+            <div class="khoang-cach-tren">
                 <label>
                     <input type="checkbox" name="ghi_nho" value="1">
                     Ghi nhớ đăng nhập trong 30 ngày

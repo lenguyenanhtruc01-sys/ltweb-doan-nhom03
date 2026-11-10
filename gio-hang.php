@@ -97,103 +97,100 @@ $tongTinChi = $duLieuGio['tong_so_tin_chi'];
 $tieuDe = 'Giỏ hàng';
 $trang = 'gio-hang';
 $goc = '';
+$cssTrang = 'css/gio-hang.css';
 
 require __DIR__ . '/inc/header.php';
 ?>
 
-<main class="noi-dung-chinh" style="padding: 20px; max-width: 900px; margin: 0 auto; font-family: Arial, sans-serif;">
-    <h1 style="color: #1a365d; margin-bottom: 20px;">Kế hoạch học tập</h1>
+<main class="noi-dung-chinh">
+    <h1>Kế hoạch học tập</h1>
 
     <!-- THÔNG BÁO -->
     <?php if (isset($_SESSION['flash_error'])): ?>
-        <div style="color: #721c24; background-color: #f8d7da; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+        <div class="thong-bao thong-bao--loi">
             <?= e($_SESSION['flash_error']) ?>
         </div>
         <?php unset($_SESSION['flash_error']); ?>
     <?php endif; ?>
 
     <?php if (isset($_SESSION['flash_success'])): ?>
-        <div style="color: #155724; background-color: #d4edda; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+        <div class="thong-bao thong-bao--thanh-cong">
             <?= e($_SESSION['flash_success']) ?>
         </div>
         <?php unset($_SESSION['flash_success']); ?>
     <?php endif; ?>
 
     <?php if (empty($danhSachMon)): ?>
-        <div style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 8px; border: 1px dashed #ccc;">
-            <p style="font-size: 1.1rem; color: #666; margin-bottom: 20px;">Chưa có môn nào trong kế hoạch học tập của bạn.</p>
-            <a href="danh-sach.php" style="display: inline-block; background: #0d6efd; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">Vào danh sách môn học để thêm</a>
+        <div class="empty-cart">
+            <p>Chưa có môn nào trong kế hoạch học tập của bạn.</p>
+            <a class="btn" href="danh-sach.php">Vào danh sách môn học để thêm</a>
         </div>
     <?php else: ?>
 
-        <div style="background: #e2e8f0; padding: 15px; border-radius: 5px; margin-bottom: 20px; font-weight: bold; color: #1a365d;">
+        <div class="cart-summary">
             Tổng số môn: <?= e((int) $soMon) ?> — Tổng tín chỉ: <?= e((int) $tongTinChi) ?>
         </div>
 
         <!-- DANH SÁCH MÔN -->
-        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+        <div class="danh-sach-mon">
             <?php foreach ($danhSachMon as $item): ?>
-                <div style="display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
-                    
-                    <div style="flex: 1; font-size: 1.05rem;">
-                        <strong style="color: #0d6efd;"><?= e((string) ($item['maMon'] ?? '')) ?></strong> - 
-                        <span style="color: #333;"><?= e((string) ($item['tenMon'] ?? '')) ?></span> 
-                        <span style="color: #666; font-size: 0.9rem;">(<?= e((int) ($item['soTinChi'] ?? 0)) ?> tín chỉ)</span>
+                <div class="mon-hang">
+                    <div class="mon-hang__thong-tin">
+                        <strong class="mon-hang__ma"><?= e((string) ($item['maMon'] ?? '')) ?></strong> -
+                        <span class="mon-hang__ten"><?= e((string) ($item['tenMon'] ?? '')) ?></span>
+                        <span class="mon-hang__tin-chi">(<?= e((int) ($item['soTinChi'] ?? 0)) ?> tín chỉ)</span>
                     </div>
 
-                    <div style="display: flex; gap: 10px; align-items: center;">
+                    <div class="mon-hang__hanh-dong">
                         <!-- Form cập nhật -->
-                        <form action="gio-hang.php" method="post" style="margin: 0; display: flex; gap: 5px;">
+                        <form action="gio-hang.php" method="post" class="form-cap-nhat">
                             <?= csrfField() ?>
                             <input type="hidden" name="hanh_dong" value="cap_nhat">
                             <input type="hidden" name="id" value="<?= e((int) ($item['id'] ?? 0)) ?>">
-                            <input type="number" name="so_luong" value="<?= e((int) ($item['soLuong'] ?? 1)) ?>" min="1" max="5" style="width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
-                            <!-- Đã sửa lại màu chữ nút Cập nhật -->
-                            <button type="submit" style="padding: 6px 12px; background: #e2e8f0; color: #000; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;">Cập nhật</button>
+                            <input type="number" name="so_luong" value="<?= e((int) ($item['soLuong'] ?? 1)) ?>" min="1" max="5" class="input-number">
+                            <button type="submit" class="btn btn-update">Cập nhật</button>
                         </form>
 
                         <!-- Form xóa -->
-                        <form action="gio-hang.php" method="post" style="margin: 0;">
+                        <form action="gio-hang.php" method="post" class="form-xoa">
                             <?= csrfField() ?>
                             <input type="hidden" name="hanh_dong" value="xoa">
                             <input type="hidden" name="id" value="<?= e((int) ($item['id'] ?? 0)) ?>">
-                            <button type="submit" style="padding: 6px 12px; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">Xóa</button>
+                            <button type="submit" class="btn btn-danger">Xóa</button>
                         </form>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
 
-        <div style="text-align: right; margin-bottom: 40px;">
-            <form action="gio-hang.php" method="post" style="margin: 0;">
+        <div class="cart-actions">
+            <form action="gio-hang.php" method="post" class="form-xoa">
                 <?= csrfField() ?>
                 <input type="hidden" name="hanh_dong" value="xoa_het">
-                <button type="submit" style="padding: 10px 15px; background: #dc2626; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Xóa hết kế hoạch</button>
+                <button type="submit" class="btn btn-danger">Xóa hết kế hoạch</button>
             </form>
         </div>
 
         <!-- KHỐI GỬI KẾ HOẠCH -->
-        <div style="border: 1px solid #b6d4fe; border-left: 5px solid #0d6efd; border-radius: 8px; padding: 25px; background: #f8f9fa; margin-top: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-            <h2 style="color: #0d6efd; margin-top: 0; font-size: 1.5rem; margin-bottom: 10px;">Gửi kế hoạch học tập</h2>
-            <p style="color: #555; margin-bottom: 20px; font-size: 0.95rem;">Kế hoạch sẽ được lưu vào tài khoản và chờ quản trị viên duyệt.</p>
-            
+        <div class="gui-ke-hoach">
+            <h2>Gửi kế hoạch học tập</h2>
+            <p class="gui-ke-hoach__mo-ta">Kế hoạch sẽ được lưu vào tài khoản và chờ quản trị viên duyệt.</p>
+
             <?php if (nguoiDung() !== null): ?>
-                
-                <form action="dat-hang.php" method="post" style="margin: 0;">
+                <form action="dat-hang.php" method="post">
                     <?= csrfField() ?>
-                    <div style="margin-bottom: 20px;">
-                        <label style="font-weight: 600; display: block; margin-bottom: 8px; color: #333;">Ghi chú (tuỳ chọn):</label>
-                        <textarea name="ghi_chu" rows="3" placeholder="Nhập ghi chú cho kế hoạch của bạn (ví dụ: Kế hoạch học kỳ 1)..." style="width: 100%; max-width: 600px; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-family: inherit; font-size: 1rem; box-sizing: border-box; resize: vertical;"></textarea>
+                    <div class="gui-ke-hoach__truong">
+                        <label for="ghi_chu" class="gui-ke-hoach__nhan">Ghi chú (tuỳ chọn):</label>
+                        <textarea id="ghi_chu" name="ghi_chu" rows="3" placeholder="Nhập ghi chú cho kế hoạch của bạn (ví dụ: Kế hoạch học kỳ 1)..." class="gui-ke-hoach__ghi-chu"></textarea>
                     </div>
-                    
-                    <button type="submit" style="background-color: #0d6efd; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: background-color 0.2s;">
+
+                    <button type="submit" class="btn-gui">
                         Gửi kế hoạch ngay
                     </button>
                 </form>
-
             <?php else: ?>
-                <div style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 6px; border: 1px solid #ffeeba;">
-                    Vui lòng <a href="dang-nhap.php" style="font-weight: 600; color: #0d6efd; text-decoration: underline;">đăng nhập</a> để gửi kế hoạch học tập.
+                <div class="nhac-dang-nhap">
+                    Vui lòng <a href="dang-nhap.php">đăng nhập</a> để gửi kế hoạch học tập.
                 </div>
             <?php endif; ?>
         </div>

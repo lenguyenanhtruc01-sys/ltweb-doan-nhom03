@@ -21,6 +21,33 @@ require_once __DIR__ . '/ham.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/csrf.php';
 require_once __DIR__ . '/xac-thuc.php';
+
+// 1b. Header bảo mật cho mọi phản hồi (Chương 7 - Biện pháp 3).
+// Đặt trước mọi output; CSP chỉ cho phép tài nguyên cùng nguồn và đúng
+// hai nguồn ngoài mà giao diện thật sự dùng (xem chú thích từng chỉ thị).
+if (!headers_sent()) {
+    header(
+        "Content-Security-Policy: default-src 'self'; "
+        . "script-src 'self'; "
+        . "style-src 'self'; "
+        . "img-src 'self'; "
+        . "font-src 'self'; "
+        . "connect-src 'self' https://api.open-meteo.com; "
+        . "frame-src https://www.google.com; "
+        . "object-src 'none'; "
+        . "base-uri 'self'; "
+        . "form-action 'self'; "
+        . "frame-ancestors 'none'"
+    );
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header_remove('X-Powered-By');
+    // HSTS chỉ có ý nghĩa khi trang đang chạy bằng HTTPS.
+    if (dungHttps()) {
+        header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+    }
+}
+
 // 2. Cấu hình môi trường.
 $giaTriGoiLoi = $_ENV['APP_DEBUG'] ?? $_SERVER['APP_DEBUG'] ?? getenv('APP_DEBUG');
 $batGoiLoi = $giaTriGoiLoi === 'true';

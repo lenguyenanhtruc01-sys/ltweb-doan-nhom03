@@ -52,12 +52,12 @@ require __DIR__ . '/inc/header.php';
 ?>
 
 <main class="noi-dung-chinh">
-    <div class="bao" style="max-width: 500px; margin: 2rem auto;">
+    <div class="bao bao--hep">
         <h1>Quên mật khẩu</h1>
         <p>Nhập email tài khoản để nhận hướng dẫn đặt lại mật khẩu.</p>
 
         <?php if ($thongBao !== ''): ?>
-            <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 1rem;">
+            <div class="khoi-thong-bao khoi-thong-bao--thanh-cong">
                 <?= e($thongBao) ?>
             </div>
         <?php endif; ?>

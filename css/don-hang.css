@@ -1,0 +1,176 @@
+/*
+ * Tệp: css/don-hang.css
+ * Giao diện trang kế hoạch học tập (danh sách và chi tiết).
+ * Các lớp dưới đây thay cho thuộc tính style="" nội tuyến để đáp ứng CSP.
+ */
+
+.dh-trang {
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+}
+
+.dh-trang--rong {
+    max-width: 1000px;
+}
+
+.dh-tieu-de {
+    color: #1a365d;
+    margin-bottom: 20px;
+}
+
+.dh-thong-bao {
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.dh-thong-bao--ok {
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+.dh-thong-bao--loi {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+.dh-hop {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 5px solid #0d6efd;
+    margin-bottom: 20px;
+}
+
+.dh-hop p {
+    margin: 5px 0;
+}
+
+.dh-nhan {
+    font-weight: bold;
+    color: var(--mau-chinh);
+}
+
+.dh-bang {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background: #fff;
+}
+
+.dh-bang--danh-sach {
+    margin-bottom: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.dh-bang thead tr {
+    background: #1a365d;
+    color: #fff;
+}
+
+.dh-bang th,
+.dh-bang td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.dh-bang tbody tr {
+    border-bottom: 1px solid #eee;
+}
+
+.dh-bang th.dh-giua,
+.dh-bang td.dh-giua {
+    text-align: center;
+}
+
+.dh-dam {
+    font-weight: bold;
+}
+
+.dh-tong {
+    text-align: right;
+    font-size: 1.2rem;
+}
+
+.dh-tong .dh-nhan {
+    font-weight: bold;
+}
+
+.dh-quan-tri {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.dh-quan-tri h2 {
+    margin-top: 0;
+    color: #1a365d;
+}
+
+.dh-form-ngang {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.dh-select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.dh-nut {
+    background: #0d6efd;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.dh-lien-ket {
+    color: var(--mau-chinh);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.dh-quay-lai {
+    margin-top: 30px;
+}
+
+.dh-trong {
+    padding: 30px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px dashed #ccc;
+}
+
+.dh-trong p {
+    font-size: 1.1rem;
+    color: #666;
+}
+
+.dh-nut--lien-ket {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: #0d6efd;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.dh-phu {
+    color: #666;
+}

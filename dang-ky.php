@@ -88,11 +88,11 @@ require __DIR__ . '/inc/header.php';
 ?>
 
 <main class="noi-dung-chinh">
-    <div class="bao" style="max-width: 500px; margin: 2rem auto;">
+    <div class="bao bao--hep">
         <h1>Đăng ký tài khoản</h1>
 
         <?php if (isset($loi['chung'])): ?>
-            <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 1rem;">
+            <div class="khoi-thong-bao khoi-thong-bao--loi">
                 <?= e($loi['chung']) ?>
             </div>
         <?php endif; ?>
@@ -104,7 +104,7 @@ require __DIR__ . '/inc/header.php';
                 <input type="text" id="ho_ten" name="ho_ten" maxlength="100" value="<?= e($hoTen) ?>" required
                     <?= isset($loi['ho_ten']) ? 'aria-invalid="true" aria-describedby="loi-ho-ten"' : '' ?>>
                 <?php if (isset($loi['ho_ten'])): ?>
-                    <span id="loi-ho-ten" role="alert" style="color: red; font-size: 0.9em;"><?= e($loi['ho_ten']) ?></span>
+                    <span id="loi-ho-ten" role="alert" class="loi-truong"><?= e($loi['ho_ten']) ?></span>
                 <?php endif; ?>
             </div>
 
@@ -113,7 +113,7 @@ require __DIR__ . '/inc/header.php';
                 <input type="text" id="ten_dang_nhap" name="ten_dang_nhap" maxlength="50" value="<?= e($tenDangNhap) ?>" required
                     <?= isset($loi['ten_dang_nhap']) ? 'aria-invalid="true" aria-describedby="loi-ten-dang-nhap"' : '' ?>>
                 <?php if (isset($loi['ten_dang_nhap'])): ?>
-                    <span id="loi-ten-dang-nhap" role="alert" style="color: red; font-size: 0.9em;"><?= e($loi['ten_dang_nhap']) ?></span>
+                    <span id="loi-ten-dang-nhap" role="alert" class="loi-truong"><?= e($loi['ten_dang_nhap']) ?></span>
                 <?php endif; ?>
             </div>
 
@@ -122,7 +122,7 @@ require __DIR__ . '/inc/header.php';
                 <input type="email" id="email" name="email" maxlength="100" value="<?= e($email) ?>" required
                     <?= isset($loi['email']) ? 'aria-invalid="true" aria-describedby="loi-email"' : '' ?>>
                 <?php if (isset($loi['email'])): ?>
-                    <span id="loi-email" role="alert" style="color: red; font-size: 0.9em;"><?= e($loi['email']) ?></span>
+                    <span id="loi-email" role="alert" class="loi-truong"><?= e($loi['email']) ?></span>
                 <?php endif; ?>
             </div>
 
@@ -131,7 +131,7 @@ require __DIR__ . '/inc/header.php';
                 <input type="password" id="mat_khau" name="mat_khau" minlength="8" autocomplete="new-password" required
                     <?= isset($loi['mat_khau']) ? 'aria-invalid="true" aria-describedby="loi-mat-khau"' : '' ?>>
                 <?php if (isset($loi['mat_khau'])): ?>
-                    <span id="loi-mat-khau" role="alert" style="color: red; font-size: 0.9em;"><?= e($loi['mat_khau']) ?></span>
+                    <span id="loi-mat-khau" role="alert" class="loi-truong"><?= e($loi['mat_khau']) ?></span>
                 <?php endif; ?>
             </div>
 
@@ -140,7 +140,7 @@ require __DIR__ . '/inc/header.php';
                 <input type="password" id="xac_nhan_mat_khau" name="xac_nhan_mat_khau" minlength="8" autocomplete="new-password" required
                     <?= isset($loi['xac_nhan_mat_khau']) ? 'aria-invalid="true" aria-describedby="loi-xac-nhan-mat-khau"' : '' ?>>
                 <?php if (isset($loi['xac_nhan_mat_khau'])): ?>
-                    <span id="loi-xac-nhan-mat-khau" role="alert" style="color: red; font-size: 0.9em;"><?= e($loi['xac_nhan_mat_khau']) ?></span>
+                    <span id="loi-xac-nhan-mat-khau" role="alert" class="loi-truong"><?= e($loi['xac_nhan_mat_khau']) ?></span>
                 <?php endif; ?>
             </div>
 

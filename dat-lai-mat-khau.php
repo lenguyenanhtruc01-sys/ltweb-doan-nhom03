@@ -49,11 +49,11 @@ require __DIR__ . '/inc/header.php';
 ?>
 
 <main class="noi-dung-chinh">
-    <div class="bao" style="max-width: 500px; margin: 2rem auto;">
+    <div class="bao bao--hep">
         <h1>Đặt lại mật khẩu</h1>
 
         <?php if ($thongBaoLoi !== ''): ?>
-            <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 1rem;">
+            <div class="khoi-thong-bao khoi-thong-bao--loi">
                 <?= e($thongBaoLoi) ?>
             </div>
         <?php endif; ?>

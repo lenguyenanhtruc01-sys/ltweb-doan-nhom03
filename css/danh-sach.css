@@ -58,3 +58,8 @@ body { background-color: var(--bg-main); color: var(--text-main); }
     border-radius: var(--radius);
     border: 1px dashed var(--border-color);
 }
+
+/* Ảnh thẻ môn học: lớp thay cho style="object-fit: cover" nội tuyến (CSP). */
+.the-san-pham__anh {
+    object-fit: cover;
+}

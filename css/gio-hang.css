@@ -296,3 +296,120 @@ body {
         font-size: 12px;
     }
 }
+
+/* ==========================================================================
+ * Chương 7 - Biện pháp 3: các khối dưới đây thay cho style="" nội tuyến
+ * của trang Kế hoạch học tập (trang cũ chưa nạp tệp CSS này).
+ * ========================================================================== */
+.danh-sach-mon {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.mon-hang {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.mon-hang__thong-tin {
+    flex: 1;
+    font-size: 1.05rem;
+}
+
+.mon-hang__ma {
+    color: #0d6efd;
+}
+
+.mon-hang__ten {
+    color: #333;
+}
+
+.mon-hang__tin-chi {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.mon-hang__hanh-dong {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.gui-ke-hoach {
+    border: 1px solid #b6d4fe;
+    border-left: 5px solid #0d6efd;
+    border-radius: 8px;
+    padding: 25px;
+    background: #f8f9fa;
+    margin-top: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.gui-ke-hoach h2 {
+    color: #0d6efd;
+    margin-top: 0;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.gui-ke-hoach__mo-ta {
+    color: #555;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.gui-ke-hoach__truong {
+    margin-bottom: 20px;
+}
+
+.gui-ke-hoach__nhan {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.gui-ke-hoach__ghi-chu {
+    width: 100%;
+    max-width: 600px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.btn-gui {
+    background-color: #0d6efd;
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.nhac-dang-nhap {
+    background: #fff3cd;
+    color: #856404;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #ffeeba;
+}
+
+.nhac-dang-nhap a {
+    font-weight: 600;
+    color: #0d6efd;
+    text-decoration: underline;
+}

@@ -5,7 +5,7 @@
 #   SID=<PHPSESSID của tài khoản khách> CSRF=<thẻ meta csrf-token> bash tests/bao-mat.sh
 # GOC: php -S localhost:8000 (mặc định) hoặc http://localhost/ltweb-doan-nhom05 (Apache, ca 10).
 GOC="${GOC:-http://localhost:8000}"
-APACHE="${APACHE:-http://localhost/ltweb-doan-nhom05}"
+APACHE="${APACHE:-http://localhost/ltweb-doan-nhom03}"
 SID="${SID:-}"
 CSRF="${CSRF:-}"
 ma() { curl -s -g -o /dev/null -w '%{http_code}' "$@"; }
@@ -41,7 +41,7 @@ curl -s "$GOC/danh-sach.php?q=%3Cb%3Eao%3C%2Fb%3E" | grep -o '&lt;b&gt;ao&lt;/b&
 tieuDe "Ca 8 – Tham số dạng mảng (mong đợi: 200/404, không 500)"
 for p in 'danh-sach.php?q[]=ao' 'chi-tiet.php?id[]=1' 'danh-sach.php?sx[]=x'; do echo "$p -> $(ma "$GOC/$p")"; done
 [ -n "$CSRF" ] && echo "dang-nhap email[]: $(ma -b "PHPSESSID=$SID" -d "email[]=a&mat_khau[]=b&_csrf=$CSRF" "$GOC/dang-nhap.php")"
-[ -n "$CSRF" ] && echo "lien-he ho_ten[]:  $(ma -b "PHPSESSID=$SID" -d "ho_ten[]=a&email[]=b&_csrf=$CSRF" "$GOC/lien-he.php")"
+[ -n "$CSRF" ] && echo "lien-he hoten[]:   $(ma -b "PHPSESSID=$SID" -d "hoten[]=a&email[]=b&_csrf=$CSRF" "$GOC/lien-he.php")"
 
 tieuDe "Ca 9 – .env (mong đợi: hai lệnh git không in gì)"
 git ls-files .env; git log --all --oneline -- .env; echo "(hết)"

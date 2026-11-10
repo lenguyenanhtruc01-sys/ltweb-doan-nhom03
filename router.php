@@ -7,8 +7,12 @@ declare(strict_types=1);
  *     php -S localhost:8000 router.php
  *
  * php -S bỏ qua .htaccess, nên nếu không có router này thì /.env, /.git/config,
- * /database/schema.sql... vẫn tải được. Router áp dụng lại đúng các quy tắc của
- * .htaccess ở tầng ứng dụng; trên Apache (XAMPP, hosting) không cần tệp này.
+ * /database/schema.sql, /uploads/probe.php... vẫn tải được. Router áp dụng lại
+ * đúng các quy tắc của .htaccess và của uploads/.htaccess ở tầng ứng dụng:
+ *   - tệp, thư mục ẩn (.env, .git...) và thư mục nội bộ của dự án;
+ *   - tệp cấu hình, SQL, log, sao lưu;
+ *   - tệp thực thi nằm trong uploads/ (php, phtml, phar, cgi, pl, py, sh).
+ * Trên Apache (XAMPP, hosting) không cần tệp này; .htaccess đã lo các quy tắc đó.
  * Trả false để PHP phục vụ tệp/thực thi mã như bình thường.
  */
 
@@ -30,7 +34,13 @@ $laTepCam = preg_match(
     $duongDan
 ) === 1;
 
-if ($laTepAn || $laThuMucNoiBo || $laTepCam) {
+// uploads/ chỉ chứa ảnh tải lên: không được chạy mã, kể cả đuôi kép.
+$laMaTrongUploads = preg_match(
+    '~(?:^|/)uploads/.*\.(?:php\d?|phtml|pht|phar|cgi|pl|py|sh)$~i',
+    $duongDan
+) === 1;
+
+if ($laTepAn || $laThuMucNoiBo || $laTepCam || $laMaTrongUploads) {
     http_response_code(404);
     header('Content-Type: text/plain; charset=utf-8');
     header('X-Content-Type-Options: nosniff');

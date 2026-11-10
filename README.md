@@ -91,8 +91,14 @@ Avatar Hải dùng MySQL: sao lưu rồi chạy `php database/nang-cap-ca-nhan-h
 
 ```bash
 composer install
-php -S localhost:8000
+php -S localhost:8000 router.php
 ```
+
+Lệnh **phải kèm `router.php`**. `php -S` không đọc `.htaccess`, nên nếu chạy
+`php -S localhost:8000` (thiếu router) thì `/.env`, `/inc/db.php`,
+`/database/schema.sql`, `/uploads/probe.php` vẫn tải được. `router.php` áp dụng
+lại đúng các quy tắc chặn của `.htaccess` và `uploads/.htaccess` (tệp ẩn, thư mục
+nội bộ, tệp SQL/log/composer, tệp thực thi trong `uploads/`).
 
 Mở http://localhost:8000/index.php; MySQL vẫn cần chạy. PHP cần quyền ghi vào `storage/`, `uploads/`, `logs/`.
 
@@ -343,5 +349,8 @@ cho tệp `.sql`, `.log`, `.bak`, `.ini`, `.lock`, `.sh`, `.md` và `composer.js
 `logs/.htaccess` và `storage/.htaccess` trả 403 cho toàn bộ thư mục.
 
 `.htaccess` chỉ có tác dụng khi chạy bằng Apache (XAMPP, hosting). `php -S` bỏ qua
-tệp này, nên khi chạy bằng `php -S` phải giữ các bước kiểm tra tệp tải lên trong
-`src/Services/TaiAnh.php` và không đặt bí mật trong thư mục web.
+tệp này, vì vậy lệnh chạy chuẩn là `php -S localhost:8000 router.php`: `router.php`
+chặn tệp ẩn, thư mục nội bộ, tệp SQL/log/composer và tệp thực thi trong `uploads/`
+giống `.htaccess` + `uploads/.htaccess`. Dù dùng router hay không, vẫn phải giữ các
+bước kiểm tra tệp tải lên trong `src/Services/TaiAnh.php`, và không đặt bí mật
+trong thư mục web.

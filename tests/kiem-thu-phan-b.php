@@ -11,6 +11,9 @@ declare(strict_types=1);
  * thử trong README. Không in mã phiên hay mã CSRF ra màn hình.
  * Cần tài khoản MySQL quản trị để tạo/dọn bản ghi fixture; đọc thông tin từ
  * biến môi trường DB_USER/DB_PASS (mặc định root, mật khẩu rỗng như XAMPP).
+ * Bộ thử chỉ xóa đúng các bản ghi nó tạo ra (id lưu lại trong lúc chạy); không
+ * dọn theo mốc id nên không xóa nhầm dữ liệu người khác ghi đồng thời. Dù vậy,
+ * nên chạy trên bản sao CSDL khi nhiều người cùng thử.
  */
 
 if (PHP_SAPI !== 'cli') {
@@ -113,6 +116,12 @@ $pdo = dbTest();
 $idFixture = null;
 $idMonTruoc = (int) $pdo->query('SELECT COALESCE(MAX(id),0) FROM tv_mon_an')->fetchColumn();
 $idOttTruoc = (int) $pdo->query('SELECT COALESCE(MAX(id),0) FROM tv_lich_su_ott')->fetchColumn();
+$tenCsdl = (string) $pdo->query('SELECT DATABASE()')->fetchColumn();
+$idMonDaTao = [];
+$idOttDaTao = [];
+
+echo 'CSDL kiểm thử: ' . $tenCsdl
+    . ' — chỉ xóa đúng bản ghi do bộ thử tạo, không dọn theo mốc id.' . PHP_EOL;
 
 try {
     echo '=== 0. Đăng nhập chủ trang duy và tài khoản hop ===' . PHP_EOL;
@@ -135,6 +144,13 @@ try {
     check(str_contains($sauXss, '&lt;b&gt;Bình&lt;/b&gt;'), 'Trang hiện nguyên văn &lt;b&gt;Bình&lt;/b&gt;');
     check(!str_contains($sauXss, '<b>Bình</b>'), 'Trang không chứa thẻ <b> thật');
     check(!str_contains($sauXss, '<script>alert(1)</script>'), 'Trang không chứa script đã gửi');
+
+    // Ghi lại đúng các bản ghi ca (a) vừa tạo (theo nội dung payload), để cuối
+    // buổi chỉ xóa các id này thay vì xóa mọi dòng có id lớn hơn mốc.
+    $stMon = $pdo->prepare('SELECT id FROM tv_mon_an
+        WHERE mssv = ? AND id > ? AND ten_mon IN (?, ?, ?) ORDER BY id');
+    $stMon->execute([MSSV_DUY, $idMonTruoc, 'Phở', $xss, 'Cơm tấm']);
+    $idMonDaTao = array_map('intval', $stMon->fetchAll(PDO::FETCH_COLUMN));
 
     echo PHP_EOL . '=== 2. Ca (b) — CSRF: thiếu mã, mã sai, mã dạng mảng ===' . PHP_EOL;
     $truoc = demMon();
@@ -201,6 +217,17 @@ try {
     $json = json_decode($than, true);
     check($ma === 200 && is_array($json) && ($json['ok'] ?? false) === true, 'AJAX có header X-CSRF-Token đúng trả JSON ok', 'mã ' . $ma);
 
+    // Chỉ dọn ván vừa chơi nếu xác định được duy nhất một bản ghi mới.
+    $stOtt = $pdo->prepare('SELECT id FROM tv_lich_su_ott WHERE mssv = ? AND id > ? ORDER BY id');
+    $stOtt->execute([MSSV_DUY, $idOttTruoc]);
+    $idOttMoi = array_map('intval', $stOtt->fetchAll(PDO::FETCH_COLUMN));
+    if (count($idOttMoi) === 1) {
+        $idOttDaTao = $idOttMoi;
+    } elseif (count($idOttMoi) > 1) {
+        echo '  (Không dọn oẳn tù tì: có ' . count($idOttMoi)
+            . ' bản ghi mới nên không xác định được bản ghi nào do bộ thử tạo.)' . PHP_EOL;
+    }
+
     echo PHP_EOL . '=== 7. Kiểm tra header bảo mật của trang (Biện pháp 3) ===' . PHP_EOL;
     [$ma, , $header] = gui(TRANG, 'GET', [], [], $jarDuy);
     check($ma === 200, 'Trang trả 200');
@@ -212,9 +239,21 @@ try {
     if ($idFixture !== null) {
         $pdo->prepare('DELETE FROM tv_mon_an WHERE id = ? AND mssv = ?')->execute([$idFixture, MSSV_KHAC]);
     }
-    // Dọn dữ liệu do chính bộ thử thêm vào, giữ nguyên dữ liệu mẫu.
-    $pdo->prepare('DELETE FROM tv_mon_an WHERE id > ? AND mssv = ?')->execute([$idMonTruoc, MSSV_DUY]);
-    $pdo->prepare('DELETE FROM tv_lich_su_ott WHERE id > ? AND mssv = ?')->execute([$idOttTruoc, MSSV_DUY]);
+    // Chỉ xóa đúng các bản ghi bộ thử đã tạo. Không dùng điều kiện "id > mốc"
+    // vì trên CSDL dùng chung, người khác có thể vừa ghi thêm dòng trong lúc chạy.
+    if ($idMonDaTao !== []) {
+        $ph = implode(',', array_fill(0, count($idMonDaTao), '?'));
+        $pdo->prepare('DELETE FROM tv_mon_an WHERE mssv = ? AND id IN (' . $ph . ')')
+            ->execute(array_merge([MSSV_DUY], $idMonDaTao));
+    }
+    if ($idOttDaTao !== []) {
+        $ph = implode(',', array_fill(0, count($idOttDaTao), '?'));
+        $pdo->prepare('DELETE FROM tv_lich_su_ott WHERE mssv = ? AND id IN (' . $ph . ')')
+            ->execute(array_merge([MSSV_DUY], $idOttDaTao));
+    }
+    echo 'Đã dọn: fixture id=' . ($idFixture ?? '-')
+        . '; món do bộ thử tạo: ' . ($idMonDaTao === [] ? '0' : implode(',', $idMonDaTao))
+        . '; ván oẳn tù tì: ' . ($idOttDaTao === [] ? '0' : implode(',', $idOttDaTao)) . PHP_EOL;
     @unlink($jarDuy);
     @unlink($jarHop);
 }

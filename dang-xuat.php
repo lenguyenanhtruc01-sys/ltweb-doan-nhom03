@@ -21,10 +21,6 @@ if (!is_string($token) || !csrfKiemTra($token)) {
 }
 
 // Không ghi giỏ session cũ đè lên dữ liệu do phiên khác vừa cập nhật.
-xoaGhiNhoHienTai();
-
-$_SESSION = [];
-session_regenerate_id(true);
-$_SESSION['ke_hoach_dang_ky'] = [];
+dangXuat();
 header('Location: index.php', true, 303);
 exit;

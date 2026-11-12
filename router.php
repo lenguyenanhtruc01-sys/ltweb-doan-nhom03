@@ -34,9 +34,9 @@ $laTepCam = preg_match(
     $duongDan
 ) === 1;
 
-// uploads/ chỉ chứa ảnh tải lên: không được chạy mã, kể cả đuôi kép.
-// uploads/ chỉ chứa ảnh tải lên: không được chạy mã, kể cả đuôi kép (VD: shell.php.jpg).
+// Chặn đuôi thực thi trong uploads, kể cả tên có đuôi kép.
 $laMaTrongUploads = preg_match(
+    '~(?:^|/)uploads/.*\.(?:php[0-9]*|phtml|pht|phar|cgi|pl|py|sh)(?:[./]|$)~i',
     $duongDan
 ) === 1;
 

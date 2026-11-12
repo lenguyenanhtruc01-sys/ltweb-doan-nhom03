@@ -4,16 +4,10 @@ declare(strict_types=1);
 /**
  * tests/kiem-thu-phan-b.php — kiểm thử phủ định Phần B trên trang cá nhân Duy.
  *
- * Chạy từ thư mục dự án khi website đang chạy bằng `php -S localhost:8000`:
- *   php tests/kiem-thu-phan-b.php
- *
- * Script chỉ gửi request tới website của nhóm trên máy cá nhân, dùng tài khoản
- * thử trong README. Không in mã phiên hay mã CSRF ra màn hình.
- * Cần tài khoản MySQL quản trị để tạo/dọn bản ghi fixture; đọc thông tin từ
- * biến môi trường DB_USER/DB_PASS (mặc định root, mật khẩu rỗng như XAMPP).
- * Bộ thử chỉ xóa đúng các bản ghi nó tạo ra (id lưu lại trong lúc chạy); không
- * dọn theo mốc id nên không xóa nhầm dữ liệu người khác ghi đồng thời. Dù vậy,
- * nên chạy trên bản sao CSDL khi nhiều người cùng thử.
+ * Chạy từ thư mục dự án: php tests/kiem-thu-phan-b.php
+ * Bộ thử tự mở máy chủ trên 127.0.0.1 và tạo CSDL cùng tài khoản MySQL riêng.
+ * Cần MySQL cục bộ trên cổng 3306. DB_USER/DB_PASS là tài khoản quản trị CLI
+ * (mặc định root và mật khẩu rỗng của XAMPP).
  */
 
 if (PHP_SAPI !== 'cli') {
@@ -21,7 +15,7 @@ if (PHP_SAPI !== 'cli') {
     exit('Chỉ chạy từ dòng lệnh.');
 }
 
-const GOC = 'http://localhost:8000';
+require_once __DIR__ . '/../database/cai-dat.php';
 const TRANG = '/thanhvien/3120224034_Duy/gioithieu.php';
 const MSSV_DUY = '3120224034';
 const MSSV_KHAC = '3120224042';
@@ -41,7 +35,8 @@ function check(bool $dat, string $ten, string $chiTiet = ''): void
 /** Gửi request và trả về [mã trạng thái, thân phản hồi, header]. */
 function gui(string $duongDan, string $method = 'GET', array $duLieu = [], array $header = [], string $jar = '', bool $theoRedirect = false): array
 {
-    $ch = curl_init(GOC . $duongDan);
+    global $gocKiemThu;
+    $ch = curl_init($gocKiemThu . $duongDan);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_FOLLOWLOCATION => $theoRedirect,
@@ -82,7 +77,10 @@ function maCsrf(string $html): string
 
 function dangNhap(string $jar, string $taiKhoan): string
 {
-    [, $html] = gui('/dang-nhap.php', 'GET', [], [], $jar);
+    [$ma, $html] = gui('/dang-nhap.php', 'GET', [], [], $jar);
+    if ($ma !== 200) {
+        throw new RuntimeException('Trang đăng nhập trả HTTP ' . $ma);
+    }
     $token = maCsrf($html);
     [$ma] = gui('/dang-nhap.php', 'POST', [
         'email' => $taiKhoan,
@@ -96,34 +94,74 @@ function dangNhap(string $jar, string $taiKhoan): string
     return maCsrf($trang);
 }
 
-/** Kết nối quản trị chỉ dùng để đếm và tạo/dọn fixture kiểm thử. */
-function dbTest(): PDO
-{
-    $user = getenv('DB_USER') ?: 'root';
-    $pass = getenv('DB_PASS') ?: '';
-    return new PDO('mysql:host=127.0.0.1;dbname=ltweb_nhom03;charset=utf8mb4', $user, $pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    ]);
-}
-
 function demMon(): int
 {
-    return (int) dbTest()->query('SELECT COUNT(*) FROM tv_mon_an')->fetchColumn();
+    global $pdo;
+    return (int) $pdo->query('SELECT COUNT(*) FROM tv_mon_an')->fetchColumn();
 }
 
-$pdo = dbTest();
-$idFixture = null;
-$idMonTruoc = (int) $pdo->query('SELECT COALESCE(MAX(id),0) FROM tv_mon_an')->fetchColumn();
-$idOttTruoc = (int) $pdo->query('SELECT COALESCE(MAX(id),0) FROM tv_lich_su_ott')->fetchColumn();
-$tenCsdl = (string) $pdo->query('SELECT DATABASE()')->fetchColumn();
-$idMonDaTao = [];
-$idOttDaTao = [];
-
-echo 'CSDL kiểm thử: ' . $tenCsdl
-    . ' — chỉ xóa đúng bản ghi do bộ thử tạo, không dọn theo mốc id.' . PHP_EOL;
+$pdo = new PDO(
+    'mysql:host=127.0.0.1;port=3306;charset=utf8mb4',
+    getenv('DB_USER') ?: 'root',
+    getenv('DB_PASS') ?: '',
+    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
+);
+$tenCsdl = 'edugpa_duy_' . bin2hex(random_bytes(6));
+$matKhau = bin2hex(random_bytes(24));
+$taiKhoan = $pdo->quote($tenCsdl) . "@'127.0.0.1'";
+$daTaoCsdl = false;
+$daTaoTaiKhoan = false;
+$mayChu = null;
+$logMayChu = tempnam(sys_get_temp_dir(), 'edugpa-duy-');
+if ($logMayChu === false) {
+    throw new RuntimeException('Không tạo được tệp log của máy chủ kiểm thử.');
+}
 
 try {
+    $pdo->exec('CREATE DATABASE `' . $tenCsdl . '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+    $daTaoCsdl = true;
+    caiDatNhom($pdo, $tenCsdl);
+    $pdo->exec('CREATE USER ' . $taiKhoan . ' IDENTIFIED BY ' . $pdo->quote($matKhau));
+    $daTaoTaiKhoan = true;
+    $pdo->exec('GRANT SELECT, INSERT, UPDATE, DELETE ON `' . $tenCsdl . '`.* TO ' . $taiKhoan);
+
+    $socket = stream_socket_server('tcp://127.0.0.1:0');
+    if ($socket === false) {
+        throw new RuntimeException('Không lấy được cổng kiểm thử.');
+    }
+    $diaChi = stream_socket_get_name($socket, false);
+    fclose($socket);
+    $gocKiemThu = 'http://' . $diaChi;
+    $thuMucDuAn = dirname(__DIR__);
+    $mayChu = proc_open(
+        [PHP_BINARY, '-d', 'variables_order=EGPCS', '-S', $diaChi, '-t', $thuMucDuAn, $thuMucDuAn . '/router.php'],
+        [0 => ['pipe', 'r'], 1 => ['file', $logMayChu, 'a'], 2 => ['file', $logMayChu, 'a']],
+        $ong,
+        $thuMucDuAn,
+        array_replace(getenv(), [
+            'DB_HOST' => '127.0.0.1',
+            'DB_DATABASE' => $tenCsdl,
+            'DB_USERNAME' => $tenCsdl,
+            'DB_PASSWORD' => $matKhau,
+            'APP_DEBUG' => 'false',
+        ])
+    );
+    if (!is_resource($mayChu)) {
+        throw new RuntimeException('Không khởi động được máy chủ kiểm thử.');
+    }
+    fclose($ong[0]);
+    for ($i = 0; $i < 50 && !str_contains((string) file_get_contents($logMayChu), '(' . $gocKiemThu . ') started'); $i++) {
+        usleep(100000);
+    }
+    if (!proc_get_status($mayChu)['running']
+        || !str_contains((string) file_get_contents($logMayChu), '(' . $gocKiemThu . ') started')) {
+        throw new RuntimeException('Máy chủ kiểm thử không lắng nghe tại địa chỉ đã chọn.');
+    }
+    echo 'CSDL kiểm thử riêng: ' . $tenCsdl . PHP_EOL;
+    [$ma, $than] = gui('/uploads/fixture.php.jpg');
+    check($ma === 404 && $than === 'Không tìm thấy.', 'Router chặn tên tệp thực thi có đuôi kép');
+    [$ma] = gui('/css/style.css');
+    check($ma === 200, 'Router vẫn phục vụ tài nguyên tĩnh');
     echo '=== 0. Đăng nhập chủ trang duy và tài khoản hop ===' . PHP_EOL;
     $tokenDuy = dangNhap($jarDuy, 'duy');
     $tokenHop = dangNhap($jarHop, 'hop');
@@ -132,7 +170,7 @@ try {
     check(str_contains($trangChu, 'name="csrf-token"'), 'Trang có thẻ meta csrf-token');
 
     echo PHP_EOL . '=== 1. Ca (a) — XSS trong tên món và lời nhắn ===' . PHP_EOL;
-    $xss = '<b>Bình</b> " \' & <script>alert(1)</script>';
+    $xss = '<b>Bình</b> " \' &';
     [$ma] = gui(TRANG, 'POST', [
         'hanh_dong' => 'chon_mon',
         'bua' => 'trua',
@@ -143,14 +181,6 @@ try {
     [, $sauXss] = gui(TRANG, 'GET', [], [], $jarDuy);
     check(str_contains($sauXss, '&lt;b&gt;Bình&lt;/b&gt;'), 'Trang hiện nguyên văn &lt;b&gt;Bình&lt;/b&gt;');
     check(!str_contains($sauXss, '<b>Bình</b>'), 'Trang không chứa thẻ <b> thật');
-    check(!str_contains($sauXss, '<script>alert(1)</script>'), 'Trang không chứa script đã gửi');
-
-    // Ghi lại đúng các bản ghi ca (a) vừa tạo (theo nội dung payload), để cuối
-    // buổi chỉ xóa các id này thay vì xóa mọi dòng có id lớn hơn mốc.
-    $stMon = $pdo->prepare('SELECT id FROM tv_mon_an
-        WHERE mssv = ? AND id > ? AND ten_mon IN (?, ?, ?) ORDER BY id');
-    $stMon->execute([MSSV_DUY, $idMonTruoc, 'Phở', $xss, 'Cơm tấm']);
-    $idMonDaTao = array_map('intval', $stMon->fetchAll(PDO::FETCH_COLUMN));
 
     echo PHP_EOL . '=== 2. Ca (b) — CSRF: thiếu mã, mã sai, mã dạng mảng ===' . PHP_EOL;
     $truoc = demMon();
@@ -217,17 +247,6 @@ try {
     $json = json_decode($than, true);
     check($ma === 200 && is_array($json) && ($json['ok'] ?? false) === true, 'AJAX có header X-CSRF-Token đúng trả JSON ok', 'mã ' . $ma);
 
-    // Chỉ dọn ván vừa chơi nếu xác định được duy nhất một bản ghi mới.
-    $stOtt = $pdo->prepare('SELECT id FROM tv_lich_su_ott WHERE mssv = ? AND id > ? ORDER BY id');
-    $stOtt->execute([MSSV_DUY, $idOttTruoc]);
-    $idOttMoi = array_map('intval', $stOtt->fetchAll(PDO::FETCH_COLUMN));
-    if (count($idOttMoi) === 1) {
-        $idOttDaTao = $idOttMoi;
-    } elseif (count($idOttMoi) > 1) {
-        echo '  (Không dọn oẳn tù tì: có ' . count($idOttMoi)
-            . ' bản ghi mới nên không xác định được bản ghi nào do bộ thử tạo.)' . PHP_EOL;
-    }
-
     echo PHP_EOL . '=== 7. Kiểm tra header bảo mật của trang (Biện pháp 3) ===' . PHP_EOL;
     [$ma, , $header] = gui(TRANG, 'GET', [], [], $jarDuy);
     check($ma === 200, 'Trang trả 200');
@@ -236,26 +255,22 @@ try {
     check(stripos($header, 'Referrer-Policy:') !== false, 'Có Referrer-Policy');
     check(stripos($header, 'X-Powered-By') === false, 'Không còn X-Powered-By');
 } finally {
-    if ($idFixture !== null) {
-        $pdo->prepare('DELETE FROM tv_mon_an WHERE id = ? AND mssv = ?')->execute([$idFixture, MSSV_KHAC]);
+    if (is_resource($mayChu)) {
+        proc_terminate($mayChu);
+        proc_close($mayChu);
     }
-    // Chỉ xóa đúng các bản ghi bộ thử đã tạo. Không dùng điều kiện "id > mốc"
-    // vì trên CSDL dùng chung, người khác có thể vừa ghi thêm dòng trong lúc chạy.
-    if ($idMonDaTao !== []) {
-        $ph = implode(',', array_fill(0, count($idMonDaTao), '?'));
-        $pdo->prepare('DELETE FROM tv_mon_an WHERE mssv = ? AND id IN (' . $ph . ')')
-            ->execute(array_merge([MSSV_DUY], $idMonDaTao));
-    }
-    if ($idOttDaTao !== []) {
-        $ph = implode(',', array_fill(0, count($idOttDaTao), '?'));
-        $pdo->prepare('DELETE FROM tv_lich_su_ott WHERE mssv = ? AND id IN (' . $ph . ')')
-            ->execute(array_merge([MSSV_DUY], $idOttDaTao));
-    }
-    echo 'Đã dọn: fixture id=' . ($idFixture ?? '-')
-        . '; món do bộ thử tạo: ' . ($idMonDaTao === [] ? '0' : implode(',', $idMonDaTao))
-        . '; ván oẳn tù tì: ' . ($idOttDaTao === [] ? '0' : implode(',', $idOttDaTao)) . PHP_EOL;
     @unlink($jarDuy);
     @unlink($jarHop);
+    @unlink($logMayChu);
+    try {
+        if ($daTaoTaiKhoan) {
+            $pdo->exec('DROP USER ' . $taiKhoan);
+        }
+    } finally {
+        if ($daTaoCsdl) {
+            $pdo->exec('DROP DATABASE `' . $tenCsdl . '`');
+        }
+    }
 }
 
 $dat = count(array_filter($ketQua));

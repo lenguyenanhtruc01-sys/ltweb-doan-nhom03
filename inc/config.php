@@ -12,7 +12,7 @@ declare(strict_types=1);
 // 1. Nạp Composer và các hàm dùng chung.
 require_once __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
-$dotenv->load();
+$dotenv->safeLoad();
 $dotenv->required(['DB_HOST', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD'])
     ->required()
     ->notEmpty();

@@ -20,8 +20,19 @@ $pdo = new PDO('mysql:host=' . (getenv('DB_HOST') ?: '127.0.0.1')
     [PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES=>false]);
 $ten = 'edugpa_auth_' . bin2hex(random_bytes(8));
+$saoLuuNangCap = null;
 try {
     caiDatNhom($pdo, $ten);
+    $pdo->exec('ALTER TABLE dang_nhap_sai DROP INDEX idx_dang_nhap_sai_email, DROP COLUMN email');
+    $khoaCu = hash('sha256', 'du-lieu-cu');
+    $pdo->prepare('INSERT INTO dang_nhap_sai (khoa, ip) VALUES (?, ?)')->execute([$khoaCu, '127.0.0.1']);
+    $saoLuuNangCap = caiDatNhom($pdo, $ten)['sao_luu'];
+    $pdo->exec(caiDatDocSql('nang-cap-dang-nhap.sql', $ten));
+    $stCu = $pdo->prepare('SELECT email FROM dang_nhap_sai WHERE khoa = ?');
+    $stCu->execute([$khoaCu]);
+    kiemTraKhoXacThuc($stCu->fetchColumn() === '', 'Nâng cấp không giữ được bản ghi đăng nhập sai cũ.');
+    $pdo->prepare('DELETE FROM dang_nhap_sai WHERE khoa = ?')->execute([$khoaCu]);
+    echo "PASS nâng cấp bảng đăng nhập sai cũ và chạy lại migration.\n";
     $nguoi = new App\Data\KhoNguoiDung($pdo);
     $phien = new App\Data\KhoPhienGhiNho($pdo);
     $hop = $nguoi->timDeDangNhap('hop');
@@ -92,6 +103,9 @@ try {
     echo "PASS reset mở khóa đúng tài khoản; mã dùng lại và lỗi transaction không làm mất khóa.\n";
     echo "PASS phiên hợp lệ/hết hạn; đặt lại thu hồi đúng tài khoản và rollback khi có lỗi.\n";
 } finally {
+    if ($saoLuuNangCap !== null) {
+        @unlink($saoLuuNangCap);
+    }
     $pdo->exec('DROP DATABASE IF EXISTS `' . $ten . '`');
     echo "Đã xóa CSDL kiểm thử riêng.\n";
 }

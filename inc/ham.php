@@ -57,6 +57,9 @@ function dinhDangSo(int|float $giaTri): string
  */
 function ghiLogBaoMat(string $suKien, array $chiTiet = []): void
 {
+    if (isset($chiTiet['trang'])) {
+        $chiTiet['trang'] = explode('?', $chiTiet['trang'], 2)[0];
+    }
     $chiTiet += [
         'ip'  => $_SERVER['REMOTE_ADDR'] ?? '-',
         'uid' => $_SESSION['uid'] ?? null,

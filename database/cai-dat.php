@@ -226,6 +226,7 @@ function caiDatNhom(PDO $pdo, string $tenCsdl = 'ltweb_nhom03', ?string $tepAvat
                 }
             }
             caiDatEmail($pdo);
+            $pdo->exec(caiDatDocSql('nang-cap-dang-nhap.sql', $tenCsdl));
             nangCapKeHoach($pdo);
             nangCapSoCho($pdo);
             nangCapKhoaNgoaiMonHoc($pdo);

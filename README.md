@@ -316,7 +316,7 @@ Minh chứng đo ngày 27/10/2026: [ảnh và JSON gốc](kiemtra/ban-chot-20261
 ### Sửa theo phản hồi BT6 về bảo mật
 Mật khẩu đặt lại có tối thiểu 8 ký tự như đăng ký. Không ghi mã/URL reset vào log; link demo vẫn chỉ dành cho môi trường dev, không dùng chế độ này khi triển khai công khai.
 Đăng nhập sai 5 lần trong 15 phút sẽ bị chặn 429 ở lần tiếp theo, kể cả khi nhập đúng mật khẩu; sau 15 phút có thể thử lại. Tên đăng nhập và email của cùng tài khoản dùng chung giới hạn, không phụ thuộc cookie. Đăng nhập hoặc đặt lại mật khẩu thành công xóa các lần sai của đúng tài khoản. Reset thất bại không mở khóa. Mỗi lượt kiểm tra đăng nhập tự dọn bản ghi đã quá 15 phút; bản ghi còn hiệu lực được giữ nguyên, không cần tác vụ nền.
-CSDL mới có thêm bảng dang_nhap_sai (tổng 25 bảng). Máy đã có dữ liệu: chạy php database/cai-dat.php để sao lưu/nâng cấp, hoặc chọn CSDL ltweb_nhom03 rồi chạy database/nang-cap-dang-nhap.sql (CREATE TABLE IF NOT EXISTS, không xóa dữ liệu). Không import lại schema.sql để nâng cấp.
+CSDL mới có thêm bảng dang_nhap_sai (tổng 25 bảng). Máy đã có dữ liệu: chạy php database/cai-dat.php để sao lưu/nâng cấp, hoặc chọn CSDL ltweb_nhom03 rồi chạy database/nang-cap-dang-nhap.sql (tạo bảng nếu thiếu, bổ sung cột `email` và chỉ mục trên bảng cũ, giữ nguyên bản ghi). Không import lại schema.sql để nâng cấp.
 uploads/.htaccess cấm truy cập các đuôi thực thi, cấm liệt kê và thêm nosniff trên Apache; cần AllowOverride cho thư mục này. php -S không đọc .htaccess.
 
 ### Bảo mật Chương 7 – Biện pháp 3 (header, CSP) và Biện pháp 5 (.htaccess)

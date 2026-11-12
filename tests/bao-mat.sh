@@ -3,7 +3,8 @@
 # Người phụ trách: Lê Dương Hoàng Hải (3120224042). Chạy trong Git Bash: bash tests/bao-mat.sh
 # Không ghi giá trị mã phiên / mã CSRF vào tệp: điền vào biến môi trường khi chạy, ví dụ
 #   SID=<PHPSESSID của tài khoản khách> CSRF=<thẻ meta csrf-token> bash tests/bao-mat.sh
-# GOC: php -S localhost:8000 (mặc định) hoặc http://localhost/ltweb-doan-nhom05 (Apache, ca 10).
+# GOC: php -S localhost:8000 router.php. APACHE: http://localhost/ltweb-doan-nhom03 (ca 10).
+# Dùng CSDL kiểm thử mới để bộ đếm đăng nhập sai ở ca 12 bắt đầu từ 0.
 GOC="${GOC:-http://localhost:8000}"
 APACHE="${APACHE:-http://localhost/ltweb-doan-nhom03}"
 SID="${SID:-}"
@@ -12,7 +13,7 @@ ma() { curl -s -g -o /dev/null -w '%{http_code}' "$@"; }
 tieuDe() { echo; echo "=== $1"; }
 
 tieuDe "Ca 1 – Header và cookie (mong đợi: CSP, nosniff, Referrer-Policy; không X-Powered-By; HttpOnly; SameSite=Lax)"
-curl -s -I "$GOC/index.php" | grep -iE '^(HTTP|content-security|x-content|referrer|x-powered|set-cookie)'
+curl -s -I "$GOC/index.php" | grep -iE '^(HTTP|content-security|x-content|referrer|x-powered|set-cookie)' | sed -E 's/(PHPSESSID=)[^;[:space:]]+/\1[ẩn]/'
 
 tieuDe "Ca 2 – POST thiếu mã CSRF (mong đợi: 403, log csrf_sai)"
 echo "thiếu _csrf: $(ma -d 'email=hop&mat_khau=matkhau123' "$GOC/dang-nhap.php")"
@@ -27,11 +28,16 @@ curl -s -b "PHPSESSID=$SID" -H 'Content-Type: application/json' -d '{"id":1,"sl"
 
 tieuDe "Ca 4 – GET đổi dữ liệu (mong đợi 405 + Allow: POST); khách có mã đúng xóa môn (mong đợi 403, log cam_truy_cap)"
 curl -s -o /dev/null -D - "$GOC/dang-xuat.php" | grep -iE '^(HTTP|allow)'
-curl -s -o /dev/null -D - "$GOC/xoa-mon-hoc.php?id=1" | grep -iE '^(HTTP|allow)'
-[ -n "$SID" ] && echo "khách POST xóa: $(ma -b "PHPSESSID=$SID" -d "id=1&_csrf=$CSRF" "$GOC/xoa-mon-hoc.php")"
+curl -s -o /dev/null -D - "$GOC/xoa-mon-hoc.php?id=0" | grep -iE '^(HTTP|allow)'
+[ -n "$SID" ] && [ -n "$CSRF" ] && echo "khách POST xóa: $(ma -b "PHPSESSID=$SID" -d "id=0&_csrf=$CSRF" "$GOC/xoa-mon-hoc.php")"
 
-tieuDe "Ca 5 – Cố định phiên (mong đợi: Set-Cookie trả mã MỚI, khác tudat123)"
-curl -s -I -b 'PHPSESSID=tudat1234567890' "$GOC/index.php" | grep -i '^set-cookie'
+tieuDe "Ca 5 – Cố định phiên (mong đợi: Set-Cookie trả mã phiên mới)"
+cookieMoi=$(curl -s -I -b 'PHPSESSID=tudat1234567890' "$GOC/index.php" | grep -i '^set-cookie: PHPSESSID=[^;]')
+if [ -n "$cookieMoi" ] && [[ "$cookieMoi" != *'PHPSESSID=tudat1234567890;'* ]]; then
+  echo "$cookieMoi" | sed -E 's/(PHPSESSID=)[^;[:space:]]+/\1[ẩn]/'
+else
+  echo "Không nhận được mã phiên mới."
+fi
 
 tieuDe "Ca 6 – Hết hạn phiên: làm tay (đổi 1800 thành 60 trong inc/config.php, chờ > 1 phút)"
 
@@ -51,45 +57,40 @@ for p in .env .git/config inc/db.php vendor/autoload.php database/schema.sql log
   echo "$p -> $(ma "$APACHE/$p")"
 done
 
-tieuDe "Ca 11 – Quyền tối thiểu: chạy trong Shell XAMPP: mysql -u nhom03_app -p ltweb_nhom03 -e 'DROP TABLE mon_hoc' (mong đợi 1142)"
+tieuDe "Ca 11 – Quyền tối thiểu (mong đợi: CRUD thành công, CREATE và DROP trả 1142)"
+echo "Làm theo README với bảng rỗng __kiem_tra_quyen_test và tên bảng __kiem_tra_quyen_create."
 
-tieuDe "Ca 12 – Đoán mật khẩu (mong đợi: 5 lần 200, lần 6 đúng mật khẩu vẫn 429; email khác 303)"
-EMAIL="${EMAIL:-hop@example.com}"
-if [ -n "$CSRF" ]; then
-  for i in 1 2 3 4 5; do echo "sai $i -> $(ma -d "email=$EMAIL&mat_khau=sai$i&_csrf=$CSRF" -b "PHPSESSID=$SID" "$GOC/dang-nhap.php")"; done
-  echo "lần 6 (đúng) -> $(ma -d "email=$EMAIL&mat_khau=matkhau123&_csrf=$CSRF" -b "PHPSESSID=$SID" "$GOC/dang-nhap.php")"
-  echo "email khác -> $(ma -d "email=uyen@example.com&mat_khau=matkhau123&_csrf=$CSRF" -b "PHPSESSID=$SID" "$GOC/dang-nhap.php")"
+tieuDe "Ca 12 – Giới hạn đăng nhập (mong đợi: 5 lần 200, lần 6 trả 429, tài khoản khác trả 303)"
+jarKiemThu=$(mktemp) || exit 1
+trap 'rm -f "$jarKiemThu"' EXIT
+csrfDangNhap=$(curl -s -c "$jarKiemThu" "$GOC/dang-nhap.php" |
+  sed -n 's/.*name="_csrf" value="\([[:xdigit:]]\{64\}\)".*/\1/p' | head -1)
+if [ -n "$csrfDangNhap" ]; then
+  for i in 1 2 3 4 5; do
+    echo "sai $i -> $(ma -d "email=hop@example.com&mat_khau=sai$i&_csrf=$csrfDangNhap" -b "$jarKiemThu" "$GOC/dang-nhap.php")"
+  done
+  echo "lần 6 (đúng) -> $(ma -d "email=hop@example.com&mat_khau=matkhau123&_csrf=$csrfDangNhap" -b "$jarKiemThu" "$GOC/dang-nhap.php")"
+  echo "tài khoản khác -> $(ma -d "email=uyen@example.com&mat_khau=matkhau123&_csrf=$csrfDangNhap" -b "$jarKiemThu" "$GOC/dang-nhap.php")"
+else
+  echo "Bỏ qua ca 12: không lấy được mã CSRF từ trang đăng nhập."
 fi
 echo "Log (không được chứa mật khẩu):"; tail -n 5 logs/bao-mat.log 2>/dev/null
 grep -cE 'matkhau|mat_khau|PHPSESSID' logs/bao-mat.log 2>/dev/null | sed 's/^/số dòng log chứa bí mật: /'
-# =========================================================================
-# PHẦN B: KIỂM THỬ TRANG CÁ NHÂN CỦA DUY (Ca 13, 14)
-# Yêu cầu: Phải có biến SID (của tài khoản khách) và CSRF (của khách)
-# =========================================================================
 
-tieuDe "Ca 13 – CSRF form chọn món của Duy (mong đợi: 403)"
-# Gửi POST không có mã _csrf
-echo "Thiếu _csrf: $(ma -d 'hanh_dong=chon_mon&dsMon=TestXoa&bua=bat_ky' "$GOC/thanhvien/3120224034_Duy/gioithieu.php")"
-# Gửi POST có mã _csrf sai
-echo "Sai _csrf:   $(ma -d 'hanh_dong=chon_mon&dsMon=TestXoa&bua=bat_ky&_csrf=abc' "$GOC/thanhvien/3120224034_Duy/gioithieu.php")"
-
-tieuDe "Ca 14 – Khách xóa món dùng chung của Duy (mong đợi: 403)"
+tieuDe "Ca 13 – API giỏ hàng từ chối số lượng ngoài phạm vi hoặc không phải số (mong đợi: 422)"
 if [ -n "$SID" ] && [ -n "$CSRF" ]; then
-  # Giả sử khách gửi request xóa món có ID=1 (cần đảm bảo ID này tồn tại trong bảng tv_mon_an)
-  echo "Khách xóa món ID=1: $(ma -b "PHPSESSID=$SID" -d "hanh_dong=xoa_mon&id=1&_csrf=$CSRF" "$GOC/thanhvien/3120224034_Duy/gioithieu.php")"
+  for json in '{"id":1,"sl":99}' '{"id":1,"sl":"abc"}'; do
+    echo "$json -> $(ma -b "PHPSESSID=$SID" -H "X-CSRF-Token: $CSRF" -H 'Content-Type: application/json' -d "$json" "$GOC/api/gio-hang.php")"
+  done
 else
-  echo "Bỏ qua ca 14: Chưa truyền biến SID và CSRF của tài khoản khách."
+  echo "Bỏ qua ca 13: cần SID và CSRF của tài khoản khách."
 fi
 
-tieuDe "Ca 15 – XSS tên món ăn (mong đợi: in ra dạng text, không chạy script)"
-# Gửi mã độc vào form chọn món (Nếu là chủ trang, nó sẽ lưu vào DB. Nếu là khách, nó lưu vào session)
+tieuDe "Ca 14 – Tài khoản khách không được thêm môn học (mong đợi: 403)"
 if [ -n "$SID" ] && [ -n "$CSRF" ]; then
-  PAYLOAD="%3Cscript%3Ealert(1)%3C%2Fscript%3E"
-  curl -s -b "PHPSESSID=$SID" -d "hanh_dong=chon_mon&dsMon=$PAYLOAD&bua=bat_ky&_csrf=$CSRF" "$GOC/thanhvien/3120224034_Duy/gioithieu.php" > /dev/null
-  # Kiểm tra xem mã nguồn HTML trả về có chứa thẻ <script> nguyên bản không (Nếu có là dính XSS)
-  # Hoặc kiểm tra xem có được mã hóa thành &lt;script&gt; không.
-  echo "Kiểm tra XSS trên trang (nếu thấy &lt;script&gt; là an toàn):"
-  curl -s "$GOC/thanhvien/3120224034_Duy/gioithieu.php" | grep -o "&lt;script&gt;alert(1)&lt;/script&gt;" | head -1
+  echo "khách POST thêm môn: $(ma -b "PHPSESSID=$SID" -d "ma_mon=&_csrf=$CSRF" "$GOC/quan-tri-mon-hoc.php")"
 else
-  echo "Bỏ qua ca 15: Chưa truyền biến SID và CSRF."
+  echo "Bỏ qua ca 14: cần SID và CSRF của tài khoản khách."
 fi
+
+echo "Phần B của Duy: chạy php tests/kiem-thu-phan-b.php trên CSDL kiểm thử tự tạo."

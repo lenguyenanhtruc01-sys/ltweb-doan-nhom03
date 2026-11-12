@@ -117,21 +117,9 @@ if (session_status() === PHP_SESSION_NONE) {
 $bayGio = time();
 $lanCuoi = $_SESSION['hoat_dong_cuoi'] ?? null;
 $hetHan = $lanCuoi !== null && ($bayGio - $lanCuoi) >= 1800;
-$matPhien = $_SESSION === [] && isset($_COOKIE[session_name()]);
 
-if (($hetHan || $matPhien) && isset($_COOKIE[TEN_COOKIE_GHI_NHO])) {
-    xoaGhiNhoHienTai();
-}
-
-if ($hetHan) {
-    $_SESSION = [];
-    session_regenerate_id(true);
-}
-
-$_SESSION['hoat_dong_cuoi'] = $bayGio;
-
-// Kiểm tra trước mọi xử lý POST, kể cả khôi phục đăng nhập có truy vấn CSDL.
-if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && !csrfHopLe()) {
+// Phiên hết hạn không còn mã CSRF hợp lệ. Chặn POST trước khi xử lý ghi nhớ.
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && ($hetHan || !csrfHopLe())) {
     ghiLogBaoMat('csrf_sai', ['trang' => $_SERVER['REQUEST_URI'] ?? '-']);
     http_response_code(403);
     $loi = 'Phiên biểu mẫu không hợp lệ. Vui lòng tải lại trang rồi gửi lại.';
@@ -145,9 +133,18 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && !csrfHopLe()) {
     header('Content-Type: text/plain; charset=utf-8');
     exit($loi);
 }
+
+$matPhien = $_SESSION === [] && isset($_COOKIE[session_name()]);
+if (($hetHan || $matPhien) && isset($_COOKIE[TEN_COOKIE_GHI_NHO])) {
+    xoaGhiNhoHienTai();
+}
+
+if ($hetHan) {
+    $_SESSION = [];
+    session_regenerate_id(true);
+}
+
+$_SESSION['hoat_dong_cuoi'] = $bayGio;
 tokenGioHang();
-
-
-
 // Khôi phục phiên có thể truy vấn CSDL; đăng ký bộ xử lý lỗi trước khi gọi.
 khoiPhucDangNhapTuCookie();

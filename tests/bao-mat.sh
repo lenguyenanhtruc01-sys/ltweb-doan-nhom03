@@ -62,3 +62,34 @@ if [ -n "$CSRF" ]; then
 fi
 echo "Log (không được chứa mật khẩu):"; tail -n 5 logs/bao-mat.log 2>/dev/null
 grep -cE 'matkhau|mat_khau|PHPSESSID' logs/bao-mat.log 2>/dev/null | sed 's/^/số dòng log chứa bí mật: /'
+# =========================================================================
+# PHẦN B: KIỂM THỬ TRANG CÁ NHÂN CỦA DUY (Ca 13, 14)
+# Yêu cầu: Phải có biến SID (của tài khoản khách) và CSRF (của khách)
+# =========================================================================
+
+tieuDe "Ca 13 – CSRF form chọn món của Duy (mong đợi: 403)"
+# Gửi POST không có mã _csrf
+echo "Thiếu _csrf: $(ma -d 'hanh_dong=chon_mon&dsMon=TestXoa&bua=bat_ky' "$GOC/thanhvien/3120224034_Duy/gioithieu.php")"
+# Gửi POST có mã _csrf sai
+echo "Sai _csrf:   $(ma -d 'hanh_dong=chon_mon&dsMon=TestXoa&bua=bat_ky&_csrf=abc' "$GOC/thanhvien/3120224034_Duy/gioithieu.php")"
+
+tieuDe "Ca 14 – Khách xóa món dùng chung của Duy (mong đợi: 403)"
+if [ -n "$SID" ] && [ -n "$CSRF" ]; then
+  # Giả sử khách gửi request xóa món có ID=1 (cần đảm bảo ID này tồn tại trong bảng tv_mon_an)
+  echo "Khách xóa món ID=1: $(ma -b "PHPSESSID=$SID" -d "hanh_dong=xoa_mon&id=1&_csrf=$CSRF" "$GOC/thanhvien/3120224034_Duy/gioithieu.php")"
+else
+  echo "Bỏ qua ca 14: Chưa truyền biến SID và CSRF của tài khoản khách."
+fi
+
+tieuDe "Ca 15 – XSS tên món ăn (mong đợi: in ra dạng text, không chạy script)"
+# Gửi mã độc vào form chọn món (Nếu là chủ trang, nó sẽ lưu vào DB. Nếu là khách, nó lưu vào session)
+if [ -n "$SID" ] && [ -n "$CSRF" ]; then
+  PAYLOAD="%3Cscript%3Ealert(1)%3C%2Fscript%3E"
+  curl -s -b "PHPSESSID=$SID" -d "hanh_dong=chon_mon&dsMon=$PAYLOAD&bua=bat_ky&_csrf=$CSRF" "$GOC/thanhvien/3120224034_Duy/gioithieu.php" > /dev/null
+  # Kiểm tra xem mã nguồn HTML trả về có chứa thẻ <script> nguyên bản không (Nếu có là dính XSS)
+  # Hoặc kiểm tra xem có được mã hóa thành &lt;script&gt; không.
+  echo "Kiểm tra XSS trên trang (nếu thấy &lt;script&gt; là an toàn):"
+  curl -s "$GOC/thanhvien/3120224034_Duy/gioithieu.php" | grep -o "&lt;script&gt;alert(1)&lt;/script&gt;" | head -1
+else
+  echo "Bỏ qua ca 15: Chưa truyền biến SID và CSRF."
+fi

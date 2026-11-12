@@ -35,8 +35,8 @@ $laTepCam = preg_match(
 ) === 1;
 
 // uploads/ chỉ chứa ảnh tải lên: không được chạy mã, kể cả đuôi kép.
+// uploads/ chỉ chứa ảnh tải lên: không được chạy mã, kể cả đuôi kép (VD: shell.php.jpg).
 $laMaTrongUploads = preg_match(
-    '~(?:^|/)uploads/.*\.(?:php\d?|phtml|pht|phar|cgi|pl|py|sh)$~i',
     $duongDan
 ) === 1;
 

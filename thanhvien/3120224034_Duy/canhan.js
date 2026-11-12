@@ -127,14 +127,11 @@ document.querySelectorAll('.thoi-tiet__thanh-do[data-phan-tram]').forEach((thanh
 // ============================================================
 // 5. XÁC NHẬN TRƯỚC KHI XÓA — thay cho onclick="return confirm(...)"
 // ============================================================
-document.querySelectorAll('[data-xac-nhan]').forEach((phanTu) => {
-    const bieuMau = phanTu.closest('form');
-    if (!bieuMau) return;
-    bieuMau.addEventListener('submit', (suKien) => {
-        if (!window.confirm(phanTu.dataset.xacNhan)) {
-            suKien.preventDefault();
-        }
-    });
+document.addEventListener('submit', (suKien) => {
+    const nutXoa = suKien.target.querySelector('[data-xac-nhan]');
+    if (nutXoa && !window.confirm(nutXoa.dataset.xacNhan)) {
+        suKien.preventDefault();
+    }
 });
 
 // ============================================================
@@ -209,6 +206,33 @@ if (formChonMon) {
             'Bữa: ' + duLieu.buaLabel + ' — lúc ' + duLieu.thoiGian
         ));
         khungKetQua.replaceChildren(khoi);
+
+        const khungDaLuu = document.getElementById('chon-mon-da-luu');
+        const danhSachDaLuu = khungDaLuu.querySelector('ul');
+        const cacMon = duLieu.daLuu.map((mon) => {
+            const muc = taoPhanTu('li');
+            muc.appendChild(taoPhanTu('span', '', `${mon.ten} — bữa ${mon.buaLabel}`));
+            if (duLieu.chuTrang) {
+                const formXoa = taoPhanTu('form', 'chon-mon__xoa');
+                formXoa.method = 'post';
+                formXoa.action = 'gioithieu.php#chon-mon';
+                for (const [ten, giaTri] of Object.entries({ _csrf: maCsrf(), hanh_dong: 'xoa_mon', id: mon.id })) {
+                    const truong = document.createElement('input');
+                    truong.type = 'hidden';
+                    truong.name = ten;
+                    truong.value = giaTri;
+                    formXoa.appendChild(truong);
+                }
+                const nutXoa = taoPhanTu('button', 'nut-phu', 'Xóa');
+                nutXoa.type = 'submit';
+                nutXoa.dataset.xacNhan = 'Xóa món này khỏi danh sách dùng chung?';
+                formXoa.appendChild(nutXoa);
+                muc.appendChild(formXoa);
+            }
+            return muc;
+        });
+        danhSachDaLuu.replaceChildren(...cacMon);
+        khungDaLuu.hidden = cacMon.length === 0;
     });
 }
 
@@ -239,8 +263,6 @@ if (formOtt) {
 
         const thongKe = duLieu.thongKe;
         const khungThongKe = document.getElementById('oan-tu-ti-thong-ke');
-        const khoiThongKe = taoPhanTu('div', 'oan-tu-ti__thong-ke');
-        khoiThongKe.appendChild(taoPhanTu('h3', '', 'Thống kê (Lưu DB)'));
         const danhSach = taoPhanTu('ul');
         [
             ['🎉 Thắng: ', thongKe.thang],
@@ -256,8 +278,9 @@ if (formOtt) {
         mucTong.appendChild(document.createTextNode(' ván — Tỉ lệ thắng: '));
         mucTong.appendChild(taoPhanTu('strong', '', String(thongKe.tiLe) + '%'));
         danhSach.appendChild(mucTong);
-        khoiThongKe.appendChild(danhSach);
-        khungThongKe.replaceChildren(khoiThongKe);
+        khungThongKe.querySelector('ul').replaceWith(danhSach);
+        const formXoaLichSu = khungThongKe.querySelector('.oan-tu-ti__xoa');
+        if (formXoaLichSu) formXoaLichSu.hidden = thongKe.tong === 0;
 
         const khungLichSu = document.getElementById('oan-tu-ti-lich-su');
         if (Array.isArray(duLieu.lichSu) && duLieu.lichSu.length) {

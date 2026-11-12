@@ -21,6 +21,14 @@ if (PHP_SAPI !== 'cli') {
 }
 
 $goc = rtrim($argv[1] ?? 'http://localhost:8000', '/');
+$diaChi = parse_url($goc);
+if ($diaChi === false
+    || !in_array($diaChi['scheme'] ?? '', ['http', 'https'], true)
+    || !in_array($diaChi['host'] ?? '', ['localhost', '127.0.0.1', '[::1]'], true)
+    || isset($diaChi['user']) || isset($diaChi['query']) || isset($diaChi['fragment'])) {
+    fwrite(STDERR, "Chỉ nhận URL HTTP(S) của website trên máy cục bộ.\n");
+    exit(1);
+}
 $kiemHtaccess = in_array('--htaccess', $argv, true);
 $dat = 0;
 $tong = 0;
@@ -109,22 +117,33 @@ foreach ($trang as $duongDan) {
 
 // Trang cần đăng nhập quản trị.
 $jar = sys_get_temp_dir() . '/bt7-bp35-' . bin2hex(random_bytes(4)) . '.cookie';
-[$ma, , $login] = lay($goc . '/dang-nhap.php', $jar);
-if (preg_match('/name="_csrf" value="([a-f0-9]{64})"/', $login, $m)) {
-    lay($goc . '/dang-nhap.php', $jar, ['email' => 'admin', 'mat_khau' => 'matkhau123', '_csrf' => $m[1]]);
-    foreach (['/quan-tri.php', '/quan-tri-mon-hoc.php', '/don-hang.php', '/don-hang.php?id=1'] as $duongDan) {
-        [$ma, $header, $than] = lay($goc . $duongDan, $jar);
-        $style = preg_match_all('/\sstyle\s*=/', $than);
-        $script = preg_match_all('/<script(?![^>]*\bsrc=)/i', $than);
-        kiem(
-            $ma === 200 && $style === 0 && $script === 0 && stripos($header, 'Content-Security-Policy:') !== false,
-            $duongDan . ' (admin)',
-            sprintf('HTTP %d, style=%d, script=%d, CSP=%s', $ma, $style, $script,
-                stripos($header, 'Content-Security-Policy:') !== false ? 'có' : 'KHÔNG')
-        );
+try {
+    [$ma, , $login] = lay($goc . '/dang-nhap.php', $jar);
+    if ($ma !== 200 || !preg_match('/name="_csrf" value="([a-f0-9]{64})"/', $login, $m)) {
+        kiem(false, 'Chuẩn bị kiểm thử trang quản trị', 'Không lấy được CSRF (HTTP ' . $ma . ')');
+    } else {
+        [$ma] = lay($goc . '/dang-nhap.php', $jar, [
+            'email' => 'admin', 'mat_khau' => 'matkhau123', '_csrf' => $m[1],
+        ]);
+        if ($ma !== 303) {
+            kiem(false, 'Chuẩn bị kiểm thử trang quản trị', 'Đăng nhập không thành công (HTTP ' . $ma . ')');
+        } else {
+            foreach (['/quan-tri.php', '/quan-tri-mon-hoc.php', '/don-hang.php', '/don-hang.php?id=1'] as $duongDan) {
+                [$ma, $header, $than] = lay($goc . $duongDan, $jar);
+                $style = preg_match_all('/\sstyle\s*=/', $than);
+                $script = preg_match_all('/<script(?![^>]*\bsrc=)/i', $than);
+                $coCsp = stripos($header, 'Content-Security-Policy:') !== false;
+                kiem(
+                    $ma === 200 && $style === 0 && $script === 0 && $coCsp,
+                    $duongDan . ' (admin)',
+                    sprintf('HTTP %d, style=%d, script=%d, CSP=%s', $ma, $style, $script, $coCsp ? 'có' : 'KHÔNG')
+                );
+            }
+        }
     }
+} finally {
+    if (is_file($jar)) unlink($jar);
 }
-@unlink($jar);
 
 echo "\n  Chính sách CSP đang gửi:\n  " . wordwrap((string) $kiemDau, 96, "\n  ") . "\n";
 kiem(preg_match('/unsafe-inline|unsafe-eval/', (string) $kiemDau) !== 1, 'CSP không chứa unsafe-inline/unsafe-eval');
@@ -150,12 +169,28 @@ if ($kiemHtaccess) {
         [$ma] = lay($goc . $duongDan);
         kiem($ma === $mongDoi, $duongDan, 'mong đợi ' . $mongDoi . ', thực tế ' . $ma);
     }
-    // Tệp .php thử trong uploads/ phải bị chặn và không chạy mã.
-    $tepThu = dirname(__DIR__) . '/uploads/kiem-tra-bp5.php';
-    file_put_contents($tepThu, "<?php echo 'MA_DA_CHAY';");
-    [$ma, , $than] = lay($goc . '/uploads/kiem-tra-bp5.php');
-    @unlink($tepThu);
-    kiem($ma === 403 && !str_contains($than, 'MA_DA_CHAY'), '/uploads/kiem-tra-bp5.php', 'mong đợi 403 và mã không chạy, thực tế ' . $ma);
+    // Tệp có đuôi .php chỉ chứa văn bản để kiểm tra quy tắc chặn truy cập.
+    $duongDanThu = '/uploads/kiem-tra-bp5-' . bin2hex(random_bytes(8)) . '.php';
+    $tepThu = dirname(__DIR__) . $duongDanThu;
+    $tep = @fopen($tepThu, 'xb');
+    if ($tep === false) {
+        kiem(false, 'Tệp kiểm thử Apache', 'Không tạo được tệp riêng trong uploads/');
+    } else {
+        try {
+            $noiDungThu = 'EDUGPA_TEST_FIXTURE';
+            $daGhi = fwrite($tep, $noiDungThu);
+            fclose($tep);
+            if ($daGhi !== strlen($noiDungThu)) {
+                kiem(false, 'Tệp kiểm thử Apache', 'Không ghi đủ nội dung thử');
+            } else {
+                [$ma, , $than] = lay($goc . $duongDanThu);
+                kiem($ma === 403 && !str_contains($than, $noiDungThu), $duongDanThu, 'mong đợi 403, thực tế ' . $ma);
+            }
+        } finally {
+            if (is_resource($tep)) fclose($tep);
+            unlink($tepThu);
+        }
+    }
 }
 
 echo "\n== Kết quả: {$dat}/{$tong} kiểm tra đạt ==\n";

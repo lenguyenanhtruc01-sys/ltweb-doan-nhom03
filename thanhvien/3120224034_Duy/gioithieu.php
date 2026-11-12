@@ -364,29 +364,27 @@ require __DIR__ . '/../../inc/header.php';
             <?php endif; ?>
         </div>
 
-        <?php if ($dsMonDaLuu !== []): ?>
-            <div class="chon-mon__da-luu">
-                <h3>Danh sách món đã lưu dùng chung</h3>
-                <ul class="chon-mon__lich-su">
-                    <?php foreach ($dsMonDaLuu as $monDaLuu): ?>
-                        <li>
-                            <span><?= e((string) $monDaLuu['ten_mon']) ?> — bữa <?= e($buaChoPhep[$monDaLuu['bua']] ?? $monDaLuu['bua']) ?></span>
-                            <?php if ($laChuTrang): ?>
-                                <form method="post" action="gioithieu.php#chon-mon" class="chon-mon__xoa">
-                                    <?= csrfField() ?>
-                                    <input type="hidden" name="hanh_dong" value="xoa_mon">
-                                    <input type="hidden" name="id" value="<?= e((int) $monDaLuu['id']) ?>">
-                                    <button type="submit" class="nut-phu" data-xac-nhan="Xóa món này khỏi danh sách dùng chung?">Xóa</button>
-                                </form>
-                            <?php endif; ?>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-                <p class="chon-mon__phu"><?= $laChuTrang
-                    ? 'Bạn là chủ trang nên có thể xóa từng món dùng chung.'
-                    : 'Chỉ chủ trang đã đăng nhập mới xóa được món dùng chung.' ?></p>
-            </div>
-        <?php endif; ?>
+        <div class="chon-mon__da-luu" id="chon-mon-da-luu"<?= $dsMonDaLuu === [] ? ' hidden' : '' ?>>
+            <h3>Danh sách món đã lưu dùng chung</h3>
+            <ul class="chon-mon__lich-su">
+                <?php foreach ($dsMonDaLuu as $monDaLuu): ?>
+                    <li>
+                        <span><?= e((string) $monDaLuu['ten_mon']) ?> — bữa <?= e($buaChoPhep[$monDaLuu['bua']] ?? $monDaLuu['bua']) ?></span>
+                        <?php if ($laChuTrang): ?>
+                            <form method="post" action="gioithieu.php#chon-mon" class="chon-mon__xoa">
+                                <?= csrfField() ?>
+                                <input type="hidden" name="hanh_dong" value="xoa_mon">
+                                <input type="hidden" name="id" value="<?= e((int) $monDaLuu['id']) ?>">
+                                <button type="submit" class="nut-phu" data-xac-nhan="Xóa món này khỏi danh sách dùng chung?">Xóa</button>
+                            </form>
+                        <?php endif; ?>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+            <p class="chon-mon__phu"><?= $laChuTrang
+                ? 'Bạn là chủ trang nên có thể xóa từng món dùng chung.'
+                : 'Chỉ chủ trang đã đăng nhập mới xóa được món dùng chung.' ?></p>
+        </div>
     </section>
 
     <!-- CHỨC NĂNG 2: OẲN TÙ TÌ -->
@@ -421,8 +419,8 @@ require __DIR__ . '/../../inc/header.php';
                     <li>🤝 Hoà: <strong><?= (int)$stOtt['hoa'] ?></strong></li>
                     <li>Tổng: <strong><?= (int)$tongVan ?></strong> ván — Tỉ lệ thắng: <strong><?= $tiLeThang ?>%</strong></li>
                 </ul>
-                <?php if ($laChuTrang && $tongVan > 0): ?>
-                    <form method="post" action="gioithieu.php#oan-tu-ti" class="oan-tu-ti__xoa">
+                <?php if ($laChuTrang): ?>
+                    <form method="post" action="gioithieu.php#oan-tu-ti" class="oan-tu-ti__xoa"<?= $tongVan === 0 ? ' hidden' : '' ?>>
                         <?= csrfField() ?>
                         <input type="hidden" name="hanh_dong" value="reset_oan_tu_ti">
                         <button type="submit" class="nut-phu" data-xac-nhan="Xóa toàn bộ lịch sử oẳn tù tì của trang?">Xóa lịch sử oẳn tù tì</button>

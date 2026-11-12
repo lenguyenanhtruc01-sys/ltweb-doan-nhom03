@@ -1,12 +1,24 @@
 <?php
 declare(strict_types=1);
-// CLI: chỉ tạo/ghi/xóa CSDL thử ngẫu nhiên, router tạm chỉ lắng nghe loopback.
+// DB_USER/DB_PASS dùng để tạo CSDL thử trên MySQL cục bộ (mặc định root của XAMPP).
+// Website chạy bằng tài khoản chỉ có quyền DML trên CSDL thử. Kết quả ghi vào thư mục tạm.
 if (PHP_SAPI !== 'cli') { http_response_code(403); exit; }
-require_once __DIR__ . '/../inc/db.php';
+require_once __DIR__ . '/../database/cai-dat.php';
 $root = dirname(__DIR__);
 $name = 'edugpa_bt7_' . bin2hex(random_bytes(6));
-if (!preg_match('/\Aedugpa_bt7_[a-f0-9]{12}\z/D', $name)) throw new RuntimeException('Sai CSDL thử.');
-$p = db(); $created = false; $server = null; $router = null; $log = null;
+$p = new PDO(
+    'mysql:host=127.0.0.1;port=3306;charset=utf8mb4',
+    getenv('DB_USER') ?: 'root',
+    getenv('DB_PASS') ?: '',
+    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
+);
+$dbPassword = bin2hex(random_bytes(24));
+$dbAccount = $p->quote($name) . "@'127.0.0.1'";
+$created = false;
+$createdAccount = false;
+$server = null;
+$log = tempnam(sys_get_temp_dir(), 'edugpa-bt7-');
+if ($log === false) throw new RuntimeException('Không tạo được tệp log của máy chủ kiểm thử.');
 $results = [];
 function check(bool $ok, string $case, array $evidence = []): void {
     global $results;
@@ -17,11 +29,10 @@ function check(bool $ok, string $case, array $evidence = []): void {
 try {
     $p->exec('CREATE DATABASE `'.$name.'` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
     $created = true;
-    $schema = file_get_contents($root.'/database/schema.sql');
-    $schema = preg_replace('/^DROP DATABASE.*;\R|^CREATE DATABASE.*;\R/m', '', $schema);
-    $schema = str_replace('ltweb_nhom03', $name, $schema);
-    $p->exec($schema);
-    $p->exec(str_replace('ltweb_nhom03', $name, file_get_contents($root.'/database/seed.sql')));
+    caiDatNhom($p, $name);
+    $p->exec('CREATE USER ' . $dbAccount . ' IDENTIFIED BY ' . $p->quote($dbPassword));
+    $createdAccount = true;
+    $p->exec('GRANT SELECT, INSERT, UPDATE, DELETE ON `' . $name . '`.* TO ' . $dbAccount);
     $payload = '<b>BT7</b> " \' &';
     $st=$p->prepare('INSERT INTO tv_tra_cuu_mang (mssv,muc_tieu,dia_chi_ip,loai_ip) VALUES (?,?,?,?)');
     $st->execute(['3120224064',$payload,'127.0.0.1','IPv4']);
@@ -31,21 +42,36 @@ try {
     $user=$p->prepare('INSERT INTO nguoi_dung (ten_dang_nhap,email,mat_khau,ho_ten,vai_tro) VALUES (?,?,?,?,?)');
     $user->execute(['bt7_guest','bt7@example.invalid',password_hash('Test-only-123',PASSWORD_DEFAULT),$payload,'khach_hang']);
     $uid=(int)$p->lastInsertId();
-    $router=tempnam(sys_get_temp_dir(),'bt7_router_');
-    $log=tempnam(sys_get_temp_dir(),'bt7_log_');
-    $secret=bin2hex(random_bytes(16));
     $socket=stream_socket_server('tcp://127.0.0.1:0',$errno,$errstr);
     if(!$socket) throw new RuntimeException($errstr);
-    $port=(int)substr(strrchr(stream_socket_get_name($socket,false),':'),1); fclose($socket);
-    file_put_contents($router,'<?php require_once '.var_export($root.'/inc/db.php',true).'; db()->exec('.var_export('USE `'.$name.'`',true).');'
-        .'if(parse_url($_SERVER["REQUEST_URI"],PHP_URL_PATH)==="/'.$secret.'"){session_start(); $_SESSION=["uid"=>'.$uid.',"chu_gio_hang"=>'.$uid.']; echo "fixture"; return true;} return false;');
-    $server=proc_open([PHP_BINARY,'-S','127.0.0.1:'.$port,'-t',$root,$router],[0=>['pipe','r'],1=>['file',$log,'a'],2=>['file',$log,'a']],$pipes);
+    $address = stream_socket_get_name($socket, false);
+    fclose($socket);
+    $baseUrl = 'http://' . $address;
+    $server = proc_open(
+        [PHP_BINARY, '-d', 'variables_order=EGPCS', '-S', $address, '-t', $root, $root . '/router.php'],
+        [0 => ['pipe', 'r'], 1 => ['file', $log, 'a'], 2 => ['file', $log, 'a']],
+        $pipes,
+        $root,
+        array_replace(getenv(), [
+            'DB_HOST' => '127.0.0.1',
+            'DB_DATABASE' => $name,
+            'DB_USERNAME' => $name,
+            'DB_PASSWORD' => $dbPassword,
+            'APP_DEBUG' => 'true',
+        ])
+    );
     if(!is_resource($server)) throw new RuntimeException('Không mở server.');
     fclose($pipes[0]);
-    for($i=0;$i<50;$i++){ $s=@fsockopen('127.0.0.1',$port); if($s){fclose($s);break;} usleep(100000); }
+    $ready = '(' . $baseUrl . ') started';
+    for ($i = 0; $i < 50 && !str_contains((string) file_get_contents($log), $ready); $i++) {
+        usleep(100000);
+    }
+    if (!proc_get_status($server)['running'] || !str_contains((string) file_get_contents($log), $ready)) {
+        throw new RuntimeException('Máy chủ kiểm thử không lắng nghe tại địa chỉ đã chọn.');
+    }
     $client=curl_init(); curl_setopt($client,CURLOPT_COOKIEFILE,'');
-    $http=function(string $path,string $method='GET',array|string $body=[],array $headers=[]) use($client,$port): array {
-        curl_setopt_array($client,[CURLOPT_URL=>'http://127.0.0.1:'.$port.'/'.$path,CURLOPT_CUSTOMREQUEST=>$method,CURLOPT_POSTFIELDS=>null,
+    $http=function(string $path,string $method='GET',array|string $body=[],array $headers=[]) use($client,$baseUrl): array {
+        curl_setopt_array($client,[CURLOPT_URL=>$baseUrl.'/'.$path,CURLOPT_CUSTOMREQUEST=>$method,CURLOPT_POSTFIELDS=>null,
             CURLOPT_HTTPHEADER=>$headers,CURLOPT_RETURNTRANSFER=>true,CURLOPT_FOLLOWLOCATION=>false,CURLOPT_TIMEOUT=>10]);
         if($method==='POST') curl_setopt($client,CURLOPT_POSTFIELDS,is_array($body)?http_build_query($body):$body);
         $text=curl_exec($client);
@@ -53,6 +79,21 @@ try {
         $code=curl_getinfo($client,CURLINFO_RESPONSE_CODE);
         if(str_contains($text,'Warning:')||str_contains($text,'Fatal error:')) throw new RuntimeException('PHP diagnostic: '.$path);
         return ['status'=>$code,'body'=>$text];
+    };
+    $freshToken = function () use ($http): string {
+        $response = $http('dang-nhap.php');
+        if ($response['status'] !== 200 || !preg_match('/name="_csrf" value="([a-f0-9]{64})"/', $response['body'], $match)) {
+            throw new RuntimeException('Không lấy được mã CSRF từ trang đăng nhập kiểm thử.');
+        }
+        return $match[1];
+    };
+    $loginFixture = function () use ($http, $freshToken): void {
+        $response = $http('dang-nhap.php', 'POST', [
+            '_csrf' => $freshToken(), 'email' => 'bt7_guest', 'mat_khau' => 'Test-only-123',
+        ]);
+        if ($response['status'] !== 303) {
+            throw new RuntimeException('Tài khoản kiểm thử không đăng nhập được (HTTP ' . $response['status'] . ').');
+        }
     };
     $page='thanhvien/3120224064_hop/gioithieu.php';
     $counts=fn()=>[$p->query('SELECT COUNT(*) FROM tv_tra_cuu_mang')->fetchColumn(),$p->query('SELECT COUNT(*) FROM tv_binh_chon')->fetchColumn()];
@@ -81,7 +122,7 @@ try {
     }
     $r=$http($page,'POST',['_csrf'=>$token,'hanh_dong'=>'xoa','id'=>$ownId]);
     check($r['status']===400 && $counts()===$before,'B8 Khách giả mạo xóa bị từ chối',['status'=>$r['status'],'db_unchanged'=>true]);
-    $http($secret);
+    $loginFixture();
     $r=$http($page); preg_match('/name="_csrf" value="([a-f0-9]{64})"/',$r['body'],$m); $token=$m[1];
     check(str_contains($r['body'],$escaped),'B9 Tên tài khoản chứa HTML được escape');
     foreach([$ownId,$otherId] as $id){
@@ -123,7 +164,7 @@ try {
     $r=$http($page,'POST',['_csrf'=>$token,'hanh_dong'=>'tra_cuu_mang','target'=>'127.0.0.1']);
     check($r['status']===403,'A Token phiên cũ sau đăng xuất bị từ chối');
     // Kiểm thử phản hồi BT6 trên cùng CSDL riêng.
-    $http($secret);
+    $loginFixture();
     $r=$http($page); preg_match('/name="_csrf" value="([a-f0-9]{64})"/',$r['body'],$m); $token=$m[1];
     $p->exec("UPDATE nguoi_dung SET vai_tro='quan_tri' WHERE id=".$uid);
     $r=$http('quan-tri-mon-hoc.php','POST',['_csrf'=>$token,'ma_mon'=>'']);
@@ -145,9 +186,6 @@ try {
     }
     $r=$http('dat-lai-mat-khau.php','POST',['_csrf'=>$token,'token'=>$resetToken,'mat_khau'=>'NewPass123','xac_nhan_mat_khau'=>'NewPass123']);
     check($r['status']===303,'BT6 Reset mật khẩu đủ độ dài');
-    $freshToken=function() use($http): string {
-        $r=$http('dang-nhap.php'); preg_match('/name="_csrf" value="([a-f0-9]{64})"/',$r['body'],$m); return $m[1];
-    };
     $token=$freshToken();
     for($i=0;$i<5;$i++){
         $r=$http('dang-nhap.php','POST',['_csrf'=>$token,'email'=>$i%2?'bt7_guest':'bt7@example.invalid','mat_khau'=>'sai']);
@@ -176,8 +214,18 @@ try {
     check(!preg_match('/error_log\s*\(/',file_get_contents($root.'/quen-mat-khau.php')),'BT6 Không còn lệnh log trong luồng quên mật khẩu');
 } finally {
     if(is_resource($server)){proc_terminate($server);proc_close($server);}
-    if($router && is_file($router)) unlink($router);
-    if($log && is_file($log)) unlink($log);
-    if($created) $p->exec('DROP DATABASE `'.$name.'`');
-    file_put_contents(__DIR__.'/bt7-ket-qua.json',json_encode(['database'=>'CSDL thử ngẫu nhiên đã xóa','php'=>PHP_VERSION,'cases'=>$results],JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES));
+    unlink($log);
+    try {
+        if ($createdAccount) $p->exec('DROP USER ' . $dbAccount);
+    } finally {
+        if ($created) $p->exec('DROP DATABASE `' . $name . '`');
+    }
+    $report = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $name . '-ket-qua.json';
+    $json = json_encode([
+        'database' => $name, 'php' => PHP_VERSION, 'cases' => $results,
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+    if (file_put_contents($report, $json) === false) {
+        throw new RuntimeException('Không ghi được kết quả kiểm thử.');
+    }
+    echo 'Kết quả kiểm thử: ' . $report . PHP_EOL;
 }

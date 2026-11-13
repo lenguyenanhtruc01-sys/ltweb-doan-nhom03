@@ -11,12 +11,6 @@ declare(strict_types=1);
 
 // 1. Nạp Composer và các hàm dùng chung.
 require_once __DIR__ . '/../vendor/autoload.php';
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
-$dotenv->safeLoad();
-$dotenv->required(['DB_HOST', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD'])
-    ->required()
-    ->notEmpty();
-
 require_once __DIR__ . '/ham.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/csrf.php';
@@ -49,15 +43,9 @@ if (!headers_sent()) {
 }
 
 // 2. Cấu hình môi trường.
-$giaTriGoiLoi = $_ENV['APP_DEBUG'] ?? $_SERVER['APP_DEBUG'] ?? getenv('APP_DEBUG');
-$batGoiLoi = $giaTriGoiLoi === 'true';
-define('MOI_TRUONG', $batGoiLoi ? 'dev' : 'prod');
 error_reporting(E_ALL);
-
-ini_set(
-    'display_errors',
-    $batGoiLoi ? '1' : '0'
-);
+ini_set('display_errors', '0');
+ini_set('zend.exception_ignore_args', '1');
 
 foreach (['logs', 'storage'] as $thuMuc) {
     $duongDan = __DIR__ . '/../' . $thuMuc;
@@ -79,24 +67,22 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
 set_exception_handler(
     static function (Throwable $loi): void {
 
-        // Ghi chi tiết lỗi vào tệp log.
-        error_log((string) $loi);
-
-        // Trả về mã HTTP 500.
+        $loiCauHinh = $loi instanceof Dotenv\Exception\ExceptionInterface;
+        error_log($loiCauHinh ? 'Không đọc được cấu hình .env hợp lệ.' : (string) $loi);
         http_response_code(500);
-
-        if (MOI_TRUONG === 'dev') {
-
-            // Hiển thị lỗi khi phát triển.
+        if (defined('MOI_TRUONG') && MOI_TRUONG === 'dev' && !$loiCauHinh) {
             echo '<pre>' . e((string) $loi) . '</pre>';
-
         } else {
-
-            // Trang lỗi thân thiện khi chạy thực tế.
             require __DIR__ . '/../500.php';
         }
     }
 );
+
+napCauHinhCSDL();
+$batGoiLoi = bienMoiTruong('APP_DEBUG') === 'true';
+define('MOI_TRUONG', $batGoiLoi ? 'dev' : 'prod');
+ini_set('display_errors', $batGoiLoi ? '1' : '0');
+
 // 4. Cấu hình và khởi tạo session an toàn (Chương 7 - Biện pháp 2).
 ini_set('session.use_strict_mode', '1');
 ini_set('session.use_only_cookies', '1');
@@ -135,16 +121,22 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && ($hetHan || !csrfHopLe()
 }
 
 $matPhien = $_SESSION === [] && isset($_COOKIE[session_name()]);
-if (($hetHan || $matPhien) && isset($_COOKIE[TEN_COOKIE_GHI_NHO])) {
-    xoaGhiNhoHienTai();
-}
-
 if ($hetHan) {
+    $ghiNhoHetPhien = $_SESSION['ghi_nho_het_phien'] ?? null;
     $_SESSION = [];
+    if ($ghiNhoHetPhien !== null) {
+        $_SESSION['ghi_nho_het_phien'] = $ghiNhoHetPhien;
+    }
     session_regenerate_id(true);
+}
+if (($hetHan || $matPhien) && isset($_COOKIE[TEN_COOKIE_GHI_NHO])) {
+    $cookieGhiNho = docCookieGhiNho();
+    if ($cookieGhiNho !== null) {
+        [$selector, $token] = $cookieGhiNho;
+        $_SESSION['ghi_nho_het_phien'] = [$selector, hash('sha256', $token)];
+    }
+    xoaCookieGhiNho();
 }
 
 $_SESSION['hoat_dong_cuoi'] = $bayGio;
 tokenGioHang();
-// Khôi phục phiên có thể truy vấn CSDL; đăng ký bộ xử lý lỗi trước khi gọi.
-khoiPhucDangNhapTuCookie();

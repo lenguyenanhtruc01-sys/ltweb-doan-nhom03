@@ -25,7 +25,8 @@ function traJson(array $data, int $status = 200): never
 
 function loiApi(Throwable $error): never
 {
-    error_log((string) $error);
+    error_log($error instanceof Dotenv\Exception\ExceptionInterface
+        ? 'Không đọc được cấu hình .env hợp lệ.' : (string) $error);
     traJson(['loi' => 'Lỗi máy chủ'], 500);
 }
 

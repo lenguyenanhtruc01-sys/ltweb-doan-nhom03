@@ -21,17 +21,17 @@ Website PHP hỗ trợ sinh viên tra cứu môn học, lập kế hoạch học
    Copy-Item .env.example .env
    ```
 
-4. Cấu hình đủ 5 biến trong `.env`:
+4. Để chấm trên XAMPP cục bộ mặc định, giữ cấu hình đã sao chép:
 
    ```dotenv
-   APP_DEBUG=false
+   APP_DEBUG=true
    DB_HOST=127.0.0.1
    DB_DATABASE=ltweb_nhom03
-   DB_USERNAME=nhom03_app
-   DB_PASSWORD=mat_khau_ban_tu_dat
+   DB_USERNAME=root
+   DB_PASSWORD=
    ```
 
-   Thay `mat_khau_ban_tu_dat` bằng mật khẩu mạnh bạn sẽ đặt ở bước 6. Không dùng `root` cho website, không commit `.env`, và để `APP_DEBUG=false` khi chạy thực tế. `.env.example` chỉ chứa giá trị mẫu, không chứa mật khẩu dùng thật.
+   Website chỉ chấp nhận `root` khi bật gỡ lỗi, CSDL và yêu cầu web đều ở máy cục bộ. Nếu đã đặt mật khẩu cho MySQL cục bộ, điền mật khẩu trong `.env`. Bỏ qua bước 6–8 khi chỉ cần chạy bản mẫu. Khi triển khai, dùng tài khoản quyền tối thiểu và đặt `APP_DEBUG=false`. Giữ `.env` ngoài Git. Nếu mật khẩu có dấu cách hoặc `#`, đặt giá trị trong dấu nháy kép.
 
 5. Tạo CSDL `ltweb_nhom03` và cài/nâng cấp schema bằng bộ cài CLI với tài khoản quản trị MySQL:
 
@@ -47,7 +47,7 @@ Website PHP hỗ trợ sinh viên tra cứu môn học, lập kế hoạch học
 
    Bộ cài tự tạo CSDL nếu chưa tồn tại. Trên CSDL hiện có, nó sao lưu trước khi nâng cấp và không xóa dữ liệu dự án. Bộ cài/migration cần quyền quản trị vì có thể tạo CSDL, bảng/cột và bản sao lưu; chúng không dùng thông tin tài khoản ứng dụng để chạy. `database/cai-dat.php` mặc định dùng `root` với mật khẩu rỗng; nếu cần thông tin khác, truyền riêng cho tiến trình CLI qua `DB_USER` và `DB_PASS`, không lưu mật khẩu quản trị vào `.env` hoặc Git.
 
-6. Sau khi CSDL đã tồn tại, mở phpMyAdmin bằng tài khoản quản trị. Kiểm tra `SHOW GRANTS FOR 'nhom03_app'@'127.0.0.1'` và xác nhận đây là tài khoản chỉ dành cho EduGPA; dừng website để ngắt các kết nối đang dùng tài khoản này. Thay `MAT_KHAU_THAY_THE` trong `database/tai-khoan.sql` bằng mật khẩu mạnh đã cấu hình ở `.env`, rồi chạy tệp. Script xóa và tạo lại riêng tài khoản `nhom03_app` để thu hồi mọi quyền/role cũ, sau đó chỉ cấp `SELECT`, `INSERT`, `UPDATE`, `DELETE` trên `ltweb_nhom03.*`. Thao tác này không xóa dữ liệu CSDL; cập nhật `.env` với cùng mật khẩu mới rồi khởi động lại website. Không chạy nếu tài khoản đang được ứng dụng khác sử dụng.
+6. **Tùy chọn khi cài cục bộ, dùng khi triển khai hoặc kiểm tra quyền tối thiểu.** Mở phpMyAdmin bằng tài khoản quản trị. Nếu `nhom03_app` đã tồn tại, xác nhận tài khoản chỉ dành cho EduGPA và dừng website để ngắt kết nối. Thay `MAT_KHAU_THAY_THE` trong bản sao của `database/tai-khoan.sql` bằng mật khẩu mạnh rồi chạy bản sao. Tệp tạo lại tài khoản với đúng `SELECT`, `INSERT`, `UPDATE`, `DELETE` trên `ltweb_nhom03.*`. Cập nhật `.env` với `DB_USERNAME=nhom03_app`, `DB_PASSWORD` vừa đặt và `APP_DEBUG=false`, rồi khởi động lại website.
 
 7. Kiểm tra quyền với tài khoản quản trị:
 
@@ -65,7 +65,7 @@ Website PHP hỗ trợ sinh viên tra cứu môn học, lập kế hoạch học
 
    Lệnh phải in `PDO connection OK`. Để kiểm tra quyền an toàn, quản trị viên tạo bảng thử nghiệm rỗng `ltweb_nhom03.__kiem_tra_quyen_test` trước. Với `nhom03_app`, thử SELECT, INSERT, UPDATE, DELETE trên bảng đó; thử tạo bảng riêng `ltweb_nhom03.__kiem_tra_quyen_create (id INT)` và xóa bảng thử nghiệm đã tạo sẵn. CRUD phải thành công, còn CREATE và DROP phải bị từ chối với MySQL error 1142. Quản trị viên dọn bảng thử nghiệm sau khi kiểm tra; không thử trên bảng chứa dữ liệu thật.
 
-9. Khởi động website và mở http://localhost/ltweb-doan-nhom03/. Website kết nối bằng `nhom03_app`; tầng PDO từ chối tài khoản `root` trong các tiến trình web.
+9. Mở http://localhost/ltweb-doan-nhom03/. Nếu thiếu `.env` hoặc cấu hình không hợp lệ, trang 500 sẽ hướng dẫn kiểm tra lại bước 3–4.
 
 **Sau mỗi lần `git pull`:** chạy lại `php database/cai-dat.php` bằng tài khoản quản trị. Bộ cài chính đọc `DB_USER`/`DB_PASS` từ môi trường tiến trình (mặc định `root`/mật khẩu rỗng); với các migration dùng `inc/db.php`, đặt tạm `DB_USERNAME`/`DB_PASSWORD` của tài khoản quản trị trong tiến trình CLI để ghi đè cấu hình `.env`. Không ghi thông tin quản trị vào Git hoặc để các biến tạm này tồn tại khi khởi chạy website. Git chỉ kéo code; lệnh cài đặt áp dụng các nâng cấp CSDL đã khai báo. Chạy lại không đặt mật khẩu tài khoản website về mặc định. Chủ trang Hải chưa có sẽ được tạo bằng `hai / matkhau123`; nếu đã có chủ thì giữ nguyên tài khoản và mật khẩu. Ảnh upload/dữ liệu runtime của máy khác không được tải xuống qua Git.
 
@@ -101,6 +101,22 @@ lại đúng các quy tắc chặn của `.htaccess` và `uploads/.htaccess` (t�
 nội bộ, tệp SQL/log/composer, tệp thực thi trong `uploads/`).
 
 Mở http://localhost:8000/index.php; MySQL vẫn cần chạy. PHP cần quyền ghi vào `storage/`, `uploads/`, `logs/`.
+
+### Biện pháp – Tệp – Slide
+
+| Biện pháp | Tệp | Slide |
+| --- | --- | --- |
+| CSRF tập trung cho form và fetch | `inc/csrf.php`, `inc/config.php`, `inc/header.php`, `js/gio-hang.js` | 23, 24 |
+| Cookie, hết hạn phiên, đăng nhập và đăng xuất | `inc/config.php`, `inc/xac-thuc.php`, `dang-nhap.php`, `dang-xuat.php` | 25 |
+| Header bảo mật và CSP | `inc/config.php` | 22, 26, 27 |
+| Dotenv và cấu hình lỗi | `.env.example`, `.gitignore`, `inc/db.php`, `inc/config.php`, `500.php` | 29 |
+| Bảo vệ tệp nội bộ và thư mục upload | `.htaccess`, `uploads/.htaccess`, `router.php` | 28, 30 |
+| Quyền CSDL tối thiểu | `database/tai-khoan.sql`, `inc/db.php` | 20 |
+| Giới hạn đăng nhập và log bảo mật | `dang-nhap.php`, `src/Data/KhoNguoiDung.php`, `inc/xac-thuc.php`, `inc/config.php` | 31, 32 |
+
+Đăng nhập bằng cookie ghi nhớ dùng nút **Tiếp tục bằng tài khoản đã ghi nhớ** trên trang đăng nhập. Yêu cầu POST xác minh và đổi token, đồng thời gộp giỏ khách. Phiên không hoạt động 30 phút yêu cầu đăng nhập lại bằng mật khẩu.
+
+Chạy các ca 6, 9, 11 của Bảng 3 trên CSDL tạm bằng `php kiemtra/kiem-thu-bt7.php --bang-3`. Cần bật extension `curl` và `pdo_mysql`. Bộ thử dùng MySQL cục bộ, mặc định `root` với mật khẩu rỗng của XAMPP. Dùng biến tiến trình `DB_USER` và `DB_PASS` khi máy đã đổi tài khoản quản trị. Kết quả JSON nằm trong thư mục tạm và đường dẫn được in cuối lần chạy. Tệp `tests/bao-mat.sh` cũng gọi bộ thử này. Trong Git Bash, đặt `PHP_BIN=/c/xampp/php/php.exe` nếu PHP chưa có trong `PATH`.
 
 ## 3. Tài khoản thử
 

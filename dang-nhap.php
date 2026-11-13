@@ -19,7 +19,13 @@ $tieuDe = 'Đăng nhập';
 $trang = 'dang-nhap';
 $goc = '';
 
-if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+$nd = null;
+$ghiNho = false;
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && ($_POST['tiep_tuc'] ?? '') === '1') {
+    $nd = khoiPhucDangNhapTuCookie();
+    $ghiNho = true;
+    $thongBao = 'Phiên ghi nhớ không còn dùng được. Vui lòng đăng nhập bằng mật khẩu.';
+} elseif (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     $emailRaw = $_POST['email'] ?? '';
     $matKhauRaw = $_POST['mat_khau'] ?? $_POST['password'] ?? '';
     $emailNhap = is_string($emailRaw) ? trim($emailRaw) : '';
@@ -28,35 +34,39 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     $thongBao = 'Tên đăng nhập/email hoặc mật khẩu không chính xác.';
     if ($emailNhap !== '' && mb_strlen($emailNhap) <= 254 && $matKhau !== '') {
         $khoNguoiDung = new \App\Data\KhoNguoiDung(db());
-        $nd = $khoNguoiDung->timDeDangNhap($emailNhap);
+        $ungVien = $khoNguoiDung->timDeDangNhap($emailNhap);
         // Cùng tài khoản dùng tên hoặc email vẫn chịu chung một giới hạn.
-        $khoa = hash('sha256', $nd !== null ? 'uid:' . $nd['id'] : 'ten:' . mb_strtolower($emailNhap));
+        $khoa = hash('sha256', $ungVien !== null ? 'uid:' . $ungVien['id'] : 'ten:' . mb_strtolower($emailNhap));
         if ($khoNguoiDung->soLanDangNhapSai($khoa) >= 5) {
             http_response_code(429);
             $thongBao = 'Đăng nhập tạm thời bị giới hạn. Vui lòng thử lại sau 15 phút.';
-        } elseif ($nd !== null && password_verify($matKhau, $nd['mat_khau'])) {
+        } elseif ($ungVien !== null && password_verify($matKhau, $ungVien['mat_khau'])) {
+            $nd = $ungVien;
             $khoNguoiDung->xoaDangNhapSai($khoa);
             if (password_needs_rehash($nd['mat_khau'], PASSWORD_DEFAULT)) {
                 $khoNguoiDung->capNhatMatKhauBam((int) $nd['id'], password_hash($matKhau, PASSWORD_DEFAULT));
             }
-            $uidCu = $_SESSION['uid'] ?? null;
-            if (is_int($uidCu) && $uidCu !== (int) $nd['id']) {
-                $_SESSION['ke_hoach_dang_ky'] = [];
-                unset($_SESSION['chu_gio_hang']);
-            }
-            $_SESSION['uid'] = (int) $nd['id'];
-            new \App\Services\KeHoachHocTap();
-            session_regenerate_id(true);
-            unset($_SESSION['csrf_gio_hang'], $_SESSION['_csrf_token']);
-            xoaGhiNhoHienTai();
-            if ($ghiNho) taoPhienGhiNho((int) $nd['id']);
-            header('Location: ' . ($nd['vai_tro'] === 'quan_tri' ? 'quan-tri.php' : 'index.php'), true, 303);
-            exit;
         } else {
             $khoNguoiDung->ghiDangNhapSai($khoa, $_SERVER['REMOTE_ADDR'] ?? '', $emailNhap);
             ghiLogBaoMat('dang_nhap_sai', ['email' => $emailNhap]);
         }
     }
+}
+
+if ($nd !== null) {
+    $uid = (int) $nd['id'];
+    $gioKhach = $_SESSION['ke_hoach_dang_ky'] ?? [];
+    if (!isset($_SESSION['uid']) && is_array($gioKhach) && $gioKhach !== []) {
+        (new \App\Data\KhoTrangThaiNguoiDung(db()))->gopGioKhach($uid, $gioKhach);
+    }
+    xoaGhiNhoHienTai();
+    if ($ghiNho) taoPhienGhiNho($uid);
+    $_SESSION['uid'] = $uid;
+    unset($_SESSION['ke_hoach_dang_ky']);
+    session_regenerate_id(true);
+    unset($_SESSION['csrf_gio_hang'], $_SESSION['_csrf_token']);
+    header('Location: ' . ($nd['vai_tro'] === 'quan_tri' ? 'quan-tri.php' : 'index.php'), true, 303);
+    exit;
 }
 
 require __DIR__ . '/inc/header.php';
@@ -69,6 +79,12 @@ require __DIR__ . '/inc/header.php';
         <?php endif; ?>
         <?php if (is_string($flashDangKy) && $flashDangKy !== ''): ?>
             <p role="status"><?= e($flashDangKy) ?></p>
+        <?php endif; ?>
+        <?php if (coTheDangNhapBangCookie()): ?>
+            <form method="post" action="dang-nhap.php">
+                <?= csrfField() ?>
+                <button type="submit" name="tiep_tuc" value="1" class="nut nut--chinh">Tiếp tục bằng tài khoản đã ghi nhớ</button>
+            </form>
         <?php endif; ?>
         <form method="post" action="dang-nhap.php" class="form-lien-he">
             <?= csrfField() ?>

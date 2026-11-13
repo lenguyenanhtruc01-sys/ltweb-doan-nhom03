@@ -31,16 +31,7 @@ class KeHoachHocTap
         }
 
         $this->khoMonHoc = new KhoMonHoc(db());
-        $uid = $_SESSION['uid'] ?? null;
-        if (is_int($uid) && $uid > 0) {
-            $kho = new KhoTrangThaiNguoiDung(db());
-            if (!isset($_SESSION['chu_gio_hang'])) {
-                // Chỉ gộp giỏ khách; không ghi lại bản sao cũ của tài khoản.
-                $kho->gopGioKhach($uid, $_SESSION[self::SESSION_KEY]);
-            }
-            $_SESSION[self::SESSION_KEY] = $kho->gioHang($uid);
-            $_SESSION['chu_gio_hang'] = $uid;
-        }
+        $this->taiLaiGio();
     }
 
     private function uid(): ?int

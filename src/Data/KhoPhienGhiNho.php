@@ -40,4 +40,11 @@ final class KhoPhienGhiNho
         $st = $this->pdo->prepare('DELETE FROM phien_ghi_nho WHERE nguoi_dung_id=?');
         $st->execute([$uid]);
     }
+
+    public function xoaToken(string $selector, string $tokenHash): bool
+    {
+        $st = $this->pdo->prepare('DELETE FROM phien_ghi_nho WHERE selector=? AND token_hash=?');
+        $st->execute([$selector, $tokenHash]);
+        return $st->rowCount() === 1;
+    }
 }

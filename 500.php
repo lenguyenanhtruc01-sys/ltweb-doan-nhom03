@@ -37,7 +37,9 @@ $gocWeb = strncasecmp($thuMucDuAn, $documentRoot . '/', strlen($documentRoot) + 
                 <div class="tieu-de-khu-vuc">
                     <p class="tieu-de-khu-vuc__nhan">Lỗi 500</p>
                     <h1 class="tieu-de-khu-vuc__tieu-de">Hệ thống đang gặp sự cố</h1>
-                    <p class="tieu-de-khu-vuc__mo-ta">Xin lỗi! EduGPA đang gặp lỗi trong quá trình xử lý yêu cầu. Vui lòng thử lại sau hoặc quay về trang chủ.</p>
+                    <p class="tieu-de-khu-vuc__mo-ta"><?= ($loiCauHinh ?? false)
+                        ? 'Cấu hình máy chủ chưa hợp lệ. Nếu đang cài EduGPA, hãy sao chép .env.example thành .env và kiểm tra theo README.'
+                        : 'Xin lỗi! EduGPA đang gặp lỗi trong quá trình xử lý yêu cầu. Vui lòng thử lại sau hoặc quay về trang chủ.' ?></p>
                     <p><a class="nut nut--chinh" href="<?= e($gocWeb . '/index.php') ?>">Quay về trang chủ</a></p>
                 </div>
             </div>

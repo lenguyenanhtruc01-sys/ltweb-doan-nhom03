@@ -1,6 +1,28 @@
 <?php
 declare(strict_types=1);
 
+function bienMoiTruong(string $ten): string|false
+{
+    return $_ENV[$ten] ?? $_SERVER[$ten] ?? getenv($ten);
+}
+
+function napCauHinhCSDL(): void
+{
+    static $daNap = false;
+    if ($daNap) {
+        return;
+    }
+    require_once __DIR__ . '/../vendor/autoload.php';
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+    $dotenv->safeLoad();
+    $dotenv->required(['DB_HOST', 'DB_DATABASE', 'DB_USERNAME'])->notEmpty();
+    $matKhau = $dotenv->required('DB_PASSWORD');
+    if (strtolower(bienMoiTruong('DB_USERNAME')) !== 'root') {
+        $matKhau->notEmpty();
+    }
+    $daNap = true;
+}
+
 /**
  * Kết nối PDO dùng chung đến CSDL được cấu hình trong môi trường.
  */
@@ -8,41 +30,21 @@ function db(): PDO
 {
     static $pdo = null;
     if ($pdo === null) {
-        require_once __DIR__ . '/../vendor/autoload.php';
-
-        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
-        $dotenv->safeLoad();
-        $dotenv->required(['DB_HOST', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD'])
-            ->required()
-            ->notEmpty();
-
-        $layBienMoiTruong = static function (string $ten): string|false {
-            if (array_key_exists($ten, $_ENV)) {
-                return (string) $_ENV[$ten];
-            }
-            if (array_key_exists($ten, $_SERVER)) {
-                return (string) $_SERVER[$ten];
-            }
-            return getenv($ten);
-        };
-
-        $giaTriBien = static function (string $ten) use ($layBienMoiTruong): string {
-            $giaTri = $layBienMoiTruong($ten);
-            if ($giaTri === false || $giaTri === '') {
-                throw new RuntimeException('Thiếu hoặc rỗng biến cấu hình môi trường ' . $ten . '.');
-            }
-            return $giaTri;
-        };
-
-        $host = $giaTriBien('DB_HOST');
-        $csdl = $giaTriBien('DB_DATABASE');
-        $taiKhoan = $giaTriBien('DB_USERNAME');
-        $matKhau = $giaTriBien('DB_PASSWORD');
+        napCauHinhCSDL();
+        $host = bienMoiTruong('DB_HOST');
+        $csdl = bienMoiTruong('DB_DATABASE');
+        $taiKhoan = bienMoiTruong('DB_USERNAME');
+        $matKhau = bienMoiTruong('DB_PASSWORD');
 
         if (PHP_SAPI !== 'cli' && strtolower($taiKhoan) === 'root') {
-            throw new RuntimeException(
-                'Website không được kết nối MySQL bằng root; hãy cấu hình DB_USERNAME=nhom03_app.'
-            );
+            $hostWeb = parse_url('http://' . ($_SERVER['HTTP_HOST'] ?? ''), PHP_URL_HOST);
+            $loopback = ['127.0.0.1', '::1'];
+            if (bienMoiTruong('APP_DEBUG') !== 'true'
+                || !in_array($host, ['localhost', ...$loopback], true)
+                || !in_array($_SERVER['REMOTE_ADDR'] ?? '', $loopback, true)
+                || !in_array($hostWeb, ['localhost', '127.0.0.1', '[::1]'], true)) {
+                throw new RuntimeException('Cấu hình root chỉ dành cho XAMPP cục bộ với APP_DEBUG=true.');
+            }
         }
 
         $pdo = new PDO(

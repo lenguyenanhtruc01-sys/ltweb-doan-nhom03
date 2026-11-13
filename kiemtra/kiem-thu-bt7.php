@@ -4,6 +4,7 @@ declare(strict_types=1);
 // Website chạy bằng tài khoản chỉ có quyền DML trên CSDL thử. Kết quả ghi vào thư mục tạm.
 if (PHP_SAPI !== 'cli') { http_response_code(403); exit; }
 require_once __DIR__ . '/../database/cai-dat.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 $root = dirname(__DIR__);
 $name = 'edugpa_bt7_' . bin2hex(random_bytes(6));
 $p = new PDO(
@@ -17,8 +18,13 @@ $dbAccount = $p->quote($name) . "@'127.0.0.1'";
 $created = false;
 $createdAccount = false;
 $server = null;
+$serverLoi = null;
 $log = tempnam(sys_get_temp_dir(), 'edugpa-bt7-');
 if ($log === false) throw new RuntimeException('Không tạo được tệp log của máy chủ kiểm thử.');
+$thuMucPhien = $log . '-phien';
+$webCauHinh = $thuMucPhien . '/web';
+$tepWebCauHinh = ['router.php', '500.php', 'index.php', 'api/san-pham.php',
+    'inc/config.php', 'inc/db.php', 'inc/ham.php', 'inc/csrf.php', 'inc/xac-thuc.php', 'inc/api.php'];
 $results = [];
 function check(bool $ok, string $case, array $evidence = []): void {
     global $results;
@@ -26,7 +32,35 @@ function check(bool $ok, string $case, array $evidence = []): void {
     echo ($ok ? 'PASS ' : 'FAIL ') . $case . PHP_EOL;
     if (!$ok) throw new RuntimeException($case);
 }
+function moMayChu(string $root, string $log, string $thuMucPhien, array $cauHinh): array
+{
+    $socket = stream_socket_server('tcp://127.0.0.1:0', $errno, $errstr);
+    if (!$socket) throw new RuntimeException($errstr);
+    $address = stream_socket_get_name($socket, false);
+    fclose($socket);
+    $server = proc_open(
+        [PHP_BINARY, '-d', 'variables_order=EGPCS', '-d', 'session.save_path=' . $thuMucPhien,
+         '-d', 'session.serialize_handler=php_serialize', '-S', $address, '-t', $root, $root . '/router.php'],
+        [0 => ['pipe', 'r'], 1 => ['file', $log, 'a'], 2 => ['file', $log, 'a']],
+        $pipes, $root, $cauHinh
+    );
+    if (!is_resource($server)) throw new RuntimeException('Không mở server.');
+    fclose($pipes[0]);
+    $url = 'http://' . $address;
+    $ready = '(' . $url . ') started';
+    for ($i = 0; $i < 50 && !str_contains((string) file_get_contents($log), $ready); $i++) {
+        usleep(100000);
+    }
+    if (!proc_get_status($server)['running'] || !str_contains((string) file_get_contents($log), $ready)) {
+        proc_terminate($server);
+        proc_close($server);
+        throw new RuntimeException('Máy chủ kiểm thử không lắng nghe tại địa chỉ đã chọn.');
+    }
+    return [$server, $url];
+}
+
 try {
+    if (!mkdir($thuMucPhien)) throw new RuntimeException('Không tạo được thư mục phiên kiểm thử.');
     $p->exec('CREATE DATABASE `'.$name.'` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
     $created = true;
     caiDatNhom($p, $name);
@@ -42,35 +76,13 @@ try {
     $user=$p->prepare('INSERT INTO nguoi_dung (ten_dang_nhap,email,mat_khau,ho_ten,vai_tro) VALUES (?,?,?,?,?)');
     $user->execute(['bt7_guest','bt7@example.invalid',password_hash('Test-only-123',PASSWORD_DEFAULT),$payload,'khach_hang']);
     $uid=(int)$p->lastInsertId();
-    $socket=stream_socket_server('tcp://127.0.0.1:0',$errno,$errstr);
-    if(!$socket) throw new RuntimeException($errstr);
-    $address = stream_socket_get_name($socket, false);
-    fclose($socket);
-    $baseUrl = 'http://' . $address;
-    $server = proc_open(
-        [PHP_BINARY, '-d', 'variables_order=EGPCS', '-S', $address, '-t', $root, $root . '/router.php'],
-        [0 => ['pipe', 'r'], 1 => ['file', $log, 'a'], 2 => ['file', $log, 'a']],
-        $pipes,
-        $root,
-        array_replace(getenv(), [
-            'DB_HOST' => '127.0.0.1',
-            'DB_DATABASE' => $name,
-            'DB_USERNAME' => $name,
-            'DB_PASSWORD' => $dbPassword,
-            'APP_DEBUG' => 'true',
-        ])
-    );
-    if(!is_resource($server)) throw new RuntimeException('Không mở server.');
-    fclose($pipes[0]);
-    $ready = '(' . $baseUrl . ') started';
-    for ($i = 0; $i < 50 && !str_contains((string) file_get_contents($log), $ready); $i++) {
-        usleep(100000);
-    }
-    if (!proc_get_status($server)['running'] || !str_contains((string) file_get_contents($log), $ready)) {
-        throw new RuntimeException('Máy chủ kiểm thử không lắng nghe tại địa chỉ đã chọn.');
-    }
+    $cauHinh = array_replace(getenv(), [
+        'DB_HOST' => '127.0.0.1', 'DB_DATABASE' => $name, 'DB_USERNAME' => $name,
+        'DB_PASSWORD' => $dbPassword, 'APP_DEBUG' => 'true',
+    ]);
+    [$server, $baseUrl] = moMayChu($root, $log, $thuMucPhien, $cauHinh);
     $client=curl_init(); curl_setopt($client,CURLOPT_COOKIEFILE,'');
-    $http=function(string $path,string $method='GET',array|string $body=[],array $headers=[]) use($client,$baseUrl): array {
+    $http=function(string $path,string $method='GET',array|string $body=[],array $headers=[]) use($client,&$baseUrl): array {
         curl_setopt_array($client,[CURLOPT_URL=>$baseUrl.'/'.$path,CURLOPT_CUSTOMREQUEST=>$method,CURLOPT_POSTFIELDS=>null,
             CURLOPT_HTTPHEADER=>$headers,CURLOPT_RETURNTRANSFER=>true,CURLOPT_FOLLOWLOCATION=>false,CURLOPT_TIMEOUT=>10]);
         if($method==='POST') curl_setopt($client,CURLOPT_POSTFIELDS,is_array($body)?http_build_query($body):$body);
@@ -78,7 +90,7 @@ try {
         if($text===false) throw new RuntimeException(curl_error($client));
         $code=curl_getinfo($client,CURLINFO_RESPONSE_CODE);
         if(str_contains($text,'Warning:')||str_contains($text,'Fatal error:')) throw new RuntimeException('PHP diagnostic: '.$path);
-        return ['status'=>$code,'body'=>$text];
+        return ['status'=>$code,'body'=>$text,'redirect'=>curl_getinfo($client,CURLINFO_REDIRECT_URL)];
     };
     $freshToken = function () use ($http): string {
         $response = $http('dang-nhap.php');
@@ -95,6 +107,123 @@ try {
             throw new RuntimeException('Tài khoản kiểm thử không đăng nhập được (HTTP ' . $response['status'] . ').');
         }
     };
+    $layMaPhien = static function () use ($client): string {
+        foreach (curl_getinfo($client, CURLINFO_COOKIELIST) as $dong) {
+            if (preg_match('/\tPHPSESSID\t([a-zA-Z0-9,-]+)$/', $dong, $m)) return $m[1];
+        }
+        throw new RuntimeException('Không nhận được cookie phiên kiểm thử.');
+    };
+    $layGhiNho = static fn(): array => $p->query('SELECT selector, token_hash FROM phien_ghi_nho ORDER BY selector')->fetchAll();
+    $layGio = static fn(): array => (new \App\Data\KhoTrangThaiNguoiDung($p))->gioHang($uid);
+    $r = $http('dang-nhap.php', 'POST', [
+        '_csrf' => $freshToken(), 'email' => 'bt7_guest', 'mat_khau' => 'Test-only-123', 'ghi_nho' => '1',
+    ]);
+    check($r['status'] === 303 && count($layGhiNho()) === 1, 'Bảng 3: tạo cookie ghi nhớ qua POST đăng nhập');
+    foreach (curl_getinfo($client, CURLINFO_COOKIELIST) as $dong) {
+        if (str_contains($dong, "\tedugpa_ghi_nho\t")) $cookieGhiNho = $dong;
+    }
+    if (!isset($cookieGhiNho)) throw new RuntimeException('Không nhận được cookie ghi nhớ.');
+    curl_setopt($client, CURLOPT_COOKIELIST, 'ALL');
+    curl_setopt($client, CURLOPT_COOKIELIST, $cookieGhiNho);
+    $token = $freshToken();
+    $mon = (int) $p->query('SELECT id FROM mon_hoc WHERE so_cho >= 1 ORDER BY id LIMIT 1')->fetchColumn();
+    $http('gio-hang.php', 'POST', ['_csrf' => $token, 'hanh_dong' => 'them', 'id' => $mon, 'so_luong' => 1]);
+    $ghiNhoCu = $layGhiNho();
+    $r = $http('dang-nhap.php');
+    check($r['status'] === 200 && str_contains($r['body'], 'Tiếp tục bằng tài khoản đã ghi nhớ')
+        && $layGhiNho() === $ghiNhoCu && $layGio() === [], 'GET đăng nhập không xoay token hoặc gộp giỏ');
+    $r = $http('dang-nhap.php', 'POST', ['_csrf' => $token, 'tiep_tuc' => '1']);
+    check($r['status'] === 303 && count($layGhiNho()) === 1 && $layGhiNho() !== $ghiNhoCu
+        && $layGio() === [$mon => 1], 'POST đăng nhập ghi nhớ xoay token và gộp giỏ khách');
+    $monKhac = (int) $p->query('SELECT id FROM mon_hoc WHERE id <> ' . $mon . ' ORDER BY id LIMIT 1')->fetchColumn();
+    $tepPhien = $thuMucPhien . '/sess_' . $layMaPhien();
+    $duLieuPhien = unserialize((string) file_get_contents($tepPhien), ['allowed_classes' => false]);
+    $duLieuPhien['ke_hoach_dang_ky'] = [$monKhac => 1];
+    file_put_contents($tepPhien, serialize($duLieuPhien));
+    $r = $http('gio-hang.php');
+    check($r['status'] === 200 && $layGio() === [$mon => 1], 'GET giỏ tài khoản không ghi dữ liệu giỏ từ phiên cũ');
+
+    $token = $freshToken();
+    $maPhien = $layMaPhien();
+    $tepPhien = $thuMucPhien . '/sess_' . $maPhien;
+    $duLieuPhien = unserialize((string) file_get_contents($tepPhien), ['allowed_classes' => false]);
+    $duLieuPhien['hoat_dong_cuoi'] = time() - 1801;
+    file_put_contents($tepPhien, serialize($duLieuPhien));
+    $ghiNhoCu = $layGhiNho();
+    $r = $http('dang-xuat.php', 'POST', ['_csrf' => $token]);
+    check($r['status'] === 403, 'Ca 6: POST với phiên không hoạt động quá 30 phút trả 403');
+    $r = $http('don-hang.php');
+    check($r['status'] === 302 && str_ends_with($r['redirect'], '/dang-nhap.php')
+        && $layMaPhien() !== $maPhien && $layGhiNho() === $ghiNhoCu,
+        'Ca 6: GET trang riêng tư đổi mã phiên, yêu cầu đăng nhập và không ghi CSDL');
+    $r = $http('dang-nhap.php');
+    $cookies = implode("\n", curl_getinfo($client, CURLINFO_COOKIELIST));
+    check($r['status'] === 200 && !str_contains($r['body'], 'Tiếp tục bằng tài khoản đã ghi nhớ')
+        && !str_contains($cookies, "\tedugpa_ghi_nho\t"),
+        'Ca 6: cookie ghi nhớ không thay mật khẩu sau khi hết hạn phiên');
+    $loginFixture();
+    check($layGhiNho() === [], 'POST đăng nhập bằng mật khẩu thu hồi cookie cũ');
+    curl_setopt($client, CURLOPT_COOKIELIST, 'ALL');
+
+    $baseUrlTot = $baseUrl;
+    foreach (['inc', 'api', 'vendor', 'logs', 'storage'] as $thuMuc) mkdir($webCauHinh . '/' . $thuMuc, 0775, true);
+    foreach ($tepWebCauHinh as $tep) copy($root . '/' . $tep, $webCauHinh . '/' . $tep);
+    file_put_contents($webCauHinh . '/vendor/autoload.php', '<?php require_once ' . var_export($root . '/vendor/autoload.php', true) . ';');
+    $cauHinhTrong = array_diff_key(getenv(), array_fill_keys(['DB_HOST', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD', 'APP_DEBUG'], true));
+    [$serverLoi, $baseUrl] = moMayChu($webCauHinh, $log, $thuMucPhien, $cauHinhTrong);
+    $r = $http('index.php');
+    check($r['status'] === 500 && str_contains($r['body'], '.env.example')
+        && !str_contains($r['body'], 'DB_HOST'), 'Ca 9: cấu hình thiếu trả HTTP 500 có hướng dẫn');
+    $r = $http('api/san-pham.php');
+    check($r['status'] === 500 && json_decode($r['body'], true) === ['loi' => 'Lỗi máy chủ'],
+        'Ca 9: cấu hình thiếu trả JSON 500 chung cho API');
+    file_put_contents($webCauHinh . '/.env', "DB_PASSWORD=\"chuoi-mau-chua-dong\n");
+    $r = $http('index.php');
+    check($r['status'] === 500 && str_contains($r['body'], '.env.example')
+        && !str_contains($r['body'], 'chuoi-mau-chua-dong'), 'Ca 9: .env sai cú pháp không lộ nội dung');
+    if (!getenv('DB_USER') && !getenv('DB_PASS')) {
+        $mau = str_replace('DB_DATABASE=ltweb_nhom03', 'DB_DATABASE=' . $name, file_get_contents($root . '/.env.example'));
+        file_put_contents($webCauHinh . '/.env', $mau);
+        file_put_contents($webCauHinh . '/kiem-tra-pdo.php', '<?php require "inc/config.php"; db(); echo "PDO OK";');
+        $r = $http('kiem-tra-pdo.php');
+        check($r['status'] === 200 && $r['body'] === 'PDO OK', 'Cài mới: mẫu root với mật khẩu rỗng chạy trên localhost');
+        file_put_contents($webCauHinh . '/.env', str_replace('APP_DEBUG=true', 'APP_DEBUG=false', $mau));
+        $r = $http('kiem-tra-pdo.php');
+        check($r['status'] === 500 && str_contains($r['body'], 'Hệ thống đang gặp sự cố'), 'Cài mới: cấu hình production từ chối root');
+    }
+    proc_terminate($serverLoi);
+    proc_close($serverLoi);
+    unlink($webCauHinh . '/.env');
+    [$serverLoi, $baseUrl] = moMayChu($webCauHinh, $log, $thuMucPhien, array_replace($cauHinh, [
+        'APP_DEBUG' => 'false', 'DB_PASSWORD' => $dbPassword . '-sai',
+    ]));
+    $r = $http('index.php');
+    check($r['status'] === 500 && str_contains($r['body'], 'Hệ thống đang gặp sự cố')
+        && !str_contains($r['body'], '.env.example') && !str_contains($r['body'], $name),
+        'Ca 9: lỗi kết nối ở chế độ prod trả trang 500 chung');
+    $r = $http('api/san-pham.php');
+    check($r['status'] === 500 && json_decode($r['body'], true) === ['loi' => 'Lỗi máy chủ'],
+        'Ca 9: sai mật khẩu CSDL ở chế độ prod trả JSON 500 chung');
+    $baseUrl = $baseUrlTot;
+
+    $p->exec('CREATE TABLE kiem_tra_quyen (id INT PRIMARY KEY)');
+    $pdoApp = new PDO('mysql:host=127.0.0.1;dbname=' . $name, $name, $dbPassword);
+    $pdoApp->exec('INSERT INTO kiem_tra_quyen VALUES (1)');
+    $pdoApp->exec('UPDATE kiem_tra_quyen SET id = 2 WHERE id = 1');
+    check((int) $pdoApp->query('SELECT id FROM kiem_tra_quyen')->fetchColumn() === 2
+        && $pdoApp->exec('DELETE FROM kiem_tra_quyen WHERE id = 2') === 1, 'Ca 11: tài khoản ứng dụng thực hiện đủ CRUD');
+    foreach (['CREATE TABLE kiem_tra_quyen_create (id INT)', 'DROP TABLE kiem_tra_quyen'] as $sql) {
+        $maLoi = null;
+        try {
+            $pdoApp->exec($sql);
+        } catch (PDOException $e) {
+            $maLoi = $e->errorInfo[1] ?? null;
+        }
+        check($maLoi === 1142, 'Ca 11: ' . strtok($sql, ' ') . ' bị từ chối với 1142');
+    }
+    unset($pdoApp);
+    if (in_array('--bang-3', $argv, true)) return;
+
     $page='thanhvien/3120224064_hop/gioithieu.php';
     $counts=fn()=>[$p->query('SELECT COUNT(*) FROM tv_tra_cuu_mang')->fetchColumn(),$p->query('SELECT COUNT(*) FROM tv_binh_chon')->fetchColumn()];
     $before=$counts();
@@ -214,6 +343,19 @@ try {
     check(!preg_match('/error_log\s*\(/',file_get_contents($root.'/quen-mat-khau.php')),'BT6 Không còn lệnh log trong luồng quên mật khẩu');
 } finally {
     if(is_resource($server)){proc_terminate($server);proc_close($server);}
+    if(is_resource($serverLoi)){proc_terminate($serverLoi);proc_close($serverLoi);}
+    if (is_dir($webCauHinh)) {
+        $tepWebCauHinh = array_merge($tepWebCauHinh, ['.env', 'kiem-tra-pdo.php', 'vendor/autoload.php', 'logs/php-error.log']);
+        foreach ($tepWebCauHinh as $tep) {
+            if (is_file($webCauHinh . '/' . $tep)) unlink($webCauHinh . '/' . $tep);
+        }
+        foreach (['inc', 'api', 'vendor', 'logs', 'storage'] as $thuMuc) rmdir($webCauHinh . '/' . $thuMuc);
+        rmdir($webCauHinh);
+    }
+    if (is_dir($thuMucPhien)) {
+        foreach (glob($thuMucPhien . '/sess_*') as $tepPhien) unlink($tepPhien);
+        rmdir($thuMucPhien);
+    }
     unlink($log);
     try {
         if ($createdAccount) $p->exec('DROP USER ' . $dbAccount);

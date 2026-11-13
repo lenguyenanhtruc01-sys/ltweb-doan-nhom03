@@ -72,44 +72,42 @@ function taoPhienGhiNho(int $uid): void
 
 function xoaGhiNhoHienTai(): void
 {
+    if (isset($_SESSION['ghi_nho_het_phien'])) {
+        [$selector, $bam] = $_SESSION['ghi_nho_het_phien'];
+        (new KhoPhienGhiNho(db()))->xoaToken($selector, $bam);
+        unset($_SESSION['ghi_nho_het_phien']);
+    }
     $duLieu = docCookieGhiNho();
     if ($duLieu !== null) {
-        [$selector] = $duLieu;
-        (new KhoPhienGhiNho(db()))->xoaTheoSelector($selector);
+        [$selector, $token] = $duLieu;
+        (new KhoPhienGhiNho(db()))->xoaToken($selector, hash('sha256', $token));
     }
 
     xoaCookieGhiNho();
 }
 
-function khoiPhucDangNhapTuCookie(): void
+function coTheDangNhapBangCookie(): bool
 {
-    if (isset($_SESSION['uid'])) {
-        return;
-    }
+    return !isset($_SESSION['uid'])
+        && !isset($_SESSION['ghi_nho_het_phien'])
+        && docCookieGhiNho() !== null;
+}
 
-    $duLieu = docCookieGhiNho();
-    if ($duLieu === null) {
-        return;
+function khoiPhucDangNhapTuCookie(): ?array
+{
+    if (!coTheDangNhapBangCookie()) {
+        return null;
     }
-    [$selector, $token] = $duLieu;
+    [$selector, $token] = docCookieGhiNho();
 
     $khoPhien = new KhoPhienGhiNho(db());
     $phien = $khoPhien->timConHan($selector);
-
-    if (!$phien || !hash_equals($phien['token_hash'], hash('sha256', $token))) {
-        if ($phien) {
-            $khoPhien->xoaTheoSelector($selector);
-        }
-        xoaCookieGhiNho();
-        return;
+    $bam = hash('sha256', $token);
+    xoaCookieGhiNho();
+    if (!$phien || !hash_equals($phien['token_hash'], $bam) || !$khoPhien->xoaToken($selector, $bam)) {
+        return null;
     }
-
-    // Xoay token sau mỗi lần dùng để hạn chế rủi ro token bị đánh cắp.
-    $khoPhien->xoaTheoSelector($selector);
-
-    session_regenerate_id(true);
-    $_SESSION['uid'] = (int) $phien['nguoi_dung_id'];
-    taoPhienGhiNho((int) $phien['nguoi_dung_id']);
+    return (new KhoNguoiDung(db()))->timTheoId((int) $phien['nguoi_dung_id']);
 }
 
 /**

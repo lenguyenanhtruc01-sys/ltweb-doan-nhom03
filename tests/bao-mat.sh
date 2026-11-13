@@ -39,7 +39,7 @@ else
   echo "Không nhận được mã phiên mới."
 fi
 
-tieuDe "Ca 6 – Hết hạn phiên: làm tay (đổi 1800 thành 60 trong inc/config.php, chờ > 1 phút)"
+tieuDe "Ca 6 – Hết hạn phiên (kết quả của bộ thử CSDL tạm ở cuối)"
 
 tieuDe "Ca 7 – XSS (mong đợi: &lt;b&gt;ao&lt;/b&gt; trong mã nguồn)"
 curl -s "$GOC/danh-sach.php?q=%3Cb%3Eao%3C%2Fb%3E" | grep -o '&lt;b&gt;ao&lt;/b&gt;' | head -1
@@ -49,7 +49,7 @@ for p in 'danh-sach.php?q[]=ao' 'chi-tiet.php?id[]=1' 'danh-sach.php?sx[]=x'; do
 [ -n "$CSRF" ] && echo "dang-nhap email[]: $(ma -b "PHPSESSID=$SID" -d "email[]=a&mat_khau[]=b&_csrf=$CSRF" "$GOC/dang-nhap.php")"
 [ -n "$CSRF" ] && echo "lien-he hoten[]:   $(ma -b "PHPSESSID=$SID" -d "hoten[]=a&email[]=b&_csrf=$CSRF" "$GOC/lien-he.php")"
 
-tieuDe "Ca 9 – .env (mong đợi: hai lệnh git không in gì)"
+tieuDe "Ca 9 – .env (hai lệnh git không in gì, kết quả HTTP 500 ở cuối)"
 git ls-files .env; git log --all --oneline -- .env; echo "(hết)"
 
 tieuDe "Ca 10 – .htaccess trên Apache (mong đợi: 404 cho .env/.git/inc/vendor; 403 cho .sql/.log/composer.json/uploads; CSS 200)"
@@ -58,7 +58,7 @@ for p in .env .git/config inc/db.php vendor/autoload.php database/schema.sql log
 done
 
 tieuDe "Ca 11 – Quyền tối thiểu (mong đợi: CRUD thành công, CREATE và DROP trả 1142)"
-echo "Làm theo README với bảng rỗng __kiem_tra_quyen_test và tên bảng __kiem_tra_quyen_create."
+echo "Xem kết quả của bộ thử CSDL tạm ở cuối."
 
 tieuDe "Ca 12 – Giới hạn đăng nhập (mong đợi: 5 lần 200, lần 6 trả 429, tài khoản khác trả 303)"
 jarKiemThu=$(mktemp) || exit 1
@@ -94,3 +94,5 @@ else
 fi
 
 echo "Phần B của Duy: chạy php tests/kiem-thu-phan-b.php trên CSDL kiểm thử tự tạo."
+tieuDe "Ca 6, 9, 11 – Kiểm thử tự động trên CSDL tạm"
+"${PHP_BIN:-php}" kiemtra/kiem-thu-bt7.php --bang-3

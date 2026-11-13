@@ -8,6 +8,8 @@ declare(strict_types=1);
  * Thử mã đúng, mã sai/hết hạn và gửi lại mã đã sử dụng trên CSDL kiểm thử.
  */
 require_once __DIR__ . '/inc/config.php';
+header('Referrer-Policy: no-referrer');
+header('Cache-Control: no-store');
 
 use App\Data\KhoNguoiDung;
 
